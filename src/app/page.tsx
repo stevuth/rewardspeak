@@ -99,7 +99,7 @@ const recentCashouts = [
 
 function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: boolean }) {
   return (
-    <div className={`transition-transform duration-300 ${isFeatured ? 'scale-110' : 'scale-90 opacity-60'}`}>
+    <div className={`transition-transform duration-300 ${isFeatured ? 'scale-100' : 'scale-90 opacity-60'}`}>
         <Card className="overflow-hidden bg-card/80 backdrop-blur-sm">
         <CardContent className="p-4">
             <div className="flex items-center gap-4">
@@ -157,7 +157,7 @@ export default function Home() {
           <Gamepad2 className="h-7 w-7 text-primary" />
           <span className="text-xl font-bold font-headline">Rewards Peak</span>
         </Link>
-        <nav className="flex items-center gap-2">
+        <nav className="hidden md:flex items-center gap-2">
           <Button variant="outline" asChild>
             <Link href="/login">
               <Chrome className="mr-2 h-4 w-4" />
@@ -171,6 +171,13 @@ export default function Home() {
             </Link>
           </Button>
         </nav>
+        <div className="md:hidden">
+            <Button asChild size="sm">
+                <Link href="/signup">
+                    Sign Up
+                </Link>
+            </Button>
+        </div>
       </header>
 
       <main className="flex-1">
@@ -190,7 +197,7 @@ export default function Home() {
                       align: "center",
                       loop: true,
                     }}
-                    className="w-full max-w-md"
+                    className="w-full max-w-sm sm:max-w-md"
                   >
                     <CarouselContent>
                       {featuredOffers.map((offer, index) => (
@@ -199,8 +206,8 @@ export default function Home() {
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                     <CarouselPrevious className="text-foreground hover:text-primary disabled:opacity-50 -left-4" />
-                    <CarouselNext className="text-foreground hover:text-primary disabled:opacity-50 -right-4" />
+                     <CarouselPrevious className="text-foreground hover:text-primary disabled:opacity-50 -left-4 hidden sm:flex" />
+                    <CarouselNext className="text-foreground hover:text-primary disabled:opacity-50 -right-4 hidden sm:flex" />
                   </Carousel>
               </div>
             </div>
@@ -259,20 +266,18 @@ export default function Home() {
             <div className="w-24 h-1 bg-primary mx-auto mb-12"></div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {/* Large Cards */}
-                <Card className="md:col-span-2 lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
+                <Card className="lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
                     <ExclusiveOpportunitiesIllustration />
                     <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Exclusive opportunities</h3>
                     <p className="text-sm text-muted-foreground">More earning options than any other platform, available to all users worldwide. Only on Rewardy.</p>
                 </Card>
-                <Card className="md:col-span-2 lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
+                <Card className="lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
                     <DailyChallengesIllustration />
                     <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Daily Challenges</h3>
                     <p className="text-sm text-muted-foreground">Take on daily challenges that reward your consistency and help you earn even more each day.</p>
                 </Card>
 
-                {/* Small Cards */}
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6 md:col-span-2 lg:col-span-1">
                     {features.map((feature, index) => (
                         <Card key={index} className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
                             <feature.icon className="w-8 h-8 text-primary mb-3" />
@@ -295,17 +300,17 @@ export default function Home() {
                 <div className="space-y-4">
                     {recentCashouts.map((cashout, index) => (
                         <Card key={index} className="bg-background/50 backdrop-blur-sm p-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-card">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-4 overflow-hidden">
+                                    <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
                                         {cashout.icon}
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-sm">{cashout.name}</p>
-                                        <p className="text-xs text-muted-foreground">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
+                                    <div className="truncate">
+                                        <p className="font-bold text-sm truncate">{cashout.name}</p>
+                                        <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
                                     </div>
                                 </div>
-                                <p className="text-xs text-muted-foreground">{cashout.time}</p>
+                                <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
                             </div>
                         </Card>
                     ))}
@@ -317,7 +322,7 @@ export default function Home() {
 
       <footer className="bg-card/40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                     <h3 className="font-bold text-lg mb-4">Browse</h3>
                     <ul className="space-y-2 text-muted-foreground">
@@ -341,7 +346,7 @@ export default function Home() {
                         <li><Link href="/dashboard/support" className="hover:text-primary">Contact</Link></li>
                     </ul>
                 </div>
-                <div className="flex items-center md:justify-end space-x-4">
+                <div className="col-span-2 md:col-span-1 flex items-start md:justify-end space-x-4">
                     <Button variant="ghost" size="icon"><Facebook /></Button>
                     <Button variant="ghost" size="icon"><Instagram /></Button>
                     <Button variant="ghost" size="icon"><Twitter /></Button>
@@ -364,5 +369,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
