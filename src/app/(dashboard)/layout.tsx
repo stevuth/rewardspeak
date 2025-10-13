@@ -17,13 +17,13 @@ import {
 import {
   Award,
   CircleHelp,
-  DollarSign,
+  Gamepad2,
   Gift,
   LayoutDashboard,
-  Mountain,
   Search,
   Settings,
   Shield,
+  Swords,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,9 +33,9 @@ import { Badge } from "@/components/ui/badge";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/earn", label: "Earn Points", icon: DollarSign },
-  { href: "/dashboard/withdraw", label: "Withdraw", icon: Gift },
-  { href: "/dashboard/referrals", label: "Referrals", icon: Users },
+  { href: "/dashboard/earn", label: "Find Quests", icon: Swords },
+  { href: "/dashboard/withdraw", label: "Withdraw Loot", icon: Gift },
+  { href: "/dashboard/referrals", label: "Guild", icon: Users },
   { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Award },
 ];
 
@@ -60,7 +60,7 @@ export default function DashboardLayout({
       >
         <SidebarHeader className="p-4">
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg">
-            <Mountain className="h-6 w-6 text-primary" />
+            <Gamepad2 className="h-6 w-6 text-primary" />
             <span className="group-data-[collapsible=icon]:hidden">
               Rewards Peak
             </span>
@@ -114,7 +114,7 @@ export default function DashboardLayout({
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search offers..."
+                  placeholder="Search quests..."
                   className="w-full appearance-none bg-transparent pl-8 md:w-2/3 lg:w-1/3"
                 />
               </div>

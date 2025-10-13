@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mountain, Chrome } from "lucide-react";
+import { Gamepad2, Chrome } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -32,14 +32,14 @@ export function AuthForm({ type }: AuthFormProps) {
     <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <Mountain className="mx-auto h-8 w-8 text-primary" />
+          <Gamepad2 className="mx-auto h-8 w-8 text-primary" />
           <CardTitle className="mt-4 text-2xl font-bold">
-            {type === "login" ? "Welcome Back" : "Create an Account"}
+            {type === "login" ? "Welcome Back!" : "Join the Adventure"}
           </CardTitle>
           <CardDescription>
             {type === "login"
-              ? "Log in to climb higher on Rewards Peak."
-              : "Join us and start earning rewards today."}
+              ? "Log in to continue your quest on Rewards Peak."
+              : "Create your hero and start earning epic rewards."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -49,7 +49,7 @@ export function AuthForm({ type }: AuthFormProps) {
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="hero@example.com"
                 required
               />
             </div>
@@ -58,7 +58,7 @@ export function AuthForm({ type }: AuthFormProps) {
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
-              {type === "login" ? "Log In" : "Sign Up"}
+              {type === "login" ? "Enter the Realm" : "Create My Hero"}
             </Button>
           </form>
           <div className="relative my-6">
@@ -79,14 +79,14 @@ export function AuthForm({ type }: AuthFormProps) {
         <CardFooter className="justify-center text-sm">
           {type === "login" ? (
             <p>
-              No account?{" "}
+              New adventurer?{" "}
               <Link href="/signup" className="font-medium text-primary hover:underline">
                 Sign up
               </Link>
             </p>
           ) : (
             <p>
-              Already have an account?{" "}
+              Already a hero?{" "}
               <Link href="/login" className="font-medium text-primary hover:underline">
                 Log in
               </Link>

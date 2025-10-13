@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { OfferCard } from "@/components/offer-card";
 import { user, popularOffers, quickTasks } from "@/lib/mock-data";
-import { DollarSign, Zap, ArrowUpRight, CheckCircle } from "lucide-react";
+import { Coins, Zap, ArrowUpRight, CheckCircle, Shield, Swords } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -44,35 +44,35 @@ export default function DashboardPage() {
         <StatCard
           title="Total Points"
           value={user.totalPoints}
-          icon={DollarSign}
+          icon={Coins}
           description="Your all-time earnings"
         />
         <StatCard
-          title="Daily Earnings"
+          title="Today's XP"
           value={user.dailyEarnings}
           icon={Zap}
           description="Points earned today"
         />
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Daily Goal</CardTitle>
+            <CardTitle className="text-sm font-medium">Daily Quest</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {user.dailyEarnings.toLocaleString()} / {dailyGoal.toLocaleString()}
+              {user.dailyEarnings.toLocaleString()} / {dailyGoal.toLocaleString()} XP
             </div>
             <Progress value={progress} className="mt-2 h-2" />
           </CardContent>
         </Card>
         <Card className="flex flex-col">
             <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Referrals</CardTitle>
+                <CardTitle className="text-sm font-medium">Guild Referrals</CardTitle>
                 <CardDescription>Invite friends, earn more</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col justify-end">
                 <Button asChild>
                     <Link href="/dashboard/referrals">
-                        View Referrals <ArrowUpRight className="ml-2 h-4 w-4" />
+                        View Guild <ArrowUpRight className="ml-2 h-4 w-4" />
                     </Link>
                 </Button>
             </CardContent>
@@ -81,7 +81,7 @@ export default function DashboardPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
             <div>
-                <h2 className="text-2xl font-bold tracking-tight mb-4">Popular Offers</h2>
+                <h2 className="text-2xl font-bold tracking-tight mb-4">Popular Quests</h2>
                 <div className="space-y-4">
                     {popularOffers.slice(0, 3).map((offer) => (
                         <OfferCard key={offer.id} offer={offer} />
@@ -90,7 +90,7 @@ export default function DashboardPage() {
             </div>
             <div>
                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/dashboard/earn">View All Offers</Link>
+                    <Link href="/dashboard/earn">View All Quests</Link>
                 </Button>
             </div>
         </div>
@@ -98,14 +98,14 @@ export default function DashboardPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Quick Tasks</CardTitle>
-                    <CardDescription>Complete these for fast points.</CardDescription>
+                    <CardDescription>Complete these for fast XP.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-4">
                        {quickTasks.slice(0, 3).map(task => (
                          <li key={task.id} className="flex items-center gap-4">
                             <div className="bg-primary/10 p-2 rounded-full">
-                                <CheckCircle className="h-5 w-5 text-primary" />
+                                <Shield className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1">
                                 <p className="text-sm font-medium">{task.title}</p>
