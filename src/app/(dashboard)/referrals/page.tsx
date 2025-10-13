@@ -1,5 +1,4 @@
 import { PageHeader } from "@/components/page-header";
-import { StatCard } from "@/components/stat-card";
 import {
   Card,
   CardContent,
@@ -7,87 +6,48 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { user, leaderboardData } from "@/lib/mock-data";
-import { Copy, Users, Gift } from "lucide-react";
+import { user } from "@/lib/mock-data";
+import { Copy, Gift, Users } from "lucide-react";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { GiftIllustration } from "@/components/illustrations/gift";
 
 export const metadata: Metadata = {
-  title: "Referrals",
+  title: "Refer and Earn",
   description: "Invite friends and earn more on Rewards Peak.",
 };
 
 export default function ReferralsPage() {
+  const referralCode = user.referralLink.split("/").pop()?.toUpperCase();
+
   return (
-    <div className="space-y-8">
-      <PageHeader
-        title="Referral Program"
-        description="Invite your friends and earn a percentage of their earnings!"
-      />
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Referral Link</CardTitle>
-          <CardDescription>
-            Share this link with your friends. When they sign up, you earn!
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2">
-            <Input value={user.referralLink} readOnly />
-            <Button variant="outline" size="icon">
-              <Copy className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-      <div className="grid gap-4 md:grid-cols-2">
-        <StatCard
-          title="Friends Referred"
-          value={user.referrals}
-          icon={Users}
-        />
-        <StatCard
-          title="Referral Earnings"
-          value={user.referralEarnings}
-          icon={Gift}
-        />
+    <div className="container mx-auto flex flex-col items-center justify-center text-center py-10 md:py-16">
+      <h1 className="text-3xl md:text-4xl font-bold">Refer and earn</h1>
+
+      <div className="my-8">
+        <GiftIllustration />
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Referrals</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-4">
-            {leaderboardData.slice(0, 3).map((refUser, index) => (
-              <li key={index} className="flex items-center gap-4">
-                <Image
-                  src={refUser.avatarUrl}
-                  alt={refUser.name}
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                  data-ai-hint={refUser.avatarHint}
-                />
-                <div className="flex-1">
-                  <p className="font-medium">{refUser.name}</p>
-                  <p className="text-sm text-muted-foreground">Joined 2 weeks ago</p>
-                </div>
-                <div className="text-right">
-                    <p className="font-semibold text-primary">+{(refUser.points/100).toLocaleString()} pts</p>
-                    <p className="text-sm text-muted-foreground">You earned</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-           {user.referrals === 0 && (
-                <div className="text-center py-10">
-                     <p className="text-sm text-muted-foreground">You haven't referred anyone yet.</p>
-                </div>
-            )}
-        </CardContent>
-      </Card>
+
+      <div className="w-full max-w-sm">
+        <p className="text-muted-foreground mb-2">Your referral code:</p>
+        <div className="relative flex items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/50 p-4">
+          <span className="text-2xl font-bold tracking-widest text-primary">
+            {referralCode}
+          </span>
+          <Button variant="ghost" size="icon" className="absolute right-2">
+            <Copy className="h-5 w-5" />
+          </Button>
+        </div>
+
+        <p className="text-muted-foreground mt-6 mb-8">
+          Share your referral code with your friends and get benefits.
+        </p>
+
+        <Button size="lg" className="w-full">
+          Invite friends
+        </Button>
+      </div>
     </div>
   );
 }
