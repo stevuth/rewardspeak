@@ -5,6 +5,7 @@ import {
   Shield,
   Star,
   BookOpen,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
