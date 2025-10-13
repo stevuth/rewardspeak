@@ -34,6 +34,10 @@ import {
   Headset,
   Banknote,
   Users,
+  Facebook,
+  Instagram,
+  Twitter,
+  MessageCircle,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -42,6 +46,55 @@ import { popularOffers, type Offer } from '@/lib/mock-data';
 import { Chrome } from "lucide-react";
 import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/exclusive-opportunities";
 import { DailyChallengesIllustration } from "@/components/illustrations/daily-challenges";
+
+const recentCashouts = [
+  {
+    name: 'fikriyecengizsoy',
+    amount: 2.01,
+    currency: 'Litecoin (LTC)',
+    time: 'an hour ago',
+    icon: (
+      <svg
+        className="w-6 h-6"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+          fill="#B0B0B0"
+        />
+        <path
+          d="M11.33 16.51l-3.37-1.63.7-.34 2.67 1.3.01.01 4.54-2.18-.54-.26-4-1.92-3.14 1.52.75.36 2.39-1.16 4.2 2.02L11.33 16.51zM14.63 7.5l-1.02 4.1-1.28.62.97-3.9 1.33-.82z"
+          fill="white"
+        />
+      </svg>
+    ),
+  },
+  {
+    name: 'ccramesar51a290',
+    amount: 2.05,
+    currency: 'Binance Coin (BNB)',
+    time: '2 hours ago',
+    icon: (
+      <svg
+        className="w-6 h-6 text-yellow-400"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M12 1.36l6.64 6.64-3.32 3.32-3.32-3.32-3.32 3.32L5.36 7.99 12 1.36zm0 13.96l-3.32-3.32 3.32-3.32 3.32 3.32-3.32 3.32zm0 7.32l-6.64-6.64 3.32-3.32 3.32 3.32 3.32-3.32 3.32 3.32L12 22.64zM4.14 9.21l3.18 3.18-3.18 3.18-3.18-3.18 3.18-3.18zm15.72 0l3.18 3.18-3.18 3.18-3.18-3.18 3.18-3.18z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'rauf26',
+    amount: 2.89,
+    currency: 'Bitcoin (BTC)',
+    time: '2 hours ago',
+    icon: <Bitcoin className="w-6 h-6 text-orange-400" />,
+  },
+];
 
 
 function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: boolean }) {
@@ -230,21 +283,86 @@ export default function Home() {
             </div>
         </section>
 
+        <section className="bg-card/40 py-16 md:py-24">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
+                <div className="text-center md:text-left">
+                    <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
+                    <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
+                    <Button size="lg" asChild>
+                        <Link href="/signup">Start earning now</Link>
+                    </Button>
+                </div>
+                <div className="space-y-4">
+                    {recentCashouts.map((cashout, index) => (
+                        <Card key={index} className="bg-background/50 backdrop-blur-sm p-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-card">
+                                        {cashout.icon}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm">{cashout.name}</p>
+                                        <p className="text-xs text-muted-foreground">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-muted-foreground">{cashout.time}</p>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        </section>
+
       </main>
 
-      <footer className="bg-card">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Gamepad2 className="h-6 w-6 text-muted-foreground" />
-            <span className="text-muted-foreground font-headline">
-              Rewards Peak
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.
-          </p>
+      <footer className="bg-card/40">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 className="font-bold text-lg mb-4">Browse</h3>
+                    <ul className="space-y-2 text-muted-foreground">
+                        <li><Link href="/dashboard/earn" className="hover:text-primary">Earn</Link></li>
+                        <li><Link href="/dashboard/withdraw" className="hover:text-primary">Withdraw</Link></li>
+                        <li><Link href="/dashboard/leaderboard" className="hover:text-primary">Leaderboard</Link></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 className="font-bold text-lg mb-4">About</h3>
+                    <ul className="space-y-2 text-muted-foreground">
+                        <li><Link href="#" className="hover:text-primary">Privacy Policy</Link></li>
+                        <li><Link href="#" className="hover:text-primary">Cookie Policy</Link></li>
+                        <li><Link href="#" className="hover:text-primary">Terms of Service</Link></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 className="font-bold text-lg mb-4">Support</h3>
+                    <ul className="space-y-2 text-muted-foreground">
+                        <li><Link href="/dashboard/support" className="hover:text-primary">FAQ</Link></li>
+                        <li><Link href="/dashboard/support" className="hover:text-primary">Contact</Link></li>
+                    </ul>
+                </div>
+                <div className="flex items-center md:justify-end space-x-4">
+                    <Button variant="ghost" size="icon"><Facebook /></Button>
+                    <Button variant="ghost" size="icon"><Instagram /></Button>
+                    <Button variant="ghost" size="icon"><Twitter /></Button>
+                    <Button variant="ghost" size="icon"><MessageCircle /></Button>
+                </div>
+            </div>
+            <div className="mt-8 border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                    <Gamepad2 className="h-6 w-6 text-muted-foreground" />
+                    <span className="text-muted-foreground font-headline">
+                    Rewards Peak
+                    </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                    &copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.
+                </p>
+            </div>
         </div>
       </footer>
     </div>
   );
 }
+
+    
