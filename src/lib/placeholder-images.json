@@ -1,3 +1,70 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "logo",
+      "description": "Rewards Peak logo",
+      "imageUrl": "https://picsum.photos/seed/logo/100/100",
+      "imageHint": "mountain logo"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "User avatar",
+      "imageUrl": "https://picsum.photos/seed/avatar1/40/40",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "adgate-logo",
+      "description": "AdGate Media logo",
+      "imageUrl": "https://picsum.photos/seed/adgate/40/40",
+      "imageHint": "company logo"
+    },
+    {
+      "id": "timewall-logo",
+      "description": "TimeWall logo",
+      "imageUrl": "https://picsum.photos/seed/timewall/40/40",
+      "imageHint": "clock logo"
+    },
+    {
+      "id": "offertoro-logo",
+      "description": "OfferToro logo",
+      "imageUrl": "https://picsum.photos/seed/offertoro/40/40",
+      "imageHint": "bull logo"
+    },
+    {
+      "id": "cpalead-logo",
+      "description": "CPALead logo",
+      "imageUrl": "https://picsum.photos/seed/cpalead/40/40",
+      "imageHint": "arrow logo"
+    },
+    {
+      "id": "leaderboard-user-1",
+      "description": "Leaderboard user 1",
+      "imageUrl": "https://picsum.photos/seed/leader1/40/40",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "leaderboard-user-2",
+      "description": "Leaderboard user 2",
+      "imageUrl": "https://picsum.photos/seed/leader2/40/40",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "leaderboard-user-3",
+      "description": "Leaderboard user 3",
+      "imageUrl": "https://picsum.photos/seed/leader3/40/40",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "leaderboard-user-4",
+      "description": "Leaderboard user 4",
+      "imageUrl": "https://picsum.photos/seed/leader4/40/40",
+      "imageHint": "woman model"
+    },
+    {
+      "id": "leaderboard-user-5",
+      "description": "Leaderboard user 5",
+      "imageUrl": "https://picsum.photos/seed/leader5/40/40",
+      "imageHint": "man model"
+    }
+  ]
 }
