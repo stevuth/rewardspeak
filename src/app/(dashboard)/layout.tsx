@@ -16,7 +16,9 @@ import {
 } from "@/components/ui/sidebar";
 import {
   Award,
+  Bell,
   CircleHelp,
+  Clock,
   Gamepad2,
   Gift,
   LayoutDashboard,
@@ -24,6 +26,7 @@ import {
   Settings,
   Shield,
   Swords,
+  Trophy,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,6 +37,8 @@ import { Badge } from "@/components/ui/badge";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/earn", label: "Find Quests", icon: Swords },
+  { href: "/dashboard/history", label: "Quest Log", icon: Clock },
+  { href: "/dashboard/achievements", label: "Achievements", icon: Trophy },
   { href: "/dashboard/withdraw", label: "Withdraw Loot", icon: Gift },
   { href: "/dashboard/referrals", label: "Guild", icon: Users },
   { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Award },
@@ -59,7 +64,10 @@ export default function DashboardLayout({
         className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
       >
         <SidebarHeader className="p-4">
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 font-semibold text-lg font-headline"
+          >
             <Gamepad2 className="h-6 w-6 text-primary" />
             <span className="group-data-[collapsible=icon]:hidden">
               Rewards Peak
@@ -91,7 +99,7 @@ export default function DashboardLayout({
                 <SidebarMenuButton
                   asChild
                   isActive={pathname.startsWith(item.href)}
-                   tooltip={{ children: item.label }}
+                  tooltip={{ children: item.label }}
                 >
                   <Link href={item.href}>
                     <item.icon />
@@ -120,6 +128,13 @@ export default function DashboardLayout({
               </div>
             </form>
           </div>
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell />
+            <span className="absolute top-1 right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+            </span>
+          </Button>
           <UserNav />
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>

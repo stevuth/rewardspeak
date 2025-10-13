@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { user, withdrawalMethods } from "@/lib/mock-data";
-import { DollarSign, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -32,13 +32,14 @@ export default function WithdrawPage() {
     <div className="space-y-8">
       <PageHeader
         title="Withdraw Earnings"
-        description="Convert your points into real money."
+        description="Convert your points into real-world loot."
+        className="font-headline"
       />
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="border-primary/50 border-2 shadow-lg shadow-primary/20">
             <CardHeader>
-              <CardTitle>New Withdrawal</CardTitle>
+              <CardTitle className="font-headline text-2xl">New Withdrawal</CardTitle>
               <CardDescription>
                 Select your method and enter the amount. 1000 points = $1.00.
               </CardDescription>
@@ -53,7 +54,10 @@ export default function WithdrawPage() {
                   <SelectContent>
                     {withdrawalMethods.map((method) => (
                       <SelectItem key={method.name} value={method.name}>
-                        {method.name} (Min: {method.min.toLocaleString()} pts)
+                        <span className="flex items-center gap-2">
+                          {method.name} (Min: {method.min.toLocaleString()}{" "}
+                          pts)
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -69,31 +73,29 @@ export default function WithdrawPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="wallet">
-                  PayPal Email / Crypto Address
-                </Label>
+                <Label htmlFor="wallet">Wallet/Account Info</Label>
                 <Input
                   id="wallet"
                   type="text"
-                  placeholder="your-wallet-address"
+                  placeholder="e.g., your-paypal@email.com"
                 />
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Request Withdrawal</Button>
+              <Button size="lg">Request Withdrawal</Button>
             </CardFooter>
           </Card>
         </div>
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 font-headline">
                 <Wallet className="h-5 w-5 text-muted-foreground" />
                 Your Balance
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">
+              <div className="text-3xl font-bold font-headline">
                 <AnimatedCounter value={user.totalPoints} /> Points
               </div>
               <div className="text-muted-foreground mt-1">
@@ -101,13 +103,17 @@ export default function WithdrawPage() {
               </div>
             </CardContent>
           </Card>
-           <Card>
+          <Card>
             <CardHeader>
-              <CardTitle>Withdrawal History</CardTitle>
-              <CardDescription>Your recent withdrawal requests.</CardDescription>
+              <CardTitle className="font-headline">Withdrawal History</CardTitle>
+              <CardDescription>
+                Your recent withdrawal requests.
+              </CardDescription>
             </CardHeader>
             <CardContent className="text-center py-10">
-                <p className="text-sm text-muted-foreground">No withdrawal history yet.</p>
+              <p className="text-sm text-muted-foreground">
+                No withdrawal history yet.
+              </p>
             </CardContent>
           </Card>
         </div>
