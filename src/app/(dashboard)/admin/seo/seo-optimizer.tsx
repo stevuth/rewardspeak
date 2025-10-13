@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { runSeoOptimizer } from "@/app/actions";
 import { Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required."),
