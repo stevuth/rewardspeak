@@ -21,7 +21,6 @@ import {
   Gamepad2,
   CheckCircle,
   Gift,
-  Users,
   Zap,
   Swords,
   ShieldCheck,
@@ -31,12 +30,19 @@ import {
   Twitch,
   ArrowLeft,
   ArrowRight,
+  Bitcoin,
+  Headset,
+  Banknote,
+  Users,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { popularOffers, type Offer } from '@/lib/mock-data';
 import { Chrome } from "lucide-react";
+import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/exclusive-opportunities";
+import { DailyChallengesIllustration } from "@/components/illustrations/daily-challenges";
+
 
 function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: boolean }) {
   return (
@@ -71,6 +77,25 @@ function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: b
 
 export default function Home() {
   const featuredOffers = popularOffers.slice(0, 5);
+
+  const features = [
+    {
+      icon: Bitcoin,
+      title: "Fast payments",
+    },
+    {
+      icon: Headset,
+      title: "24/7 Support",
+    },
+    {
+      icon: Banknote,
+      title: "Withdrawals starting at $2.00",
+    },
+    {
+      icon: Gift,
+      title: "Frequent giveaways",
+    },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -173,6 +198,38 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
+                Not your typical rewards platform. <span className="text-primary">Here's the difference</span>
+            </h2>
+            <div className="w-24 h-1 bg-primary mx-auto mb-12"></div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                {/* Large Cards */}
+                <Card className="md:col-span-2 lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
+                    <ExclusiveOpportunitiesIllustration />
+                    <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Exclusive opportunities</h3>
+                    <p className="text-sm text-muted-foreground">More earning options than any other platform, available to all users worldwide. Only on Rewardy.</p>
+                </Card>
+                <Card className="md:col-span-2 lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
+                    <DailyChallengesIllustration />
+                    <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Daily Challenges</h3>
+                    <p className="text-sm text-muted-foreground">Take on daily challenges that reward your consistency and help you earn even more each day.</p>
+                </Card>
+
+                {/* Small Cards */}
+                <div className="grid grid-cols-2 gap-6">
+                    {features.map((feature, index) => (
+                        <Card key={index} className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
+                            <feature.icon className="w-8 h-8 text-primary mb-3" />
+                            <h4 className="font-semibold text-sm">{feature.title}</h4>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        </section>
+
       </main>
 
       <footer className="bg-card">
@@ -191,5 +248,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
