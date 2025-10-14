@@ -75,16 +75,3 @@ export const offerWalls = [
     { name: "OfferToro", logo: getPlaceholder("offertoro-logo").url, hint: getPlaceholder("offertoro-logo").hint, description: "High-paying mobile offers." },
     { name: "CPALead", logo: getPlaceholder("cpalead-logo").url, hint: getPlaceholder("cpalead-logo").hint, description: "Daily surveys and app installs." },
 ];
-
-export type Achievement = {
-  id: string;
-  name: string;
-  description: string;
-  icon: LucideIcon;
-  goal: number;
-  currentProgress: number;
-  reward: number;
-  unlocked: boolean;
-};
-
-export const achievements: Achievement[] = [];

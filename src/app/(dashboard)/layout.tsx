@@ -40,7 +40,6 @@ import { UserNav } from "@/components/user-nav";
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
     { href: "/earn", label: "Climb & Earn", icon: Mountain },
-    { href: "/achievements", label: "Challenges", icon: Trophy },
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
     { href: "/referrals", label: "Invite & Climb", icon: Users },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
