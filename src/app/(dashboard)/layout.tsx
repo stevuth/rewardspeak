@@ -211,6 +211,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const totalAmountEarned = popularOffers
+    .filter((o) => o.status === "Completed")
+    .reduce((sum, o) => sum + o.points, 0) / 100;
 
   return (
     <SidebarProvider>
@@ -241,6 +244,16 @@ export default function DashboardLayout({
               </div>
             </div>
             <div className="flex items-center gap-2 ml-auto">
+              <div className="hidden sm:flex items-center gap-4">
+                  <div className="text-xs text-right">
+                      <p className="text-muted-foreground">Balance</p>
+                      <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
+                  </div>
+                    <div className="text-xs text-right">
+                      <p className="text-muted-foreground">Earned</p>
+                      <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
+                  </div>
+              </div>
               <UserNav />
               <Sheet>
                 <SheetTrigger asChild>
@@ -301,3 +314,4 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+
