@@ -69,11 +69,19 @@ export default function AchievementsPage() {
         title="Challenges"
         description="Track your progress and unlock exclusive rewards for your efforts."
       />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {achievements.map((ach) => (
-          <AchievementCard key={ach.id} achievement={ach} />
-        ))}
-      </div>
+      {achievements.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {achievements.map((ach) => (
+            <AchievementCard key={ach.id} achievement={ach} />
+          ))}
+        </div>
+      ) : (
+        <Card>
+            <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground">No challenges available right now. Check back soon!</p>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

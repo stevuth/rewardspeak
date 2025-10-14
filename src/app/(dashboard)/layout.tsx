@@ -41,16 +41,7 @@ const secondaryNavItems = [
   { href: "/dashboard/support", label: "Support", icon: CircleHelp },
 ];
 
-const recentEarnings = [
-  { name: "Adjoe", user: "chrisbruegger", amount: 240 },
-  { name: "Rewardy", user: "seekptc", amount: 1 },
-  { name: "Rewardy", user: "herme", amount: 1 },
-  { name: "Rewardy", user: "susanodiaz777", amount: 1 },
-  { name: "Rewardy", user: "seekptc", amount: 1 },
-  { name: "Rewardy", user: "protrek", amount: 4 },
-  { name: "Tapjoy", user: "majewskid911", amount: 4 },
-  { name: "Rewardy", user: "trez", amount: 3 },
-  { name: "Rewardy", user: "seekptc", amount: 1 },
+const recentEarnings: any[] = [
 ];
 
 function SidebarContent() {

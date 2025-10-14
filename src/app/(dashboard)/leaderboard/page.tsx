@@ -57,29 +57,37 @@ export default function LeaderboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leaderboardData.map((user) => (
-                <TableRow key={user.rank}>
-                  <TableCell>
-                    <RankBadge rank={user.rank} />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={user.avatarUrl}
-                        alt={user.name}
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                        data-ai-hint={user.avatarHint}
-                      />
-                      <span className="font-medium">{user.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-primary">
-                    {user.points.toLocaleString()}
-                  </TableCell>
+              {leaderboardData.length > 0 ? (
+                leaderboardData.map((user) => (
+                  <TableRow key={user.rank}>
+                    <TableCell>
+                      <RankBadge rank={user.rank} />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src={user.avatarUrl}
+                          alt={user.name}
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                          data-ai-hint={user.avatarHint}
+                        />
+                        <span className="font-medium">{user.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-primary">
+                      {user.points.toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                    <TableCell colSpan={3} className="text-center h-24">
+                        The leaderboard is empty. Start earning to get on the board!
+                    </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>

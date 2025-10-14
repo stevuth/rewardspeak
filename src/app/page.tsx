@@ -45,54 +45,7 @@ import { Chrome } from "lucide-react";
 import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/exclusive-opportunities";
 import { DailyChallengesIllustration } from "@/components/illustrations/daily-challenges";
 
-const recentCashouts = [
-  {
-    name: 'fikriyecengizsoy',
-    amount: 2.01,
-    currency: 'Litecoin (LTC)',
-    time: 'an hour ago',
-    icon: (
-      <svg
-        className="w-6 h-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-          fill="#B0B0B0"
-        />
-        <path
-          d="M11.33 16.51l-3.37-1.63.7-.34 2.67 1.3.01.01 4.54-2.18-.54-.26-4-1.92-3.14 1.52.75.36 2.39-1.16 4.2 2.02L11.33 16.51zM14.63 7.5l-1.02 4.1-1.28.62.97-3.9 1.33-.82z"
-          fill="white"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: 'ccramesar51a290',
-    amount: 2.05,
-    currency: 'Binance Coin (BNB)',
-    time: '2 hours ago',
-    icon: (
-      <svg
-        className="w-6 h-6 text-yellow-400"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M12 1.36l6.64 6.64-3.32 3.32-3.32-3.32-3.32 3.32L5.36 7.99 12 1.36zm0 13.96l-3.32-3.32 3.32-3.32 3.32 3.32-3.32 3.32zm0 7.32l-6.64-6.64 3.32-3.32 3.32 3.32 3.32-3.32 3.32 3.32L12 22.64zM4.14 9.21l3.18 3.18-3.18 3.18-3.18-3.18 3.18-3.18zm15.72 0l3.18 3.18-3.18 3.18-3.18-3.18 3.18-3.18z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'rauf26',
-    amount: 2.89,
-    currency: 'Bitcoin (BTC)',
-    time: '2 hours ago',
-    icon: <Bitcoin className="w-6 h-6 text-orange-400" />,
-  },
-];
+const recentCashouts: any[] = [];
 
 
 function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: boolean }) {
@@ -296,22 +249,28 @@ export default function Home() {
                     </Button>
                 </div>
                 <div className="space-y-4">
-                    {recentCashouts.map((cashout, index) => (
-                        <Card key={index} className="bg-background/50 backdrop-blur-sm p-4">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-4 overflow-hidden">
-                                    <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
-                                        {cashout.icon}
+                    {recentCashouts.length > 0 ? (
+                        recentCashouts.map((cashout, index) => (
+                            <Card key={index} className="bg-background/50 backdrop-blur-sm p-4">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4 overflow-hidden">
+                                        <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
+                                            {cashout.icon}
+                                        </div>
+                                        <div className="truncate">
+                                            <p className="font-bold text-sm truncate">{cashout.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
+                                        </div>
                                     </div>
-                                    <div className="truncate">
-                                        <p className="font-bold text-sm truncate">{cashout.name}</p>
-                                        <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
-                                    </div>
+                                    <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
                                 </div>
-                                <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
-                            </div>
+                            </Card>
+                        ))
+                    ) : (
+                        <Card className="bg-background/50 backdrop-blur-sm p-4 text-center">
+                            <p className="text-muted-foreground">Be the first to cash out!</p>
                         </Card>
-                    ))}
+                    )}
                 </div>
             </div>
         </section>

@@ -83,25 +83,33 @@ export default function HistoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {offerHistory.map((offer) => (
-                <TableRow key={offer.id}>
-                  <TableCell className="font-medium">{offer.title}</TableCell>
-                  <TableCell>{offer.partner}</TableCell>
-                  <TableCell>{offer.date}</TableCell>
-                  <TableCell>
-                    <StatusBadge status={offer.status} />
-                  </TableCell>
-                  <TableCell
-                    className={cn("text-right font-bold", {
-                      "text-primary": offer.status === "Completed",
-                      "text-muted-foreground": offer.status !== "Completed",
-                    })}
-                  >
-                    {offer.status === "Completed" ? "+" : ""}
-                    {offer.points.toLocaleString()}
+              {offerHistory.length > 0 ? (
+                offerHistory.map((offer) => (
+                  <TableRow key={offer.id}>
+                    <TableCell className="font-medium">{offer.title}</TableCell>
+                    <TableCell>{offer.partner}</TableCell>
+                    <TableCell>{offer.date}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={offer.status} />
+                    </TableCell>
+                    <TableCell
+                      className={cn("text-right font-bold", {
+                        "text-primary": offer.status === "Completed",
+                        "text-muted-foreground": offer.status !== "Completed",
+                      })}
+                    >
+                      {offer.status === "Completed" ? "+" : ""}
+                      {offer.points.toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center h-24">
+                    No history yet. Complete some quests!
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>
