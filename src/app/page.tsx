@@ -506,7 +506,7 @@ export default function Home() {
 
                             <div className="text-center">
                                 <p className="text-sm text-muted-foreground">Available to withdraw</p>
-                                <p className="text-3xl md:text-4xl font-bold text-accent my-1">$250.00</p>
+                                <p className="text-3xl md:text-4xl font-bold text-accent my-1">$170.00</p>
                                 <Button variant="link" className="text-primary">Choose your reward</Button>
                             </div>
                         </div>
