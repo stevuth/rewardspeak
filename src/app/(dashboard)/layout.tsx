@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Coins,
   Gift,
@@ -24,6 +25,7 @@ import {
   FileText,
   Shield,
   BookUser,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -131,6 +133,8 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[260px_1fr]">
       <div className="hidden border-r bg-card md:block">
@@ -155,6 +159,10 @@ export default function DashboardLayout({
               <SidebarContent />
             </SheetContent>
           </Sheet>
+          <Button variant="outline" size="icon" className="shrink-0" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+            <span className="sr-only">Go back</span>
+          </Button>
           <div className="hidden md:flex flex-1 overflow-x-auto whitespace-nowrap">
              <div className="flex gap-2 items-center">
                  {recentEarnings.map((earning, i) => (
