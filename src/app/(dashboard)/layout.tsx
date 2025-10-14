@@ -91,7 +91,7 @@ function SidebarContent() {
         <p className="text-sm text-muted-foreground">Level 0</p>
         <div className="mt-2 flex items-center gap-2 rounded-md bg-muted p-2 text-sm font-semibold">
           <Coins className="h-4 w-4 text-yellow-400" />
-          <span>{user.totalPoints.toLocaleString()} (${(user.totalPoints / 1000).toFixed(2)})</span>
+          <span>{user.totalPoints.toLocaleString()} (${(user.totalPoints / 100).toFixed(2)})</span>
         </div>
       </div>
 

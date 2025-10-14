@@ -73,7 +73,7 @@ function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: b
                 </div>
             </div>
             <div className="mt-4 flex justify-between items-center">
-                <p className="text-lg font-bold text-primary">${(offer.points / 1000).toFixed(2)}</p>
+                <p className="text-lg font-bold text-primary">${(offer.points / 100).toFixed(2)}</p>
             </div>
         </CardContent>
         </Card>
