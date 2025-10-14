@@ -22,15 +22,14 @@ type AuthFormProps = {
 export function AuthForm({ type }: AuthFormProps) {
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Mock authentication logic
-    router.push("/dashboard/earn");
+  const handleNavigation = () => {
+    router.push("/dashboard");
   };
 
-  const handleButtonClick = () => {
-    router.push('/dashboard/earn');
-  }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleNavigation();
+  };
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
@@ -62,7 +61,7 @@ export function AuthForm({ type }: AuthFormProps) {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required defaultValue="password" />
             </div>
-            <Button type="button" onClick={handleButtonClick} className="w-full">
+            <Button type="submit" className="w-full">
               {type === "login" ? "Enter the Realm" : "Create My Hero"}
             </Button>
           </form>
@@ -76,7 +75,7 @@ export function AuthForm({ type }: AuthFormProps) {
               </span>
             </div>
           </div>
-          <Button variant="outline" className="w-full" onClick={handleButtonClick}>
+          <Button variant="outline" className="w-full" onClick={handleNavigation}>
             <Chrome className="mr-2 h-4 w-4" />
             Google
           </Button>
