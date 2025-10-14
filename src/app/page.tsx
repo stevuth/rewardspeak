@@ -112,6 +112,22 @@ const paymentMethods = [
     { icon: BitcoinLogo, name: 'Bitcoin'},
 ];
 
+const SignUpBonusIllustration = () => (
+    <div className="relative w-48 h-32 flex items-center justify-center">
+      {/* Gift Box */}
+      <div className="relative">
+        <div className="w-24 h-20 bg-primary/20 rounded-lg shadow-lg"></div>
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-28 h-6 bg-primary/30 rounded-t-lg"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-full bg-primary/10"></div>
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-8 bg-primary/40 rounded-full"></div>
+      </div>
+      {/* Coins */}
+      <div className="absolute top-4 left-8 w-6 h-6 bg-yellow-400 rounded-full animate-bounce"></div>
+      <div className="absolute top-10 right-6 w-8 h-8 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+       <div className="absolute bottom-4 left-12 w-5 h-5 bg-yellow-300 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
+    </div>
+  );
+
 
 export default function Home() {
   const featuredOffers = popularOffers.slice(0, 5);
@@ -137,11 +153,6 @@ export default function Home() {
 
 
   const features = [
-    {
-      icon: Gift,
-      title: "Instant sign up bonus",
-      description: "New users receive a $1 bonus instantly upon signing up.",
-    },
     {
       icon: UserPlus,
       title: "10% lifetime referral earnings",
@@ -461,6 +472,11 @@ export default function Home() {
                     <ExclusiveOpportunitiesIllustration />
                     <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Exclusive opportunities</h3>
                     <p className="text-sm text-muted-foreground">More earning options than any other platform, available to all users worldwide.</p>
+                </Card>
+                <Card className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
+                    <SignUpBonusIllustration />
+                    <h3 className="font-bold text-lg font-headline mb-2 mt-4">Instant sign up bonus</h3>
+                    <p className="text-sm text-muted-foreground">New users receive a $1 bonus instantly upon signing up.</p>
                 </Card>
                 {features.map((feature, index) => (
                     <Card key={index} className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
