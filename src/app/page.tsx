@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -53,45 +54,61 @@ import { popularOffers, type Offer } from '@/lib/mock-data';
 import { Chrome } from "lucide-react";
 import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/exclusive-opportunities";
 import { DailyChallengesIllustration } from "@/components/illustrations/daily-challenges";
+import React from 'react';
+import { cn } from '@/lib/utils';
+
 
 const recentCashouts: any[] = [];
 
 
-function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: boolean }) {
+function OfferCarouselCard({ offer }: { offer: Offer }) {
   return (
-    <div className={`transition-transform duration-300 ${isFeatured ? 'scale-100' : 'scale-90 opacity-60'}`}>
-        <Card className="overflow-hidden bg-card/80 backdrop-blur-sm">
-        <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-                {offer.imageUrl && (
-                    <Image
-                        src={offer.imageUrl}
-                        alt={`${offer.partner} logo`}
-                        width={48}
-                        height={48}
-                        className="rounded-lg"
-                        data-ai-hint={offer.imageHint}
-                    />
-                )}
-                <div>
-                    <p className="font-semibold text-sm">{offer.title}</p>
-                    <div className="flex items-center gap-1 text-yellow-400 mt-1">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span className="text-xs font-bold">5.0</span>
-                    </div>
+    <Card className="overflow-hidden bg-card/80 backdrop-blur-sm w-full">
+    <CardContent className="p-4">
+        <div className="flex items-center gap-4">
+            {offer.imageUrl && (
+                <Image
+                    src={offer.imageUrl}
+                    alt={`${offer.partner} logo`}
+                    width={48}
+                    height={48}
+                    className="rounded-lg"
+                    data-ai-hint={offer.imageHint}
+                />
+            )}
+            <div>
+                <p className="font-semibold text-sm">{offer.title}</p>
+                <div className="flex items-center gap-1 text-yellow-400 mt-1">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span className="text-xs font-bold">5.0</span>
                 </div>
             </div>
-            <div className="mt-4 flex justify-between items-center">
-                <p className="text-lg font-bold text-primary">${(offer.points / 100).toFixed(2)}</p>
-            </div>
-        </CardContent>
-        </Card>
-    </div>
+        </div>
+        <div className="mt-4 flex justify-between items-center">
+            <p className="text-lg font-bold text-primary">${(offer.points / 100).toFixed(2)}</p>
+        </div>
+    </CardContent>
+    </Card>
   )
 }
 
 export default function Home() {
   const featuredOffers = popularOffers.slice(0, 5);
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+
+  React.useEffect(() => {
+    if (!api) {
+      return
+    }
+ 
+    setCurrent(api.selectedScrollSnap())
+ 
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+  }, [api])
+
 
   const features = [
     {
@@ -189,18 +206,41 @@ export default function Home() {
              {featuredOffers.length > 0 && (
                 <div className="mt-12 h-64 flex items-center justify-center">
                     <Carousel
+                        setApi={setApi}
                         opts={{
-                        align: "center",
-                        loop: true,
+                          align: "center",
+                          loop: true,
                         }}
                         className="w-full max-w-sm sm:max-w-md"
                     >
                         <CarouselContent>
-                        {featuredOffers.map((offer, index) => (
+                        {featuredOffers.map((offer, index) => {
+                           const isFeatured = index === current;
+                           let rotation = 0;
+                           let translation = 0;
+                           
+                           if (index < current) {
+                             rotation = -15 - (current - index -1) * 5;
+                             translation = -40 - (current - index-1) * 10;
+                           }
+                           if (index > current) {
+                             rotation = 15 + (index - current -1) * 5;
+                             translation = 40 + (index - current-1) * 10;
+                           }
+                           
+                           return (
                             <CarouselItem key={index} className="basis-1/2 flex justify-center">
-                                <OfferCarouselCard offer={offer} isFeatured={index === 1} />
+                                <div 
+                                  className={cn("transition-all duration-300", isFeatured ? 'scale-100 opacity-100' : 'scale-90 opacity-60')}
+                                  style={{
+                                    transform: `rotate(${rotation}deg) translateX(${translation}%)`,
+                                  }}
+                                >
+                                  <OfferCarouselCard offer={offer} />
+                                </div>
                             </CarouselItem>
-                        ))}
+                           )
+                        })}
                         </CarouselContent>
                         <CarouselPrevious className="text-foreground hover:text-primary disabled:opacity-50 -left-4 hidden sm:flex" />
                         <CarouselNext className="text-foreground hover:text-primary disabled:opacity-50 -right-4 hidden sm:flex" />
@@ -416,3 +456,5 @@ export default function Home() {
 }
 
   
+
+    
