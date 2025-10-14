@@ -33,7 +33,6 @@ export default function WithdrawPage() {
       <PageHeader
         title="Withdraw Earnings"
         description="Convert your points into real-world loot."
-        className="font-headline"
       />
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
