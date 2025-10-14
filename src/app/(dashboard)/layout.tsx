@@ -71,6 +71,7 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
   };
   
   if (isMobile) {
+    const mobileOnlyNav = navItems.filter(item => !mobileNavItems.some(mobileItem => mobileItem.href === item.href));
     return (
       <div className="flex flex-col h-full">
          <div className="p-4 border-b flex items-center justify-between">
@@ -84,7 +85,7 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
             {children}
           </div>
         <nav className="flex-1 space-y-1 p-4">
-           {navItems.map((item) => (
+           {mobileOnlyNav.map((item) => (
              <Link
                key={item.href}
                href={item.href}
@@ -239,7 +240,6 @@ export default function DashboardLayout({
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col p-0 bg-card w-[80vw] max-w-xs"
-              // The default close icon is hidden, so we provide our own in SidebarContent
                hideCloseButton={true}
               >
                 <SidebarContent>
