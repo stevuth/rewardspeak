@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -11,15 +12,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Gamepad2, Chrome, Home } from "lucide-react";
+import { Gamepad2, Chrome } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type AuthFormProps = {
   type: "login" | "signup";
+  onSwitch?: () => void;
 };
 
-export function AuthForm({ type }: AuthFormProps) {
+export function AuthForm({ type, onSwitch }: AuthFormProps) {
   const router = useRouter();
 
   const handleNavigation = () => {
@@ -31,15 +33,14 @@ export function AuthForm({ type }: AuthFormProps) {
     handleNavigation();
   };
 
+  const switchText =
+    type === "login"
+      ? "New adventurer?"
+      : "Already a hero?";
+  const switchLinkText = type === "login" ? "Sign up" : "Log in";
+
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md relative">
-        <Link href="/" className="absolute top-4 left-4">
-           <Button variant="ghost" size="icon">
-             <Home className="h-5 w-5" />
-             <span className="sr-only">Back to Home</span>
-           </Button>
-        </Link>
+      <Card className="w-full max-w-md border-0 shadow-none rounded-lg">
         <CardHeader className="text-center pt-12">
           <Gamepad2 className="mx-auto h-8 w-8 text-primary" />
           <CardTitle className="mt-4 text-2xl font-bold">
@@ -87,23 +88,18 @@ export function AuthForm({ type }: AuthFormProps) {
           </Button>
         </CardContent>
         <CardFooter className="justify-center text-sm">
-          {type === "login" ? (
-            <p>
-              New adventurer?{" "}
-              <Link href="/signup" className="font-medium text-primary hover:underline">
-                Sign up
-              </Link>
-            </p>
-          ) : (
-            <p>
-              Already a hero?{" "}
-              <Link href="/login" className="font-medium text-primary hover:underline">
-                Log in
-              </Link>
-            </p>
-          )}
+          <p>
+            {switchText}{" "}
+            <Button
+              variant="link"
+              className="p-0 h-auto font-medium text-primary hover:underline"
+              onClick={onSwitch}
+              type="button"
+            >
+              {switchLinkText}
+            </Button>
+          </p>
         </CardFooter>
       </Card>
-    </div>
   );
 }

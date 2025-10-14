@@ -26,6 +26,11 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Gamepad2,
   Gift,
   Zap,
@@ -65,6 +70,7 @@ import { cn } from '@/lib/utils';
 import Autoplay from "embla-carousel-autoplay"
 import { OfferGridCard } from '@/components/offer-grid-card';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
+import { AuthForm } from '@/components/auth/auth-form';
 
 
 const recentCashouts: any[] = [];
@@ -170,6 +176,9 @@ export default function Home() {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [isClient, setIsClient] = React.useState(false);
+  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
+  const [isSignupOpen, setIsSignupOpen] = React.useState(false);
+  
 
   React.useEffect(() => {
     setIsClient(true);
@@ -231,32 +240,41 @@ export default function Home() {
     { reward: '$171.60', task: 'Upgrade to 3000 meter', status: 'pending' },
   ];
 
+  const onSwitchForms = () => {
+    setIsLoginOpen(!isLoginOpen);
+    setIsSignupOpen(!isSignupOpen);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
+      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+        <DialogContent className="p-0 border-0 max-w-md">
+            <AuthForm type="login" onSwitch={onSwitchForms} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
+        <DialogContent className="p-0 border-0 max-w-md">
+            <AuthForm type="signup" onSwitch={onSwitchForms} />
+        </DialogContent>
+      </Dialog>
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Gamepad2 className="h-7 w-7 text-primary" />
           <span className="text-xl font-bold font-headline">Rewards Peak</span>
         </Link>
         <nav className="hidden md:flex items-center gap-2">
-          <Button variant="outline" asChild>
-            <Link href="/login">
+          <Button variant="outline" onClick={() => setIsLoginOpen(true)}>
               <Chrome className="mr-2 h-4 w-4" />
               Sign in
-            </Link>
           </Button>
-          <Button asChild>
-            <Link href="/signup">
+          <Button onClick={() => setIsSignupOpen(true)}>
                 <Users className="mr-2 h-4 w-4"/>
                 Sign Up
-            </Link>
           </Button>
         </nav>
         <div className="md:hidden">
-            <Button asChild size="sm">
-                <Link href="/signup">
-                    Sign Up
-                </Link>
+            <Button size="sm" onClick={() => setIsSignupOpen(true)}>
+                Sign Up
             </Button>
         </div>
       </header>
@@ -337,7 +355,7 @@ export default function Home() {
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input type="email" placeholder="Email address" className="pl-9" />
                   </div>
-                  <Button size="lg" className="w-full font-bold">
+                  <Button size="lg" className="w-full font-bold" onClick={() => setIsSignupOpen(true)}>
                     Start Earning
                   </Button>
                   
@@ -352,11 +370,11 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <Button variant="outline" className="w-full font-bold">
+                  <Button variant="outline" className="w-full font-bold" onClick={() => setIsSignupOpen(true)}>
                     <Chrome className="mr-2 h-4 w-4" />
                     Sign up with Google
                   </Button>
-                  <Button variant="outline" className="w-full font-bold bg-[#6441a5]/20 border-[#6441a5]/50 hover:bg-[#6441a5]/30 text-white">
+                  <Button variant="outline" className="w-full font-bold bg-[#6441a5]/20 border-[#6441a5]/50 hover:bg-[#6441a5]/30 text-white" onClick={() => setIsSignupOpen(true)}>
                      <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="mr-2 h-4 w-4 fill-current"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z"/></svg>
                     Sign up with Twitch
                   </Button>
