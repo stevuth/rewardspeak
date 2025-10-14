@@ -57,11 +57,12 @@ export type WithdrawalMethod = {
 };
 
 export const withdrawalMethods: WithdrawalMethod[] = [
-  { name: "PayPal", min: 5000, fee: 0.02 },
-  { name: "Bitcoin", min: 25000, fee: 1000 },
-  { name: "Ethereum", min: 25000, fee: 1500 },
-  { name: "Amazon Gift Card", min: 1000, fee: 0 },
-  { name: "Steam Gift Card", min: 5000, fee: 0 },
+  { name: "PayPal", min: 500, fee: 0.02 },
+  { name: "Litecoin", min: 2500, fee: 100 },
+  { name: "USD Coin", min: 2500, fee: 150 },
+  { name: "Binance Coin", min: 1000, fee: 0 },
+  { name: "Bitcoin", min: 2500, fee: 100 },
+  { name: "Ethereum", min: 2500, fee: 150 },
 ];
 
 export const user = {
