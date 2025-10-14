@@ -31,6 +31,7 @@ import { popularOffers, user } from "@/lib/mock-data";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -153,61 +154,54 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
   }
 
   // Mobile Sidebar
-  const mobileOnlyNav = navItems.filter(item => !mobileNavItems.some(mobileItem => mobileItem.href === item.href));
   return (
-    <div className="flex flex-col h-full">
-        <div className="p-4 border-b flex items-center justify-between">
+    <div className="flex flex-col h-full w-full">
+      <div className="p-4 border-b flex items-center justify-between">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 font-semibold text-lg font-headline"
+        >
+          <Coins className="h-6 w-6 text-primary" />
+          <span className="text-xl font-bold">Rewards Peak</span>
+        </Link>
+        {children}
+      </div>
+
+      <nav className="flex-1 space-y-1 p-4">
+        {navItems.map((item) => (
           <Link
-            href="/dashboard"
-            className="flex items-center gap-2 font-semibold text-lg font-headline"
+            key={item.href}
+            href={item.href}
+            className={getNavLinkClass(item.href)}
           >
-            <Coins className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Rewards Peak</span>
+            <item.icon className="h-4 w-4" />
+            {item.label}
           </Link>
-          {children}
-        </div>
-      <div className="grid grid-cols-2 gap-4 p-4">
-        <nav className="flex-1 space-y-1">
-            {mobileOnlyNav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={getNavLinkClass(item.href)}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            ))}
-            <Link href="/history" className={getNavLinkClass("/history")}><Clock className="h-4 w-4" />Quest Log</Link>
-            <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>
-        </nav>
-        <div className="border-l pl-4 flex flex-col justify-between">
-             <div className="space-y-1">
-                 <Link href="/settings" className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground">
-                    <Settings className="h-4 w-4" />
-                    <span>My Profile</span>
-                </Link>
-             </div>
-             <div>
-                <Link href="/settings" className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground mb-4">
-                    <Image 
-                        src={user.avatarUrl} 
-                        alt="user avatar" 
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                        data-ai-hint={user.avatarHint}
-                    />
-                    <span>{user.name}</span>
-                </Link>
-                <Link
-                    href="/"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground bg-muted hover:bg-muted/80"
-                >
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
-                </Link>
+        ))}
+      </nav>
+
+      <div className="mt-auto p-4 space-y-1 border-t">
+        {secondaryNavItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={getNavLinkClass(item.href)}
+          >
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </Link>
+        ))}
+        <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
+            <UserNav />
+             <div className="flex-1">
+                <p className="font-semibold">{user.name}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
             </div>
+             <Button variant="ghost" size="icon" asChild>
+                <Link href="/">
+                    <LogOut className="h-4 w-4" />
+                </Link>
+             </Button>
         </div>
       </div>
     </div>
@@ -220,101 +214,93 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const totalAmountEarned = popularOffers
-    .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.points, 0) / 100;
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[260px_1fr]">
-      <div className="hidden border-r bg-card md:block">
-        <SidebarContent />
-      </div>
-      <div className="flex flex-col overflow-hidden">
-        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
-            <ArrowLeft className="h-5 w-5" />
-            <span className="sr-only">Go back</span>
-          </Button>
-          <div className="flex-1 overflow-x-auto whitespace-nowrap">
-             <div className="flex gap-2 items-center">
-                 <div className="flex items-center gap-4 md:hidden">
-                    <div className="flex items-center gap-4">
-                        <div className="text-xs">
-                            <p className="text-muted-foreground">Balance</p>
-                            <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
-                        </div>
-                         <div className="text-xs">
-                            <p className="text-muted-foreground">Earned</p>
-                            <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
-                        </div>
-                    </div>
-                 </div>
-                 {recentEarnings.map((earning, i) => (
-                    <div key={i} className="hidden md:flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
-                        <div className="flex flex-col">
-                            <span className="font-bold text-primary">{earning.name}</span>
-                            <span className="text-muted-foreground">{earning.user}</span>
-                        </div>
-                        <Badge variant="secondary">{earning.amount}</Badge>
-                    </div>
-                 ))}
-             </div>
-          </div>
-          <div className="flex items-center gap-2 ml-auto">
-            <UserNav />
-             <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                >
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent 
-                side="top" 
-                className="flex flex-col p-0 bg-card w-full rounded-b-2xl"
-                hideCloseButton={true}
-              >
-                <SidebarContent>
-                   <SheetClose asChild>
-                      <Button variant="ghost" size="icon" className="md:hidden">
-                          <X className="h-5 w-5" />
-                          <span className="sr-only">Close</span>
-                      </Button>
-                  </SheetClose>
-                </SidebarContent>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
-        
-        {/* Mobile Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
-            <div className="grid grid-cols-4 gap-2">
-                {mobileNavItems.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-medium",
-                                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                            )}
-                        >
-                            <item.icon className="h-5 w-5" />
-                            <span className="truncate">{item.label}</span>
-                        </Link>
-                    )
-                })}
+    <SidebarProvider>
+      <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
+        <Sidebar collapsible="icon" className="bg-card border-r">
+          <SidebarContent />
+        </Sidebar>
+        <div className="flex flex-col overflow-hidden">
+          <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
+            <div className="hidden md:flex">
+              <SidebarTrigger />
             </div>
+            <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Go back</span>
+            </Button>
+            <div className="flex-1 overflow-x-auto whitespace-nowrap">
+              <div className="flex gap-2 items-center">
+                {recentEarnings.map((earning, i) => (
+                  <div key={i} className="hidden md:flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-primary">{earning.name}</span>
+                      <span className="text-muted-foreground">{earning.user}</span>
+                    </div>
+                    <Badge variant="secondary">{earning.amount}</Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 ml-auto">
+              <UserNav />
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 md:hidden"
+                  >
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  side="left"
+                  className="flex flex-col p-0 bg-card w-full max-w-xs sm:max-w-sm"
+                  hideCloseButton={true}
+                >
+                  <SidebarContent>
+                    <SheetClose asChild>
+                      <Button variant="ghost" size="icon" className="md:hidden">
+                        <X className="h-5 w-5" />
+                        <span className="sr-only">Close</span>
+                      </Button>
+                    </SheetClose>
+                  </SidebarContent>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </header>
+          <SidebarInset>
+            <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
+          </SidebarInset>
+          
+          {/* Mobile Bottom Navigation */}
+          <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
+              <div className="grid grid-cols-4 gap-2">
+                  {mobileNavItems.map((item) => {
+                      const pathname = usePathname();
+                      const isActive = pathname === item.href;
+                      return (
+                          <Link
+                              key={item.href}
+                              href={item.href}
+                              className={cn(
+                                  "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-medium",
+                                  isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                              )}
+                          >
+                              <item.icon className="h-5 w-5" />
+                              <span className="truncate">{item.label}</span>
+                          </Link>
+                      )
+                  })}
+              </div>
+          </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
