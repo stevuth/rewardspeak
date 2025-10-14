@@ -47,7 +47,10 @@ import {
   UserPlus,
   ListChecks,
   Wallet,
-  Hand
+  Hand,
+  CheckCircle,
+  Circle,
+  Badge,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -164,6 +167,16 @@ export default function Home() {
         answer: "Yes, Rewards Peak is completely free. You'll never be asked to pay for anything. Just sign up and start earning."
     }
   ]
+
+  const offerSteps = [
+    { reward: '$0.03', task: 'Upgrade to 100 meter', status: 'completed' },
+    { reward: '$0.13', task: 'Upgrade to 300 meter', status: 'completed' },
+    { reward: '$1.29', task: 'Upgrade to 700 meter', status: 'completed' },
+    { reward: '$6.43', task: 'Upgrade to 900 meter', status: 'current' },
+    { reward: '$17.16', task: 'Upgrade to 1000 meter', status: 'pending' },
+    { reward: '$60.06', task: 'Upgrade to 2000 meter', status: 'pending' },
+    { reward: '$171.60', task: 'Upgrade to 3000 meter', status: 'pending' },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -330,22 +343,65 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-                <Card className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
+                <div className="space-y-4">
+                  <Card className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                          <div className="p-3 bg-primary/10 rounded-lg">
+                            <Hand className="w-6 h-6 text-primary" />
+                          </div>
+                          <div>
+                              <h3 className="font-bold font-headline">1. Choose an offer</h3>
+                              <p className="text-sm text-muted-foreground">Browse our selection of offers, surveys, and tasks.</p>
+                          </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                          {popularOffers.slice(0, 4).map((offer) => (
+                              <OfferGridCard key={offer.id} offer={offer} />
+                          ))}
+                      </div>
+                  </Card>
+                   <Card className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
                         <div className="p-3 bg-primary/10 rounded-lg">
-                           <Hand className="w-6 h-6 text-primary" />
+                          <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">2</div>
                         </div>
                         <div>
-                            <h3 className="font-bold font-headline">Choose an offer</h3>
-                            <p className="text-sm text-muted-foreground">Browse our selection of offers, surveys, and tasks.</p>
+                          <h3 className="font-bold font-headline">2. Complete the offer</h3>
+                          <p className="text-sm text-muted-foreground">Follow the steps to complete the offer and get paid.</p>
                         </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        {popularOffers.slice(0, 4).map((offer) => (
-                            <OfferGridCard key={offer.id} offer={offer} />
-                        ))}
-                    </div>
-                </Card>
+                      </div>
+                      <Card className="bg-background/50 p-4 space-y-3">
+                        <div className="flex items-center gap-3">
+                            <Image src="https://picsum.photos/seed/riverrush/48/48" alt="River Rush" width={48} height={48} className="rounded-lg" data-ai-hint="beaver character"/>
+                            <div>
+                                <h4 className="font-semibold">River Rush</h4>
+                                <div className="text-xs bg-primary/20 text-primary-foreground px-2 py-0.5 rounded-full inline-block">Game</div>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            {offerSteps.map((step, index) => (
+                                <div
+                                key={index}
+                                className={cn(
+                                    "flex items-center gap-3 text-sm p-2 rounded-md",
+                                    step.status === 'completed' && 'bg-green-500/10 text-green-400',
+                                    step.status === 'current' && 'bg-primary/20 ring-2 ring-primary',
+                                    step.status === 'pending' && 'text-muted-foreground'
+                                )}
+                                >
+                                {step.status === 'completed' ? <CheckCircle className="w-4 h-4 text-green-400" /> : <Circle className={cn("w-4 h-4", step.status === 'current' ? 'text-primary' : 'text-muted-foreground/50')} />}
+                                <span className="font-bold">{step.reward}</span>
+                                <span>{step.task}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-between items-center text-sm pt-2 border-t border-border">
+                            <p>Progress: <span className="font-bold">3/7</span></p>
+                            <p className="font-bold text-accent">$256.70</p>
+                        </div>
+                      </Card>
+                  </Card>
+                </div>
             </div>
         </section>
 
@@ -511,3 +567,4 @@ export default function Home() {
   
 
     
+
