@@ -230,14 +230,6 @@ export default function DashboardLayout({
           <div className="flex-1 overflow-x-auto whitespace-nowrap">
              <div className="flex gap-2 items-center">
                  <div className="flex items-center gap-4 md:hidden">
-                    <Image
-                        src={user.avatarUrl}
-                        alt="user avatar"
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                        data-ai-hint={user.avatarHint}
-                    />
                     <div className="flex items-center gap-4">
                         <div className="text-xs">
                             <p className="text-muted-foreground">Balance</p>
@@ -317,5 +309,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-
-    
