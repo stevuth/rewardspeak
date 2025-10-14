@@ -258,7 +258,7 @@ export default function DashboardLayout({
                 </SheetTrigger>
                 <SheetContent
                   side="top"
-                  className="flex flex-col p-0 bg-card h-full"
+                  className="flex flex-col p-0 bg-card"
                   hideCloseButton={true}
                 >
                   <SidebarContent>
