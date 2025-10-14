@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { cn } from "@/lib/utils";
@@ -5,7 +6,7 @@ import type { LucideIcon } from "lucide-react";
 
 type StatCardProps = {
   title: string;
-  value: number;
+  value: number | string;
   icon: LucideIcon;
   description?: string;
   className?: string;
@@ -26,7 +27,7 @@ export function StatCard({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          <AnimatedCounter value={value} />
+          {typeof value === 'number' ? <AnimatedCounter value={value} /> : value}
         </div>
         {description && (
           <p className="text-xs text-muted-foreground">{description}</p>

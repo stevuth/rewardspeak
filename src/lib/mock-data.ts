@@ -36,6 +36,7 @@ export const popularOffers: Offer[] = [
     { id: "4", title: "Bingo Blitz", partner: "Playtika", points: 4000, imageUrl: "https://picsum.photos/seed/bingo/200/200", imageHint: "bingo balls", category: "Game", status: "Rejected", date: "2024-07-17" },
     { id: "5", title: "Download TikTok", partner: "TikTok", points: 250, imageUrl: "https://picsum.photos/seed/tiktok/200/200", imageHint: "music note", category: "App", status: "Completed", date: "2024-07-16" },
     { id: "6", title: "History Quiz", partner: "Quiz Time", points: 100, imageUrl: "https://picsum.photos/seed/quiz/200/200", imageHint: "question mark", category: "Quiz", status: "Pending", date: "2024-07-21" },
+    { id: "7", title: "Game of Thrones Slots", partner: "Zynga", points: 3000, imageUrl: "https://picsum.photos/seed/got/200/200", imageHint: "dragon sigil", category: "Game", status: "Completed", date: "2024-07-22" },
 ];
 
 export const quickTasks: Offer[] = [
@@ -86,6 +87,8 @@ export const user = {
   referrals: 5,
   referralEarnings: 2500,
   lastLogin: "2024-01-01", // YYYY-MM-DD
+  dateJoined: "2024-01-01",
+  rewardsPeakId: "RP-GUEST-001",
 };
 
 export const offerWalls = [
