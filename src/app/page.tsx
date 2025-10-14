@@ -138,7 +138,7 @@ export default function Home() {
 
   const features = [
     {
-      icon: DollarSign,
+      icon: Gift,
       title: "Instant sign up bonus",
       description: "New users receive a $1 bonus instantly upon signing up.",
     },
