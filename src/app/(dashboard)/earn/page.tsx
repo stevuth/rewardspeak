@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import { OfferCard } from "@/components/offer-card";
+import { OfferGridCard } from "@/components/offer-grid-card";
 import { offerWalls, popularOffers, quickTasks } from "@/lib/mock-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
@@ -76,29 +76,6 @@ export default function ClimbAndEarnPage() {
         </Carousel>
       </div>
 
-       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold tracking-tight font-headline">
-            Survey Providers
-          </h2>
-        </div>
-         {surveyProviders.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {surveyProviders.map((offer) => (
-                <OfferCard key={offer.id} offer={offer} />
-            ))}
-            </div>
-         ) : (
-            <Card className="text-center py-12 col-span-full">
-                <CardContent>
-                <p className="text-muted-foreground">
-                    No surveys available right now. Check back soon!
-                </p>
-                </CardContent>
-            </Card>
-         )}
-      </div>
-
       <section>
         <Tabs defaultValue="popular" className="w-full">
           <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
@@ -108,9 +85,9 @@ export default function ClimbAndEarnPage() {
           </TabsList>
           <TabsContent value="popular" className="mt-6">
              {popularOffers.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {popularOffers.map((offer) => (
-                        <OfferCard key={offer.id} offer={offer} />
+                        <OfferGridCard key={offer.id} offer={offer} />
                     ))}
                 </div>
              ) : (
@@ -123,9 +100,9 @@ export default function ClimbAndEarnPage() {
           </TabsContent>
           <TabsContent value="games" className="mt-6">
             {gameOffers.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {gameOffers.map((offer) => (
-                        <OfferCard key={offer.id} offer={offer} />
+                        <OfferGridCard key={offer.id} offer={offer} />
                     ))}
                 </div>
             ) : (
@@ -138,9 +115,9 @@ export default function ClimbAndEarnPage() {
           </TabsContent>
           <TabsContent value="quick_tasks" className="mt-6">
             {quickTasks.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {quickTasks.map((offer) => (
-                        <OfferCard key={offer.id} offer={offer} />
+                        <OfferGridCard key={offer.id} offer={offer} />
                     ))}
                 </div>
             ) : (
