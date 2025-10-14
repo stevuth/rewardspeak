@@ -138,20 +138,24 @@ export default function Home() {
 
   const features = [
     {
-      icon: Bitcoin,
-      title: "Fast payments",
+      icon: DollarSign,
+      title: "Instant sign up bonus",
+      description: "New users receive a $1 bonus instantly upon signing up.",
     },
     {
-      icon: Headset,
-      title: "24/7 Support",
+      icon: UserPlus,
+      title: "10% lifetime referral earnings",
+      description: "Earn 10% of your referrals' earnings for life.",
     },
     {
       icon: Banknote,
-      title: "Withdrawals starting at $2.00",
+      title: "Withdrawals starting at $10.00",
+      description: "Cash out your earnings quickly and securely.",
     },
     {
       icon: Gift,
       title: "Frequent giveaways",
+      description: "Participate in regular giveaways for extra rewards.",
     },
   ];
 
@@ -452,26 +456,19 @@ export default function Home() {
             </h2>
             <div className="w-24 h-1 bg-primary mx-auto mb-12"></div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                <Card className="lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <Card className="p-6 flex flex-col items-center text-center bg-card/50">
                     <ExclusiveOpportunitiesIllustration />
                     <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Exclusive opportunities</h3>
-                    <p className="text-sm text-muted-foreground">More earning options than any other platform, available to all users worldwide. Only on Rewardy.</p>
+                    <p className="text-sm text-muted-foreground">More earning options than any other platform, available to all users worldwide.</p>
                 </Card>
-                <Card className="lg:col-span-1 p-6 flex flex-col items-center text-center bg-card/50">
-                    <DailyChallengesIllustration />
-                    <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Daily Challenges</h3>
-                    <p className="text-sm text-muted-foreground">Take on daily challenges that reward your consistency and help you earn even more each day.</p>
-                </Card>
-
-                <div className="grid grid-cols-2 gap-6 md:col-span-2 lg:col-span-1">
-                    {features.map((feature, index) => (
-                        <Card key={index} className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
-                            <feature.icon className="w-8 h-8 text-primary mb-3" />
-                            <h4 className="font-semibold text-sm">{feature.title}</h4>
-                        </Card>
-                    ))}
-                </div>
+                {features.map((feature, index) => (
+                    <Card key={index} className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
+                        <feature.icon className="w-10 h-10 text-primary mb-4" />
+                        <h3 className="font-bold text-lg font-headline mb-2">{feature.title}</h3>
+                        <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </Card>
+                ))}
             </div>
         </section>
 
