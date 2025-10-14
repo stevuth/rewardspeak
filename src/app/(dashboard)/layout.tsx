@@ -214,6 +214,8 @@ export default function DashboardLayout({
   const totalAmountEarned = popularOffers
     .filter((o) => o.status === "Completed")
     .reduce((sum, o) => sum + o.points, 0) / 100;
+  const userBalanceInCash = user.totalPoints / 100;
+
 
   return (
     <SidebarProvider>
@@ -254,10 +256,11 @@ export default function DashboardLayout({
                       <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
                   </div>
               </div>
-              <div className="flex sm:hidden items-center gap-2">
+              <div className="flex sm:hidden items-center gap-4">
                 <div className="text-xs text-right">
                   <p className="text-muted-foreground">Balance</p>
                   <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
+                  <p className="font-bold text-xs">(${userBalanceInCash.toFixed(2)})</p>
                 </div>
               </div>
               <UserNav />
@@ -319,5 +322,6 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+
 
 
