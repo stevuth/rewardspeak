@@ -157,39 +157,49 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
           </Link>
           {children}
         </div>
-      <nav className="flex-1 space-y-1 p-4">
-          {mobileOnlyNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={getNavLinkClass(item.href)}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          ))}
-          <Link href="/history" className={getNavLinkClass("/history")}><Clock className="h-4 w-4" />Quest Log</Link>
-          <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>
-      </nav>
-      <div className="mt-auto p-4 border-t space-y-2">
-          <Link href="/settings" className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground">
-              <Image 
-                  src={user.avatarUrl} 
-                  alt="user avatar" 
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                  data-ai-hint={user.avatarHint}
-              />
-              <span>{user.name}</span>
-          </Link>
-            <Link
-              href="/"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </Link>
+      <div className="grid grid-cols-2 gap-4 p-4">
+        <nav className="flex-1 space-y-1">
+            {mobileOnlyNav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={getNavLinkClass(item.href)}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Link>
+            ))}
+            <Link href="/history" className={getNavLinkClass("/history")}><Clock className="h-4 w-4" />Quest Log</Link>
+            <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>
+        </nav>
+        <div className="border-l pl-4 flex flex-col justify-between">
+             <div className="space-y-1">
+                 <Link href="/settings" className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+                    <Settings className="h-4 w-4" />
+                    <span>My Profile</span>
+                </Link>
+             </div>
+             <div>
+                <Link href="/settings" className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground mb-4">
+                    <Image 
+                        src={user.avatarUrl} 
+                        alt="user avatar" 
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                        data-ai-hint={user.avatarHint}
+                    />
+                    <span>{user.name}</span>
+                </Link>
+                <Link
+                    href="/"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground bg-muted hover:bg-muted/80"
+                >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                </Link>
+            </div>
+        </div>
       </div>
     </div>
   );
@@ -241,8 +251,8 @@ export default function DashboardLayout({
                 </Button>
               </SheetTrigger>
               <SheetContent 
-                side="left" 
-                className="flex flex-col p-0 bg-card w-[85vw] max-w-xs h-[95vh] top-1/2 -translate-y-1/2 rounded-r-2xl"
+                side="top" 
+                className="flex flex-col p-0 bg-card w-full rounded-b-2xl"
                 hideCloseButton={true}
               >
                 <SidebarContent>
@@ -284,3 +294,5 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+    
