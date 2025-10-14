@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { user, popularOffers } from "@/lib/mock-data";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import type { Metadata } from "next";
 import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -52,7 +52,7 @@ export default function MyPeakProfilePage() {
                         <Button variant="outline"><Upload className="mr-2 h-4 w-4" /> Upload Picture</Button>
                         <p className="text-xs text-muted-foreground mt-2">PNG, JPG up to 5MB.</p>
                     </div>
-                    <div className="md:col-span-2 grid grid-cols-2 gap-4">
+                    <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                          <StatItem
                             title="Offers Completed"
                             value={completedOffersCount}
@@ -91,7 +91,7 @@ export default function MyPeakProfilePage() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="password">Password</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="support">Support Ticket</TabsTrigger>
         </TabsList>
         <TabsContent value="profile">
           <Card>
@@ -143,30 +143,26 @@ export default function MyPeakProfilePage() {
             </CardFooter>
           </Card>
         </TabsContent>
-        <TabsContent value="notifications">
+        <TabsContent value="support">
           <Card>
             <CardHeader>
-              <CardTitle>Notifications</CardTitle>
+              <CardTitle>Submit a Support Ticket</CardTitle>
               <CardDescription>
-                Choose what you want to be notified about.
+                Having an issue? Fill out the form below and our team will get back to you.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="offers" defaultChecked />
-                <Label htmlFor="offers">New Offers</Label>
+              <div className="space-y-2">
+                <Label htmlFor="subject">Subject</Label>
+                <Input id="subject" placeholder="e.g., Issue with an offer" />
               </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="payouts" defaultChecked />
-                <Label htmlFor="payouts">Payout confirmations</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="updates" />
-                <Label htmlFor="updates">Product updates</Label>
+              <div className="space-y-2">
+                <Label htmlFor="message">Message</Label>
+                <Textarea id="message" placeholder="Describe your issue in detail..." className="min-h-[150px]" />
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save Preferences</Button>
+              <Button>Submit Ticket</Button>
             </CardFooter>
           </Card>
         </TabsContent>
