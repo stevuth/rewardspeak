@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Trophy,
   Users,
-  Ticket,
   CircleHelp,
   Settings,
   Menu,
@@ -43,7 +42,6 @@ const navItems = [
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
     { href: "/referrals", label: "Invite & Climb", icon: Users },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
-    { href: "/raffle", label: "Raffle", icon: Ticket },
 ];
 
 const secondaryNavItems = [
