@@ -25,6 +25,7 @@ import {
   Shield,
   BookUser,
   ArrowLeft,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,7 +68,7 @@ function SidebarContent() {
   const isMobile = useIsMobile();
 
   const getNavLinkClass = (href: string) => {
-    const isActive = pathname === href;
+    const isActive = pathname.startsWith(href) && href !== '/dashboard' || pathname === href;
     return `flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
       isActive
         ? "bg-primary text-primary-foreground"
@@ -88,7 +89,7 @@ function SidebarContent() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b">
+      <div className="p-4 border-b flex items-center justify-between">
         <Link
           href="/dashboard"
           className="flex items-center gap-2 font-semibold text-lg font-headline"
@@ -98,7 +99,7 @@ function SidebarContent() {
         </Link>
       </div>
 
-      <div className="p-4 flex items-center gap-4 bg-muted/50">
+      <div className="p-4 flex items-center gap-4 bg-muted/50 border-b">
         <div className="relative h-12 w-12 shrink-0">
             <Image 
                 src={user.avatarUrl} 
@@ -128,11 +129,12 @@ function SidebarContent() {
             {item.label}
           </Link>
         ))}
+         {isMobile && <Link href="/history" className={getNavLinkClass("/history")}><Clock className="h-4 w-4" />Quest Log</Link>}
         {isMobile && <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>}
       </nav>
 
        <div className="mt-auto p-4 space-y-1 border-t">
-        {filteredSecondaryNavItems.map((item) => (
+        {!isMobile && filteredSecondaryNavItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -146,6 +148,13 @@ function SidebarContent() {
             {item.label}
           </Link>
         ))}
+         <Link
+            href="/"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
+          >
+            <LogOut className="h-4 w-4" />
+            Log Out
+          </Link>
       </div>
     </div>
   );
@@ -184,10 +193,6 @@ export default function DashboardLayout({
              </div>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            <div className="hidden sm:flex items-center gap-1 text-sm font-semibold">
-                <Clock className="h-4 w-4" />
-                <span>05:11:41</span>
-            </div>
             <UserNav />
              <Sheet>
               <SheetTrigger asChild>
@@ -200,7 +205,7 @@ export default function DashboardLayout({
                   <span className="sr-only">Toggle navigation menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col p-0 bg-card">
+              <SheetContent side="left" className="flex flex-col p-0 bg-card w-[280px]">
                 <SidebarContent />
               </SheetContent>
             </Sheet>
@@ -223,7 +228,7 @@ export default function DashboardLayout({
                             )}
                         >
                             <item.icon className="h-5 w-5" />
-                            <span>{item.label}</span>
+                            <span className="truncate">{item.label}</span>
                         </Link>
                     )
                 })}
