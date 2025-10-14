@@ -1,4 +1,5 @@
 
+
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -51,6 +52,8 @@ import {
   CheckCircle,
   Circle,
   Badge,
+  CreditCard,
+  DollarSign,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -62,6 +65,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import Autoplay from "embla-carousel-autoplay"
 import { OfferGridCard } from '@/components/offer-grid-card';
+import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 
 
 const recentCashouts: any[] = [];
@@ -97,6 +101,17 @@ function OfferCarouselCard({ offer }: { offer: Offer }) {
     </Card>
   )
 }
+
+const paymentMethods = [
+    { icon: PaypalLogo, name: 'Paypal'},
+    { icon: CreditCard, name: 'Visa'},
+    { icon: BinanceCoinLogo, name: 'Binance'},
+    { icon: UsdCoinLogo, name: 'USD Coin'},
+    { icon: LitecoinLogo, name: 'Litecoin'},
+    { icon: EthereumLogo, name: 'Ethereum'},
+    { icon: BitcoinLogo, name: 'Bitcoin'},
+]
+
 
 export default function Home() {
   const featuredOffers = popularOffers.slice(0, 5);
@@ -401,6 +416,44 @@ export default function Home() {
                         </div>
                       </Card>
                   </Card>
+                  <Card className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-3 bg-primary/10 rounded-lg">
+                                <DollarSign className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold font-headline">3. Get Paid</h3>
+                                <p className="text-sm text-muted-foreground">Redeem your earnings for cash, crypto, or gift cards.</p>
+                            </div>
+                        </div>
+                        <div className="relative flex items-center justify-center h-64">
+                            <div className="absolute w-64 h-64 border-2 border-dashed border-border rounded-full"></div>
+                            <div className="absolute w-48 h-48 border border-border rounded-full"></div>
+                            
+                            {paymentMethods.map((method, i) => {
+                                const angle = (i / paymentMethods.length) * 2 * Math.PI;
+                                const x = Math.cos(angle) * 128; // 128 is radius of outer circle
+                                const y = Math.sin(angle) * 128;
+                                return (
+                                    <div
+                                        key={method.name}
+                                        className="absolute w-12 h-12 bg-card border border-border rounded-full flex items-center justify-center"
+                                        style={{ 
+                                            transform: `translate(${x}px, ${y}px)`
+                                        }}
+                                    >
+                                        <method.icon className="w-6 h-6 text-foreground" />
+                                    </div>
+                                )
+                            })}
+
+                            <div className="text-center">
+                                <p className="text-sm text-muted-foreground">Available to withdraw</p>
+                                <p className="text-4xl font-bold text-accent my-1">$250.00</p>
+                                <Button variant="link" className="text-primary">Choose your reward</Button>
+                            </div>
+                        </div>
+                    </Card>
                 </div>
             </div>
         </section>
@@ -567,4 +620,5 @@ export default function Home() {
   
 
     
+
 
