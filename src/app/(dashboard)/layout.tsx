@@ -55,6 +55,15 @@ const recentEarnings = [
 
 function SidebarContent() {
   const pathname = usePathname();
+  const getNavLinkClass = (href: string) => {
+    const isActive = pathname === href || (href === "/dashboard" && pathname.startsWith("/dashboard/earn"));
+    return `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+      isActive
+        ? "bg-primary text-primary-foreground"
+        : "text-muted-foreground hover:bg-muted"
+    }`;
+  };
+
   return (
     <>
       <div className="p-4">
@@ -91,11 +100,7 @@ function SidebarContent() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              pathname === item.href || (item.href === "/dashboard" && pathname.startsWith("/dashboard/earn"))
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted"
-            }`}
+            className={getNavLinkClass(item.href)}
           >
             <item.icon className="h-4 w-4" />
             {item.label}
@@ -135,7 +140,7 @@ export default function DashboardLayout({
           <SidebarContent />
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-hidden">
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
@@ -152,7 +157,7 @@ export default function DashboardLayout({
               <SidebarContent />
             </SheetContent>
           </Sheet>
-          <div className="flex-1 overflow-x-auto whitespace-nowrap">
+          <div className="hidden md:flex flex-1 overflow-x-auto whitespace-nowrap">
              <div className="flex gap-2 items-center">
                  {recentEarnings.map((earning, i) => (
                     <div key={i} className="flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
@@ -165,15 +170,15 @@ export default function DashboardLayout({
                  ))}
              </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 text-sm font-semibold">
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="hidden sm:flex items-center gap-1 text-sm font-semibold">
                 <Clock className="h-4 w-4" />
                 <span>05:11:41</span>
             </div>
             <UserNav />
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background">{children}</main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto">{children}</main>
       </div>
     </div>
   );

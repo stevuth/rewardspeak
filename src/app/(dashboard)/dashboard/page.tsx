@@ -70,7 +70,7 @@ export default function DashboardPage() {
             Survey Providers
           </h2>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard/earn">
+            <Link href="/earn">
               View all <ChevronRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
             Popular Quests
           </h2>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard/earn">
+            <Link href="/earn">
               View all <ChevronRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>

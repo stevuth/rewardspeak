@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/carousel';
 import {
   Gamepad2,
-  CheckCircle,
   Gift,
   Zap,
   Swords,
@@ -41,7 +40,6 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { popularOffers, type Offer } from '@/lib/mock-data';
 import { Chrome } from "lucide-react";
 import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/exclusive-opportunities";
@@ -151,7 +149,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Gamepad2 className="h-7 w-7 text-primary" />

@@ -91,7 +91,7 @@ export default function EarnPage() {
       </div>
 
       <section>
-        <Tabs defaultValue="popular">
+        <Tabs defaultValue="popular" className="w-full">
           <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
             <TabsTrigger value="popular">Popular Offers</TabsTrigger>
             <TabsTrigger value="games">Games</TabsTrigger>
