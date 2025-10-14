@@ -46,7 +46,8 @@ import {
   MessageCircle,
   UserPlus,
   ListChecks,
-  Wallet
+  Wallet,
+  Hand
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -57,6 +58,7 @@ import { DailyChallengesIllustration } from "@/components/illustrations/daily-ch
 import React from 'react';
 import { cn } from '@/lib/utils';
 import Autoplay from "embla-carousel-autoplay"
+import { OfferGridCard } from '@/components/offer-grid-card';
 
 
 const recentCashouts: any[] = [];
@@ -258,7 +260,7 @@ export default function Home() {
 
             {/* Right Column */}
             <div>
-              <Card>
+              <Card className="max-w-md mx-auto">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">
                     Get started - it's free!
@@ -301,6 +303,50 @@ export default function Home() {
               </Card>
             </div>
           </div>
+        </section>
+
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 className="text-4xl md:text-5xl font-bold font-headline mb-4">Get paid in <span className="text-secondary">3 easy steps</span></h2>
+                    <p className="text-muted-foreground mb-6">
+                        Join thousands of users earning real rewards every day. Getting started is quick and completely free!
+                    </p>
+                    <Button asChild size="lg">
+                        <Link href="/signup">Start Earning</Link>
+                    </Button>
+                    <div className="mt-8 flex items-center gap-4">
+                        <p className="text-sm text-muted-foreground">Trusted by over +1500</p>
+                        <div className="flex items-center gap-1">
+                            <Star className="w-5 h-5 text-green-500 fill-green-500" />
+                            <p className="font-bold">Trustpilot</p>
+                            <div className="flex items-center bg-green-500 text-white px-2 py-1 rounded-md">
+                                <Star className="w-4 h-4 fill-white" />
+                                <Star className="w-4 h-4 fill-white" />
+                                <Star className="w-4 h-4 fill-white" />
+                                <Star className="w-4 h-4 fill-white" />
+                                <Star className="w-4 h-4 fill-white" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Card className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-primary/10 rounded-lg">
+                           <Hand className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold font-headline">Choose an offer</h3>
+                            <p className="text-sm text-muted-foreground">Browse our selection of offers, surveys, and tasks.</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {popularOffers.slice(0, 4).map((offer) => (
+                            <OfferGridCard key={offer.id} offer={offer} />
+                        ))}
+                    </div>
+                </Card>
+            </div>
         </section>
 
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">

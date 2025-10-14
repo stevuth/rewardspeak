@@ -22,17 +22,19 @@ export function OfferGridCard({ offer }: { offer: Offer }) {
           className="w-full h-auto aspect-square object-cover"
           data-ai-hint={offer.imageHint}
         />
-        <div className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1.5">
-          <AndroidIcon className="w-3 h-3" />
-        </div>
+        {offer.category === "Game" && (
+            <div className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1.5">
+            <AndroidIcon className="w-3 h-3" />
+            </div>
+        )}
       </div>
       <CardContent className="p-3 flex-grow flex flex-col">
         <h3 className="font-semibold text-sm truncate flex-grow">{offer.title}</h3>
         <div className="flex justify-between items-center mt-2">
-          <Badge variant={offer.category === 'Game' ? 'default' : 'secondary'} className="text-xs">
-            {offer.category}
+          <Badge variant={offer.category === 'Game' ? 'default' : 'secondary'} className="text-xs capitalize">
+            {offer.category.toLowerCase()}
           </Badge>
-          <span className="text-sm font-bold text-primary">
+          <span className="text-sm font-bold text-accent">
             ${(offer.points / 100).toFixed(2)}
           </span>
         </div>
