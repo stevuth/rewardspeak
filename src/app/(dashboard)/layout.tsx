@@ -56,7 +56,7 @@ const mobileNavItems = [
 const recentEarnings: any[] = [
 ];
 
-function SidebarContent() {
+function SidebarContent({ children }: { children?: React.ReactNode }) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
 
@@ -81,12 +81,7 @@ function SidebarContent() {
               <Coins className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold">Rewards Peak</span>
             </Link>
-             <SheetClose asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                    <X className="h-5 w-5" />
-                    <span className="sr-only">Close</span>
-                </Button>
-            </SheetClose>
+            {children}
           </div>
         <nav className="flex-1 space-y-1 p-4">
            {navItems.map((item) => (
@@ -247,7 +242,14 @@ export default function DashboardLayout({
               // The default close icon is hidden, so we provide our own in SidebarContent
                hideCloseButton={true}
               >
-                <SidebarContent />
+                <SidebarContent>
+                   <SheetClose asChild>
+                      <Button variant="ghost" size="icon" className="md:hidden">
+                          <X className="h-5 w-5" />
+                          <span className="sr-only">Close</span>
+                      </Button>
+                  </SheetClose>
+                </SidebarContent>
               </SheetContent>
             </Sheet>
           </div>
@@ -279,5 +281,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-
-    
