@@ -68,13 +68,6 @@ export default function DashboardPage() {
         description="Welcome back! Here's a look at your recent activity."
       />
 
-       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard title="Total Earnings" value={user.totalPoints} icon={DollarSign} description={`$${(user.totalPoints / 100).toFixed(2)} lifetime`} />
-        <StatCard title="Daily Earnings" value={user.dailyEarnings} icon={Clock} description="Points earned today" />
-        <StatCard title="Referrals" value={user.referrals} icon={Users} description={`${user.referralEarnings} points from referrals`} />
-        <StatCard title="Offers Completed" value={popularOffers.filter(o => o.status === 'Completed').length} icon={CheckCircle} description="Total quests finished" />
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
             <div>
