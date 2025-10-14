@@ -1,144 +1,180 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarTrigger,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  SidebarFooter,
-} from "@/components/ui/sidebar";
-import {
-  Award,
-  Bell,
-  CircleHelp,
-  Clock,
-  Gamepad2,
+  Coins,
+  DollarSign,
   Gift,
   LayoutDashboard,
-  Search,
-  Settings,
-  Shield,
   Swords,
   Trophy,
   Users,
+  Ticket,
+  CircleHelp,
+  Settings,
+  Bell,
+  Facebook,
+  Twitter,
+  MessageCircle,
+  Menu,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserNav } from "@/components/user-nav";
-import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { user } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/earn", label: "Find Quests", icon: Swords },
-  { href: "/dashboard/history", label: "Quest Log", icon: Clock },
-  { href: "/dashboard/achievements", label: "Achievements", icon: Trophy },
-  { href: "/dashboard/withdraw", label: "Withdraw Loot", icon: Gift },
-  { href: "/dashboard/referrals", label: "Guild", icon: Users },
-  { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Award },
+  { href: "/dashboard", label: "Earn", icon: DollarSign },
+  { href: "/dashboard/withdraw", label: "Withdraw", icon: Gift },
+  { href: "/dashboard/achievements", label: "Challenges", icon: Trophy },
+  { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Swords },
+  { href: "/dashboard/raffle", label: "Raffle", icon: Ticket },
+  { href: "/dashboard/referrals", label: "Referral", icon: Users },
 ];
 
 const secondaryNavItems = [
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
   { href: "/dashboard/support", label: "Support", icon: CircleHelp },
-  { href: "/dashboard/admin/seo", label: "Admin", icon: Shield },
 ];
+
+const recentEarnings = [
+  { name: "Adjoe", user: "chrisbruegger", amount: 240 },
+  { name: "Rewardy", user: "seekptc", amount: 1 },
+  { name: "Rewardy", user: "herme", amount: 1 },
+  { name: "Rewardy", user: "susanodiaz777", amount: 1 },
+  { name: "Rewardy", user: "seekptc", amount: 1 },
+  { name: "Rewardy", user: "protrek", amount: 4 },
+  { name: "Tapjoy", user: "majewskid911", amount: 4 },
+  { name: "Rewardy", user: "trez", amount: 3 },
+  { name: "Rewardy", user: "seekptc", amount: 1 },
+];
+
+function SidebarContent() {
+  const pathname = usePathname();
+  return (
+    <>
+      <div className="p-4">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 font-semibold text-lg font-headline"
+        >
+          <Coins className="h-6 w-6 text-primary" />
+          <span className="text-xl font-bold">Rewardy</span>
+        </Link>
+      </div>
+
+      <div className="p-4 flex flex-col items-center text-center">
+        <div className="relative h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mb-2">
+            <span className="text-4xl font-bold text-primary">P</span>
+        </div>
+        <p className="font-semibold">{user.name}</p>
+        <p className="text-sm text-muted-foreground">Level 0</p>
+        <div className="mt-2 flex items-center gap-2 rounded-md bg-muted p-2 text-sm font-semibold">
+          <Coins className="h-4 w-4 text-yellow-400" />
+          <span>{user.totalPoints.toLocaleString()} (${(user.totalPoints / 1000).toFixed(2)})</span>
+        </div>
+      </div>
+
+      <nav className="flex-1 space-y-2 px-4">
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+              pathname === item.href
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+
+       <div className="mt-auto p-4 space-y-2">
+        {secondaryNavItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+              pathname.startsWith(item.href)
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </Link>
+        ))}
+      </div>
+    </>
+  );
+}
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
-    <SidebarProvider>
-      <Sidebar
-        collapsible="icon"
-        className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
-      >
-        <SidebarHeader className="p-4">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 font-semibold text-lg font-headline"
-          >
-            <Gamepad2 className="h-6 w-6 text-primary" />
-            <span className="group-data-[collapsible=icon]:hidden">
-              Rewards Peak
-            </span>
-          </Link>
-        </SidebarHeader>
-        <SidebarContent className="p-2">
-          <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                  tooltip={{ children: item.label }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter className="p-2">
-          <SidebarMenu>
-            {secondaryNavItems.map((item) => (
-              <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith(item.href)}
-                  tooltip={{ children: item.label }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
-          <div className="flex items-center gap-4">
-            <SidebarTrigger className="md:hidden" />
+    <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
+      <div className="hidden border-r bg-card md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <SidebarContent />
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col p-0 bg-card">
+              <SidebarContent />
+            </SheetContent>
+          </Sheet>
+          <div className="flex-1 overflow-x-auto whitespace-nowrap">
+             <div className="flex gap-2 items-center">
+                 {recentEarnings.map((earning, i) => (
+                    <div key={i} className="flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
+                        <div className="flex flex-col">
+                            <span className="font-bold text-primary">{earning.name}</span>
+                            <span className="text-muted-foreground">{earning.user}</span>
+                        </div>
+                        <Badge variant="secondary">{earning.amount}</Badge>
+                    </div>
+                 ))}
+             </div>
           </div>
-          <div className="w-full flex-1">
-            <form>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search quests..."
-                  className="w-full appearance-none bg-transparent pl-8 md:w-2/3 lg:w-1/3"
-                />
-              </div>
-            </form>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon"><Facebook className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon"><Twitter className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon"><MessageCircle className="h-5 w-5" /></Button>
+            <div className="flex items-center gap-1 text-sm font-semibold">
+                <Clock className="h-4 w-4" />
+                <span>05:11:41</span>
+            </div>
+            <UserNav />
           </div>
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell />
-            <span className="absolute top-1 right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-            </span>
-          </Button>
-          <UserNav />
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background">{children}</main>
+      </div>
+    </div>
   );
 }

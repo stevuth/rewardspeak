@@ -2,7 +2,6 @@ import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -11,8 +10,17 @@ import { offerWalls, popularOffers, quickTasks } from "@/lib/mock-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 
 export const metadata: Metadata = {
   title: "Earn Points",
@@ -20,49 +28,78 @@ export const metadata: Metadata = {
 };
 
 export default function EarnPage() {
+    const surveyProviders = popularOffers.filter(o => o.category === "Survey");
+
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Earn Points"
+        title="Find Quests to Earn"
         description="Choose from a variety of ways to earn."
       />
 
-      <section>
-        <h2 className="text-2xl font-bold tracking-tight mb-4">Offer Walls</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {offerWalls.map((wall) => (
-            <Card key={wall.name} className="flex flex-col">
-              <CardHeader className="flex-row items-center gap-4">
-                <Image
-                  src={wall.logo}
-                  alt={`${wall.name} logo`}
-                  width={40}
-                  height={40}
-                  className="rounded-lg"
-                  data-ai-hint={wall.hint}
-                />
-                <div>
-                  <CardTitle>{wall.name}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col justify-between">
-                <p className="text-sm text-muted-foreground mb-4">
-                  {wall.description}
+       <div>
+        <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
+            Featured Partners
+        </h2>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: false,
+          }}
+          className="w-full"
+        >
+          <CarouselContent>
+            {offerWalls.map((wall) => (
+              <CarouselItem
+                key={wall.name}
+                className="basis-1/3 md:basis-1/4 lg:basis-1/6"
+              >
+                <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full bg-card hover:bg-muted/50 transition-colors">
+                  <Image
+                    src={wall.logo}
+                    alt={`${wall.name} logo`}
+                    width={48}
+                    height={48}
+                    className="rounded-lg mb-2"
+                    data-ai-hint={wall.hint}
+                  />
+                  <span className="text-xs font-medium">{wall.name}</span>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="-left-4 hidden md:flex" />
+          <CarouselNext className="-right-4 hidden md:flex" />
+        </Carousel>
+      </div>
+
+       <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold tracking-tight font-headline">
+            Survey Providers
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {surveyProviders.map((offer) => (
+            <OfferCard key={offer.id} offer={offer} />
+          ))}
+           {surveyProviders.length === 0 && (
+            <Card className="text-center py-12 col-span-full">
+              <CardContent>
+                <p className="text-muted-foreground">
+                  No surveys available right now. Check back soon!
                 </p>
-                <Button className="w-full">
-                  Visit <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
               </CardContent>
             </Card>
-          ))}
+          )}
         </div>
-      </section>
+      </div>
 
       <section>
         <Tabs defaultValue="popular">
           <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
             <TabsTrigger value="popular">Popular Offers</TabsTrigger>
-            <TabsTrigger value="surveys">Surveys</TabsTrigger>
+            <TabsTrigger value="games">Games</TabsTrigger>
             <TabsTrigger value="quick_tasks">Quick Tasks</TabsTrigger>
           </TabsList>
           <TabsContent value="popular" className="mt-6">
@@ -72,16 +109,16 @@ export default function EarnPage() {
                 ))}
              </div>
           </TabsContent>
-          <TabsContent value="surveys" className="mt-6">
+          <TabsContent value="games" className="mt-6">
             <div className="space-y-4">
-                {popularOffers.filter(o => o.category === "Survey").map((offer) => (
+                {popularOffers.filter(o => o.category === "Game").map((offer) => (
                     <OfferCard key={offer.id} offer={offer} />
                 ))}
             </div>
-            {popularOffers.filter(o => o.category === "Survey").length === 0 && (
+            {popularOffers.filter(o => o.category === "Game").length === 0 && (
                 <Card className="text-center py-12">
                     <CardContent>
-                        <p className="text-muted-foreground">No surveys available right now. Check back soon!</p>
+                        <p className="text-muted-foreground">No game offers available right now. Check back soon!</p>
                     </CardContent>
                 </Card>
             )}
