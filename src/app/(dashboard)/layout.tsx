@@ -87,8 +87,8 @@ function SidebarContent() {
 
 
   return (
-    <>
-      <div className="p-4">
+    <div className="flex flex-col h-full">
+      <div className="p-4 border-b">
         <Link
           href="/dashboard"
           className="flex items-center gap-2 font-semibold text-lg font-headline"
@@ -98,26 +98,26 @@ function SidebarContent() {
         </Link>
       </div>
 
-      <div className="p-4 flex flex-col items-center text-center">
-        <div className="relative h-20 w-20">
+      <div className="p-4 flex items-center gap-4 bg-muted/50">
+        <div className="relative h-12 w-12 shrink-0">
             <Image 
                 src={user.avatarUrl} 
                 alt="user avatar" 
-                width={80} 
-                height={80} 
-                className="rounded-full border-4 border-primary/50"
+                layout="fill"
+                className="rounded-full border-2 border-primary/50"
                 data-ai-hint={user.avatarHint}
             />
         </div>
-        <p className="font-semibold mt-2">{user.name}</p>
-        <p className="text-sm text-muted-foreground">Level 0</p>
-        <div className="mt-2 flex items-center gap-2 rounded-md bg-muted p-2 text-sm font-semibold">
-          <Coins className="h-4 w-4 text-yellow-400" />
-          <span>{user.totalPoints.toLocaleString()} (${(user.totalPoints / 100).toFixed(2)})</span>
+        <div className="flex-1">
+            <p className="font-semibold">{user.name}</p>
+            <div className="flex items-center gap-1 text-xs text-yellow-400">
+              <Coins className="h-3 w-3" />
+              <span>{user.totalPoints.toLocaleString()} (${(user.totalPoints / 100).toFixed(2)})</span>
+            </div>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-4">
+      <nav className="flex-1 space-y-1 p-4">
         {filteredNavItems.map((item) => (
           <Link
             key={item.href}
@@ -131,7 +131,7 @@ function SidebarContent() {
         {isMobile && <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>}
       </nav>
 
-       <div className="mt-auto p-4 space-y-1">
+       <div className="mt-auto p-4 space-y-1 border-t">
         {filteredSecondaryNavItems.map((item) => (
           <Link
             key={item.href}
@@ -147,7 +147,7 @@ function SidebarContent() {
           </Link>
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -162,9 +162,7 @@ export default function DashboardLayout({
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[260px_1fr]">
       <div className="hidden border-r bg-card md:block">
-        <div className="flex h-full max-h-screen flex-col">
-          <SidebarContent />
-        </div>
+        <SidebarContent />
       </div>
       <div className="flex flex-col overflow-hidden">
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
