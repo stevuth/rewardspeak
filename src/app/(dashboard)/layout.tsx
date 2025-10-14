@@ -59,6 +59,9 @@ const recentEarnings: any[] = [
 function SidebarContent({ children }: { children?: React.ReactNode }) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const totalAmountEarned = popularOffers
+    .filter((o) => o.status === "Completed")
+    .reduce((sum, o) => sum + o.points, 0) / 100;
 
   const getNavLinkClass = (href: string) => {
     const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
@@ -96,10 +99,16 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
             </div>
             <div className="flex-1">
                 <p className="font-semibold">{user.name}</p>
-                <div className="flex items-center gap-1 text-xs text-yellow-400">
-                  <Coins className="h-3 w-3" />
-                  <span>{user.totalPoints.toLocaleString()} (${(user.totalPoints / 100).toFixed(2)})</span>
-                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-xs">
+                      <p className="text-muted-foreground">Balance</p>
+                      <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
+                  </div>
+                    <div className="text-xs">
+                      <p className="text-muted-foreground">Earned</p>
+                      <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
+                  </div>
+              </div>
             </div>
           </div>
 
