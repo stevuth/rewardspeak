@@ -23,15 +23,15 @@ import { Wallet } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Withdraw",
-  description: "Withdraw your earnings from Rewards Peak.",
+  title: "Cash-Out Cabin",
+  description: "Withdraw points to cash, crypto, or gift cards.",
 };
 
-export default function WithdrawPage() {
+export default function CashOutCabinPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Withdraw Earnings"
+        title="Cash-Out Cabin"
         description="Convert your points into real-world loot."
       />
       <div className="grid gap-8 lg:grid-cols-3">
@@ -68,7 +68,7 @@ export default function WithdrawPage() {
                   id="amount"
                   type="number"
                   placeholder="e.g., 5000"
-                  min="5000"
+                  min="1000"
                 />
               </div>
               <div className="space-y-2">

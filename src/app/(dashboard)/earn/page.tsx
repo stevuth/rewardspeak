@@ -18,18 +18,19 @@ import {
 
 
 export const metadata: Metadata = {
-  title: "Earn Points",
-  description: "Browse offers and tasks to earn points.",
+  title: "Climb & Earn",
+  description: "Main earning hub that leads to all available earning opportunities.",
 };
 
-export default function EarnPage() {
+export default function ClimbAndEarnPage() {
     const surveyProviders = popularOffers.filter(o => o.category === "Survey");
+    const gameOffers = popularOffers.filter(o => o.category === "Game");
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Earn"
-        description="Choose from a variety of ways to earn."
+        title="Climb & Earn"
+        description="Main earning hub that leads to all available earning opportunities."
       />
 
        <div>
@@ -74,20 +75,21 @@ export default function EarnPage() {
             Survey Providers
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {surveyProviders.map((offer) => (
-            <OfferCard key={offer.id} offer={offer} />
-          ))}
-           {surveyProviders.length === 0 && (
+         {surveyProviders.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {surveyProviders.map((offer) => (
+                <OfferCard key={offer.id} offer={offer} />
+            ))}
+            </div>
+         ) : (
             <Card className="text-center py-12 col-span-full">
-              <CardContent>
+                <CardContent>
                 <p className="text-muted-foreground">
-                  No surveys available right now. Check back soon!
+                    No surveys available right now. Check back soon!
                 </p>
-              </CardContent>
+                </CardContent>
             </Card>
-          )}
-        </div>
+         )}
       </div>
 
       <section>
@@ -98,19 +100,28 @@ export default function EarnPage() {
             <TabsTrigger value="quick_tasks">Quick Tasks</TabsTrigger>
           </TabsList>
           <TabsContent value="popular" className="mt-6">
-             <div className="space-y-4">
-                {popularOffers.map((offer) => (
-                    <OfferCard key={offer.id} offer={offer} />
-                ))}
-             </div>
+             {popularOffers.length > 0 ? (
+                <div className="space-y-4">
+                    {popularOffers.map((offer) => (
+                        <OfferCard key={offer.id} offer={offer} />
+                    ))}
+                </div>
+             ) : (
+                <Card className="text-center py-12">
+                    <CardContent>
+                        <p className="text-muted-foreground">No popular offers right now. Check back soon!</p>
+                    </CardContent>
+                </Card>
+             )}
           </TabsContent>
           <TabsContent value="games" className="mt-6">
-            <div className="space-y-4">
-                {popularOffers.filter(o => o.category === "Game").map((offer) => (
-                    <OfferCard key={offer.id} offer={offer} />
-                ))}
-            </div>
-            {popularOffers.filter(o => o.category === "Game").length === 0 && (
+            {gameOffers.length > 0 ? (
+                <div className="space-y-4">
+                    {gameOffers.map((offer) => (
+                        <OfferCard key={offer.id} offer={offer} />
+                    ))}
+                </div>
+            ) : (
                 <Card className="text-center py-12">
                     <CardContent>
                         <p className="text-muted-foreground">No game offers available right now. Check back soon!</p>
@@ -119,11 +130,19 @@ export default function EarnPage() {
             )}
           </TabsContent>
           <TabsContent value="quick_tasks" className="mt-6">
-            <div className="space-y-4">
-                {quickTasks.map((offer) => (
-                    <OfferCard key={offer.id} offer={offer} />
-                ))}
-            </div>
+            {quickTasks.length > 0 ? (
+                <div className="space-y-4">
+                    {quickTasks.map((offer) => (
+                        <OfferCard key={offer.id} offer={offer} />
+                    ))}
+                </div>
+            ) : (
+                 <Card className="text-center py-12">
+                    <CardContent>
+                        <p className="text-muted-foreground">No quick tasks available right now. Check back soon!</p>
+                    </CardContent>
+                </Card>
+            )}
           </TabsContent>
         </Tabs>
       </section>

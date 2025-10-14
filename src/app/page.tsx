@@ -54,14 +54,16 @@ function OfferCarouselCard({ offer, isFeatured }: { offer: Offer, isFeatured?: b
         <Card className="overflow-hidden bg-card/80 backdrop-blur-sm">
         <CardContent className="p-4">
             <div className="flex items-center gap-4">
-                <Image
-                    src={offer.imageUrl}
-                    alt={`${offer.partner} logo`}
-                    width={48}
-                    height={48}
-                    className="rounded-lg"
-                    data-ai-hint={offer.imageHint}
-                />
+                {offer.imageUrl && (
+                    <Image
+                        src={offer.imageUrl}
+                        alt={`${offer.partner} logo`}
+                        width={48}
+                        height={48}
+                        className="rounded-lg"
+                        data-ai-hint={offer.imageHint}
+                    />
+                )}
                 <div>
                     <p className="font-semibold text-sm">{offer.title}</p>
                     <div className="flex items-center gap-1 text-yellow-400 mt-1">
@@ -142,25 +144,27 @@ export default function Home() {
                 by playing games
               </h1>
               
-              <div className="mt-12 h-64 flex items-center justify-center">
-                 <Carousel
-                    opts={{
-                      align: "center",
-                      loop: true,
-                    }}
-                    className="w-full max-w-sm sm:max-w-md"
-                  >
-                    <CarouselContent>
-                      {featuredOffers.map((offer, index) => (
-                        <CarouselItem key={index} className="basis-1/2 flex justify-center">
-                            <OfferCarouselCard offer={offer} isFeatured={index === 1} />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                     <CarouselPrevious className="text-foreground hover:text-primary disabled:opacity-50 -left-4 hidden sm:flex" />
-                    <CarouselNext className="text-foreground hover:text-primary disabled:opacity-50 -right-4 hidden sm:flex" />
-                  </Carousel>
-              </div>
+             {featuredOffers.length > 0 && (
+                <div className="mt-12 h-64 flex items-center justify-center">
+                    <Carousel
+                        opts={{
+                        align: "center",
+                        loop: true,
+                        }}
+                        className="w-full max-w-sm sm:max-w-md"
+                    >
+                        <CarouselContent>
+                        {featuredOffers.map((offer, index) => (
+                            <CarouselItem key={index} className="basis-1/2 flex justify-center">
+                                <OfferCarouselCard offer={offer} isFeatured={index === 1} />
+                            </CarouselItem>
+                        ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="text-foreground hover:text-primary disabled:opacity-50 -left-4 hidden sm:flex" />
+                        <CarouselNext className="text-foreground hover:text-primary disabled:opacity-50 -right-4 hidden sm:flex" />
+                    </Carousel>
+                </div>
+             )}
             </div>
 
             {/* Right Column */}
@@ -255,7 +259,7 @@ export default function Home() {
                                 <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-4 overflow-hidden">
                                         <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
-                                            {cashout.icon}
+                                            {/* cashout.icon */}
                                         </div>
                                         <div className="truncate">
                                             <p className="font-bold text-sm truncate">{cashout.name}</p>
@@ -283,24 +287,24 @@ export default function Home() {
                 <div>
                     <h3 className="font-bold text-lg mb-4">Browse</h3>
                     <ul className="space-y-2 text-muted-foreground">
-                        <li><Link href="/dashboard/earn" className="hover:text-primary">Earn</Link></li>
-                        <li><Link href="/dashboard/withdraw" className="hover:text-primary">Withdraw</Link></li>
-                        <li><Link href="/dashboard/leaderboard" className="hover:text-primary">Leaderboard</Link></li>
+                        <li><Link href="/climb-and-earn" className="hover:text-primary">Earn</Link></li>
+                        <li><Link href="/cash-out-cabin" className="hover:text-primary">Withdraw</Link></li>
+                        <li><Link href="/top-climbers" className="hover:text-primary">Leaderboard</Link></li>
                     </ul>
                 </div>
                  <div>
                     <h3 className="font-bold text-lg mb-4">About</h3>
                     <ul className="space-y-2 text-muted-foreground">
-                        <li><Link href="#" className="hover:text-primary">Privacy Policy</Link></li>
+                        <li><Link href="/privacy-trail" className="hover:text-primary">Privacy Policy</Link></li>
                         <li><Link href="#" className="hover:text-primary">Cookie Policy</Link></li>
-                        <li><Link href="#" className="hover:text-primary">Terms of Service</Link></li>
+                        <li><Link href="/terms-of-the-peak" className="hover:text-primary">Terms of Service</Link></li>
                     </ul>
                 </div>
                  <div>
                     <h3 className="font-bold text-lg mb-4">Support</h3>
                     <ul className="space-y-2 text-muted-foreground">
-                        <li><Link href="/dashboard/support" className="hover:text-primary">FAQ</Link></li>
-                        <li><Link href="/dashboard/support" className="hover:text-primary">Contact</Link></li>
+                        <li><Link href="/help-station" className="hover:text-primary">FAQ</Link></li>
+                        <li><Link href="/help-station" className="hover:text-primary">Contact</Link></li>
                     </ul>
                 </div>
                 <div className="col-span-2 md:col-span-1 flex items-start md:justify-end space-x-4">

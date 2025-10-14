@@ -16,6 +16,14 @@ import {
   Clock,
   DollarSign,
   Swords,
+  Mountain,
+  Zap,
+  TrendingUp,
+  Rocket,
+  PlusCircle,
+  FileText,
+  Shield,
+  BookUser,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,17 +36,16 @@ import { Badge } from "@/components/ui/badge";
 import { UserNav } from "@/components/user-nav";
 
 const navItems = [
-    { href: "/dashboard", label: "Earn", icon: DollarSign },
-    { href: "/dashboard/withdraw", label: "Withdraw", icon: Gift },
-    { href: "/dashboard/achievements", label: "Challenges", icon: Trophy },
-    { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Swords },
-    { href: "/dashboard/raffle", label: "Raffle", icon: Ticket },
-    { href: "/dashboard/referrals", label: "Referral", icon: Users },
+    { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
+    { href: "/climb-and-earn", label: "Climb & Earn", icon: Mountain },
+    { href: "/cash-out-cabin", label: "Cash-Out Cabin", icon: Gift },
+    { href: "/invite-and-climb", label: "Invite & Climb", icon: Users },
+    { href: "/top-climbers", label: "Top Climbers", icon: Trophy },
 ];
 
 const secondaryNavItems = [
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
-  { href: "/dashboard/support", label: "Support", icon: CircleHelp },
+  { href: "/my-peak-profile", label: "My Peak Profile", icon: Settings },
+  { href: "/help-station", label: "Help Station", icon: CircleHelp },
 ];
 
 const recentEarnings: any[] = [
@@ -47,8 +54,8 @@ const recentEarnings: any[] = [
 function SidebarContent() {
   const pathname = usePathname();
   const getNavLinkClass = (href: string) => {
-    const isActive = pathname === href || (href === "/dashboard" && pathname.startsWith("/dashboard/earn"));
-    return `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+    const isActive = pathname === href;
+    return `flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
       isActive
         ? "bg-primary text-primary-foreground"
         : "text-muted-foreground hover:bg-muted"
@@ -63,7 +70,7 @@ function SidebarContent() {
           className="flex items-center gap-2 font-semibold text-lg font-headline"
         >
           <Coins className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold">Rewardy</span>
+          <span className="text-xl font-bold">Rewards Peak</span>
         </Link>
       </div>
 

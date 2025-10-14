@@ -21,8 +21,8 @@ import { Award } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Leaderboard",
-  description: "See who's at the peak of earnings.",
+  title: "Top Climbers",
+  description: "Leaderboard showing the highest earners.",
 };
 
 const RankBadge = ({ rank }: { rank: number }) => {
@@ -35,11 +35,11 @@ const RankBadge = ({ rank }: { rank: number }) => {
   return <Badge variant="secondary">{rank}th</Badge>;
 };
 
-export default function LeaderboardPage() {
+export default function TopClimbersPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Leaderboard"
+        title="Top Climbers"
         description="See who's climbing the highest on Rewards Peak."
       />
       <Card>

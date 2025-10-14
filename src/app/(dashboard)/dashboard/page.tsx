@@ -1,6 +1,9 @@
 import {
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { OfferCard } from "@/components/offer-card";
 import { offerWalls, popularOffers } from "@/lib/mock-data";
@@ -16,6 +19,12 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { PageHeader } from "@/components/page-header";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Peak Dashboard",
+  description: "Your personalized control center showing points, progress, and recent activity.",
+};
 
 export default function DashboardPage() {
   const surveyProviders = popularOffers.filter(
@@ -25,8 +34,8 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Earn"
-        description="Choose from a variety of ways to earn."
+        title="Peak Dashboard"
+        description="Your personalized control center showing points, progress, and recent activity."
       />
       <div>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
@@ -70,16 +79,18 @@ export default function DashboardPage() {
             Survey Providers
           </h2>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/earn">
+            <Link href="/climb-and-earn">
               View all <ChevronRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {surveyProviders.slice(0, 3).map((offer) => (
-            <OfferCard key={offer.id} offer={offer} />
-          ))}
-          {surveyProviders.length === 0 && (
+        {surveyProviders.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {surveyProviders.slice(0, 3).map((offer) => (
+                <OfferCard key={offer.id} offer={offer} />
+            ))}
+            </div>
+        ) : (
             <Card className="text-center py-12 col-span-full">
               <CardContent>
                 <p className="text-muted-foreground">
@@ -87,8 +98,7 @@ export default function DashboardPage() {
                 </p>
               </CardContent>
             </Card>
-          )}
-        </div>
+        )}
       </div>
 
       <div>
@@ -97,16 +107,26 @@ export default function DashboardPage() {
             Popular Quests
           </h2>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/earn">
+            <Link href="/climb-and-earn">
               View all <ChevronRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
         </div>
-        <div className="space-y-4">
-          {popularOffers.slice(0, 3).map((offer) => (
-            <OfferCard key={offer.id} offer={offer} />
-          ))}
-        </div>
+        {popularOffers.length > 0 ? (
+            <div className="space-y-4">
+            {popularOffers.slice(0, 3).map((offer) => (
+                <OfferCard key={offer.id} offer={offer} />
+            ))}
+            </div>
+        ) : (
+             <Card className="text-center py-12 col-span-full">
+              <CardContent>
+                <p className="text-muted-foreground">
+                  No popular quests right now. Check back soon!
+                </p>
+              </CardContent>
+            </Card>
+        )}
       </div>
     </div>
   );

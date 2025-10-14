@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Support",
-  description: "Get help and support from the Rewards Peak team.",
+  title: "Help Station",
+  description: "FAQs, support form, and contact helpdesk.",
 };
 
 const faqs = [
@@ -39,11 +39,11 @@ const faqs = [
     }
 ]
 
-export default function SupportPage() {
+export default function HelpStationPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Support"
+        title="Help Station"
         description="Need help? We're here for you."
       />
       <div className="grid gap-8 md:grid-cols-3">

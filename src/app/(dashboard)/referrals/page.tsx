@@ -14,11 +14,11 @@ import type { Metadata } from "next";
 import { GiftIllustration } from "@/components/illustrations/gift";
 
 export const metadata: Metadata = {
-  title: "Refer and Earn",
-  description: "Invite friends and earn more on Rewards Peak.",
+  title: "Invite & Climb",
+  description: "Your referral and bonus page (share link, track earnings).",
 };
 
-export default function ReferralsPage() {
+export default function InviteAndClimbPage() {
   const referralCode = user.referralLink.split("/").pop()?.toUpperCase();
 
   return (

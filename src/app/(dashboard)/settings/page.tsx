@@ -16,15 +16,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Settings",
-  description: "Manage your account settings.",
+  title: "My Peak Profile",
+  description: "Account info, preferences, and personal stats.",
 };
 
-export default function SettingsPage() {
+export default function MyPeakProfilePage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Settings"
+        title="My Peak Profile"
         description="Manage your account and notification settings."
       />
       <div className="grid gap-8 md:grid-cols-3">
