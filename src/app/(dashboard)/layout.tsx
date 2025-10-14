@@ -128,6 +128,7 @@ function SidebarContent() {
             {item.label}
           </Link>
         ))}
+        {isMobile && <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>}
       </nav>
 
        <div className="mt-auto p-4 space-y-1">

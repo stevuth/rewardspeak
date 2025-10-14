@@ -88,10 +88,9 @@ export default function MyPeakProfilePage() {
 
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="password">Password</TabsTrigger>
-          <TabsTrigger value="support">Support Ticket</TabsTrigger>
         </TabsList>
         <TabsContent value="profile">
           <Card>
@@ -140,29 +139,6 @@ export default function MyPeakProfilePage() {
             </CardContent>
             <CardFooter>
               <Button>Update Password</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="support">
-          <Card>
-            <CardHeader>
-              <CardTitle>Submit a Support Ticket</CardTitle>
-              <CardDescription>
-                Having an issue? Fill out the form below and our team will get back to you.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
-                <Input id="subject" placeholder="e.g., Issue with an offer" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
-                <Textarea id="message" placeholder="Describe your issue in detail..." className="min-h-[150px]" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Submit Ticket</Button>
             </CardFooter>
           </Card>
         </TabsContent>
