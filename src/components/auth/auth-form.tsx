@@ -33,7 +33,7 @@ export function AuthForm({ type }: AuthFormProps) {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm relative">
+      <Card className="w-full max-w-md relative">
         <Link href="/" className="absolute top-4 left-4">
            <Button variant="ghost" size="icon">
              <Home className="h-5 w-5" />
