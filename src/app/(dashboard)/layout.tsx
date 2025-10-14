@@ -15,26 +15,19 @@ import {
   Menu,
   Clock,
   DollarSign,
-  Swords,
   Mountain,
-  Zap,
-  TrendingUp,
-  Rocket,
-  PlusCircle,
-  FileText,
-  Shield,
-  BookUser,
-  ArrowLeft,
   LogOut,
+  ArrowLeft,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { user } from "@/lib/mock-data";
-import { Badge } from "@/components/ui/badge";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -68,25 +61,72 @@ function SidebarContent() {
   const isMobile = useIsMobile();
 
   const getNavLinkClass = (href: string) => {
-    const isActive = pathname.startsWith(href) && href !== '/dashboard' || pathname === href;
-    return `flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
+    const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
+    return cn(
+      "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
       isActive
         ? "bg-primary text-primary-foreground"
         : "text-muted-foreground hover:bg-muted"
-    }`;
+    );
   };
   
-  const mobileHiddenHrefs = mobileNavItems.map(item => item.href);
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full">
+         <div className="p-4 border-b flex items-center justify-between">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 font-semibold text-lg font-headline"
+            >
+              <Coins className="h-6 w-6 text-primary" />
+              <span className="text-xl font-bold">Rewards Peak</span>
+            </Link>
+             <SheetClose asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                    <X className="h-5 w-5" />
+                    <span className="sr-only">Close</span>
+                </Button>
+            </SheetClose>
+          </div>
+        <nav className="flex-1 space-y-1 p-4">
+           {navItems.map((item) => (
+             <Link
+               key={item.href}
+               href={item.href}
+               className={getNavLinkClass(item.href)}
+             >
+               <item.icon className="h-4 w-4" />
+               {item.label}
+             </Link>
+           ))}
+            <Link href="/history" className={getNavLinkClass("/history")}><Clock className="h-4 w-4" />Quest Log</Link>
+            <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>
+        </nav>
+        <div className="mt-auto p-4 border-t space-y-2">
+            <Link href="/settings" className="flex items-center gap-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+                <Image 
+                    src={user.avatarUrl} 
+                    alt="user avatar" 
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                    data-ai-hint={user.avatarHint}
+                />
+                <span>{user.name}</span>
+            </Link>
+             <Link
+                href="/"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const filteredNavItems = isMobile 
-    ? navItems.filter(item => !mobileHiddenHrefs.includes(item.href)) 
-    : navItems;
-  
-  const filteredSecondaryNavItems = isMobile
-    ? secondaryNavItems.filter(item => !mobileHiddenHrefs.includes(item.href))
-    : secondaryNavItems;
-
-
+  // Desktop Sidebar
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -119,7 +159,7 @@ function SidebarContent() {
       </div>
 
       <nav className="flex-1 space-y-1 p-4">
-        {filteredNavItems.map((item) => (
+        {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -129,12 +169,10 @@ function SidebarContent() {
             {item.label}
           </Link>
         ))}
-         {isMobile && <Link href="/history" className={getNavLinkClass("/history")}><Clock className="h-4 w-4" />Quest Log</Link>}
-        {isMobile && <Link href="/support" className={getNavLinkClass("/support")}><CircleHelp className="h-4 w-4" />Help Station</Link>}
       </nav>
 
        <div className="mt-auto p-4 space-y-1 border-t">
-        {!isMobile && filteredSecondaryNavItems.map((item) => (
+        {secondaryNavItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -193,7 +231,6 @@ export default function DashboardLayout({
              </div>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            <UserNav />
              <Sheet>
               <SheetTrigger asChild>
                 <Button
@@ -205,10 +242,14 @@ export default function DashboardLayout({
                   <span className="sr-only">Toggle navigation menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col p-0 bg-card w-[280px]">
+              <SheetContent side="left" className="flex flex-col p-0 bg-card w-[80vw] max-w-xs"
+              // The default close icon is hidden, so we provide our own in SidebarContent
+               hideCloseButton={true}
+              >
                 <SidebarContent />
               </SheetContent>
             </Sheet>
+            <UserNav />
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
@@ -238,3 +279,5 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+    
