@@ -152,6 +152,12 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
         </div>
       );
   }
+  
+  const mobileNavLinks = [
+    ...navItems,
+    ...secondaryNavItems
+  ].filter(item => !mobileNavItems.some(mobileItem => mobileItem.href === item.href));
+
 
   // Mobile Sidebar
   return (
@@ -168,17 +174,7 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
       </div>
       <div className="grid grid-cols-2 gap-4 p-4">
         <nav className="flex-1 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={getNavLinkClass(item.href)}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          ))}
-          {secondaryNavItems.map((item) => (
+          {mobileNavLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
