@@ -1,3 +1,4 @@
+
 import { PlaceHolderImages } from "./placeholder-images";
 import {
   Gem,
@@ -38,9 +39,16 @@ export type LeaderboardUser = {
   points: number;
   avatarUrl: string;
   avatarHint: string;
+  prize?: number;
 };
 
-export const leaderboardData: LeaderboardUser[] = [];
+export const leaderboardData: LeaderboardUser[] = [
+    { rank: 1, name: "elizabeth320", points: 11125, avatarUrl: getPlaceholder("leaderboard-user-1").url, avatarHint: getPlaceholder("leaderboard-user-1").hint, prize: 3000 },
+    { rank: 2, name: "dingo0842", points: 8361, avatarUrl: getPlaceholder("leaderboard-user-2").url, avatarHint: getPlaceholder("leaderboard-user-2").hint, prize: 2000 },
+    { rank: 3, name: "downxx", points: 6262, avatarUrl: getPlaceholder("leaderboard-user-3").url, avatarHint: getPlaceholder("leaderboard-user-3").hint, prize: 1000 },
+    { rank: 4, name: "hermes", points: 5980, avatarUrl: getPlaceholder("leaderboard-user-4").url, avatarHint: getPlaceholder("leaderboard-user-4").hint },
+    { rank: 5, name: "ritatuzi", points: 5120, avatarUrl: getPlaceholder("leaderboard-user-5").url, avatarHint: getPlaceholder("leaderboard-user-5").hint },
+];
 
 export type WithdrawalMethod = {
   name: string;
