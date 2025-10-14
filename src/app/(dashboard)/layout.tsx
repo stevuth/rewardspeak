@@ -256,12 +256,10 @@ export default function DashboardLayout({
                       <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
                   </div>
               </div>
-              <div className="flex sm:hidden items-center gap-4">
-                <div className="text-xs text-right">
-                  <p className="text-muted-foreground">Balance</p>
-                  <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
-                  <p className="font-bold text-xs">(${userBalanceInCash.toFixed(2)})</p>
-                </div>
+              <div className="flex sm:hidden items-center gap-2 text-xs">
+                <span className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</span>
+                <span className="font-bold text-muted-foreground">/</span>
+                <span className="font-bold">${userBalanceInCash.toFixed(2)}</span>
               </div>
               <UserNav />
               <Sheet>
@@ -322,6 +320,7 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+
 
 
 
