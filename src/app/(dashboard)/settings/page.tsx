@@ -15,7 +15,7 @@ import { user, popularOffers } from "@/lib/mock-data";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Metadata } from "next";
-import { DollarSign, CheckCircle, CalendarDays, Upload } from "lucide-react";
+import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint } from "lucide-react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatItem } from "@/components/stat-item";
@@ -41,14 +41,14 @@ export default function MyPeakProfilePage() {
         description="Manage your account and notification settings."
       />
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 border rounded-lg p-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 border rounded-lg p-4">
             <StatItem
-                title="Total Offers Completed"
+                title="Offers Completed"
                 value={completedOffersCount}
                 icon={CheckCircle}
             />
             <StatItem
-                title="Total Amount Earned"
+                title="Amount Earned"
                 value={`$${totalAmountEarned.toFixed(2)}`}
                 icon={DollarSign}
                 />
@@ -60,7 +60,11 @@ export default function MyPeakProfilePage() {
                     day: 'numeric'
                 })}
                 icon={CalendarDays}
-                className="col-span-2 md:col-span-1"
+                />
+            <StatItem
+                title="Rewards Peak ID"
+                value={user.rewardsPeakId}
+                icon={Fingerprint}
                 />
         </div>
 
@@ -88,10 +92,6 @@ export default function MyPeakProfilePage() {
                    </div>
                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB.</p>
                 </div>
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="rewards-peak-id">Rewards Peak ID</Label>
-                <Input id="rewards-peak-id" defaultValue={user.rewardsPeakId} readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
