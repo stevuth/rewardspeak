@@ -110,13 +110,18 @@ const paymentMethods = [
     { icon: LitecoinLogo, name: 'Litecoin'},
     { icon: EthereumLogo, name: 'Ethereum'},
     { icon: BitcoinLogo, name: 'Bitcoin'},
-]
+];
 
 
 export default function Home() {
   const featuredOffers = popularOffers.slice(0, 5);
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   React.useEffect(() => {
     if (!api) {
@@ -235,7 +240,7 @@ export default function Home() {
               </h1>
               
              {featuredOffers.length > 0 && (
-                <div className="mt-12 h-64 flex items-center justify-center">
+                <div className="mt-8 md:mt-12 h-48 md:h-64 flex items-center justify-center">
                     <Carousel
                         setApi={setApi}
                         plugins={[
@@ -248,7 +253,7 @@ export default function Home() {
                           align: "center",
                           loop: true,
                         }}
-                        className="w-full max-w-sm sm:max-w-md"
+                        className="w-full max-w-xs sm:max-w-sm"
                     >
                         <CarouselContent>
                         {featuredOffers.map((offer, index) => {
@@ -287,7 +292,7 @@ export default function Home() {
             </div>
 
             {/* Right Column */}
-            <div>
+            <div className="mt-8 lg:mt-0">
               <Card className="max-w-md mx-auto">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">
@@ -336,14 +341,14 @@ export default function Home() {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
             <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                    <h2 className="text-4xl md:text-5xl font-bold font-headline mb-4">Get paid in <span className="text-secondary">3 easy steps</span></h2>
+                    <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">Get paid in <span className="text-secondary">3 easy steps</span></h2>
                     <p className="text-muted-foreground mb-6">
                         Join thousands of users earning real rewards every day. Getting started is quick and completely free!
                     </p>
                     <Button asChild size="lg">
                         <Link href="/signup">Start Earning</Link>
                     </Button>
-                    <div className="mt-8 flex items-center gap-4">
+                    <div className="mt-8 flex flex-wrap items-center gap-4">
                         <p className="text-sm text-muted-foreground">Trusted by over +1500</p>
                         <div className="flex items-center gap-1">
                             <Star className="w-5 h-5 text-green-500 fill-green-500" />
@@ -426,30 +431,31 @@ export default function Home() {
                                 <p className="text-sm text-muted-foreground">Redeem your earnings for cash, crypto, or gift cards.</p>
                             </div>
                         </div>
-                        <div className="relative flex items-center justify-center h-64">
-                            <div className="absolute w-64 h-64 border-2 border-dashed border-border rounded-full"></div>
-                            <div className="absolute w-48 h-48 border border-border rounded-full"></div>
+                        <div className="relative flex items-center justify-center h-48 md:h-64">
+                            <div className="absolute w-48 h-48 md:w-64 md:h-64 border-2 border-dashed border-border rounded-full"></div>
+                            <div className="absolute w-36 h-36 md:w-48 md:h-48 border border-border rounded-full"></div>
                             
-                            {paymentMethods.map((method, i) => {
+                            {isClient && paymentMethods.map((method, i) => {
                                 const angle = (i / paymentMethods.length) * 2 * Math.PI;
-                                const x = Math.cos(angle) * 128; // 128 is radius of outer circle
-                                const y = Math.sin(angle) * 128;
+                                const radius = window.innerWidth < 768 ? 96 : 128;
+                                const x = Math.cos(angle) * radius;
+                                const y = Math.sin(angle) * radius;
                                 return (
                                     <div
                                         key={method.name}
-                                        className="absolute w-12 h-12 bg-card border border-border rounded-full flex items-center justify-center"
+                                        className="absolute w-10 h-10 md:w-12 md:h-12 bg-card border border-border rounded-full flex items-center justify-center"
                                         style={{ 
                                             transform: `translate(${x}px, ${y}px)`
                                         }}
                                     >
-                                        <method.icon className="w-6 h-6 text-foreground" />
+                                        <method.icon className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
                                     </div>
                                 )
                             })}
 
                             <div className="text-center">
                                 <p className="text-sm text-muted-foreground">Available to withdraw</p>
-                                <p className="text-4xl font-bold text-accent my-1">$250.00</p>
+                                <p className="text-3xl md:text-4xl font-bold text-accent my-1">$250.00</p>
                                 <Button variant="link" className="text-primary">Choose your reward</Button>
                             </div>
                         </div>
@@ -584,41 +590,35 @@ export default function Home() {
                         <li><Link href="/privacy-trail" className="hover:text-primary">Privacy Policy</Link></li>
                         <li><Link href="#" className="hover:text-primary">Cookie Policy</Link></li>
                         <li><Link href="/terms-of-the-peak" className="hover:text-primary">Terms of Service</Link></li>
+                        <li><Link href="/about-rewards-peak" className="hover:text-primary">About Us</Link></li>
                     </ul>
                 </div>
-                 <div>
+                <div>
                     <h3 className="font-bold text-lg mb-4">Support</h3>
-                    <ul className="space-y-2 text-muted-foreground">
-                        <li><Link href="/help-station" className="hover:text-primary">FAQ</Link></li>
-                        <li><Link href="/help-station" className="hover:text-primary">Contact</Link></li>
+                     <ul className="space-y-2 text-muted-foreground">
+                        <li><Link href="/help-station" className="hover:text-primary">Help Center</Link></li>
+                        <li><Link href="#" className="hover:text-primary">Contact Us</Link></li>
                     </ul>
                 </div>
-                <div className="col-span-2 md:col-span-1 flex items-start md:justify-end space-x-4">
-                    <Button variant="ghost" size="icon"><Facebook /></Button>
-                    <Button variant="ghost" size="icon"><Instagram /></Button>
-                    <Button variant="ghost" size="icon"><Twitter /></Button>
-                    <Button variant="ghost" size="icon"><MessageCircle /></Button>
+                <div>
+                    <h3 className="font-bold text-lg mb-4">Community</h3>
+                    <div className="flex space-x-4">
+                        <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>
+                        <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
+                        <Link href="#" className="text-muted-foreground hover:text-primary"><Twitter /></Link>
+                        <Link href="#" className="text-muted-foreground hover:text-primary"><MessageCircle /></Link>
+                    </div>
                 </div>
             </div>
-            <div className="mt-8 border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                    <Gamepad2 className="h-6 w-6 text-muted-foreground" />
-                    <span className="text-muted-foreground font-headline">
-                    Rewards Peak
-                    </span>
+            <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
+                <p>&copy; 2024 Rewards Peak. All rights reserved.</p>
+                 <div className="flex items-center gap-4 mt-4 md:mt-0">
+                    <Link href="/privacy-trail" className="hover:text-primary">Privacy Policy</Link>
+                    <Link href="/terms-of-the-peak" className="hover:text-primary">Terms of Service</Link>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.
-                </p>
             </div>
         </div>
       </footer>
     </div>
   );
 }
-
-  
-
-    
-
-
