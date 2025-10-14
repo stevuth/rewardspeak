@@ -60,7 +60,6 @@ import Image from 'next/image';
 import { popularOffers, type Offer } from '@/lib/mock-data';
 import { Chrome } from "lucide-react";
 import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/exclusive-opportunities";
-import { DailyChallengesIllustration } from "@/components/illustrations/daily-challenges";
 import React from 'react';
 import { cn } from '@/lib/utils';
 import Autoplay from "embla-carousel-autoplay"
@@ -128,6 +127,43 @@ const SignUpBonusIllustration = () => (
     </div>
   );
 
+const ReferralEarningsIllustration = () => (
+  <div className="relative w-48 h-32 flex items-center justify-center">
+    {/* People */}
+    <div className="absolute w-10 h-10 bg-yellow-200 rounded-full top-8 left-8"></div>
+    <div className="absolute w-12 h-12 bg-gray-400 rounded-full top-4 left-1/2 -translate-x-1/2"></div>
+    <div className="absolute w-10 h-10 bg-yellow-200 rounded-full top-8 right-8"></div>
+    {/* Arrows and Percentage */}
+    <div className="absolute top-20 left-12 text-primary font-bold text-lg">10%</div>
+    <ArrowRight className="absolute top-16 left-20 w-8 h-8 text-primary" />
+    <ArrowLeft className="absolute top-16 right-20 w-8 h-8 text-primary" />
+  </div>
+);
+
+const SecureWithdrawalsIllustration = () => (
+  <div className="relative w-48 h-32 flex items-center justify-center">
+    {/* Banknote */}
+    <div className="w-24 h-14 bg-green-500 rounded-lg shadow-lg flex items-center justify-center text-white font-bold text-xl">$10</div>
+    {/* Padlock */}
+    <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
+      <ShieldCheck className="w-5 h-5 text-white" />
+    </div>
+    {/* Coins */}
+    <div className="absolute bottom-4 -left-4 w-6 h-6 bg-yellow-400 rounded-full"></div>
+    <div className="absolute -bottom-2 left-0 w-8 h-8 bg-yellow-500 rounded-full"></div>
+  </div>
+);
+
+const FrequentGiveawaysIllustration = () => (
+  <div className="relative w-48 h-32 flex items-center justify-center">
+    <Gift className="w-20 h-20 text-primary" />
+    {/* Stars */}
+    <Star className="absolute top-4 left-8 w-5 h-5 text-yellow-400 fill-yellow-400" />
+    <Star className="absolute top-8 right-4 w-6 h-6 text-yellow-400 fill-yellow-400" />
+    <Star className="absolute bottom-4 left-12 w-4 h-4 text-yellow-400 fill-yellow-400" />
+  </div>
+);
+
 
 export default function Home() {
   const featuredOffers = popularOffers.slice(0, 5);
@@ -154,17 +190,17 @@ export default function Home() {
 
   const features = [
     {
-      icon: UserPlus,
+      illustration: <ReferralEarningsIllustration />,
       title: "10% lifetime referral earnings",
       description: "Earn 10% of your referrals' earnings for life.",
     },
     {
-      icon: Banknote,
+      illustration: <SecureWithdrawalsIllustration />,
       title: "Withdrawals starting at $10.00",
       description: "Cash out your earnings quickly and securely.",
     },
     {
-      icon: Gift,
+      illustration: <FrequentGiveawaysIllustration />,
       title: "Frequent giveaways",
       description: "Participate in regular giveaways for extra rewards.",
     },
@@ -480,8 +516,8 @@ export default function Home() {
                 </Card>
                 {features.map((feature, index) => (
                     <Card key={index} className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
-                        <feature.icon className="w-10 h-10 text-primary mb-4" />
-                        <h3 className="font-bold text-lg font-headline mb-2">{feature.title}</h3>
+                        {feature.illustration}
+                        <h3 className="font-bold text-lg font-headline mb-2 mt-4">{feature.title}</h3>
                         <p className="text-sm text-muted-foreground">{feature.description}</p>
                     </Card>
                 ))}
