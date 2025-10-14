@@ -15,10 +15,10 @@ import { user, popularOffers } from "@/lib/mock-data";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Metadata } from "next";
-import { StatCard } from "@/components/stat-card";
 import { DollarSign, CheckCircle, CalendarDays, Upload } from "lucide-react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { StatItem } from "@/components/stat-item";
 
 export const metadata: Metadata = {
   title: "My Peak Profile",
@@ -41,27 +41,29 @@ export default function MyPeakProfilePage() {
         description="Manage your account and notification settings."
       />
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
-            title="Total Offers Completed"
-            value={completedOffersCount}
-            icon={CheckCircle}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 border rounded-lg p-4">
+            <StatItem
+                title="Total Offers Completed"
+                value={completedOffersCount}
+                icon={CheckCircle}
             />
-        <StatCard
-            title="Total Amount Earned"
-            value={totalAmountEarned}
-            icon={DollarSign}
-            />
-        <StatCard
-            title="Date Joined"
-            value={new Date(user.dateJoined).toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            })}
-            icon={CalendarDays}
-            />
-      </div>
+            <StatItem
+                title="Total Amount Earned"
+                value={`$${totalAmountEarned.toFixed(2)}`}
+                icon={DollarSign}
+                />
+            <StatItem
+                title="Date Joined"
+                value={new Date(user.dateJoined).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })}
+                icon={CalendarDays}
+                className="col-span-2 md:col-span-1"
+                />
+        </div>
+
 
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-8">
