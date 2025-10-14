@@ -71,33 +71,6 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
             <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold tracking-tight font-headline">
-                Popular Quests
-              </h2>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/earn">
-                  View all <ChevronRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            {popularOffers.length > 0 ? (
-                <div className="space-y-4">
-                {popularOffers.slice(0, 3).map((offer) => (
-                    <OfferCard key={offer.id} offer={offer} />
-                ))}
-                </div>
-            ) : (
-                <Card className="text-center py-12 col-span-full">
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      No popular quests right now. Check back soon!
-                    </p>
-                  </CardContent>
-                </Card>
-            )}
-          </div>
-            <div>
             <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
                 Featured Partners
             </h2>
@@ -131,6 +104,33 @@ export default function DashboardPage() {
               <CarouselPrevious className="-left-4 hidden lg:flex" />
               <CarouselNext className="-right-4 hidden lg:flex" />
             </Carousel>
+          </div>
+            <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold tracking-tight font-headline">
+                Popular Quests
+              </h2>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/earn">
+                  View all <ChevronRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+            {popularOffers.length > 0 ? (
+                <div className="space-y-4">
+                {popularOffers.slice(0, 3).map((offer) => (
+                    <OfferCard key={offer.id} offer={offer} />
+                ))}
+                </div>
+            ) : (
+                <Card className="text-center py-12 col-span-full">
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      No popular quests right now. Check back soon!
+                    </p>
+                  </CardContent>
+                </Card>
+            )}
           </div>
         </div>
 
