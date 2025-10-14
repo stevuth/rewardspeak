@@ -1,12 +1,9 @@
-import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { OfferCard } from "@/components/offer-card";
-import { offerWalls, popularOffers, quickTasks } from "@/lib/mock-data";
+import { offerWalls, popularOffers } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
@@ -18,6 +15,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { PageHeader } from "@/components/page-header";
 
 export default function DashboardPage() {
   const surveyProviders = popularOffers.filter(
@@ -26,7 +24,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <PageHeader
+        title="Earn"
+        description="Choose from a variety of ways to earn."
+      />
       <div>
+        <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
+            Featured Partners
+        </h2>
         <Carousel
           opts={{
             align: "start",
@@ -38,24 +43,24 @@ export default function DashboardPage() {
             {offerWalls.map((wall) => (
               <CarouselItem
                 key={wall.name}
-                className="basis-1/3 md:basis-1/4 lg:basis-1/6"
+                className="basis-1/2 md:basis-1/3 lg:basis-1/5"
               >
                 <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full bg-card hover:bg-muted/50 transition-colors">
                   <Image
                     src={wall.logo}
                     alt={`${wall.name} logo`}
-                    width={48}
-                    height={48}
+                    width={56}
+                    height={56}
                     className="rounded-lg mb-2"
                     data-ai-hint={wall.hint}
                   />
-                  <span className="text-xs font-medium">{wall.name}</span>
+                  <span className="text-sm font-medium mt-1">{wall.name}</span>
                 </Card>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="-left-4 hidden md:flex" />
-          <CarouselNext className="-right-4 hidden md:flex" />
+          <CarouselPrevious className="-left-4 hidden lg:flex" />
+          <CarouselNext className="-right-4 hidden lg:flex" />
         </Carousel>
       </div>
 
@@ -71,7 +76,7 @@ export default function DashboardPage() {
           </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {surveyProviders.map((offer) => (
+          {surveyProviders.slice(0, 3).map((offer) => (
             <OfferCard key={offer.id} offer={offer} />
           ))}
           {surveyProviders.length === 0 && (

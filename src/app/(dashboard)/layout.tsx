@@ -5,24 +5,19 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Coins,
-  DollarSign,
   Gift,
   LayoutDashboard,
-  Swords,
   Trophy,
   Users,
   Ticket,
   CircleHelp,
   Settings,
-  Bell,
-  Facebook,
-  Twitter,
-  MessageCircle,
   Menu,
   Clock,
+  DollarSign,
+  Swords,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserNav } from "@/components/user-nav";
 import {
   Sheet,
   SheetContent,
@@ -30,14 +25,15 @@ import {
 } from "@/components/ui/sheet";
 import { user } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
+import { UserNav } from "@/components/user-nav";
 
 const navItems = [
-  { href: "/dashboard", label: "Earn", icon: DollarSign },
-  { href: "/dashboard/withdraw", label: "Withdraw", icon: Gift },
-  { href: "/dashboard/achievements", label: "Challenges", icon: Trophy },
-  { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Swords },
-  { href: "/dashboard/raffle", label: "Raffle", icon: Ticket },
-  { href: "/dashboard/referrals", label: "Referral", icon: Users },
+    { href: "/dashboard", label: "Earn", icon: DollarSign },
+    { href: "/dashboard/withdraw", label: "Withdraw", icon: Gift },
+    { href: "/dashboard/achievements", label: "Challenges", icon: Trophy },
+    { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Swords },
+    { href: "/dashboard/raffle", label: "Raffle", icon: Ticket },
+    { href: "/dashboard/referrals", label: "Referral", icon: Users },
 ];
 
 const secondaryNavItems = [
@@ -72,10 +68,17 @@ function SidebarContent() {
       </div>
 
       <div className="p-4 flex flex-col items-center text-center">
-        <div className="relative h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center mb-2">
-            <span className="text-4xl font-bold text-primary">P</span>
+        <div className="relative h-20 w-20">
+            <Image 
+                src={user.avatarUrl} 
+                alt="user avatar" 
+                width={80} 
+                height={80} 
+                className="rounded-full border-4 border-primary/50"
+                data-ai-hint={user.avatarHint}
+            />
         </div>
-        <p className="font-semibold">{user.name}</p>
+        <p className="font-semibold mt-2">{user.name}</p>
         <p className="text-sm text-muted-foreground">Level 0</p>
         <div className="mt-2 flex items-center gap-2 rounded-md bg-muted p-2 text-sm font-semibold">
           <Coins className="h-4 w-4 text-yellow-400" />
@@ -83,13 +86,13 @@ function SidebarContent() {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-2 px-4">
+      <nav className="flex-1 space-y-1 px-4">
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              pathname === item.href
+              pathname === item.href || (item.href === "/dashboard" && pathname.startsWith("/dashboard/earn"))
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-muted"
             }`}
@@ -100,14 +103,14 @@ function SidebarContent() {
         ))}
       </nav>
 
-       <div className="mt-auto p-4 space-y-2">
+       <div className="mt-auto p-4 space-y-1">
         {secondaryNavItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
               pathname.startsWith(item.href)
-                ? "bg-primary text-primary-foreground"
+                ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:bg-muted"
             }`}
           >
@@ -126,9 +129,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
+    <div className="grid min-h-screen w-full md:grid-cols-[260px_1fr]">
       <div className="hidden border-r bg-card md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
+        <div className="flex h-full max-h-screen flex-col">
           <SidebarContent />
         </div>
       </div>
@@ -163,9 +166,6 @@ export default function DashboardLayout({
              </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon"><Facebook className="h-5 w-5" /></Button>
-            <Button variant="ghost" size="icon"><Twitter className="h-5 w-5" /></Button>
-            <Button variant="ghost" size="icon"><MessageCircle className="h-5 w-5" /></Button>
             <div className="flex items-center gap-1 text-sm font-semibold">
                 <Clock className="h-4 w-4" />
                 <span>05:11:41</span>

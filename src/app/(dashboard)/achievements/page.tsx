@@ -39,7 +39,7 @@ const AchievementCard = ({ achievement }: { achievement: Achievement }) => {
           <achievement.icon className="w-8 h-8" />
         </div>
         <div>
-          <CardTitle className="font-headline">{achievement.name}</CardTitle>
+          <CardTitle className="font-headline text-lg">{achievement.name}</CardTitle>
           <CardDescription>{achievement.description}</CardDescription>
         </div>
       </CardHeader>
@@ -66,7 +66,7 @@ export default function AchievementsPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Achievements"
+        title="Challenges"
         description="Track your progress and unlock exclusive rewards for your efforts."
       />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
