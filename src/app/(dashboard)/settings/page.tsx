@@ -41,16 +41,18 @@ export default function MyPeakProfilePage() {
         description="Manage your account and notification settings."
       />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 border rounded-lg p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatItem
                 title="Offers Completed"
                 value={completedOffersCount}
                 icon={CheckCircle}
+                className="bg-card p-4 rounded-lg"
             />
             <StatItem
                 title="Amount Earned"
                 value={`$${totalAmountEarned.toFixed(2)}`}
                 icon={DollarSign}
+                className="bg-card p-4 rounded-lg"
                 />
             <StatItem
                 title="Date Joined"
@@ -60,11 +62,13 @@ export default function MyPeakProfilePage() {
                     day: 'numeric'
                 })}
                 icon={CalendarDays}
+                className="bg-card p-4 rounded-lg"
                 />
             <StatItem
                 title="Rewards Peak ID"
                 value={user.rewardsPeakId}
                 icon={Fingerprint}
+                className="bg-card p-4 rounded-lg"
                 />
         </div>
 
