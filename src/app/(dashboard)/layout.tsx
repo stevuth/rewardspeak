@@ -155,7 +155,7 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
 
   // Mobile Sidebar
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="w-full">
       <div className="p-4 border-b flex items-center justify-between">
         <Link
           href="/dashboard"
@@ -166,42 +166,43 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
         </Link>
         {children}
       </div>
-
-      <nav className="flex-1 space-y-1 p-4">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={getNavLinkClass(item.href)}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-
-      <div className="mt-auto p-4 space-y-1 border-t">
-        {secondaryNavItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={getNavLinkClass(item.href)}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
-        <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
-            <UserNav />
-             <div className="flex-1">
-                <p className="font-semibold">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
-            </div>
-             <Button variant="ghost" size="icon" asChild>
-                <Link href="/">
-                    <LogOut className="h-4 w-4" />
-                </Link>
-             </Button>
+      <div className="grid grid-cols-2 gap-4 p-4">
+        <nav className="flex-1 space-y-1">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={getNavLinkClass(item.href)}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
+          ))}
+          {secondaryNavItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={getNavLinkClass(item.href)}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="space-y-4">
+          <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
+              <UserNav />
+               <div className="flex-1">
+                  <p className="font-semibold">{user.name}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+              </div>
+          </div>
+           <Button variant="ghost" asChild className="w-full justify-start">
+              <Link href="/">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log Out
+              </Link>
+           </Button>
         </div>
       </div>
     </div>
@@ -258,7 +259,7 @@ export default function DashboardLayout({
                 </SheetTrigger>
                 <SheetContent
                   side="top"
-                  className="flex flex-col p-0 bg-card"
+                  className="w-full bg-card p-0"
                   hideCloseButton={true}
                 >
                   <SidebarContent>
