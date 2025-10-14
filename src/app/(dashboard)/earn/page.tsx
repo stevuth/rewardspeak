@@ -15,6 +15,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 
 export const metadata: Metadata = {
@@ -32,6 +34,11 @@ export default function ClimbAndEarnPage() {
         title="Climb & Earn"
         description="Main earning hub that leads to all available earning opportunities."
       />
+      
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input placeholder="Search for offers..." className="pl-9" />
+      </div>
 
        <div>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
