@@ -73,22 +73,6 @@ export default function DashboardPage() {
         description="Welcome back! Here's a look at your recent activity."
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:hidden">
-          <StatCard
-            title="Your Balance"
-            value={user.totalPoints}
-            icon={Wallet}
-            description={`≈ $${(user.totalPoints / 100).toFixed(2)}`}
-          />
-          <StatCard
-            title="Total Earned"
-            value={`$${totalAmountEarned.toFixed(2)}`}
-            icon={DollarSign}
-            description="All-time earnings"
-          />
-      </div>
-
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
             <div>

@@ -27,7 +27,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { user } from "@/lib/mock-data";
+import { popularOffers, user } from "@/lib/mock-data";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -212,6 +212,9 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const totalAmountEarned = popularOffers
+    .filter((o) => o.status === "Completed")
+    .reduce((sum, o) => sum + o.points, 0) / 100;
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[260px_1fr]">
@@ -224,10 +227,30 @@ export default function DashboardLayout({
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Go back</span>
           </Button>
-          <div className="hidden md:flex flex-1 overflow-x-auto whitespace-nowrap">
+          <div className="flex-1 overflow-x-auto whitespace-nowrap">
              <div className="flex gap-2 items-center">
+                 <div className="flex items-center gap-4 md:hidden">
+                    <Image
+                        src={user.avatarUrl}
+                        alt="user avatar"
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                        data-ai-hint={user.avatarHint}
+                    />
+                    <div className="flex items-center gap-4">
+                        <div className="text-xs">
+                            <p className="text-muted-foreground">Balance</p>
+                            <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
+                        </div>
+                         <div className="text-xs">
+                            <p className="text-muted-foreground">Earned</p>
+                            <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
+                        </div>
+                    </div>
+                 </div>
                  {recentEarnings.map((earning, i) => (
-                    <div key={i} className="flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
+                    <div key={i} className="hidden md:flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
                         <div className="flex flex-col">
                             <span className="font-bold text-primary">{earning.name}</span>
                             <span className="text-muted-foreground">{earning.user}</span>
