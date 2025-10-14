@@ -167,22 +167,7 @@ export default function DashboardLayout({
       </div>
       <div className="flex flex-col overflow-hidden">
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0 md:hidden"
-              >
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col p-0 bg-card">
-              <SidebarContent />
-            </SheetContent>
-          </Sheet>
-          <Button variant="outline" size="icon" className="shrink-0" onClick={() => router.back()}>
+          <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Go back</span>
           </Button>
@@ -205,6 +190,21 @@ export default function DashboardLayout({
                 <span>05:11:41</span>
             </div>
             <UserNav />
+             <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 md:hidden"
+                >
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="flex flex-col p-0 bg-card">
+                <SidebarContent />
+              </SheetContent>
+            </Sheet>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
