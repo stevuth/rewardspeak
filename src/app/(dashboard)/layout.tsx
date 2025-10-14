@@ -35,6 +35,7 @@ import {
 import { user } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
 import { UserNav } from "@/components/user-nav";
+import { cn } from "@/lib/utils";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -49,6 +50,13 @@ const secondaryNavItems = [
   { href: "/history", label: "Quest Log", icon: Clock },
   { href: "/support", label: "Help Station", icon: CircleHelp },
 ];
+
+const mobileNavItems = [
+    { href: "/earn", label: "Climb & Earn", icon: Mountain },
+    { href: "/withdraw", label: "Cash-Out", icon: Gift },
+    { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
+    { href: "/settings", label: "My Profile", icon: Settings },
+]
 
 const recentEarnings: any[] = [
 ];
@@ -134,6 +142,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[260px_1fr]">
@@ -184,7 +193,29 @@ export default function DashboardLayout({
             <UserNav />
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto">{children}</main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
+        
+        {/* Mobile Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
+            <div className="grid grid-cols-4 gap-2">
+                {mobileNavItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                                "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-medium",
+                                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                            )}
+                        >
+                            <item.icon className="h-5 w-5" />
+                            <span>{item.label}</span>
+                        </Link>
+                    )
+                })}
+            </div>
+        </div>
       </div>
     </div>
   );
