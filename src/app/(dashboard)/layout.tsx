@@ -231,6 +231,7 @@ export default function DashboardLayout({
              </div>
           </div>
           <div className="flex items-center gap-2 ml-auto">
+            <UserNav />
              <Sheet>
               <SheetTrigger asChild>
                 <Button
@@ -249,7 +250,6 @@ export default function DashboardLayout({
                 <SidebarContent />
               </SheetContent>
             </Sheet>
-            <UserNav />
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
