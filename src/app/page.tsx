@@ -18,6 +18,12 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Gamepad2,
   Gift,
   Zap,
@@ -37,6 +43,9 @@ import {
   Instagram,
   Twitter,
   MessageCircle,
+  UserPlus,
+  ListChecks,
+  Wallet
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -102,6 +111,39 @@ export default function Home() {
       title: "Frequent giveaways",
     },
   ];
+
+  const howItWorksSteps = [
+    {
+      icon: UserPlus,
+      title: "Sign Up",
+      description: "Create your free account in just a few seconds.",
+    },
+    {
+      icon: ListChecks,
+      title: "Complete Tasks",
+      description: "Play games, take surveys, and watch videos to earn points.",
+    },
+    {
+      icon: Wallet,
+      title: "Cash Out",
+      description: "Redeem your points for real cash and crypto.",
+    },
+  ];
+
+  const faqs = [
+    {
+      question: "How much can I earn?",
+      answer: "Your earnings depend on the tasks you complete. The more offers you do, the more you can earn. There's no limit!"
+    },
+    {
+      question: "How do I get paid?",
+      answer: "You can withdraw your earnings via PayPal, various cryptocurrencies like Bitcoin and Litecoin, and more. Payouts are fast and secure."
+    },
+    {
+        question: "Is Rewards Peak free to use?",
+        answer: "Yes, Rewards Peak is completely free. You'll never be asked to pay for anything. Just sign up and start earning."
+    }
+  ]
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -279,6 +321,48 @@ export default function Home() {
             </div>
         </section>
 
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
+                How It Works
+            </h2>
+            <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">Earning rewards is as simple as 1, 2, 3. Follow these steps to get started and cash out your first reward.</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                {howItWorksSteps.map((step, index) => (
+                    <Card key={index} className="bg-card/50 p-6 flex flex-col items-center">
+                        <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary">
+                            <step.icon className="w-8 h-8" />
+                        </div>
+                        <h3 className="font-bold text-lg mb-2 font-headline">{step.title}</h3>
+                        <p className="text-sm text-muted-foreground">{step.description}</p>
+                    </Card>
+                ))}
+            </div>
+        </section>
+
+        <section className="bg-card/40 py-16 md:py-24">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+                <div className="text-center">
+                    <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
+                        Frequently Asked Questions
+                    </h2>
+                    <p className="text-muted-foreground mb-8">
+                        Have questions? We've got answers.
+                    </p>
+                </div>
+                <Accordion type="single" collapsible className="w-full">
+                    {faqs.map((faq, index) => (
+                        <AccordionItem value={`item-${index}`} key={index}>
+                            <AccordionTrigger>{faq.question}</AccordionTrigger>
+                            <AccordionContent>
+                            {faq.answer}
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </div>
+        </section>
+
       </main>
 
       <footer className="bg-card/40">
@@ -330,3 +414,5 @@ export default function Home() {
     </div>
   );
 }
+
+  
