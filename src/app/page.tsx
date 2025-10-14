@@ -155,24 +155,6 @@ export default function Home() {
     },
   ];
 
-  const howItWorksSteps = [
-    {
-      icon: UserPlus,
-      title: "Sign Up",
-      description: "Create your free account in just a few seconds.",
-    },
-    {
-      icon: ListChecks,
-      title: "Complete Tasks",
-      description: "Play games, take surveys, and watch videos to earn points.",
-    },
-    {
-      icon: Wallet,
-      title: "Cash Out",
-      description: "Redeem your points for real cash and crypto.",
-    },
-  ];
-
   const faqs = [
     {
       question: "How much can I earn?",
@@ -526,25 +508,6 @@ export default function Home() {
                         </Card>
                     )}
                 </div>
-            </div>
-        </section>
-
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
-                How It Works
-            </h2>
-            <p className="text-muted-foreground mb-12 max-w-2xl mx-auto">Earning rewards is as simple as 1, 2, 3. Follow these steps to get started and cash out your first reward.</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                {howItWorksSteps.map((step, index) => (
-                    <Card key={index} className="bg-card/50 p-6 flex flex-col items-center">
-                        <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary">
-                            <step.icon className="w-8 h-8" />
-                        </div>
-                        <h3 className="font-bold text-lg mb-2 font-headline">{step.title}</h3>
-                        <p className="text-sm text-muted-foreground">{step.description}</p>
-                    </Card>
-                ))}
             </div>
         </section>
 
