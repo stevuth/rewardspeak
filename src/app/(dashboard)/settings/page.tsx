@@ -67,7 +67,7 @@ export default function MyPeakProfilePage() {
                         />
                         <StatItem
                             title="Date Joined"
-                            value={new Date(user.dateJoined).toLocaleDate-string(undefined, {
+                            value={new Date(user.dateJoined).toLocaleDateString(undefined, {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'
