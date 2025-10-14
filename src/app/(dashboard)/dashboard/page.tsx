@@ -68,7 +68,7 @@ export default function DashboardPage() {
         description="Welcome back! Here's a look at your recent activity."
       />
 
-       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard title="Total Earnings" value={user.totalPoints} icon={DollarSign} description={`$${(user.totalPoints / 100).toFixed(2)} lifetime`} />
         <StatCard title="Daily Earnings" value={user.dailyEarnings} icon={Clock} description="Points earned today" />
         <StatCard title="Referrals" value={user.referrals} icon={Users} description={`${user.referralEarnings} points from referrals`} />
