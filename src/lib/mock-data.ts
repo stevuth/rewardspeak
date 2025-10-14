@@ -91,6 +91,22 @@ export const user = {
   rewardsPeakId: "RP-GUEST-001",
 };
 
+export type Withdrawal = {
+  id: string;
+  method: string;
+  amount: number; // in points
+  date: string;
+  status: "Completed" | "Pending" | "Failed";
+};
+
+export const withdrawalHistory: Withdrawal[] = [
+  { id: "wh1", method: "PayPal", amount: 5000, date: "2024-07-18", status: "Completed" },
+  { id: "wh2", method: "Bitcoin", amount: 10000, date: "2024-07-15", status: "Completed" },
+  { id: "wh3", method: "Litecoin", amount: 2500, date: "2024-07-20", status: "Pending" },
+  { id: "wh4", method: "PayPal", amount: 1000, date: "2024-07-10", status: "Failed" },
+];
+
+
 export const offerWalls = [
     { name: "AdGate", logo: getPlaceholder("adgate-logo").url, hint: getPlaceholder("adgate-logo").hint, description: "A wide variety of offers." },
     { name: "TimeWall", logo: getPlaceholder("timewall-logo").url, hint: getPlaceholder("timewall-logo").hint, description: "Surveys, tasks, and more." },

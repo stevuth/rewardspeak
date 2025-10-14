@@ -3,9 +3,22 @@ import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { withdrawalMethods, type WithdrawalMethod } from "@/lib/mock-data";
+import { withdrawalMethods, withdrawalHistory, type Withdrawal, user } from "@/lib/mock-data";
 import {
   PaypalLogo,
   LitecoinLogo,
@@ -16,6 +29,7 @@ import {
 } from "@/components/illustrations/crypto-logos";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
+import { CheckCircle, Clock, XCircle } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Cash-Out Cabin",
@@ -41,7 +55,7 @@ const colorMap: Record<string, string> = {
 }
 
 
-const WithdrawalCard = ({ method }: { method: WithdrawalMethod }) => {
+const WithdrawalCard = ({ method }: { method: typeof withdrawalMethods[0] }) => {
   const Icon = iconMap[method.name];
   const bgColor = colorMap[method.name] || "bg-card";
 
@@ -66,6 +80,35 @@ const WithdrawalCard = ({ method }: { method: WithdrawalMethod }) => {
   );
 };
 
+const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
+  if (status === "Completed") {
+    return (
+      <Badge className="bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600/30">
+        <CheckCircle className="mr-1 h-3 w-3" />
+        Completed
+      </Badge>
+    );
+  }
+  if (status === "Pending") {
+    return (
+      <Badge variant="outline" className="text-yellow-400 border-yellow-600/30">
+        <Clock className="mr-1 h-3 w-3" />
+        Pending
+      </Badge>
+    );
+  }
+  if (status === "Failed") {
+    return (
+      <Badge variant="destructive">
+        <XCircle className="mr-1 h-3 w-3" />
+        Failed
+      </Badge>
+    );
+  }
+  return <Badge variant="secondary">{status}</Badge>;
+};
+
+
 export default function CashOutCabinPage() {
   return (
     <div className="space-y-8">
@@ -78,6 +121,46 @@ export default function CashOutCabinPage() {
           <WithdrawalCard key={method.name} method={method} />
         ))}
       </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Withdrawal History</CardTitle>
+          <CardDescription>A log of your recent cash-out requests.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Method</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {withdrawalHistory.length > 0 ? (
+                withdrawalHistory.map((withdrawal) => (
+                  <TableRow key={withdrawal.id}>
+                    <TableCell>{withdrawal.date}</TableCell>
+                    <TableCell className="font-medium">{withdrawal.method}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={withdrawal.status} />
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-primary">
+                      ${(withdrawal.amount / 100).toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No withdrawal history yet.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
