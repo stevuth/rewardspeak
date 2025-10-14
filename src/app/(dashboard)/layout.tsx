@@ -254,6 +254,12 @@ export default function DashboardLayout({
                       <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
                   </div>
               </div>
+              <div className="flex sm:hidden items-center gap-2">
+                <div className="text-xs text-right">
+                  <p className="text-muted-foreground">Balance</p>
+                  <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
+                </div>
+              </div>
               <UserNav />
               <Sheet>
                 <SheetTrigger asChild>
@@ -269,7 +275,6 @@ export default function DashboardLayout({
                 <SheetContent
                   side="top"
                   className="w-full bg-card p-0"
-                  hideCloseButton={true}
                 >
                   <SidebarContent>
                     <SheetClose asChild>
@@ -314,4 +319,5 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+
 
