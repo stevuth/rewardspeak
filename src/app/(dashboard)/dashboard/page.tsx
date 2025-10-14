@@ -73,32 +73,21 @@ export default function DashboardPage() {
         description="Welcome back! Here's a look at your recent activity."
       />
       
-      <Card className="md:hidden">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
-              <Wallet className="h-5 w-5 text-muted-foreground" />
-              Your Balance
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-2xl font-bold font-headline">
-                <AnimatedCounter value={user.totalPoints} /> Points
-              </div>
-              <div className="text-muted-foreground mt-1 text-sm">
-                ≈ $<AnimatedCounter value={user.totalPoints / 100} />
-              </div>
-            </div>
-             <div>
-              <div className="text-2xl font-bold font-headline">
-                $<AnimatedCounter value={totalAmountEarned} />
-              </div>
-              <div className="text-muted-foreground mt-1 text-sm">
-                Total Earned
-              </div>
-            </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:hidden">
+          <StatCard
+            title="Your Balance"
+            value={user.totalPoints}
+            icon={Wallet}
+            description={`≈ $${(user.totalPoints / 100).toFixed(2)}`}
+          />
+          <StatCard
+            title="Total Earned"
+            value={`$${totalAmountEarned.toFixed(2)}`}
+            icon={DollarSign}
+            description="All-time earnings"
+          />
+      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
