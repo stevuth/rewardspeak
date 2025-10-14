@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Gamepad2, Chrome } from "lucide-react";
+import { Gamepad2, Chrome, Home } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -33,8 +33,14 @@ export function AuthForm({ type }: AuthFormProps) {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
+      <Card className="w-full max-w-sm relative">
+        <Link href="/" className="absolute top-4 left-4">
+           <Button variant="ghost" size="icon">
+             <Home className="h-5 w-5" />
+             <span className="sr-only">Back to Home</span>
+           </Button>
+        </Link>
+        <CardHeader className="text-center pt-12">
           <Gamepad2 className="mx-auto h-8 w-8 text-primary" />
           <CardTitle className="mt-4 text-2xl font-bold">
             {type === "login" ? "Welcome Back!" : "Join the Adventure"}
@@ -61,7 +67,7 @@ export function AuthForm({ type }: AuthFormProps) {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required defaultValue="password" />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={handleNavigation}>
               {type === "login" ? "Enter the Realm" : "Create My Hero"}
             </Button>
           </form>
@@ -70,7 +76,7 @@ export function AuthForm({ type }: AuthFormProps) {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or continue with
               </span>
             </div>

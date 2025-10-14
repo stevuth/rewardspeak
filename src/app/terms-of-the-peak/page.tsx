@@ -1,3 +1,6 @@
+
+'use client';
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import {
     Card,
@@ -6,15 +9,17 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Terms of the Peak",
-  description: "Terms of Service for Rewards Peak.",
-};
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function TermsOfThePeakPage() {
+  const router = useRouter();
   return (
     <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <Button variant="outline" size="icon" className="shrink-0 mb-4" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+            <span className="sr-only">Go back</span>
+        </Button>
         <div className="space-y-8">
         <PageHeader
             title="Terms of the Peak"

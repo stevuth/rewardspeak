@@ -39,15 +39,18 @@ import { UserNav } from "@/components/user-nav";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
-    { href: "/climb-and-earn", label: "Climb & Earn", icon: Mountain },
-    { href: "/cash-out-cabin", label: "Cash-Out Cabin", icon: Gift },
-    { href: "/invite-and-climb", label: "Invite & Climb", icon: Users },
-    { href: "/top-climbers", label: "Top Climbers", icon: Trophy },
+    { href: "/earn", label: "Climb & Earn", icon: Mountain },
+    { href: "/achievements", label: "Challenges", icon: Trophy },
+    { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
+    { href: "/referrals", label: "Invite & Climb", icon: Users },
+    { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
+    { href: "/raffle", label: "Raffle", icon: Ticket },
 ];
 
 const secondaryNavItems = [
-  { href: "/my-peak-profile", label: "My Peak Profile", icon: Settings },
-  { href: "/help-station", label: "Help Station", icon: CircleHelp },
+  { href: "/settings", label: "My Peak Profile", icon: Settings },
+  { href: "/history", label: "Quest Log", icon: Clock },
+  { href: "/support", label: "Help Station", icon: CircleHelp },
 ];
 
 const recentEarnings: any[] = [
