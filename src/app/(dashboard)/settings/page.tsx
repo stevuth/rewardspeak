@@ -41,28 +41,6 @@ export default function MyPeakProfilePage() {
         description="Manage your account and notification settings."
       />
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
-          title="Total Offers Completed"
-          value={completedOffersCount}
-          icon={CheckCircle}
-        />
-        <StatCard
-          title="Total Amount Earned"
-          value={totalAmountEarned}
-          icon={DollarSign}
-        />
-        <StatCard
-          title="Date Joined"
-          value={new Date(user.dateJoined).toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-          icon={CalendarDays}
-        />
-      </div>
-
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-8">
           <Card>
@@ -104,6 +82,7 @@ export default function MyPeakProfilePage() {
               <Button>Save Profile</Button>
             </CardFooter>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Password</CardTitle>
@@ -126,32 +105,52 @@ export default function MyPeakProfilePage() {
             </CardFooter>
           </Card>
         </div>
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Notifications</CardTitle>
-              <CardDescription>
-                Choose what you want to be notified about.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="offers" defaultChecked />
-                <Label htmlFor="offers">New Offers</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="payouts" defaultChecked />
-                <Label htmlFor="payouts">Payout confirmations</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="updates" />
-                <Label htmlFor="updates">Product updates</Label>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save Preferences</Button>
-            </CardFooter>
-          </Card>
+
+        <div className="space-y-4">
+            <StatCard
+            title="Total Offers Completed"
+            value={completedOffersCount}
+            icon={CheckCircle}
+            />
+            <StatCard
+            title="Total Amount Earned"
+            value={totalAmountEarned}
+            icon={DollarSign}
+            />
+            <StatCard
+            title="Date Joined"
+            value={new Date(user.dateJoined).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })}
+            icon={CalendarDays}
+            />
+             <Card>
+                <CardHeader>
+                <CardTitle>Notifications</CardTitle>
+                <CardDescription>
+                    Choose what you want to be notified about.
+                </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="offers" defaultChecked />
+                    <Label htmlFor="offers">New Offers</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="payouts" defaultChecked />
+                    <Label htmlFor="payouts">Payout confirmations</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="updates" />
+                    <Label htmlFor="updates">Product updates</Label>
+                </div>
+                </CardContent>
+                <CardFooter>
+                <Button>Save Preferences</Button>
+                </CardFooter>
+            </Card>
         </div>
       </div>
     </div>
