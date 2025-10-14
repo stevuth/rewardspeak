@@ -36,6 +36,7 @@ import { user } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -63,6 +64,8 @@ const recentEarnings: any[] = [
 
 function SidebarContent() {
   const pathname = usePathname();
+  const isMobile = useIsMobile();
+
   const getNavLinkClass = (href: string) => {
     const isActive = pathname === href;
     return `flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
@@ -71,6 +74,17 @@ function SidebarContent() {
         : "text-muted-foreground hover:bg-muted"
     }`;
   };
+  
+  const mobileHiddenHrefs = mobileNavItems.map(item => item.href);
+
+  const filteredNavItems = isMobile 
+    ? navItems.filter(item => !mobileHiddenHrefs.includes(item.href)) 
+    : navItems;
+  
+  const filteredSecondaryNavItems = isMobile
+    ? secondaryNavItems.filter(item => !mobileHiddenHrefs.includes(item.href))
+    : secondaryNavItems;
+
 
   return (
     <>
@@ -104,7 +118,7 @@ function SidebarContent() {
       </div>
 
       <nav className="flex-1 space-y-1 px-4">
-        {navItems.map((item) => (
+        {filteredNavItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -117,7 +131,7 @@ function SidebarContent() {
       </nav>
 
        <div className="mt-auto p-4 space-y-1">
-        {secondaryNavItems.map((item) => (
+        {filteredSecondaryNavItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
