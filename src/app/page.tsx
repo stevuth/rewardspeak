@@ -56,6 +56,7 @@ import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/e
 import { DailyChallengesIllustration } from "@/components/illustrations/daily-challenges";
 import React from 'react';
 import { cn } from '@/lib/utils';
+import Autoplay from "embla-carousel-autoplay"
 
 
 const recentCashouts: any[] = [];
@@ -207,6 +208,12 @@ export default function Home() {
                 <div className="mt-12 h-64 flex items-center justify-center">
                     <Carousel
                         setApi={setApi}
+                        plugins={[
+                          Autoplay({
+                            delay: 2000,
+                            stopOnInteraction: true,
+                          }),
+                        ]}
                         opts={{
                           align: "center",
                           loop: true,
