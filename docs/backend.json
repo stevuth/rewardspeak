@@ -1,63 +1,79 @@
+
 {
   "entities": {
     "User": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
       "description": "Represents a user within the Rewards Peak application.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the user."
-        },
-        "email": {
-          "type": "string",
-          "description": "User's email address.",
-          "format": "email"
-        },
-        "username": {
-          "type": "string",
-          "description": "The user's chosen username."
-        },
-        "totalPoints": {
-          "type": "number",
-          "description": "The total points the user has accumulated."
-        },
-        "referralCode": {
-          "type": "string",
-          "description": "Unique referral code for the user."
-        },
-        "referredByUserId": {
-          "type": "string",
-          "description": "Reference to the user who referred this user. (Relationship: User 1:N User)"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp of when the user was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp of when the user was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string", "description": "Unique identifier for the user (UID from Firebase Auth)." },
+        "email": { "type": "string", "description": "User's email address.", "format": "email" },
+        "username": { "type": "string", "description": "The user's chosen display name." },
+        "totalPoints": { "type": "number", "description": "The total points the user has accumulated." },
+        "referralCode": { "type": "string", "description": "Unique referral code for the user." },
+        "referredByUserId": { "type": "string", "description": "UID of the user who referred this user." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of when the user account was created." }
       },
-      "required": [
-        "id",
-        "email",
-        "username",
-        "totalPoints",
-        "referralCode",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "email", "totalPoints", "referralCode", "createdAt"]
+    },
+    "Offer": {
+      "title": "Offer",
+      "type": "object",
+      "description": "Represents an earning opportunity for a user.",
+      "properties": {
+        "title": { "type": "string" },
+        "partner": { "type": "string" },
+        "points": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "imageHint": { "type": "string" },
+        "category": { "type": "string", "enum": ["Survey", "Game", "App", "Quiz"] },
+        "isPopular": { "type": "boolean" },
+        "isQuickTask": { "type": "boolean" }
+      },
+      "required": ["title", "partner", "points", "imageUrl", "category"]
+    },
+    "OfferWall": {
+        "title": "Offer Wall",
+        "type": "object",
+        "description": "Represents a partner offer wall.",
+        "properties": {
+            "name": { "type": "string" },
+            "logo": { "type": "string" },
+            "hint": { "type": "string" },
+            "description": { "type": "string" }
+        },
+        "required": ["name", "logo", "hint", "description"]
+    },
+    "LeaderboardEntry": {
+      "title": "Leaderboard Entry",
+      "type": "object",
+      "description": "Represents a user's entry on the leaderboard.",
+      "properties": {
+        "rank": { "type": "number" },
+        "name": { "type": "string" },
+        "points": { "type": "number" },
+        "avatarUrl": { "type": "string" },
+        "avatarHint": { "type": "string" },
+        "prize": { "type": "number" }
+      },
+      "required": ["rank", "name", "points", "avatarUrl"]
+    },
+    "Withdrawal": {
+      "title": "Withdrawal",
+      "type": "object",
+      "description": "Represents a user's withdrawal request.",
+      "properties": {
+        "userId": { "type": "string" },
+        "method": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["Completed", "Pending", "Failed"] }
+      },
+      "required": ["userId", "method", "amount", "date", "status"]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "google.com"]
   },
   "firestore": {
     "structure": [
@@ -65,19 +81,50 @@
         "path": "/users/{userId}",
         "definition": {
           "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profile data. Path-based ownership ensures only the authenticated user can access their own data.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, corresponding to their Firebase Auth UID."
-            }
-          ]
+          "schema": { "$ref": "#/entities/User" },
+          "description": "Stores user profile data."
+        }
+      },
+      {
+        "path": "/offers",
+        "definition": {
+          "entityName": "Offer",
+          "schema": { "$ref": "#/entities/Offer" },
+          "description": "Stores all available offers."
+        }
+      },
+       {
+        "path": "/offer-walls",
+        "definition": {
+          "entityName": "OfferWall",
+          "schema": { "$ref": "#/entities/OfferWall" },
+          "description": "Stores all available offer walls."
+        }
+      },
+      {
+        "path": "/leaderboard",
+        "definition": {
+          "entityName": "LeaderboardEntry",
+          "schema": { "$ref": "#/entities/LeaderboardEntry" },
+          "description": "Stores the current leaderboard standings."
+        }
+      },
+      {
+        "path": "/users/{userId}/withdrawals",
+        "definition": {
+          "entityName": "Withdrawal",
+          "schema": { "$ref": "#/entities/Withdrawal" },
+          "description": "Stores a user's withdrawal history."
+        }
+      },
+      {
+        "path": "/users/{userId}/activity",
+        "definition": {
+          "entityName": "Offer",
+          "schema": { "$ref": "#/entities/Offer" },
+          "description": "Stores offers a user has interacted with, including status."
         }
       }
-    ],
-    "reasoning": "This Firestore structure prioritizes Authorization Independence and QAPs. The `/users/{userId}` collection stores user profiles. Path-based ownership (`/users/{userId}`) ensures that only the user can access their own profile data. This structure avoids the need for `get()` calls in security rules, enabling atomic operations and simplifying debugging. All user data is private, so no additional segregation is needed. The structure readily supports QAPs as list operations on the `users` collection will be secured based on the authentication state of the user."
+    ]
   }
 }

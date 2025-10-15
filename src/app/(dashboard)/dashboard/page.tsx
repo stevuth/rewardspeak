@@ -1,4 +1,5 @@
 
+'use client';
 
 import {
   Card,
@@ -8,10 +9,10 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { OfferCard } from "@/components/offer-card";
-import { offerWalls, popularOffers, type Offer } from "@/lib/mock-data";
+import { type Offer } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { CheckCircle, ChevronRight, Clock, DollarSign, Users, Wallet } from "lucide-react";
+import { CheckCircle, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
   Carousel,
@@ -21,9 +22,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { PageHeader } from "@/components/page-header";
-import type { Metadata } from "next";
-import { StatCard } from "@/components/stat-card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -33,39 +31,101 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { AnimatedCounter } from "@/components/animated-counter";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, query, where, orderBy, limit } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export const metadata: Metadata = {
-  title: "Peak Dashboard",
-  description: "Your personalized control center showing points, progress, and recent activity.",
-};
 
-const StatusBadge = ({ status }: { status: Offer["status"] }) => {
-  if (status === "Completed") {
-    return (
-      <Badge className="bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600/30">
-        <CheckCircle className="mr-1 h-3 w-3" />
-        Completed
-      </Badge>
-    );
-  }
-  return <Badge variant="secondary">{status}</Badge>;
-};
+const RecentActivitySkeleton = () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Quest</TableHead>
+          <TableHead className="text-right">Points</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {[...Array(3)].map((_, i) => (
+          <TableRow key={i}>
+            <TableCell>
+              <Skeleton className="h-4 w-32 mb-1" />
+              <Skeleton className="h-3 w-20" />
+            </TableCell>
+            <TableCell className="text-right">
+              <Skeleton className="h-4 w-12 ml-auto" />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+);
+
+const FeaturedPartnersSkeleton = () => (
+    <div className="flex space-x-4">
+        {[...Array(4)].map((_, i) => (
+            <div key={i} className="w-1/4">
+                 <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full">
+                    <Skeleton className="h-14 w-14 rounded-lg mb-2" />
+                    <Skeleton className="h-4 w-20 mt-1" />
+                </Card>
+            </div>
+        ))}
+    </div>
+);
+
+const PopularQuestsSkeleton = () => (
+    <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+            <Card key={i} className="p-3">
+                <div className="flex items-center gap-4">
+                    <Skeleton className="h-16 w-16 rounded-lg" />
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div>
+                            <Skeleton className="h-4 w-40 mb-2" />
+                            <Skeleton className="h-3 w-24" />
+                        </div>
+                         <div className="flex items-center justify-between gap-4">
+                            <Skeleton className="h-6 w-20" />
+                            <Skeleton className="h-9 w-24" />
+                        </div>
+                    </div>
+                </div>
+            </Card>
+        ))}
+    </div>
+)
 
 
 export default function DashboardPage() {
-  const surveyProviders = popularOffers.filter(
-    (o) => o.category === "Survey"
-  );
-  
-  const recentActivity = popularOffers
-    .filter((o) => o.status === "Completed")
-    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())
-    .slice(0, 5);
-    
-  const totalAmountEarned = popularOffers
-    .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.points, 0) / 100;
+  const firestore = useFirestore();
+
+  const offerWallsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'offer-walls');
+  }, [firestore]);
+
+  const popularOffersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(
+      collection(firestore, "offers"),
+      where("isPopular", "==", true),
+      limit(3)
+    );
+  }, [firestore]);
+
+  const recentActivityQuery = useMemoFirebase(() => {
+      if (!firestore) return null;
+      return query(
+          collection(firestore, "offers"), // Assuming completed offers are in 'offers' with a status
+          where("status", "==", "Completed"),
+          orderBy("date", "desc"),
+          limit(5)
+      )
+  }, [firestore]);
+
+  const { data: offerWalls, isLoading: isLoadingOfferWalls } = useCollection(offerWallsQuery);
+  const { data: popularOffers, isLoading: isLoadingPopularOffers } = useCollection<Offer>(popularOffersQuery);
+  const { data: recentActivity, isLoading: isLoadingRecentActivity } = useCollection<Offer>(recentActivityQuery);
 
   return (
     <div className="space-y-8">
@@ -80,36 +140,38 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
                 Featured Partners
             </h2>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: false,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {offerWalls.map((wall) => (
-                  <CarouselItem
-                    key={wall.name}
-                    className="basis-1/2 md:basis-1/3 lg:basis-1/4"
-                  >
-                    <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full bg-card hover:bg-muted/50 transition-colors">
-                      <Image
-                        src={wall.logo}
-                        alt={`${wall.name} logo`}
-                        width={56}
-                        height={56}
-                        className="rounded-lg mb-2"
-                        data-ai-hint={wall.hint}
-                      />
-                      <span className="text-sm font-medium mt-1">{wall.name}</span>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="-left-4 hidden lg:flex" />
-              <CarouselNext className="-right-4 hidden lg:flex" />
-            </Carousel>
+            {isLoadingOfferWalls ? <FeaturedPartnersSkeleton /> : (
+                <Carousel
+                opts={{
+                    align: "start",
+                    loop: false,
+                }}
+                className="w-full"
+                >
+                <CarouselContent>
+                    {offerWalls?.map((wall) => (
+                    <CarouselItem
+                        key={wall.name}
+                        className="basis-1/2 md:basis-1/3 lg:basis-1/4"
+                    >
+                        <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full bg-card hover:bg-muted/50 transition-colors">
+                        <Image
+                            src={wall.logo}
+                            alt={`${wall.name} logo`}
+                            width={56}
+                            height={56}
+                            className="rounded-lg mb-2"
+                            data-ai-hint={wall.hint}
+                        />
+                        <span className="text-sm font-medium mt-1">{wall.name}</span>
+                        </Card>
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-4 hidden lg:flex" />
+                <CarouselNext className="-right-4 hidden lg:flex" />
+                </Carousel>
+            )}
           </div>
             <div>
             <div className="flex items-center justify-between mb-4">
@@ -122,20 +184,22 @@ export default function DashboardPage() {
                 </Link>
               </Button>
             </div>
-            {popularOffers.length > 0 ? (
-                <div className="space-y-4">
-                {popularOffers.slice(0, 3).map((offer) => (
-                    <OfferCard key={offer.id} offer={offer} />
-                ))}
-                </div>
-            ) : (
-                <Card className="text-center py-12 col-span-full">
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      No popular quests right now. Check back soon!
-                    </p>
-                  </CardContent>
-                </Card>
+            {isLoadingPopularOffers ? <PopularQuestsSkeleton /> : (
+                 popularOffers && popularOffers.length > 0 ? (
+                    <div className="space-y-4">
+                    {popularOffers.map((offer) => (
+                        <OfferCard key={offer.id} offer={offer} />
+                    ))}
+                    </div>
+                ) : (
+                    <Card className="text-center py-12 col-span-full">
+                    <CardContent>
+                        <p className="text-muted-foreground">
+                        No popular quests right now. Check back soon!
+                        </p>
+                    </CardContent>
+                    </Card>
+                )
             )}
           </div>
         </div>
@@ -147,38 +211,40 @@ export default function DashboardPage() {
               <CardDescription>Your latest completed quests.</CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
-               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Quest</TableHead>
-                    <TableHead className="text-right">Points</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentActivity.length > 0 ? (
-                    recentActivity.map((offer) => (
-                      <TableRow key={offer.id}>
-                        <TableCell>
-                            <div className="font-medium">{offer.title}</div>
-                            <div className="text-xs text-muted-foreground">{offer.partner}</div>
-                        </TableCell>
-                        <TableCell
-                          className={cn("text-right font-bold", "text-primary")}
-                        >
-                          +
-                          {offer.points.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
+               {isLoadingRecentActivity ? <RecentActivitySkeleton /> : (
+                <Table>
+                    <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={2} className="text-center h-24">
-                        No recent activity.
-                      </TableCell>
+                        <TableHead>Quest</TableHead>
+                        <TableHead className="text-right">Points</TableHead>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                    </TableHeader>
+                    <TableBody>
+                    {recentActivity && recentActivity.length > 0 ? (
+                        recentActivity.map((offer) => (
+                        <TableRow key={offer.id}>
+                            <TableCell>
+                                <div className="font-medium">{offer.title}</div>
+                                <div className="text-xs text-muted-foreground">{offer.partner}</div>
+                            </TableCell>
+                            <TableCell
+                            className={cn("text-right font-bold", "text-primary")}
+                            >
+                            +
+                            {offer.points.toLocaleString()}
+                            </TableCell>
+                        </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                        <TableCell colSpan={2} className="text-center h-24">
+                            No recent activity.
+                        </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+               )}
             </CardContent>
           </Card>
         </div>

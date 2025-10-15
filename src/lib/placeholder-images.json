@@ -15,43 +15,85 @@
     {
       "id": "adgate-logo",
       "description": "AdGate Media logo",
-      "imageUrl": "https://picsum.photos/seed/adgate/40/40",
+      "imageUrl": "https://picsum.photos/seed/adgate/56/56",
       "imageHint": "company logo"
     },
     {
       "id": "timewall-logo",
       "description": "TimeWall logo",
-      "imageUrl": "https://picsum.photos/seed/timewall/40/40",
+      "imageUrl": "https://picsum.photos/seed/timewall/56/56",
       "imageHint": "clock logo"
     },
     {
       "id": "offertoro-logo",
       "description": "OfferToro logo",
-      "imageUrl": "https://picsum.photos/seed/offertoro/40/40",
+      "imageUrl": "https://picsum.photos/seed/offertoro/56/56",
       "imageHint": "bull logo"
     },
     {
       "id": "cpalead-logo",
       "description": "CPALead logo",
-      "imageUrl": "https://picsum.photos/seed/cpalead/40/40",
+      "imageUrl": "https://picsum.photos/seed/cpalead/56/56",
       "imageHint": "arrow logo"
+    },
+    {
+      "id": "game-icon-1",
+      "description": "Lords Mobile game icon",
+      "imageUrl": "https://picsum.photos/seed/lordsmobile/64/64",
+      "imageHint": "castle game"
+    },
+    {
+      "id": "game-icon-2",
+      "description": "RAID: Shadow Legends game icon",
+      "imageUrl": "https://picsum.photos/seed/raid/64/64",
+      "imageHint": "warrior character"
+    },
+    {
+      "id": "game-icon-3",
+      "description": "Star Trek Fleet Command game icon",
+      "imageUrl": "https://picsum.photos/seed/startrek/64/64",
+      "imageHint": "spaceship game"
+    },
+    {
+      "id": "survey-icon-1",
+      "description": "CPX Research survey icon",
+      "imageUrl": "https://picsum.photos/seed/cpx/64/64",
+      "imageHint": "chart survey"
+    },
+    {
+      "id": "task-icon-1",
+      "description": "InboxDollars task icon",
+      "imageUrl": "https://picsum.photos/seed/inbox/64/64",
+      "imageHint": "mail icon"
+    },
+    {
+      "id": "task-icon-2",
+      "description": "MyPoints task icon",
+      "imageUrl": "https://picsum.photos/seed/mypoints/64/64",
+      "imageHint": "gift box"
+    },
+    {
+      "id": "task-icon-3",
+      "description": "Swagbucks task icon",
+      "imageUrl": "https://picsum.photos/seed/swagbucks/64/64",
+      "imageHint": "money bag"
     },
     {
       "id": "leaderboard-user-1",
       "description": "Leaderboard user 1",
-      "imageUrl": "https://picsum.photos/seed/leader1/40/40",
+      "imageUrl": "https://picsum.photos/seed/leader1/96/96",
       "imageHint": "person portrait"
     },
     {
       "id": "leaderboard-user-2",
       "description": "Leaderboard user 2",
-      "imageUrl": "https://picsum.photos/seed/leader2/40/40",
+      "imageUrl": "https://picsum.photos/seed/leader2/96/96",
       "imageHint": "woman portrait"
     },
     {
       "id": "leaderboard-user-3",
       "description": "Leaderboard user 3",
-      "imageUrl": "https://picsum.photos/seed/leader3/40/40",
+      "imageUrl": "https://picsum.photos/seed/leader3/96/96",
       "imageHint": "man portrait"
     },
     {
