@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user within the Rewards Peak application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "username": {
+          "type": "string",
+          "description": "The user's chosen username."
+        },
+        "totalPoints": {
+          "type": "number",
+          "description": "The total points the user has accumulated."
+        },
+        "referralCode": {
+          "type": "string",
+          "description": "Unique referral code for the user."
+        },
+        "referredByUserId": {
+          "type": "string",
+          "description": "Reference to the user who referred this user. (Relationship: User 1:N User)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of when the user was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of when the user was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "username",
+        "totalPoints",
+        "referralCode",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile data. Path-based ownership ensures only the authenticated user can access their own data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user, corresponding to their Firebase Auth UID."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure prioritizes Authorization Independence and QAPs. The `/users/{userId}` collection stores user profiles. Path-based ownership (`/users/{userId}`) ensures that only the user can access their own profile data. This structure avoids the need for `get()` calls in security rules, enabling atomic operations and simplifying debugging. All user data is private, so no additional segregation is needed. The structure readily supports QAPs as list operations on the `users` collection will be secured based on the authentication state of the user."
+  }
+}
