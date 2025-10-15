@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Gamepad2, Chrome, Loader2 } from "lucide-react";
 import { useAuth } from "@/firebase";
 import {
@@ -23,6 +22,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -51,6 +51,7 @@ type AuthFormProps = {
 
 export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const auth = useAuth();
   const { toast } = useToast();
 
@@ -104,6 +105,38 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
     }
   };
 
+  const handlePasswordReset = async () => {
+    const email = form.getValues("email");
+    if (!email) {
+      form.setError("email", {
+        type: "manual",
+        message: "Please enter your email to reset your password.",
+      });
+      return;
+    }
+    
+    // Clear previous error message if any
+    form.clearErrors("email");
+
+    setIsResettingPassword(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Check your inbox for a link to reset your password.",
+      });
+    } catch (error: any) {
+      console.error("Password reset error:", error);
+      toast({
+        variant: "destructive",
+        title: "Password Reset Failed",
+        description: error.code === 'auth/user-not-found' ? 'No user found with this email.' : 'An unexpected error occurred.'
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
   const switchText =
     type === "login" ? "New adventurer?" : "Already a hero?";
   const switchLinkText = type === "login" ? "Sign up" : "Log in";
@@ -146,7 +179,20 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                    <div className="flex items-center justify-between">
+                        <FormLabel>Password</FormLabel>
+                        {type === "login" && (
+                            <Button
+                            type="button"
+                            variant="link"
+                            className="p-0 h-auto text-xs"
+                            onClick={handlePasswordReset}
+                            disabled={isResettingPassword}
+                            >
+                            Forgot Password?
+                            </Button>
+                        )}
+                    </div>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -154,7 +200,7 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading || isResettingPassword}>
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
