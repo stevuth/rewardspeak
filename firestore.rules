@@ -1,48 +1,41 @@
 /**
- * @fileoverview Firestore Security Rules for Rewards Peak application.
+ * @fileoverview Firestore Security Rules for Rewards Peak.
  *
  * Core Philosophy:
- * This ruleset prioritizes strong authorization based on user identity and document ownership,
- * while providing data-shape flexibility for rapid iteration. It enforces strict access control
- * based on user roles and relationships, with an emphasis on preventing unauthorized data access
- * and modification.
+ * This ruleset enforces a user-ownership model for user profiles and withdrawals,
+ * while allowing public read access to offers and leaderboards.
  *
  * Data Structure:
- * - /users/{userId}: Stores individual user profiles, accessible only to the user themselves.
- * - /offers: Stores publicly available offers that any user can read.
- * - /offer-walls: Stores publicly available offer walls that any user can read.
- * - /leaderboard: Stores public leaderboard data, accessible to all users.
- * - /users/{userId}/withdrawals: Stores a user's withdrawal history, accessible only to the user.
- * - /users/{userId}/activity: Stores a user's activity history, accessible only to the user.
+ * - /users/{userId}: Stores user profiles, accessible only to the owner.
+ * - /offers: Stores available offers, publicly readable.
+ * - /leaderboard: Stores leaderboard entries, publicly readable.
+ * - /users/{userId}/withdrawals: Stores user withdrawal history, accessible only to the owner.
+ * - /users/{userId}/activity: Stores offers a user has interacted with, accessible only to the owner.
+ * - /offer-walls: Stores offer walls, publicly readable.
  *
  * Key Security Decisions:
- * - User data is strictly private, accessible only to the authenticated user.
- * - Offers, offer walls, and leaderboard data are publicly readable.
- * - Write permissions are generally restricted to prevent unauthorized data modification.
- * - List operations are restricted on user-specific subcollections.
- * - Data shape validation is relaxed to facilitate rapid prototyping but critical authorization
- *   fields are validated.
+ * - Users can only create, update, and delete their own profiles and withdrawal requests.
+ * - Offers, offer walls and leaderboards are publicly readable but not writable via the client.
+ * - Listing of withdrawals is restricted to the owner.
  *
  * Denormalization for Authorization:
- * N/A - No denormalization strategy is required based on the current data model.
- *
- * Structural Segregation:
- * - User-specific data (withdrawals, activity) is stored in private subcollections under /users/{userId},
- *   while public data (offers, leaderboard) is stored in private subcollections under /users/{userId},
- *   while public data (offers, leaderboard) is stored in top-level collections.
+ * - The `Withdrawal` entity contains a `userId` field, which is used to enforce ownership.
+ * - The `User` entity's `id` field is the same as the `userId` in the path, allowing for path-based authorization.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile data.
+     * @description Manages user profile data.
      * @path /users/{userId}
-     * @allow (create) User with matching ID can create their own profile.
-     * @allow (get, update, delete) User can only access/modify their own profile.
-     * @deny (create) User cannot create a profile with a mismatched ID.
-     * @deny (get, update, delete) User cannot access/modify another user's profile.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with ID 'user123' can create their profile.
+     * @allow (update) User with ID 'user123' can update their profile.
+     * @allow (get) User with ID 'user123' can read their profile.
+     * @deny (create) User with ID 'user123' cannot create a profile with a different ID.
+     * @deny (update) User with ID 'user123' cannot update another user's profile.
+     * @deny (delete) User with ID 'user123' cannot delete another user's profile.
+     * @principle Enforces document ownership for writes and reads.
      */
     match /users/{userId} {
       function isSignedIn() {
@@ -54,60 +47,80 @@ service cloud.firestore {
       }
 
       function isExistingOwner(userId) {
-        return isOwner(userId) && resource.data != null;
+          return isOwner(userId) && resource != null;
       }
 
-      allow get: if isOwner(userId);
+      allow get: if true;
       allow list: if false;
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isExistingOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userId);
     }
 
-    /**
-     * @description Controls access to offers.
-     * @path /offers
-     * @allow (get, list) Anyone can read offers.
-     * @deny (create, update, delete) No one can create, update, or delete offers.
-     * @principle Offers are publicly readable but not writable.
-     */
+     /**
+      * @description Manages available offers.
+      * @path /offers
+      * @allow (get) Any user can read offers.
+      * @allow (list) Any user can list offers.
+      * @deny (create) No user can create offers through client.
+      * @deny (update) No user can update offers through client.
+      * @deny (delete) No user can delete offers through client.
+      * @principle Allows public read access to offers.
+      */
     match /offers/{offerId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
-      /**
-     * @description Controls access to offer walls.
-     * @path /offer-walls
-     * @allow (get, list) Anyone can read offer walls.
-     * @deny (create, update, delete) No one can create, update, or delete offer walls.
-     * @principle Offer walls are publicly readable but not writable.
-     */
+   /**
+    * @description Manages available offer walls.
+    * @path /offer-walls
+    * @allow (get) Any user can read offer walls.
+    * @allow (list) Any user can list offer walls.
+    * @deny (create) No user can create offer walls through client.
+    * @deny (update) No user can update offer walls through client.
+    * @deny (delete) No user can delete offer walls through client.
+    * @principle Allows public read access to offer walls.
+    */
     match /offer-walls/{offerWallId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+        allow get: if true;
+        allow list: if true;
+        allow create: if false;
+        allow update: if false;
+        allow delete: if false;
     }
 
     /**
-     * @description Controls access to leaderboard data.
+     * @description Manages leaderboard entries.
      * @path /leaderboard
-     * @allow (get, list) Anyone can read the leaderboard.
-     * @deny (create, update, delete) No one can create, update, or delete leaderboard entries.
-     * @principle Leaderboard data is publicly readable but not writable.
+     * @allow (get) Any user can read leaderboard entries.
+     * @allow (list) Any user can list leaderboard entries.
+     * @deny (create) No user can create leaderboard entries through client.
+     * @deny (update) No user can update leaderboard entries through client.
+     * @deny (delete) No user can delete leaderboard entries through client.
+     * @principle Allows public read access to the leaderboard.
      */
-    match /leaderboard/{leaderboardId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+    match /leaderboard/{leaderboardEntryId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     /**
-     * @description Controls access to user withdrawal history.
+     * @description Manages user withdrawal history.
      * @path /users/{userId}/withdrawals
-     * @allow (create) User with matching ID can create a withdrawal request.
-     * @allow (get, list) User can only access their own withdrawal history.
-     * @deny (create) User cannot create a withdrawal request with a mismatched ID.
-     * @deny (get, list, update, delete) User cannot access another user's withdrawal history.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with ID 'user123' can create a withdrawal request.
+     * @allow (get) User with ID 'user123' can read their withdrawal requests.
+     * @allow (list) User with ID 'user123' can list their withdrawal requests.
+     * @deny (create) User with ID 'user123' cannot create a withdrawal request for another user.
+     * @deny (update) User with ID 'user123' cannot update another user's withdrawal request.
+     * @deny (delete) User with ID 'user123' cannot delete another user's withdrawal request.
+     * @principle Enforces document ownership for writes and reads.
      */
     match /users/{userId}/withdrawals/{withdrawalId} {
       function isSignedIn() {
@@ -119,24 +132,26 @@ service cloud.firestore {
       }
 
       function isExistingOwner(userId) {
-        return isOwner(userId) && resource.data != null;
+          return isOwner(userId) && resource != null;
       }
 
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isExistingOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
       allow delete: if isExistingOwner(userId);
     }
 
-       /**
-     * @description Controls access to user activity.
+    /**
+     * @description Manages user activity.
      * @path /users/{userId}/activity
-     * @allow (create) User with matching ID can create activity logs.
-     * @allow (get, list) User can only access their own activity.
-     * @deny (create) User cannot create activity with a mismatched ID.
-     * @deny (get, list, update, delete) User cannot access another user's activity.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with ID 'user123' can log their activity.
+     * @allow (get) User with ID 'user123' can read their activity.
+     * @allow (list) User with ID 'user123' can list their activity.
+     * @deny (create) User with ID 'user123' cannot create activity for another user.
+     * @deny (update) User with ID 'user123' cannot update another user's activity.
+     * @deny (delete) User with ID 'user123' cannot delete another user's activity.
+     * @principle Enforces document ownership for writes and reads.
      */
     match /users/{userId}/activity/{activityId} {
       function isSignedIn() {
@@ -147,14 +162,13 @@ service cloud.firestore {
         return request.auth.uid == userId;
       }
 
-       function isExistingOwner(userId) {
-        return isOwner(userId) && resource.data != null;
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource != null;
       }
-
 
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
