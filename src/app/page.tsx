@@ -356,7 +356,7 @@ export default function Home() {
                                     transform: `rotate(${rotation}deg) translateX(${translation}%)`,
                                   }}
                                 >
-                                  <OfferCarouselCard offer={offer} />
+                                  <OfferCarouselCard offer={offer as Offer} />
                                 </div>
                             </CarouselItem>
                            )
@@ -454,7 +454,7 @@ export default function Home() {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                           {popularOffers.slice(0, 4).map((offer) => (
-                              <OfferGridCard key={offer.id} offer={offer} />
+                              <OfferGridCard key={offer.title} offer={offer as Offer} />
                           ))}
                       </div>
                   </Card>
@@ -520,7 +520,7 @@ export default function Home() {
                                 const y = Math.sin(angle) * radius;
                                 return (
                                     <div
-                                        key={method.name}
+                                        key={`${method.name}-${i}`}
                                         className="absolute w-10 h-10 md:w-12 md:h-12 bg-card border border-border rounded-full flex items-center justify-center"
                                         style={{ 
                                             transform: `translate(${x}px, ${y}px)`
