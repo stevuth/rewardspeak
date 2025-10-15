@@ -1,34 +1,162 @@
-
+/**
+ * @fileoverview Firestore Security Rules for Rewards Peak application.
+ *
+ * Core Philosophy:
+ * This ruleset prioritizes strong authorization based on user identity and document ownership,
+ * while providing data-shape flexibility for rapid iteration. It enforces strict access control
+ * based on user roles and relationships, with an emphasis on preventing unauthorized data access
+ * and modification.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores individual user profiles, accessible only to the user themselves.
+ * - /offers: Stores publicly available offers that any user can read.
+ * - /offer-walls: Stores publicly available offer walls that any user can read.
+ * - /leaderboard: Stores public leaderboard data, accessible to all users.
+ * - /users/{userId}/withdrawals: Stores a user's withdrawal history, accessible only to the user.
+ * - /users/{userId}/activity: Stores a user's activity history, accessible only to the user.
+ *
+ * Key Security Decisions:
+ * - User data is strictly private, accessible only to the authenticated user.
+ * - Offers, offer walls, and leaderboard data are publicly readable.
+ * - Write permissions are generally restricted to prevent unauthorized data modification.
+ * - List operations are restricted on user-specific subcollections.
+ * - Data shape validation is relaxed to facilitate rapid prototyping but critical authorization
+ *   fields are validated.
+ *
+ * Denormalization for Authorization:
+ * N/A - No denormalization strategy is required based on the current data model.
+ *
+ * Structural Segregation:
+ * - User-specific data (withdrawals, activity) is stored in private subcollections under /users/{userId},
+ *   while public data (offers, leaderboard) is stored in private subcollections under /users/{userId},
+ *   while public data (offers, leaderboard) is stored in top-level collections.
+ */
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Allow authenticated users to read offers and offer walls
-    match /offers/{offerId} {
-      allow read: if request.auth != null;
-    }
 
-    match /offer-walls/{wallId} {
-      allow read: if request.auth != null;
-    }
-
-    // Leaderboard is public
-    match /leaderboard/{entryId} {
-      allow read: if true;
-    }
-
-    // Users should only be able to read/write their own data
+    /**
+     * @description Controls access to user profile data.
+     * @path /users/{userId}
+     * @allow (create) User with matching ID can create their own profile.
+     * @allow (get, update, delete) User can only access/modify their own profile.
+     * @deny (create) User cannot create a profile with a mismatched ID.
+     * @deny (get, update, delete) User cannot access/modify another user's profile.
+     * @principle Enforces document ownership for all operations.
+     */
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
-    
+
+    /**
+     * @description Controls access to offers.
+     * @path /offers
+     * @allow (get, list) Anyone can read offers.
+     * @deny (create, update, delete) No one can create, update, or delete offers.
+     * @principle Offers are publicly readable but not writable.
+     */
+    match /offers/{offerId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+      /**
+     * @description Controls access to offer walls.
+     * @path /offer-walls
+     * @allow (get, list) Anyone can read offer walls.
+     * @deny (create, update, delete) No one can create, update, or delete offer walls.
+     * @principle Offer walls are publicly readable but not writable.
+     */
+    match /offer-walls/{offerWallId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Controls access to leaderboard data.
+     * @path /leaderboard
+     * @allow (get, list) Anyone can read the leaderboard.
+     * @deny (create, update, delete) No one can create, update, or delete leaderboard entries.
+     * @principle Leaderboard data is publicly readable but not writable.
+     */
+    match /leaderboard/{leaderboardId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Controls access to user withdrawal history.
+     * @path /users/{userId}/withdrawals
+     * @allow (create) User with matching ID can create a withdrawal request.
+     * @allow (get, list) User can only access their own withdrawal history.
+     * @deny (create) User cannot create a withdrawal request with a mismatched ID.
+     * @deny (get, list, update, delete) User cannot access another user's withdrawal history.
+     * @principle Enforces document ownership for all operations.
+     */
     match /users/{userId}/withdrawals/{withdrawalId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
-    
+
+       /**
+     * @description Controls access to user activity.
+     * @path /users/{userId}/activity
+     * @allow (create) User with matching ID can create activity logs.
+     * @allow (get, list) User can only access their own activity.
+     * @deny (create) User cannot create activity with a mismatched ID.
+     * @deny (get, list, update, delete) User cannot access another user's activity.
+     * @principle Enforces document ownership for all operations.
+     */
     match /users/{userId}/activity/{activityId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+       function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
   }
 }
