@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
+import { FirebaseClientProvider } from "@/firebase/client-provider";
+import { Loader2 } from "lucide-react";
+import React from "react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,10 +51,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} font-body antialiased overflow-x-hidden`}>
-        {children}
+        <FirebaseClientProvider>
+            <React.Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+                {children}
+            </React.Suspense>
+        </FirebaseClientProvider>
         <Toaster />
         <Analytics />
       </body>
     </html>
   );
 }
+
+    

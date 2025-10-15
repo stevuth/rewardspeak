@@ -1,5 +1,4 @@
 
-
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Gamepad2,
@@ -59,6 +57,7 @@ import {
   Badge,
   CreditCard,
   DollarSign,
+  Loader2,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -71,6 +70,8 @@ import Autoplay from "embla-carousel-autoplay"
 import { OfferGridCard } from '@/components/offer-grid-card';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { AuthForm } from '@/components/auth/auth-form';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase';
 
 
 const recentCashouts: any[] = [];
@@ -178,6 +179,14 @@ export default function Home() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
+  const router = useRouter();
+  const { user, isUserLoading } = useUser();
+
+  React.useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
   
 
   React.useEffect(() => {
@@ -245,16 +254,30 @@ export default function Home() {
     setIsSignupOpen(!isSignupOpen);
   };
 
+  const handleAuthSuccess = () => {
+    setIsLoginOpen(false);
+    setIsSignupOpen(false);
+    router.push('/dashboard');
+  };
+
+  if (isUserLoading || user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
         <DialogContent className="p-0 border-0 max-w-md">
-            <AuthForm type="login" onSwitch={onSwitchForms} />
+            <AuthForm type="login" onSwitch={onSwitchForms} onSuccess={handleAuthSuccess} />
         </DialogContent>
       </Dialog>
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
         <DialogContent className="p-0 border-0 max-w-md">
-            <AuthForm type="signup" onSwitch={onSwitchForms} />
+            <AuthForm type="signup" onSwitch={onSwitchForms} onSuccess={handleAuthSuccess} />
         </DialogContent>
       </Dialog>
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -396,8 +419,8 @@ export default function Home() {
                     <p className="text-muted-foreground mb-6">
                         Join thousands of users earning real rewards every day. Getting started is quick and completely free!
                     </p>
-                    <Button asChild size="lg">
-                        <Link href="/signup">Start Earning</Link>
+                    <Button size="lg" onClick={() => setIsSignupOpen(true)}>
+                        Start Earning
                     </Button>
                     <div className="mt-8 flex flex-wrap items-center gap-4">
                         <p className="text-sm text-muted-foreground">Trusted by over +1500</p>
@@ -547,8 +570,8 @@ export default function Home() {
                 <div className="text-center md:text-left">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
                     <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
-                    <Button size="lg" asChild>
-                        <Link href="/signup">Start earning now</Link>
+                    <Button size="lg" onClick={() => setIsSignupOpen(true)}>
+                        Start earning now
                     </Button>
                 </div>
                 <div className="space-y-4">
@@ -652,3 +675,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

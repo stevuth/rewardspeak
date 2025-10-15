@@ -27,11 +27,13 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { popularOffers, user } from "@/lib/mock-data";
-import { UserNav } from "@/components/user-nav";
+import { popularOffers, user as mockUser } from "@/lib/mock-data";
+import { UserNav } from "@/app/user-nav";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { useUser, useAuth } from "@/firebase";
+import { signOut } from "firebase/auth";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -60,9 +62,15 @@ const recentEarnings: any[] = [
 function SidebarContent({ children }: { children?: React.ReactNode }) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const auth = useAuth();
+  const { user } = useUser();
   const totalAmountEarned = popularOffers
     .filter((o) => o.status === "Completed")
     .reduce((sum, o) => sum + o.points, 0) / 100;
+
+  const handleLogout = () => {
+    signOut(auth);
+  };
 
   const getNavLinkClass = (href: string) => {
     const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
@@ -91,19 +99,19 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
           <div className="p-4 flex items-center gap-4 bg-muted/50 border-b">
             <div className="relative h-12 w-12 shrink-0">
                 <Image 
-                    src={user.avatarUrl} 
+                    src={user?.photoURL || mockUser.avatarUrl} 
                     alt="user avatar" 
                     layout="fill"
                     className="rounded-full border-2 border-primary/50"
-                    data-ai-hint={user.avatarHint}
+                    data-ai-hint={mockUser.avatarHint}
                 />
             </div>
             <div className="flex-1">
-                <p className="font-semibold">{user.name}</p>
+                <p className="font-semibold">{user?.displayName || "Guest User"}</p>
                 <div className="flex items-center gap-4">
                   <div className="text-xs">
                       <p className="text-muted-foreground">Balance</p>
-                      <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
+                      <p className="font-bold text-primary">{mockUser.totalPoints.toLocaleString()} Pts</p>
                   </div>
                     <div className="text-xs">
                       <p className="text-muted-foreground">Earned</p>
@@ -141,13 +149,13 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
                 {item.label}
               </Link>
             ))}
-             <Link
-                href="/"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
+             <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted w-full"
               >
                 <LogOut className="h-4 w-4" />
                 Log Out
-              </Link>
+              </button>
           </div>
         </div>
       );
@@ -189,15 +197,15 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
           <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
               <UserNav />
                <div className="flex-1">
-                  <p className="font-semibold">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                  <p className="font-semibold">{user?.displayName || "Guest User"}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email || "guest@example.com"}</p>
               </div>
           </div>
            <Button variant="ghost" asChild className="w-full justify-start">
-              <Link href="/">
+              <button onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Log Out
-              </Link>
+              </button>
            </Button>
         </div>
       </div>
@@ -211,10 +219,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { user } = useUser();
   const totalAmountEarned = popularOffers
     .filter((o) => o.status === "Completed")
     .reduce((sum, o) => sum + o.points, 0) / 100;
-  const userBalanceInCash = user.totalPoints / 100;
+  const userBalanceInCash = (mockUser.totalPoints || 0) / 100;
 
 
   return (
@@ -249,7 +258,7 @@ export default function DashboardLayout({
               <div className="hidden sm:flex items-center gap-4">
                   <div className="text-xs text-right">
                       <p className="text-muted-foreground">Balance</p>
-                      <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
+                      <p className="font-bold text-primary">{mockUser.totalPoints.toLocaleString()} Pts</p>
                   </div>
                     <div className="text-xs text-right">
                       <p className="text-muted-foreground">Earned</p>
@@ -257,7 +266,7 @@ export default function DashboardLayout({
                   </div>
               </div>
               <div className="flex sm:hidden items-center gap-2 text-xs">
-                <span className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</span>
+                <span className="font-bold text-primary">{mockUser.totalPoints.toLocaleString()} Pts</span>
                 <span className="font-bold text-muted-foreground">/</span>
                 <span className="font-bold">${userBalanceInCash.toFixed(2)}</span>
               </div>
@@ -320,7 +329,4 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
-
-
-
 
