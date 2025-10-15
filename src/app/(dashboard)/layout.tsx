@@ -27,7 +27,6 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { popularOffers, user as mockUser } from "@/lib/mock-data";
 import { UserNav } from "@/app/user-nav";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -64,9 +63,8 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
   const isMobile = useIsMobile();
   const auth = useAuth();
   const { user } = useUser();
-  const totalAmountEarned = popularOffers
-    .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.points, 0) / 100;
+  const totalAmountEarned = 0;
+  const totalPoints = 0;
 
   const handleLogout = () => {
     signOut(auth);
@@ -99,11 +97,11 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
           <div className="p-4 flex items-center gap-4 bg-muted/50 border-b">
             <div className="relative h-12 w-12 shrink-0">
                 <Image 
-                    src={user?.photoURL || mockUser.avatarUrl} 
+                    src={user?.photoURL || `https://picsum.photos/seed/avatar1/40/40`} 
                     alt="user avatar" 
                     layout="fill"
                     className="rounded-full border-2 border-primary/50"
-                    data-ai-hint={mockUser.avatarHint}
+                    data-ai-hint={'person portrait'}
                 />
             </div>
             <div className="flex-1">
@@ -111,7 +109,7 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
                 <div className="flex items-center gap-4">
                   <div className="text-xs">
                       <p className="text-muted-foreground">Balance</p>
-                      <p className="font-bold text-primary">{mockUser.totalPoints.toLocaleString()} Pts</p>
+                      <p className="font-bold text-primary">{totalPoints.toLocaleString()} Pts</p>
                   </div>
                     <div className="text-xs">
                       <p className="text-muted-foreground">Earned</p>
@@ -220,10 +218,9 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const { user } = useUser();
-  const totalAmountEarned = popularOffers
-    .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.points, 0) / 100;
-  const userBalanceInCash = (mockUser.totalPoints || 0) / 100;
+  const totalAmountEarned = 0;
+  const totalPoints = 0;
+  const userBalanceInCash = (totalPoints || 0) / 100;
 
 
   return (
@@ -258,7 +255,7 @@ export default function DashboardLayout({
               <div className="hidden sm:flex items-center gap-4">
                   <div className="text-xs text-right">
                       <p className="text-muted-foreground">Balance</p>
-                      <p className="font-bold text-primary">{mockUser.totalPoints.toLocaleString()} Pts</p>
+                      <p className="font-bold text-primary">{totalPoints.toLocaleString()} Pts</p>
                   </div>
                     <div className="text-xs text-right">
                       <p className="text-muted-foreground">Earned</p>
@@ -266,7 +263,7 @@ export default function DashboardLayout({
                   </div>
               </div>
               <div className="flex sm:hidden items-center gap-2 text-xs">
-                <span className="font-bold text-primary">{mockUser.totalPoints.toLocaleString()} Pts</span>
+                <span className="font-bold text-primary">{totalPoints.toLocaleString()} Pts</span>
                 <span className="font-bold text-muted-foreground">/</span>
                 <span className="font-bold">${userBalanceInCash.toFixed(2)}</span>
               </div>
@@ -329,4 +326,3 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
-

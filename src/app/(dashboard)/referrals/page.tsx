@@ -1,3 +1,4 @@
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -7,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { user } from "@/lib/mock-data";
 import { Copy, Gift, Users, DollarSign } from "lucide-react";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -20,7 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default function InviteAndClimbPage() {
-  const referralCode = user.referralLink.split("/").pop()?.toUpperCase();
+  const referralLink = "https://rewardspeak.com/ref/guest"
+  const referralCode = referralLink.split("/").pop()?.toUpperCase();
+  const referrals = 0;
+  const referralEarnings = 0;
 
   return (
     <div className="space-y-8">
@@ -32,13 +35,13 @@ export default function InviteAndClimbPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <StatCard
           title="Total Referrals"
-          value={user.referrals}
+          value={referrals}
           icon={Users}
           description="Number of users who signed up with your code."
         />
         <StatCard
           title="Referral Earnings"
-          value={user.referralEarnings}
+          value={referralEarnings}
           icon={DollarSign}
           description="Total points earned from your referrals."
         />

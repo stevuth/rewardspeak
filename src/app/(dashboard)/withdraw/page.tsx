@@ -1,4 +1,5 @@
 
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { withdrawalMethods, withdrawalHistory, type Withdrawal, user } from "@/lib/mock-data";
+import { withdrawalMethods, withdrawalHistory, type Withdrawal } from "@/lib/mock-data";
 import {
   PaypalLogo,
   LitecoinLogo,

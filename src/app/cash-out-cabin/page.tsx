@@ -1,3 +1,4 @@
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -18,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AnimatedCounter } from "@/components/animated-counter";
-import { user, withdrawalMethods } from "@/lib/mock-data";
+import { withdrawalMethods } from "@/lib/mock-data";
 import { Wallet } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
 };
 
 export default function CashOutCabinPage() {
+    const totalPoints = 0;
   return (
     <div className="space-y-8">
       <PageHeader
@@ -95,10 +97,10 @@ export default function CashOutCabinPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold font-headline">
-                <AnimatedCounter value={user.totalPoints} /> Points
+                <AnimatedCounter value={totalPoints} /> Points
               </div>
               <div className="text-muted-foreground mt-1">
-                ≈ $<AnimatedCounter value={user.totalPoints / 100} />
+                ≈ $<AnimatedCounter value={totalPoints / 100} />
               </div>
             </CardContent>
           </Card>

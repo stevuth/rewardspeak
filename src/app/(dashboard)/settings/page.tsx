@@ -1,4 +1,5 @@
 
+
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { user, popularOffers } from "@/lib/mock-data";
+import { popularOffers } from "@/lib/mock-data";
 import { Textarea } from "@/components/ui/textarea";
 import type { Metadata } from "next";
 import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint } from "lucide-react";
@@ -26,13 +27,15 @@ export const metadata: Metadata = {
 };
 
 export default function MyPeakProfilePage() {
-  const completedOffersCount = popularOffers.filter(
-    (o) => o.status === "Completed"
-  ).length;
-  const totalAmountEarned =
-    popularOffers
-      .filter((o) => o.status === "Completed")
-      .reduce((sum, o) => sum + o.points, 0) / 100;
+  const completedOffersCount = 0;
+  const totalAmountEarned = 0;
+  const user = {
+    avatarUrl: `https://picsum.photos/seed/avatar1/40/40`,
+    name: 'Guest User',
+    dateJoined: new Date().toISOString(),
+    rewardsPeakId: 'RP-GUEST-001',
+    email: 'guest@example.com'
+  }
 
   return (
     <div className="space-y-8">

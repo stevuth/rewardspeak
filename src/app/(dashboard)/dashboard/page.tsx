@@ -1,4 +1,5 @@
 
+
 import {
   Card,
   CardContent,
@@ -7,7 +8,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { OfferCard } from "@/components/offer-card";
-import { offerWalls, popularOffers, user, type Offer } from "@/lib/mock-data";
+import { offerWalls, popularOffers, type Offer } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { CheckCircle, ChevronRight, Clock, DollarSign, Users, Wallet } from "lucide-react";
