@@ -1,5 +1,7 @@
 
+
 'use client';
+import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -64,7 +66,6 @@ import Image from 'next/image';
 import { popularOffers, type Offer } from '@/lib/mock-data';
 import { Chrome } from "lucide-react";
 import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/exclusive-opportunities";
-import React from 'react';
 import { cn } from '@/lib/utils';
 import Autoplay from "embla-carousel-autoplay"
 import { OfferGridCard } from '@/components/offer-grid-card';
@@ -511,7 +512,7 @@ export default function Home() {
                             
                             {isClient && paymentMethods.map((method, i) => {
                                 const angle = (i / paymentMethods.length) * 2 * Math.PI;
-                                const radius = window.innerWidth < 768 ? 96 : 128;
+                                const radius = 128; // Adjust radius for md screens
                                 const x = Math.cos(angle) * radius;
                                 const y = Math.sin(angle) * radius;
                                 return (
@@ -675,5 +676,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
