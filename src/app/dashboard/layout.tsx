@@ -241,6 +241,10 @@ export default function DashboardLayout({
       </div>
     );
   }
+  
+  if (!user) {
+    return null;
+  }
 
   return (
     <SidebarProvider>
@@ -345,3 +349,4 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+

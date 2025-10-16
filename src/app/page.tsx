@@ -16,7 +16,7 @@ export default function Page() {
     }
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || user) {
+  if (isUserLoading || (!isUserLoading && user)) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
