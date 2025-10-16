@@ -1,3 +1,6 @@
+// This part is the new Client Component
+// It contains all the hooks and interactive UI
+'use client';
 
 import Link from "next/link";
 import Image from "next/image";
@@ -30,9 +33,6 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/compon
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { type User } from "@supabase/supabase-js";
 
-// This part is the new Client Component
-// It contains all the hooks and interactive UI
-'use client';
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -314,8 +314,6 @@ function MobileBottomNav() {
 }
 
 function LayoutClient({ user, children }: { user: User | null, children: React.ReactNode }) {
-    useRouter();
-    usePathname();
     return (
         <SidebarProvider>
           <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
@@ -347,5 +345,3 @@ export default async function DashboardLayout({
 
   return <LayoutClient user={user}>{children}</LayoutClient>;
 }
-
-    
