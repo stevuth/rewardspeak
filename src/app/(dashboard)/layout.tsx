@@ -33,6 +33,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
+import { useMemo } from "react";
+import { Loader2 } from "lucide-react";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -55,8 +57,7 @@ const mobileNavItems = [
     { href: "/settings", label: "My Profile", icon: Settings },
 ]
 
-const recentEarnings: any[] = [
-];
+const recentEarnings: any[] = [];
 
 function SidebarContent({ children }: { children?: React.ReactNode }) {
   const pathname = usePathname();
@@ -67,7 +68,9 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
   const totalPoints = 0;
 
   const handleLogout = () => {
-    signOut(auth);
+    if (auth) {
+      signOut(auth);
+    }
   };
 
   const getNavLinkClass = (href: string) => {
@@ -159,10 +162,10 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
       );
   }
   
-  const mobileNavLinks = [
+  const mobileNavLinks = useMemo(() => [
     ...navItems,
     ...secondaryNavItems
-  ].filter(item => !mobileNavItems.some(mobileItem => mobileItem.href === item.href));
+  ].filter(item => !mobileNavItems.some(mobileItem => mobileItem.href === item.href)), []);
 
 
   // Mobile Sidebar
@@ -217,11 +220,24 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const totalAmountEarned = 0;
   const totalPoints = 0;
   const userBalanceInCash = (totalPoints || 0) / 100;
 
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.replace('/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>

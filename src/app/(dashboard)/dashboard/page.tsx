@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -116,10 +115,10 @@ export default function DashboardPage() {
 
   const recentActivityQuery = useMemoFirebase(() => {
       if (!firestore) return null;
+      // This is a placeholder query, it should be updated to reflect actual user activity
       return query(
-          collection(firestore, "offers"), // Assuming completed offers are in 'offers' with a status
-          where("status", "==", "Completed"),
-          orderBy("date", "desc"),
+          collection(firestore, "offers"), 
+          where("isPopular", "==", true),
           limit(5)
       )
   }, [firestore]);
