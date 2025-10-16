@@ -67,7 +67,7 @@ export function AuthToastProvider() {
         description: 'We sent a verification link to your email. Please check your inbox.',
       });
     }
-  }, [searchParams, toast]);
+  }, [searchParams]);
 
   return null; // This component doesn't render anything itself
 }
