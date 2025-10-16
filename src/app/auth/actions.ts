@@ -5,25 +5,6 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/utils/supabase/server';
 
-// Function to generate a unique 5-character alphanumeric ID
-async function generateUniqueId(supabase: any): Promise<string> {
-  let newId: string;
-  let done = false;
-  while (!done) {
-    // Generate a 5-character random string
-    newId = Math.random().toString(36).substring(2, 7);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', newId)
-      .single();
-    if (!data && !error) {
-      done = true;
-    }
-  }
-  return newId!;
-}
-
 export async function signup(
   state: { message: string },
   formData: FormData
@@ -48,10 +29,16 @@ export async function signup(
     return { message: 'Signup successful, but no user data returned. Please try logging in.' };
   }
 
-  // Generate a unique ID for the profile
-  const uniqueId = await generateUniqueId(supabase);
+  // Call the database function to generate a unique ID
+  const { data: uniqueId, error: rpcError } = await supabase
+    .rpc('generate_unique_id');
 
-  // Create a profile for the new user
+  if (rpcError) {
+      console.error('Error generating unique ID:', rpcError);
+      return { message: `User created, but failed to generate unique ID: ${rpcError.message}` };
+  }
+
+  // Create a profile for the new user with the generated ID
   const { error: profileError } = await supabase.from('profiles').insert({
     user_id: signUpData.user.id,
     id: uniqueId,
