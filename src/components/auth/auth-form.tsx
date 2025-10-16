@@ -14,11 +14,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Gamepad2, Chrome } from "lucide-react";
 import { login, signup } from "@/app/auth/actions";
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import { LoadingOverlay } from "./loading-overlay";
+import { useSearchParams } from "next/navigation";
 
 type AuthFormProps = {
   type: "login" | "signup";
@@ -61,9 +62,27 @@ function SubmitButton({ type }: { type: "login" | "signup" }) {
 export function AuthForm({ type, onSwitch }: AuthFormProps) {
   const [loginState, loginAction] = useActionState(login, { message: "" });
   const [signupState, signupAction] = useActionState(signup, { message: "" });
+  const searchParams = useSearchParams();
+  const [referralCode, setReferralCode] = useState("");
+
+  useEffect(() => {
+    const refFromUrl = searchParams.get("ref");
+    if (refFromUrl) {
+      setReferralCode(refFromUrl);
+      localStorage.setItem('referral_code', refFromUrl);
+    }
+  }, [searchParams]);
+
+  const handleSignup = (formData: FormData) => {
+    const refCode = formData.get('referral_code') as string;
+    if (refCode) {
+        localStorage.setItem('referral_code', refCode);
+    }
+    signupAction(formData);
+  }
 
   const state = type === "login" ? loginState : signupState;
-  const formAction = type === "login" ? loginAction : signupAction;
+  const formAction = type === "login" ? loginAction : handleSignup;
   
   const switchText =
     type === "login"
@@ -100,6 +119,19 @@ export function AuthForm({ type, onSwitch }: AuthFormProps) {
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" required />
             </div>
+            {type === "signup" && (
+                <div className="space-y-2">
+                    <Label htmlFor="referral_code">Referral Code (Optional)</Label>
+                    <Input
+                        id="referral_code"
+                        name="referral_code"
+                        type="text"
+                        placeholder="Enter 5-digit code"
+                        value={referralCode}
+                        onChange={(e) => setReferralCode(e.target.value)}
+                    />
+                </div>
+            )}
             {state.message && (
               <Alert variant="destructive">
                 <Terminal className="h-4 w-4" />

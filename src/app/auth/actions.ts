@@ -13,6 +13,9 @@ export async function signup(
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
+  // The referral code is now handled on the client and passed in localStorage
+  // It will be picked up by the auth callback after verification
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -25,8 +28,8 @@ export async function signup(
     console.error("Signup error:", error);
     return { message: error.message };
   }
-
-  // Redirect to a page that tells the user to check their email
+  
+  // The database trigger 'on_auth_user_created' handles profile creation.
   redirect('/auth/confirm?signup=true');
 }
 

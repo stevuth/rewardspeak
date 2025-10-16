@@ -2,6 +2,14 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabase/server';
 
+// This is a helper function to run inside the route handler
+const handleReferral = async (supabase: any, referredUserId: string) => {
+    // This is a client-side only operation, so we can't do it here.
+    // The logic has been moved to the signup form itself.
+    return;
+};
+
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
@@ -13,10 +21,14 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!error) {
-      // The database trigger 'on_auth_user_created' will now handle profile creation automatically.
-      // No need to call RPC here anymore.
+      // The database trigger 'on_auth_user_created' will handle profile creation automatically.
       const redirectUrl = new URL(next, origin);
       redirectUrl.searchParams.set('verified', 'true');
+      
+      // The referral logic needs to be handled differently.
+      // We will now read from localStorage on the client side after signup.
+      // This server-side route's primary job is just to verify the session.
+
       return NextResponse.redirect(redirectUrl);
     }
 

@@ -1,4 +1,6 @@
 
+'use client';
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -8,40 +10,58 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Gift, Users, DollarSign } from "lucide-react";
-import Image from "next/image";
+import { Copy, Gift, Users, DollarSign, Check } from "lucide-react";
 import type { Metadata } from "next";
 import { GiftIllustration } from "@/components/illustrations/gift";
 import { StatCard } from "@/components/stat-card";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { useEffect, useState } from "react";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
-export const metadata: Metadata = {
-  title: "Invite & Climb",
-  description: "Your referral and bonus page (share link, track earnings).",
-};
+export default function InviteAndClimbPage() {
+  const [referralCode, setReferralCode] = useState('GUEST');
+  const [userId, setUserId] = useState<string | null>(null);
+  const [totalReferrals, setTotalReferrals] = useState(0);
+  const [referralEarnings, setReferralEarnings] = useState(0);
+  const { toast } = useToast();
 
-export default async function InviteAndClimbPage() {
-  const supabase = createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  let referralCode = 'GUEST';
-  let totalReferrals = 0;
-  let referralEarnings = 0;
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
 
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+        if (profile) {
+          setReferralCode(profile.id);
+        }
+        
+        // TODO: Fetch real referral data
+        // const { count } = await supabase.from('referrals').select('*', { count: 'exact', head: true }).eq('referrer_id', user.id);
+        // setTotalReferrals(count || 0);
+      }
+    };
+    fetchProfile();
+  }, []);
 
-    if (profile) {
-      referralCode = profile.id;
-    }
-    // TODO: Fetch real referral data
-  }
+  const referralLink = `https://rewardspeak.com/join?ref=${referralCode}`;
 
-  const referralLink = `https://rewardspeak.com/ref/${referralCode}`;
+  const handleCopy = () => {
+    navigator.clipboard.writeText(referralLink);
+    toast({
+      title: "Copied to clipboard!",
+      description: "Your referral link is ready to be shared.",
+      icon: <Check className="text-green-500" />,
+    });
+  };
+
 
   return (
     <div className="space-y-8">
@@ -75,12 +95,16 @@ export default async function InviteAndClimbPage() {
         </div>
 
         <div className="w-full max-w-sm">
-          <p className="text-muted-foreground mb-2">Your referral code:</p>
-          <div className="relative flex items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/50 p-4">
-            <span className="text-2xl font-bold tracking-widest text-primary">
-              {referralCode}
-            </span>
-            <Button variant="ghost" size="icon" className="absolute right-2">
+          <p className="text-muted-foreground mb-2">Your unique referral link:</p>
+          <div className="relative flex items-center">
+            <Input
+              id="referral-link"
+              type="text"
+              value={referralLink}
+              readOnly
+              className="pr-12 bg-muted border-dashed"
+            />
+            <Button variant="ghost" size="icon" className="absolute right-1" onClick={handleCopy}>
               <Copy className="h-5 w-5" />
             </Button>
           </div>
@@ -89,12 +113,11 @@ export default async function InviteAndClimbPage() {
             Share your referral code with your friends and get benefits.
           </p>
 
-          <Button size="lg" className="w-full">
-            Invite friends
+          <Button size="lg" className="w-full" onClick={handleCopy}>
+            <Copy className="mr-2 h-4 w-4" /> Copy Your Link
           </Button>
         </div>
       </div>
     </div>
   );
 }
-
