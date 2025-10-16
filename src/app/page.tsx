@@ -28,6 +28,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -249,11 +250,13 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
         <DialogContent className="p-0 border-0 max-w-md">
+            <DialogTitle className="sr-only">Log In</DialogTitle>
             <AuthForm type="login" onSwitch={onSwitchForms} />
         </DialogContent>
       </Dialog>
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
         <DialogContent className="p-0 border-0 max-w-md">
+            <DialogTitle className="sr-only">Sign Up</DialogTitle>
             <AuthForm type="signup" onSwitch={onSwitchForms} />
         </DialogContent>
       </Dialog>
