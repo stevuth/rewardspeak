@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatItem } from "@/components/stat-item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { AnimatedCounter } from "@/components/animated-counter";
 
 export const metadata: Metadata = {
   title: "My Peak Profile",
@@ -27,23 +28,21 @@ export default async function MyPeakProfilePage() {
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const completedOffersCount = 0;
-  const totalAmountEarned = 0;
-  const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
-  
-  let rewardsPeakId = 'RP-GUEST';
-
+  let profileData = null;
   if (user) {
-    const { data: profile } = await supabase
+    const { data } = await supabase
       .from('profiles')
-      .select('id')
+      .select('id, points')
       .eq('user_id', user.id)
       .single();
-
-    if (profile) {
-      rewardsPeakId = `RP-${profile.id}`;
-    }
+    profileData = data;
   }
+
+  const completedOffersCount = 0; // This can be fetched later
+  const totalPoints = profileData?.points ?? 0;
+  const totalAmountEarned = totalPoints / 100;
+  const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
+  const rewardsPeakId = profileData?.id ? `RP-${profileData.id}` : 'RP-GUEST';
 
 
   return (

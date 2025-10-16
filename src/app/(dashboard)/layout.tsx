@@ -12,5 +12,18 @@ export default async function DashboardLayout({
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  return <LayoutClient user={user}>{children}</LayoutClient>;
+  let profileData = null;
+  if (user) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('points')
+      .eq('user_id', user.id)
+      .single();
+    profileData = data;
+  }
+  
+  const totalPoints = profileData?.points ?? 0;
+  const totalAmountEarned = totalPoints / 100;
+
+  return <LayoutClient user={user} totalPoints={totalPoints} totalAmountEarned={totalAmountEarned}>{children}</LayoutClient>;
 }
