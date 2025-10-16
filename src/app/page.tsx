@@ -269,12 +269,11 @@ export default function Home() {
               <Chrome className="mr-2 h-4 w-4" />
               Sign in
           </Button>
-          <Button onClick={() => setIsSignupOpen(true)}>
+          <Button onClick={() => setIsSignupOpen(true)} className="hidden sm:inline-flex">
                 <Users className="mr-2 h-4 w-4"/>
                 Sign Up
           </Button>
-        </nav>
-        <div className="sm:hidden flex items-center gap-2">
+          <div className="sm:hidden flex items-center gap-2">
              <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
               Sign In
             </Button>
@@ -282,6 +281,7 @@ export default function Home() {
                 Sign Up
             </Button>
         </div>
+        </nav>
       </header>
 
       <main className="flex-1">
