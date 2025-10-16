@@ -1,3 +1,4 @@
+
 // This part is the new Client Component
 // It contains all the hooks and interactive UI
 'use client';
@@ -30,9 +31,7 @@ import {
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { type User } from "@supabase/supabase-js";
-
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -335,6 +334,8 @@ function LayoutClient({ user, children }: { user: User | null, children: React.R
 
 // This is the main Server Component
 // It fetches data and passes it to the Client Component
+import { createSupabaseServerClient } from "@/utils/supabase/server";
+
 export default async function DashboardLayout({
   children,
 }: {
