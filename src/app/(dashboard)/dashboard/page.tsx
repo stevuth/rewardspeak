@@ -1,4 +1,6 @@
 
+'use client';
+
 import {
   Card,
   CardContent,
@@ -33,11 +35,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { AnimatedCounter } from "@/components/animated-counter";
-
-export const metadata: Metadata = {
-  title: "Peak Dashboard",
-  description: "Your personalized control center showing points, progress, and recent activity.",
-};
+import { AuthToastProvider } from "@/components/auth/auth-toast-provider";
 
 const StatusBadge = ({ status }: { status: Offer["status"] }) => {
   if (status === "Completed") {
@@ -68,6 +66,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <AuthToastProvider />
       <PageHeader
         title="Peak Dashboard"
         description="Welcome back! Here's a look at your recent activity."

@@ -53,7 +53,7 @@ export async function signup(
 
 
   // Redirect to a page that tells the user to check their email
-  redirect('/auth/confirm');
+  redirect('/auth/confirm?signup=true');
 }
 
 export async function login(
@@ -74,5 +74,5 @@ export async function login(
   }
 
   revalidatePath('/', 'layout');
-  redirect('/dashboard');
+  redirect('/dashboard?login=true');
 }
