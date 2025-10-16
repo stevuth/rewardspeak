@@ -11,10 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Copy, Gift, Users, DollarSign, Check } from "lucide-react";
-import type { Metadata } from "next";
 import { GiftIllustration } from "@/components/illustrations/gift";
 import { StatCard } from "@/components/stat-card";
-import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -28,11 +26,13 @@ export default function InviteAndClimbPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileAndReferrals = async () => {
       const supabase = createSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUserId(user.id);
+        
+        // Fetch user's profile to get their referral code
         const { data: profile } = await supabase
           .from('profiles')
           .select('id')
@@ -43,21 +43,37 @@ export default function InviteAndClimbPage() {
           setReferralCode(profile.id);
         }
         
-        // TODO: Fetch real referral data
-        // const { count } = await supabase.from('referrals').select('*', { count: 'exact', head: true }).eq('referrer_id', user.id);
-        // setTotalReferrals(count || 0);
+        // Fetch the count of referrals made by this user
+        const { count } = await supabase
+            .from('referrals')
+            .select('*', { count: 'exact', head: true })
+            .eq('referrer_id', user.id);
+            
+        setTotalReferrals(count || 0);
+
+        // TODO: Fetch real referral earnings
+        // setReferralEarnings(...)
       }
     };
-    fetchProfile();
+    fetchProfileAndReferrals();
   }, []);
 
   const referralLink = `https://rewardspeak.com/join?ref=${referralCode}`;
 
-  const handleCopy = () => {
+  const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
     toast({
       title: "Copied to clipboard!",
       description: "Your referral link is ready to be shared.",
+      icon: <Check className="text-green-500" />,
+    });
+  };
+  
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(referralCode);
+    toast({
+      title: "Copied to clipboard!",
+      description: "Your referral code is ready to be shared.",
       icon: <Check className="text-green-500" />,
     });
   };
@@ -79,7 +95,7 @@ export default function InviteAndClimbPage() {
         />
         <StatCard
           title="Referral Earnings"
-          value={referralEarnings}
+          value={`$${referralEarnings.toFixed(2)}`}
           icon={DollarSign}
           description="Total points earned from your referrals."
         />
@@ -94,26 +110,40 @@ export default function InviteAndClimbPage() {
           <GiftIllustration />
         </div>
 
-        <div className="w-full max-w-sm">
-          <p className="text-muted-foreground mb-2">Your unique referral link:</p>
-          <div className="relative flex items-center">
-            <Input
-              id="referral-link"
-              type="text"
-              value={referralLink}
-              readOnly
-              className="pr-12 bg-muted border-dashed"
-            />
-            <Button variant="ghost" size="icon" className="absolute right-1" onClick={handleCopy}>
-              <Copy className="h-5 w-5" />
-            </Button>
+        <div className="w-full max-w-sm space-y-6">
+          <div>
+            <p className="text-muted-foreground mb-2">Your unique referral code:</p>
+            <div className="relative flex items-center">
+              <Input
+                id="referral-code"
+                type="text"
+                value={referralCode}
+                readOnly
+                className="pr-12 bg-muted border-dashed text-center text-lg font-mono tracking-widest"
+              />
+              <Button variant="ghost" size="icon" className="absolute right-1" onClick={handleCopyCode}>
+                <Copy className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
-
-          <p className="text-muted-foreground mt-6 mb-8">
-            Share your referral code with your friends and get benefits.
-          </p>
-
-          <Button size="lg" className="w-full" onClick={handleCopy}>
+        
+          <div>
+            <p className="text-muted-foreground mb-2">Or share your referral link:</p>
+            <div className="relative flex items-center">
+              <Input
+                id="referral-link"
+                type="text"
+                value={referralLink}
+                readOnly
+                className="pr-12 bg-muted border-dashed"
+              />
+              <Button variant="ghost" size="icon" className="absolute right-1" onClick={handleCopyLink}>
+                <Copy className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+          
+          <Button size="lg" className="w-full" onClick={handleCopyLink}>
             <Copy className="mr-2 h-4 w-4" /> Copy Your Link
           </Button>
         </div>
