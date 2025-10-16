@@ -262,25 +262,17 @@ export default function Home() {
       </Dialog>
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="Rewards Peak Logo" width={32} height={32} />
+          <Image src="/logo.png?v=1" alt="Rewards Peak Logo" width={32} height={32} />
         </Link>
         <nav className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setIsLoginOpen(true)} className="hidden sm:inline-flex">
+          <Button variant="outline" onClick={() => setIsLoginOpen(true)}>
               <Chrome className="mr-2 h-4 w-4" />
               Sign in
           </Button>
-          <Button onClick={() => setIsSignupOpen(true)} className="hidden sm:inline-flex">
+          <Button onClick={() => setIsSignupOpen(true)}>
                 <Users className="mr-2 h-4 w-4"/>
                 Sign Up
           </Button>
-          <div className="sm:hidden flex items-center gap-2">
-             <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
-              Sign In
-            </Button>
-            <Button size="sm" onClick={() => setIsSignupOpen(true)}>
-                Sign Up
-            </Button>
-        </div>
         </nav>
       </header>
 
