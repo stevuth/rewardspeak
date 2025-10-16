@@ -263,10 +263,9 @@ export default function Home() {
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.png" alt="Rewards Peak Logo" width={32} height={32} />
-          <span className="text-xl font-bold font-headline">Rewards Peak</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-2">
-          <Button variant="outline" onClick={() => setIsLoginOpen(true)}>
+        <nav className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setIsLoginOpen(true)} className="hidden sm:inline-flex">
               <Chrome className="mr-2 h-4 w-4" />
               Sign in
           </Button>
@@ -275,7 +274,10 @@ export default function Home() {
                 Sign Up
           </Button>
         </nav>
-        <div className="md:hidden">
+        <div className="sm:hidden flex items-center gap-2">
+             <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
+              Sign In
+            </Button>
             <Button size="sm" onClick={() => setIsSignupOpen(true)}>
                 Sign Up
             </Button>
