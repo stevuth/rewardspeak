@@ -147,7 +147,6 @@ export function AuthForm({ type, onSuccess }: AuthFormProps) {
   const buttonText = isLogin ? "Enter the Realm" : "Create My Hero";
   const switchText = isLogin ? "New adventurer?" : "Already a hero?";
   const switchActionText = isLogin ? "Sign up" : "Log in";
-  const switchRoute = isLogin ? "/signup" : "/login";
   
   return (
     <Card className="w-full max-w-md border-0 shadow-none rounded-lg">
@@ -247,7 +246,7 @@ export function AuthForm({ type, onSuccess }: AuthFormProps) {
           <Button
             variant="link"
             className="p-0 h-auto font-medium text-primary hover:underline"
-            onClick={() => router.push(switchRoute)}
+            onClick={() => router.push(isLogin ? "/signup" : "/login")}
             type="button"
             disabled={isLoading}
           >
