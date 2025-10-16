@@ -15,13 +15,48 @@ import { Label } from "@/components/ui/label";
 import { Gamepad2, Chrome } from "lucide-react";
 import { login, signup } from "@/app/auth/actions";
 import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
+import { LoadingOverlay } from "./loading-overlay";
 
 type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
 };
+
+const loginLoadingMessages = [
+  "Checking your credentials...",
+  "Authenticating your session...",
+  "Loading your dashboard...",
+  "Almost there...",
+];
+
+const signupLoadingMessages = [
+  "Creating your account...",
+  "Securing your profile...",
+  "Setting up your rewards...",
+  "Just a moment...",
+];
+
+function SubmitButton({ type }: { type: "login" | "signup" }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <>
+      {pending && (
+        <LoadingOverlay
+          messages={
+            type === "login" ? loginLoadingMessages : signupLoadingMessages
+          }
+        />
+      )}
+      <Button type="submit" className="w-full" disabled={pending}>
+        {type === "login" ? "Enter the Realm" : "Create My Hero"}
+      </Button>
+    </>
+  );
+}
 
 export function AuthForm({ type, onSwitch }: AuthFormProps) {
   const [loginState, loginAction] = useActionState(login, { message: "" });
@@ -74,9 +109,7 @@ export function AuthForm({ type, onSwitch }: AuthFormProps) {
                 </AlertDescription>
               </Alert>
             )}
-            <Button type="submit" className="w-full">
-              {type === "login" ? "Enter the Realm" : "Create My Hero"}
-            </Button>
+            <SubmitButton type={type} />
           </form>
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
