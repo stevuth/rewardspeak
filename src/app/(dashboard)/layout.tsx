@@ -1,5 +1,4 @@
 
-'use client';
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -30,6 +29,10 @@ import { cn } from "@/lib/utils";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { type User } from "@supabase/supabase-js";
+
+// This part is the new Client Component
+// It contains all the hooks and interactive UI
+'use client';
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -331,6 +334,9 @@ function LayoutClient({ user, children }: { user: User | null, children: React.R
     )
 }
 
+
+// This is the main Server Component
+// It fetches data and passes it to the Client Component
 export default async function DashboardLayout({
   children,
 }: {
@@ -341,3 +347,5 @@ export default async function DashboardLayout({
 
   return <LayoutClient user={user}>{children}</LayoutClient>;
 }
+
+    
