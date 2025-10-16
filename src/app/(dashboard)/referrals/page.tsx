@@ -52,7 +52,9 @@ export default function InviteAndClimbPage() {
         setTotalReferrals(count || 0);
 
         // TODO: Fetch real referral earnings
-        // setReferralEarnings(...)
+        // This assumes each referral grants a certain number of points.
+        // For now, let's assume each referral is worth 10% of the initial 100 points, so 10 points.
+        setReferralEarnings((count || 0) * 10);
       }
     };
     fetchProfileAndReferrals();
@@ -95,8 +97,8 @@ export default function InviteAndClimbPage() {
         />
         <StatCard
           title="Referral Earnings"
-          value={`$${referralEarnings.toFixed(2)}`}
-          icon={DollarSign}
+          value={`${referralEarnings} Pts`}
+          icon={Gift}
           description="Total points earned from your referrals."
         />
       </div>
