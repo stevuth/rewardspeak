@@ -30,7 +30,20 @@ export default async function MyPeakProfilePage() {
   const completedOffersCount = 0;
   const totalAmountEarned = 0;
   const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
-  const rewardsPeakId = `RP-${user?.id.substring(0, 8).toUpperCase() || 'GUEST'}`;
+  
+  let rewardsPeakId = 'RP-GUEST';
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profile) {
+      rewardsPeakId = `RP-${profile.id}`;
+    }
+  }
 
 
   return (

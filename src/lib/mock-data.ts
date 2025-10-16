@@ -59,12 +59,12 @@ export const user = {
   avatarHint: getPlaceholder("user-avatar-1").hint,
   totalPoints: 0,
   dailyEarnings: 0,
-  referralLink: "https://rewardspeak.com/ref/guest",
+  referralLink: "https://rewardspeak.com/ref/GUEST",
   referrals: 0,
   referralEarnings: 0,
   lastLogin: "2024-01-01", // YYYY-MM-DD
   dateJoined: "2024-01-01",
-  rewardsPeakId: "RP-GUEST-001",
+  rewardsPeakId: "RP-GUEST",
 };
 
 export type Withdrawal = {

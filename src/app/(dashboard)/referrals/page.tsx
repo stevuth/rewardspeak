@@ -1,3 +1,4 @@
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -7,20 +8,40 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { user } from "@/lib/mock-data";
 import { Copy, Gift, Users, DollarSign } from "lucide-react";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { GiftIllustration } from "@/components/illustrations/gift";
 import { StatCard } from "@/components/stat-card";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Invite & Climb",
   description: "Your referral and bonus page (share link, track earnings).",
 };
 
-export default function InviteAndClimbPage() {
-  const referralCode = user.referralLink.split("/").pop()?.toUpperCase();
+export default async function InviteAndClimbPage() {
+  const supabase = createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  let referralCode = 'GUEST';
+  let totalReferrals = 0;
+  let referralEarnings = 0;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profile) {
+      referralCode = profile.id;
+    }
+    // TODO: Fetch real referral data
+  }
+
+  const referralLink = `https://rewardspeak.com/ref/${referralCode}`;
 
   return (
     <div className="space-y-8">
@@ -32,13 +53,13 @@ export default function InviteAndClimbPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <StatCard
           title="Total Referrals"
-          value={user.referrals}
+          value={totalReferrals}
           icon={Users}
           description="Number of users who signed up with your code."
         />
         <StatCard
           title="Referral Earnings"
-          value={user.referralEarnings}
+          value={referralEarnings}
           icon={DollarSign}
           description="Total points earned from your referrals."
         />
