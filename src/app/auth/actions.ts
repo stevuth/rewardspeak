@@ -17,16 +17,15 @@ export async function signup(
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
   const emailRedirectTo = new URL('/auth/callback', siteUrl);
 
-  // Pass the referral code as a query parameter in the redirect URL
-  if (referralCode) {
-    emailRedirectTo.searchParams.set('referral_code', referralCode);
-  }
-
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: emailRedirectTo.toString(),
+      // Pass the referral code in the user's metadata
+      data: {
+        referral_code: referralCode || null
+      }
     },
   });
 
