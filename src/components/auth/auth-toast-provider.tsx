@@ -1,10 +1,10 @@
 
-'use client';
+"use client";
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Info, Rocket, ShieldCheck } from 'lucide-react';
+import { CheckCircle, Info, Rocket, Gift } from 'lucide-react';
 
 const toastStyles = {
   success: {
@@ -26,9 +26,9 @@ const toastStyles = {
     },
   },
   verified: {
-      icon: <ShieldCheck className="text-green-500" />,
+      icon: <Gift className="text-yellow-400" />,
       style: {
-        borderColor: 'hsl(var(--green-500))',
+        borderColor: 'hsl(var(--yellow-400))',
         color: 'hsl(var(--foreground))',
       }
   }
@@ -55,8 +55,8 @@ export function AuthToastProvider() {
     if (verified) {
       toast({
         ...toastStyles.verified,
-        title: 'Account Verified!',
-        description: "Your email has been confirmed. Welcome to Rewards Peak!",
+        title: 'Welcome to Rewards Peak!',
+        description: "You’ve just earned a $1 Welcome Bonus! Start exploring offers, surveys, and quick tasks to grow your balance even more.",
       });
     }
 
@@ -67,6 +67,7 @@ export function AuthToastProvider() {
         description: 'We sent a verification link to your email. Please check your inbox.',
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   return null; // This component doesn't render anything itself
