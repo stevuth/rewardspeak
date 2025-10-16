@@ -12,17 +12,30 @@ export default async function DashboardLayout({
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  let profileData = null;
+  let profilePoints = 0;
+  let referralEarnings = 0;
+
   if (user) {
-    const { data } = await supabase
+    const { data: profileData } = await supabase
       .from('profiles')
       .select('points')
       .eq('user_id', user.id)
       .single();
-    profileData = data;
+    
+    if (profileData) {
+        profilePoints = profileData.points ?? 0;
+    }
+
+    // Fetch referral earnings
+    const { data: earnings, error: earningsError } = await supabase.rpc('get_referral_earnings');
+    if (earningsError) {
+        console.error("Error fetching referral earnings: ", earningsError);
+    } else {
+        referralEarnings = earnings ?? 0;
+    }
   }
   
-  const totalPoints = profileData?.points ?? 0;
+  const totalPoints = profilePoints + referralEarnings;
   const totalAmountEarned = totalPoints / 100;
 
   return <LayoutClient user={user} totalPoints={totalPoints} totalAmountEarned={totalAmountEarned}>{children}</LayoutClient>;
