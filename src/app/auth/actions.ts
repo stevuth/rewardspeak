@@ -22,6 +22,7 @@ export async function signup(
   });
 
   if (error) {
+    console.error("Signup error:", error);
     return { message: error.message };
   }
 

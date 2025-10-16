@@ -10,28 +10,21 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = createSupabaseServerClient();
-    const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
-    if (!sessionError) {
-      // After session is created, try to create a profile.
-      // The DB function will handle checking if the profile already exists.
-      const { error: rpcError } = await supabase.rpc('create_profile_for_user');
-
-      if (rpcError) {
-        console.error('Error creating profile after verification:', rpcError);
-        // Redirect to an error page or show a message.
-        // For now, we will still redirect to dashboard but with an error.
-        const redirectUrl = new URL(next, origin);
-        redirectUrl.searchParams.set('profile_error', 'true');
-        return NextResponse.redirect(redirectUrl);
-      }
-
-      // Add a query param to show a toast on the client
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    
+    if (!error) {
+      // The database trigger 'on_auth_user_created' will now handle profile creation automatically.
+      // No need to call RPC here anymore.
       const redirectUrl = new URL(next, origin);
       redirectUrl.searchParams.set('verified', 'true');
       return NextResponse.redirect(redirectUrl);
     }
+
+    console.error('Error exchanging code for session:', error);
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/error`);
+  const redirectUrl = new URL('/auth/error', origin);
+  redirectUrl.searchParams.set('message', 'Could not verify email. Please try again.');
+  return NextResponse.redirect(redirectUrl);
 }
