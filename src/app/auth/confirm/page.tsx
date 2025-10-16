@@ -18,7 +18,6 @@ export default function AuthConfirmPage() {
     return (
         <React.Suspense fallback={<div>Loading...</div>}>
             <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[calc(100vh-10rem)]">
-                <AuthToastProvider />
                 <Card className="max-w-lg text-center">
                     <CardHeader>
                         <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit">

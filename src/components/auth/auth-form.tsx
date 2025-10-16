@@ -69,20 +69,11 @@ export function AuthForm({ type, onSwitch }: AuthFormProps) {
     const refFromUrl = searchParams.get("ref");
     if (refFromUrl) {
       setReferralCode(refFromUrl);
-      localStorage.setItem('referral_code', refFromUrl);
     }
   }, [searchParams]);
 
-  const handleSignup = (formData: FormData) => {
-    const refCode = formData.get('referral_code') as string;
-    if (refCode) {
-        localStorage.setItem('referral_code', refCode);
-    }
-    signupAction(formData);
-  }
-
   const state = type === "login" ? loginState : signupState;
-  const formAction = type === "login" ? loginAction : handleSignup;
+  const formAction = type === "login" ? loginAction : signupAction;
   
   const switchText =
     type === "login"

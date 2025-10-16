@@ -36,7 +36,7 @@ export async function signup(
   }
   
   // The database trigger 'on_auth_user_created' handles profile creation.
-  redirect('/auth/confirm?signup=true');
+  redirect('/auth/confirm');
 }
 
 export async function login(
