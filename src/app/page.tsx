@@ -262,7 +262,7 @@ export default function Home() {
       </Dialog>
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Gamepad2 className="h-7 w-7 text-primary" />
+          <Image src="/logo.png" alt="Rewards Peak Logo" width={32} height={32} />
           <span className="text-xl font-bold font-headline">Rewards Peak</span>
         </Link>
         <nav className="hidden md:flex items-center gap-2">
