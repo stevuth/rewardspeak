@@ -22,7 +22,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { PageHeader } from "@/components/page-header";
-import type { Metadata } from "next";
 import { StatCard } from "@/components/stat-card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -36,6 +35,9 @@ import {
 import { cn } from "@/lib/utils";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { AuthToastProvider } from "@/components/auth/auth-toast-provider";
+import { WelcomeBonusModal } from "@/components/welcome-bonus-modal";
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const StatusBadge = ({ status }: { status: Offer["status"] }) => {
   if (status === "Completed") {
@@ -51,6 +53,15 @@ const StatusBadge = ({ status }: { status: Offer["status"] }) => {
 
 
 export default function DashboardPage() {
+  const searchParams = useSearchParams();
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('verified') === 'true') {
+      setShowWelcomeModal(true);
+    }
+  }, [searchParams]);
+
   const surveyProviders = popularOffers.filter(
     (o) => o.category === "Survey"
   );
@@ -67,6 +78,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <AuthToastProvider />
+      <WelcomeBonusModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />
       <PageHeader
         title="Peak Dashboard"
         description="Welcome back! Here's a look at your recent activity."

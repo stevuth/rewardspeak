@@ -41,7 +41,6 @@ export function AuthToastProvider() {
 
   useEffect(() => {
     const login = searchParams.get('login');
-    const verified = searchParams.get('verified');
     const signup = searchParams.get('signup');
 
     if (login) {
@@ -49,14 +48,6 @@ export function AuthToastProvider() {
         ...toastStyles.welcome,
         title: 'Welcome Back!',
         description: "You've successfully logged in. Let's get earning!",
-      });
-    }
-
-    if (verified) {
-      toast({
-        ...toastStyles.verified,
-        title: 'Welcome to Rewards Peak!',
-        description: "You’ve just earned a $1 Welcome Bonus! Start exploring offers, surveys, and quick tasks to grow your balance even more.",
       });
     }
 
