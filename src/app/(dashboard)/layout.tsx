@@ -1,4 +1,5 @@
 
+'use client';
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -310,8 +311,8 @@ function MobileBottomNav() {
 }
 
 function LayoutClient({ user, children }: { user: User | null, children: React.ReactNode }) {
-    useRouter(); // This is a client hook
-    usePathname(); // This is a client hook
+    useRouter();
+    usePathname();
     return (
         <SidebarProvider>
           <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
