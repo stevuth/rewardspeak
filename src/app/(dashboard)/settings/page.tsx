@@ -11,28 +11,27 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { user, popularOffers } from "@/lib/mock-data";
-import { Textarea } from "@/components/ui/textarea";
 import type { Metadata } from "next";
 import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatItem } from "@/components/stat-item";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "My Peak Profile",
   description: "Account info, preferences, and personal stats.",
 };
 
-export default function MyPeakProfilePage() {
-  const completedOffersCount = popularOffers.filter(
-    (o) => o.status === "Completed"
-  ).length;
-  const totalAmountEarned =
-    popularOffers
-      .filter((o) => o.status === "Completed")
-      .reduce((sum, o) => sum + o.points, 0) / 100;
+export default async function MyPeakProfilePage() {
+  const supabase = createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const completedOffersCount = 0;
+  const totalAmountEarned = 0;
+  const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
+  const rewardsPeakId = `RP-${user?.id.substring(0, 8).toUpperCase() || 'GUEST'}`;
+
 
   return (
     <div className="space-y-8">
@@ -46,8 +45,8 @@ export default function MyPeakProfilePage() {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-1 flex flex-col items-center text-center">
                         <Avatar className="h-24 w-24 mb-4">
-                            <AvatarImage src={user.avatarUrl} alt={user.name} />
-                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={"https://picsum.photos/seed/avatar1/96/96"} alt={user?.email || "user"} />
+                            <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                         </Avatar>
                         <Button variant="outline"><Upload className="mr-2 h-4 w-4" /> Upload Picture</Button>
                         <p className="text-xs text-muted-foreground mt-2">PNG, JPG up to 5MB.</p>
@@ -67,7 +66,7 @@ export default function MyPeakProfilePage() {
                         />
                         <StatItem
                             title="Date Joined"
-                            value={new Date(user.dateJoined).toLocaleDateString(undefined, {
+                            value={dateJoined.toLocaleDateString(undefined, {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'
@@ -77,7 +76,7 @@ export default function MyPeakProfilePage() {
                         />
                         <StatItem
                             title="Rewards Peak ID"
-                            value={user.rewardsPeakId}
+                            value={rewardsPeakId}
                             icon={Fingerprint}
                             className="bg-muted p-4 rounded-lg"
                         />
@@ -103,11 +102,11 @@ export default function MyPeakProfilePage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" defaultValue={user.name} />
+                <Input id="name" defaultValue={user?.email} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue={user.email} />
+                <Input id="email" type="email" defaultValue={user?.email} />
               </div>
             </CardContent>
             <CardFooter>

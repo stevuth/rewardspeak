@@ -1,6 +1,4 @@
 
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,7 +12,6 @@ import {
   Settings,
   Menu,
   Clock,
-  DollarSign,
   Mountain,
   LogOut,
   ArrowLeft,
@@ -27,11 +24,11 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { popularOffers, user } from "@/lib/mock-data";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { type User } from "@supabase/supabase-js";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -54,15 +51,10 @@ const mobileNavItems = [
     { href: "/settings", label: "My Profile", icon: Settings },
 ]
 
-const recentEarnings: any[] = [
-];
+const recentEarnings: any[] = [];
 
-function SidebarContent({ children }: { children?: React.ReactNode }) {
+function SidebarNavs() {
   const pathname = usePathname();
-  const isMobile = useIsMobile();
-  const totalAmountEarned = popularOffers
-    .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.points, 0) / 100;
 
   const getNavLinkClass = (href: string) => {
     const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
@@ -73,95 +65,55 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
         : "text-muted-foreground hover:bg-muted"
     );
   };
-  
-  // Desktop Sidebar
-  if (!isMobile) {
-      return (
-        <div className="flex flex-col h-full">
-          <div className="p-4 border-b flex items-center justify-between">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 font-semibold text-lg font-headline"
-            >
-              <Coins className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">Rewards Peak</span>
-            </Link>
-          </div>
 
-          <div className="p-4 flex items-center gap-4 bg-muted/50 border-b">
-            <div className="relative h-12 w-12 shrink-0">
-                <Image 
-                    src={user.avatarUrl} 
-                    alt="user avatar" 
-                    layout="fill"
-                    className="rounded-full border-2 border-primary/50"
-                    data-ai-hint={user.avatarHint}
-                />
-            </div>
-            <div className="flex-1">
-                <p className="font-semibold">{user.name}</p>
-                <div className="flex items-center gap-4">
-                  <div className="text-xs">
-                      <p className="text-muted-foreground">Balance</p>
-                      <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
-                  </div>
-                    <div className="text-xs">
-                      <p className="text-muted-foreground">Earned</p>
-                      <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
-                  </div>
-              </div>
-            </div>
-          </div>
-
-          <nav className="flex-1 space-y-1 p-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={getNavLinkClass(item.href)}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-           <div className="mt-auto p-4 space-y-1 border-t">
-            {secondaryNavItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
-                  pathname.startsWith(item.href)
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            ))}
-             <Link
-                href="/"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
-              >
-                <LogOut className="h-4 w-4" />
-                Log Out
-              </Link>
-          </div>
-        </div>
-      );
-  }
-  
-  const mobileNavLinks = [
-    ...navItems,
-    ...secondaryNavItems
-  ].filter(item => !mobileNavItems.some(mobileItem => mobileItem.href === item.href));
-
-
-  // Mobile Sidebar
   return (
-    <div className="w-full">
+    <>
+      <nav className="flex-1 space-y-1 p-4">
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={getNavLinkClass(item.href)}
+          >
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="mt-auto p-4 space-y-1 border-t">
+        {secondaryNavItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
+              pathname.startsWith(item.href)
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </Link>
+        ))}
+         <Link
+            href="/"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
+          >
+            <LogOut className="h-4 w-4" />
+            Log Out
+          </Link>
+      </div>
+    </>
+  );
+}
+
+function SidebarContent({ user, children }: { user: User | null, children?: React.ReactNode }) {
+  const totalAmountEarned = 0;
+  const totalPoints = 0;
+
+  return (
+    <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
         <Link
           href="/dashboard"
@@ -172,155 +124,219 @@ function SidebarContent({ children }: { children?: React.ReactNode }) {
         </Link>
         {children}
       </div>
-      <div className="grid grid-cols-2 gap-4 p-4">
-        <nav className="flex-1 space-y-1">
-          {mobileNavLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={getNavLinkClass(item.href)}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="space-y-4">
-          <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
-              <UserNav />
-               <div className="flex-1">
-                  <p className="font-semibold">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">{user.email}</p>
-              </div>
+
+      <div className="p-4 flex items-center gap-4 bg-muted/50 border-b">
+        <div className="relative h-12 w-12 shrink-0">
+          <Image
+            src={"https://picsum.photos/seed/avatar1/40/40"}
+            alt="user avatar"
+            width={48}
+            height={48}
+            className="rounded-full border-2 border-primary/50"
+            data-ai-hint={"person portrait"}
+          />
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold">{user?.email}</p>
+          <div className="flex items-center gap-4">
+            <div className="text-xs">
+              <p className="text-muted-foreground">Balance</p>
+              <p className="font-bold text-primary">{totalPoints.toLocaleString()} Pts</p>
+            </div>
+            <div className="text-xs">
+              <p className="text-muted-foreground">Earned</p>
+              <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
+            </div>
           </div>
-           <Button variant="ghost" asChild className="w-full justify-start">
-              <Link href="/">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log Out
-              </Link>
-           </Button>
         </div>
       </div>
+      <SidebarNavs />
     </div>
   );
 }
 
-export default function DashboardLayout({
+
+function MobileSidebar({ user }: { user: User | null }) {
+    const pathname = usePathname();
+    const getNavLinkClass = (href: string) => {
+        const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
+        return cn(
+          "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
+          isActive
+            ? "bg-primary text-primary-foreground"
+            : "text-muted-foreground hover:bg-muted"
+        );
+    };
+
+    const mobileNavLinks = [...navItems, ...secondaryNavItems].filter(
+        (item) => !mobileNavItems.some((mobileItem) => mobileItem.href === item.href)
+    );
+
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="top" className="w-full bg-card p-0">
+                 <div className="w-full">
+                    <div className="p-4 border-b flex items-center justify-between">
+                        <Link
+                        href="/dashboard"
+                        className="flex items-center gap-2 font-semibold text-lg font-headline"
+                        >
+                        <Coins className="h-6 w-6 text-primary" />
+                        <span className="text-xl font-bold">Rewards Peak</span>
+                        </Link>
+                        <SheetClose asChild>
+                            <Button variant="ghost" size="icon" className="md:hidden">
+                                <X className="h-5 w-5" />
+                                <span className="sr-only">Close</span>
+                            </Button>
+                        </SheetClose>
+                    </div>
+                     <div className="grid grid-cols-2 gap-4 p-4">
+                        <nav className="flex-1 space-y-1">
+                        {mobileNavLinks.map((item) => (
+                            <Link
+                            key={item.href}
+                            href={item.href}
+                            className={getNavLinkClass(item.href)}
+                            >
+                            <item.icon className="h-4 w-4" />
+                            {item.label}
+                            </Link>
+                        ))}
+                        </nav>
+                        <div className="space-y-4">
+                        <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
+                            <UserNav user={user} />
+                            <div className="flex-1">
+                                <p className="font-semibold truncate">{user?.email}</p>
+                                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                            </div>
+                        </div>
+                        <Button variant="ghost" asChild className="w-full justify-start">
+                            <Link href="/">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Log Out
+                            </Link>
+                        </Button>
+                        </div>
+                    </div>
+                 </div>
+            </SheetContent>
+        </Sheet>
+    );
+}
+
+function Header({ user }: { user: User | null }) {
+    const router = useRouter();
+    const totalAmountEarned = 0;
+    const totalPoints = 0;
+    const userBalanceInCash = 0;
+
+    return (
+        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
+            <div className="hidden md:flex">
+                <SidebarTrigger />
+            </div>
+            <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+                <span className="sr-only">Go back</span>
+            </Button>
+            <div className="flex-1 overflow-x-auto whitespace-nowrap">
+                <div className="flex gap-2 items-center">
+                {recentEarnings.map((earning, i) => (
+                    <div key={i} className="hidden md:flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
+                    <div className="flex flex-col">
+                        <span className="font-bold text-primary">{earning.name}</span>
+                        <span className="text-muted-foreground">{earning.user}</span>
+                    </div>
+                    <Badge variant="secondary">{earning.amount}</Badge>
+                    </div>
+                ))}
+                </div>
+            </div>
+            <div className="flex items-center gap-2 ml-auto">
+                <div className="hidden sm:flex items-center gap-4">
+                    <div className="text-xs text-right">
+                        <p className="text-muted-foreground">Balance</p>
+                        <p className="font-bold text-primary">{totalPoints.toLocaleString()} Pts</p>
+                    </div>
+                    <div className="text-xs text-right">
+                        <p className="text-muted-foreground">Earned</p>
+                        <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
+                    </div>
+                </div>
+                <div className="flex sm:hidden items-center gap-2 text-xs">
+                <span className="font-bold text-primary">{totalPoints.toLocaleString()} Pts</span>
+                <span className="font-bold text-muted-foreground">/</span>
+                <span className="font-bold">${userBalanceInCash.toFixed(2)}</span>
+                </div>
+                <UserNav user={user} />
+                <MobileSidebar user={user} />
+            </div>
+        </header>
+    )
+}
+
+function MobileBottomNav() {
+    const pathname = usePathname();
+    return (
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
+            <div className="grid grid-cols-4 gap-2">
+                {mobileNavItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                                "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-medium",
+                                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                            )}
+                        >
+                            <item.icon className="h-5 w-5" />
+                            <span className="truncate">{item.label}</span>
+                        </Link>
+                    )
+                })}
+            </div>
+        </div>
+    )
+}
+
+function LayoutClient({ user, children }: { user: User | null, children: React.ReactNode }) {
+    useRouter(); // This is a client hook
+    usePathname(); // This is a client hook
+    return (
+        <SidebarProvider>
+          <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
+            <Sidebar collapsible="icon" className="bg-card border-r">
+              <SidebarContent user={user} />
+            </Sidebar>
+            <div className="flex flex-col overflow-hidden">
+              <Header user={user} />
+              <SidebarInset>
+                <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
+              </SidebarInset>
+              <MobileBottomNav />
+            </div>
+          </div>
+        </SidebarProvider>
+    )
+}
+
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-  const totalAmountEarned = popularOffers
-    .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.points, 0) / 100;
-  const userBalanceInCash = user.totalPoints / 100;
+  const supabase = createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-
-  return (
-    <SidebarProvider>
-      <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
-        <Sidebar collapsible="icon" className="bg-card border-r">
-          <SidebarContent />
-        </Sidebar>
-        <div className="flex flex-col overflow-hidden">
-          <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
-            <div className="hidden md:flex">
-              <SidebarTrigger />
-            </div>
-            <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
-              <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">Go back</span>
-            </Button>
-            <div className="flex-1 overflow-x-auto whitespace-nowrap">
-              <div className="flex gap-2 items-center">
-                {recentEarnings.map((earning, i) => (
-                  <div key={i} className="hidden md:flex items-center gap-2 p-2 rounded-md bg-muted/50 text-xs">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-primary">{earning.name}</span>
-                      <span className="text-muted-foreground">{earning.user}</span>
-                    </div>
-                    <Badge variant="secondary">{earning.amount}</Badge>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 ml-auto">
-              <div className="hidden sm:flex items-center gap-4">
-                  <div className="text-xs text-right">
-                      <p className="text-muted-foreground">Balance</p>
-                      <p className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</p>
-                  </div>
-                    <div className="text-xs text-right">
-                      <p className="text-muted-foreground">Earned</p>
-                      <p className="font-bold">${totalAmountEarned.toFixed(2)}</p>
-                  </div>
-              </div>
-              <div className="flex sm:hidden items-center gap-2 text-xs">
-                <span className="font-bold text-primary">{user.totalPoints.toLocaleString()} Pts</span>
-                <span className="font-bold text-muted-foreground">/</span>
-                <span className="font-bold">${userBalanceInCash.toFixed(2)}</span>
-              </div>
-              <UserNav />
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="shrink-0 md:hidden"
-                  >
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle navigation menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  side="top"
-                  className="w-full bg-card p-0"
-                >
-                  <SidebarContent>
-                    <SheetClose asChild>
-                      <Button variant="ghost" size="icon" className="md:hidden">
-                        <X className="h-5 w-5" />
-                        <span className="sr-only">Close</span>
-                      </Button>
-                    </SheetClose>
-                  </SidebarContent>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </header>
-          <SidebarInset>
-            <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
-          </SidebarInset>
-          
-          {/* Mobile Bottom Navigation */}
-          <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
-              <div className="grid grid-cols-4 gap-2">
-                  {mobileNavItems.map((item) => {
-                      const pathname = usePathname();
-                      const isActive = pathname === item.href;
-                      return (
-                          <Link
-                              key={item.href}
-                              href={item.href}
-                              className={cn(
-                                  "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-medium",
-                                  isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
-                              )}
-                          >
-                              <item.icon className="h-5 w-5" />
-                              <span className="truncate">{item.label}</span>
-                          </Link>
-                      )
-                  })}
-              </div>
-          </div>
-        </div>
-      </div>
-    </SidebarProvider>
-  );
+  return <LayoutClient user={user}>{children}</LayoutClient>;
 }
-
-
-
-
