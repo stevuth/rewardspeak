@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -151,7 +152,7 @@ export default function DashboardPage() {
                 <CarouselContent>
                     {offerWalls?.map((wall) => (
                     <CarouselItem
-                        key={wall.name}
+                        key={wall.id}
                         className="basis-1/2 md:basis-1/3 lg:basis-1/4"
                     >
                         <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full bg-card hover:bg-muted/50 transition-colors">
