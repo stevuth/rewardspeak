@@ -1,3 +1,4 @@
+
 'use client';
 
 import { LoginPageContent } from '@/components/auth/login-page-content';
