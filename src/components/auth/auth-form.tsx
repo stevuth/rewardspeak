@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState } from "react";
@@ -33,6 +34,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -45,15 +47,15 @@ type FormValues = z.infer<typeof formSchema>;
 
 type AuthFormProps = {
   type: "login" | "signup";
-  onSwitch?: () => void;
   onSuccess?: () => void;
 };
 
-export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
+export function AuthForm({ type, onSuccess }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const auth = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -73,6 +75,7 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
         await signInWithEmailAndPassword(auth, data.email, data.password);
         toast({ title: "Logged in successfully!" });
       }
+      router.push("/dashboard");
       onSuccess?.();
     } catch (error: any) {
       console.error("Authentication error:", error);
@@ -92,6 +95,7 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       toast({ title: "Logged in with Google successfully!" });
+      router.push('/dashboard');
       onSuccess?.();
     } catch (error: any) {
       console.error("Google sign-in error:", error);
@@ -137,21 +141,23 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
     }
   };
 
-  const switchText =
-    type === "login" ? "New adventurer?" : "Already a hero?";
-  const switchLinkText = type === "login" ? "Sign up" : "Log in";
-
+  const isLogin = type === 'login';
+  const title = isLogin ? "Welcome Back!" : "Join the Adventure";
+  const description = isLogin ? "Log in to continue your quest on Rewards Peak." : "Create your hero and start earning epic rewards.";
+  const buttonText = isLogin ? "Enter the Realm" : "Create My Hero";
+  const switchText = isLogin ? "New adventurer?" : "Already a hero?";
+  const switchActionText = isLogin ? "Sign up" : "Log in";
+  const switchRoute = isLogin ? "/signup" : "/login";
+  
   return (
     <Card className="w-full max-w-md border-0 shadow-none rounded-lg">
       <CardHeader className="text-center pt-12">
         <Gamepad2 className="mx-auto h-8 w-8 text-primary" />
         <CardTitle className="mt-4 text-2xl font-bold">
-          {type === "login" ? "Welcome Back!" : "Join the Adventure"}
+          {title}
         </CardTitle>
         <CardDescription>
-          {type === "login"
-            ? "Log in to continue your quest on Rewards Peak."
-            : "Create your hero and start earning epic rewards."}
+          {description}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -181,7 +187,7 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
                 <FormItem>
                     <div className="flex items-center justify-between">
                         <FormLabel>Password</FormLabel>
-                        {type === "login" && (
+                        {isLogin && (
                             <Button
                             type="button"
                             variant="link"
@@ -204,7 +210,7 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                type === "login" ? "Enter the Realm" : "Create My Hero"
+                buttonText
               )}
             </Button>
           </form>
@@ -241,11 +247,11 @@ export function AuthForm({ type, onSwitch, onSuccess }: AuthFormProps) {
           <Button
             variant="link"
             className="p-0 h-auto font-medium text-primary hover:underline"
-            onClick={onSwitch}
+            onClick={() => router.push(switchRoute)}
             type="button"
             disabled={isLoading}
           >
-            {switchLinkText}
+            {switchActionText}
           </Button>
         </p>
       </CardFooter>

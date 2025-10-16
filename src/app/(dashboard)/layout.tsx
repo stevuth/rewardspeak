@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from "next/link";
@@ -18,7 +19,8 @@ import {
   Mountain,
   LogOut,
   ArrowLeft,
-  X
+  X,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +35,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 
 const navItems = [
@@ -42,6 +44,7 @@ const navItems = [
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
     { href: "/referrals", label: "Invite & Climb", icon: Users },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
+    { href: "/admin/seo", label: "SEO Optimizer", icon: Shield },
 ];
 
 const secondaryNavItems = [
@@ -227,7 +230,7 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.replace('/login');
+      router.replace('/');
     }
   }, [user, isUserLoading, router]);
 
