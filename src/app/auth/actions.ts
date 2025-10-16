@@ -12,15 +12,21 @@ export async function signup(
   const supabase = createSupabaseServerClient();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  const referralCode = formData.get('referral_code') as string;
 
-  // The referral code is now handled on the client and passed in localStorage
-  // It will be picked up by the auth callback after verification
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
+  const emailRedirectTo = new URL('/auth/callback', siteUrl);
+
+  // Pass the referral code as a query parameter in the redirect URL
+  if (referralCode) {
+    emailRedirectTo.searchParams.set('referral_code', referralCode);
+  }
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      emailRedirectTo: emailRedirectTo.toString(),
     },
   });
 
@@ -36,7 +42,7 @@ export async function signup(
 export async function login(
   state: { message: string },
   formData: FormData
-): Promise<{ message: string }> {
+): Promise<{ message:string }> {
   const supabase = createSupabaseServerClient();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
