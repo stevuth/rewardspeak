@@ -75,7 +75,7 @@ export function AuthForm({ type, onSuccess }: AuthFormProps) {
         await signInWithEmailAndPassword(auth, data.email, data.password);
         toast({ title: "Logged in successfully!" });
       }
-      router.push("/dashboard");
+      router.push("/");
       onSuccess?.();
     } catch (error: any) {
       console.error("Authentication error:", error);
@@ -95,7 +95,7 @@ export function AuthForm({ type, onSuccess }: AuthFormProps) {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       toast({ title: "Logged in with Google successfully!" });
-      router.push('/dashboard');
+      router.push('/');
       onSuccess?.();
     } catch (error: any) {
       console.error("Google sign-in error:", error);
