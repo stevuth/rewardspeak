@@ -1,4 +1,3 @@
-
 // This part is the new Client Component
 // It contains all the hooks and interactive UI
 'use client';
