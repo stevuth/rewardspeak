@@ -35,6 +35,7 @@ const FloatingLabelInput = ({
   label,
   defaultValue = "",
   Icon,
+  required = true,
 }: {
   id: string;
   name: string;
@@ -42,6 +43,7 @@ const FloatingLabelInput = ({
   label: string;
   defaultValue?: string;
   Icon: React.ElementType;
+  required?: boolean;
 }) => {
   return (
     <div className="relative">
@@ -55,7 +57,7 @@ const FloatingLabelInput = ({
             defaultValue={defaultValue}
             placeholder=" " // Important for the floating label effect
             className="floating-label-input block w-full bg-[#1A0033]/80 rounded-md py-3 pl-10 pr-3 text-base text-gray-200 placeholder-gray-500 appearance-none focus:outline-none focus:ring-0 relative z-20"
-            required
+            required={required}
           />
           <label
             htmlFor={id}
@@ -91,7 +93,7 @@ export function FuturisticAuthForm({
   return (
     <div className="futuristic-auth-form w-full max-w-4xl min-h-[auto] md:min-h-[550px] bg-gradient-to-br from-[#15002B] to-[#240046] rounded-2xl shadow-[0_0_30px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row">
       {/* Left Panel */}
-      <div className="relative w-full md:w-2/5 p-8 flex flex-col justify-center items-center text-center text-white">
+      <div className="relative w-full md:w-2/5 p-8 md:p-6 flex flex-col justify-center items-center text-center text-white">
         <div className="absolute inset-0 bg-black/20 opacity-50 z-0"></div>
         <div className="relative z-10">
           <Image
@@ -162,6 +164,7 @@ export function FuturisticAuthForm({
                   label="Referral Code (Optional)"
                   defaultValue={referralCode}
                   Icon={UserPlus}
+                  required={false}
                 />
               )}
 
