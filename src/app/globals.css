@@ -4,80 +4,80 @@
 
 @layer base {
   :root {
-    --background: 220 48% 8%; /* #0A0F1E - Obsidian */
-    --foreground: 0 0% 91%; /* #E8E8E8 - Silver White */
-    --card: 220 40% 12%; /* Slightly lighter Obsidian for cards */
-    --card-foreground: 0 0% 91%; /* #E8E8E8 */
-    --popover: 220 48% 8%; /* #0A0F1E */
-    --popover-foreground: 0 0% 91%; /* #E8E8E8 */
-    --primary: 188 100% 50%; /* #04D9FF - Neon Cyan */
-    --primary-foreground: 220 48% 8%; /* Obsidian for contrast */
-    --secondary: 56 100% 50%; /* #FFEA00 - Yellow Spark */
-    --secondary-foreground: 220 48% 8%; /* Obsidian for contrast */
-    --muted: 220 40% 15%;
-    --muted-foreground: 220 20% 60%;
-    --accent: 56 100% 50%; /* #FFEA00 - Yellow Spark */
-    --accent-foreground: 220 48% 8%;
+    --background: 0 0% 5%; /* #0D0D0D - Carbon Black */
+    --foreground: 0 0% 100%; /* #FFFFFF - White */
+    --card: 0 0% 8%; /* Slightly lighter than Carbon Black for cards */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
+    --popover: 0 0% 5%; /* #0D0D0D */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
+    --primary: 195 100% 50%; /* #00C2FF - Electric Blue */
+    --primary-foreground: 0 0% 5%; /* Carbon Black for contrast */
+    --secondary: 54 100% 50%; /* #FFE600 - Reward Gold */
+    --secondary-foreground: 0 0% 5%; /* Carbon Black for contrast */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 195 100% 50%; /* #00C2FF - Electric Blue */
+    --accent-foreground: 0 0% 5%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 40% 18%;
-    --input: 220 40% 15%;
-    --ring: 188 100% 50%; /* Neon Cyan for rings */
-    --chart-1: 188 100% 50%;
-    --chart-2: 56 100% 50%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 195 100% 50%; /* Electric Blue for rings */
+    --chart-1: 195 100% 50%;
+    --chart-2: 54 100% 50%;
     --chart-3: 330 100% 50%;
     --chart-4: 260 85% 66%;
     --chart-5: 300 89% 66%;
     --radius: 0.75rem;
-    --sidebar-background: 220 48% 8%;
-    --sidebar-foreground: 0 0% 91%;
-    --sidebar-primary: 188 100% 50%;
-    --sidebar-primary-foreground: 220 48% 8%;
-    --sidebar-accent: 220 40% 15%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 195 100% 50%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 220 40% 18%;
-    --sidebar-ring: 188 100% 50%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 195 100% 50%;
 
     /* Custom Reward Toast Colors */
-    --reward-toast-start: 220 48% 8%;
-    --reward-toast-end: 188 100% 20%; 
-    --reward-toast-accent: 56 100% 50%;
+    --reward-toast-start: 0 0% 5%;
+    --reward-toast-end: 195 100% 15%; 
+    --reward-toast-accent: 54 100% 50%;
   }
 
   .dark {
-    --background: 220 48% 8%; /* #0A0F1E - Obsidian */
-    --foreground: 0 0% 91%; /* #E8E8E8 - Silver White */
-    --card: 220 40% 12%; /* Slightly lighter Obsidian for cards */
-    --card-foreground: 0 0% 91%; /* #E8E8E8 */
-    --popover: 220 48% 8%; /* #0A0F1E */
-    --popover-foreground: 0 0% 91%; /* #E8E8E8 */
-    --primary: 188 100% 50%; /* #04D9FF - Neon Cyan */
-    --primary-foreground: 220 48% 8%; /* Obsidian for contrast */
-    --secondary: 56 100% 50%; /* #FFEA00 - Yellow Spark */
-    --secondary-foreground: 220 48% 8%; /* Obsidian for contrast */
-    --muted: 220 40% 15%;
-    --muted-foreground: 220 20% 60%;
-    --accent: 56 100% 50%; /* #FFEA00 - Yellow Spark */
-    --accent-foreground: 220 48% 8%;
+    --background: 0 0% 5%; /* #0D0D0D - Carbon Black */
+    --foreground: 0 0% 100%; /* #FFFFFF - White */
+    --card: 0 0% 8%; /* Slightly lighter than Carbon Black for cards */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
+    --popover: 0 0% 5%; /* #0D0D0D */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
+    --primary: 195 100% 50%; /* #00C2FF - Electric Blue */
+    --primary-foreground: 0 0% 5%; /* Carbon Black for contrast */
+    --secondary: 54 100% 50%; /* #FFE600 - Reward Gold */
+    --secondary-foreground: 0 0% 5%; /* Carbon Black for contrast */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 195 100% 50%; /* #00C2FF - Electric Blue */
+    --accent-foreground: 0 0% 5%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 40% 18%;
-    --input: 220 40% 15%;
-    --ring: 188 100% 50%; /* Neon Cyan for rings */
-    --chart-1: 188 100% 50%;
-    --chart-2: 56 100% 50%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 195 100% 50%; /* Electric Blue for rings */
+    --chart-1: 195 100% 50%;
+    --chart-2: 54 100% 50%;
     --chart-3: 330 100% 50%;
     --chart-4: 260 85% 66%;
     --chart-5: 300 89% 66%;
     --radius: 0.75rem;
-    --sidebar-background: 220 48% 8%;
-    --sidebar-foreground: 0 0% 91%;
-    --sidebar-primary: 188 100% 50%;
-    --sidebar-primary-foreground: 220 48% 8%;
-    --sidebar-accent: 220 40% 15%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 195 100% 50%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 220 40% 18%;
-    --sidebar-ring: 188 100% 50%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 195 100% 50%;
   }
 }
 
