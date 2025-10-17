@@ -81,8 +81,8 @@ export default async function MyPeakProfilePage() {
                         </div>
 
                         <Button className="w-full">
-                            <UserPlus className="mr-2 h-4 w-4" />
-                            Edit Profile
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload Picture
                         </Button>
                     </CardContent>
                 </Card>
