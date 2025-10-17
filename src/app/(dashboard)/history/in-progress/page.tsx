@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 const StatusBadge = ({ status }: { status: Offer["status"] }) => {
   if (status === "Pending") {
     return (
-      <Badge variant="outline" className="text-yellow-400 border-yellow-600/30">
+      <Badge variant="outline" className="text-secondary border-secondary/30">
         <Clock className="mr-1 h-3 w-3" />
         Pending
       </Badge>

@@ -22,8 +22,8 @@ export function WelcomeBonusModal({ isOpen, onClose }: WelcomeBonusModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md text-center">
         <DialogHeader>
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/50 mb-4">
-            <Gift className="h-10 w-10 text-yellow-500 dark:text-yellow-400" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary/20 dark:bg-secondary/30 mb-4">
+            <Gift className="h-10 w-10 text-secondary" />
           </div>
           <DialogTitle className="text-2xl font-bold font-headline">
             Welcome to Rewards Peak!

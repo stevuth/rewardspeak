@@ -39,7 +39,7 @@ const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => 
           (isSecond || isThird) && "bg-card/80"
         )}
       >
-        {isFirst && <Crown className="absolute -top-3 h-6 w-6 text-yellow-400" />}
+        {isFirst && <Crown className="absolute -top-3 h-6 w-6 text-primary" />}
         {isSecond && <Medal className="absolute top-2 right-2 h-5 w-5 text-gray-400" />}
         {isThird && <Medal className="absolute top-2 right-2 h-5 w-5 text-orange-400" />}
 
@@ -49,7 +49,7 @@ const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => 
         </Avatar>
         <p className="font-bold text-lg text-primary">{user.name}</p>
         <p className="text-sm text-muted-foreground">{user.points.toLocaleString()} Points</p>
-        <div className="mt-4 flex items-center gap-2 bg-yellow-400/20 text-yellow-300 font-bold px-4 py-1.5 rounded-full">
+        <div className="mt-4 flex items-center gap-2 bg-secondary/20 text-secondary font-bold px-4 py-1.5 rounded-full">
             <span>${user.prize?.toLocaleString()}</span>
         </div>
         <Badge className="mt-4">{`#${user.rank}`}</Badge>

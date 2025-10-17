@@ -97,7 +97,7 @@ function OfferCarouselCard({ offer }: { offer: Offer }) {
             )}
             <div>
                 <p className="font-semibold text-sm">{offer.title}</p>
-                <div className="flex items-center gap-1 text-yellow-400 mt-1">
+                <div className="flex items-center gap-1 text-secondary mt-1">
                     <Star className="w-4 h-4 fill-current" />
                     <span className="text-xs font-bold">5.0</span>
                 </div>
@@ -131,18 +131,18 @@ const SignUpBonusIllustration = () => (
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-8 bg-primary/40 rounded-full"></div>
       </div>
       {/* Coins */}
-      <div className="absolute top-4 left-8 w-6 h-6 bg-yellow-400 rounded-full animate-bounce"></div>
-      <div className="absolute top-10 right-6 w-8 h-8 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
-       <div className="absolute bottom-4 left-12 w-5 h-5 bg-yellow-300 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
+      <div className="absolute top-4 left-8 w-6 h-6 bg-secondary rounded-full animate-bounce"></div>
+      <div className="absolute top-10 right-6 w-8 h-8 bg-secondary/80 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+       <div className="absolute bottom-4 left-12 w-5 h-5 bg-secondary/60 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
     </div>
   );
 
 const ReferralEarningsIllustration = () => (
   <div className="relative w-48 h-32 flex items-center justify-center">
     {/* People */}
-    <div className="absolute w-10 h-10 bg-yellow-200 rounded-full top-8 left-8"></div>
-    <div className="absolute w-12 h-12 bg-gray-400 rounded-full top-4 left-1/2 -translate-x-1/2"></div>
-    <div className="absolute w-10 h-10 bg-yellow-200 rounded-full top-8 right-8"></div>
+    <div className="absolute w-10 h-10 bg-secondary/30 rounded-full top-8 left-8"></div>
+    <div className="absolute w-12 h-12 bg-muted rounded-full top-4 left-1/2 -translate-x-1/2"></div>
+    <div className="absolute w-10 h-10 bg-secondary/30 rounded-full top-8 right-8"></div>
     {/* Arrows and Percentage */}
     <div className="absolute top-20 left-12 text-primary font-bold text-lg">10%</div>
     <ArrowRight className="absolute top-16 left-20 w-8 h-8 text-primary" />
@@ -155,12 +155,12 @@ const SecureWithdrawalsIllustration = () => (
     {/* Banknote */}
     <div className="w-24 h-14 bg-green-500 rounded-lg shadow-lg flex items-center justify-center text-white font-bold text-xl">$10</div>
     {/* Padlock */}
-    <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
+    <div className="absolute -top-2 -right-2 w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
       <ShieldCheck className="w-5 h-5 text-white" />
     </div>
     {/* Coins */}
-    <div className="absolute bottom-4 -left-4 w-6 h-6 bg-yellow-400 rounded-full"></div>
-    <div className="absolute -bottom-2 left-0 w-8 h-8 bg-yellow-500 rounded-full"></div>
+    <div className="absolute bottom-4 -left-4 w-6 h-6 bg-secondary rounded-full"></div>
+    <div className="absolute -bottom-2 left-0 w-8 h-8 bg-secondary/80 rounded-full"></div>
   </div>
 );
 
@@ -168,9 +168,9 @@ const FrequentGiveawaysIllustration = () => (
   <div className="relative w-48 h-32 flex items-center justify-center">
     <Gift className="w-20 h-20 text-primary" />
     {/* Stars */}
-    <Star className="absolute top-4 left-8 w-5 h-5 text-yellow-400 fill-yellow-400" />
-    <Star className="absolute top-8 right-4 w-6 h-6 text-yellow-400 fill-yellow-400" />
-    <Star className="absolute bottom-4 left-12 w-4 h-4 text-yellow-400 fill-yellow-400" />
+    <Star className="absolute top-4 left-8 w-5 h-5 text-secondary fill-secondary" />
+    <Star className="absolute top-8 right-4 w-6 h-6 text-secondary fill-secondary" />
+    <Star className="absolute bottom-4 left-12 w-4 h-4 text-secondary fill-secondary" />
   </div>
 );
 

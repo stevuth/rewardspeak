@@ -57,7 +57,12 @@ const colorMap: Record<string, string> = {
 
 const WithdrawalCard = ({ method }: { method: typeof withdrawalMethods[0] }) => {
   const Icon = iconMap[method.name];
-  const bgColor = colorMap[method.name] || "bg-card";
+  let bgColor = colorMap[method.name] || "bg-card";
+
+  // Override yellow colors to blue
+  if (method.name === 'Binance Coin') {
+    bgColor = 'bg-secondary';
+  }
 
   return (
     <div className="relative group">
@@ -91,7 +96,7 @@ const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
   }
   if (status === "Pending") {
     return (
-      <Badge variant="outline" className="text-yellow-400 border-yellow-600/30">
+      <Badge variant="outline" className="text-secondary border-secondary/30">
         <Clock className="mr-1 h-3 w-3" />
         Pending
       </Badge>

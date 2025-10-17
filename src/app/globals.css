@@ -16,8 +16,8 @@
     --secondary-foreground: 228 21% 98%;
     --muted: 225 41% 15%;
     --muted-foreground: 228 21% 60%;
-    --accent: 51 100% 50%;
-    --accent-foreground: 225 41% 5%;
+    --accent: 211 100% 50%;
+    --accent-foreground: 228 21% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 225 41% 20%;
@@ -41,7 +41,7 @@
     /* Custom Reward Toast Colors */
     --reward-toast-start: 232 77% 17%; /* #0B1A4C */
     --reward-toast-end: 219 95% 48%; /* #0D6EFD */
-    --reward-toast-accent: 67 100% 67%; /* #EFFF57 */
+    --reward-toast-accent: 211 100% 70%; /* Lighter shade of secondary blue */
   }
 
   .dark {
@@ -57,8 +57,8 @@
     --secondary-foreground: 228 21% 98%;
     --muted: 225 41% 15%;
     --muted-foreground: 228 21% 60%;
-    --accent: 51 100% 50%;
-    --accent-foreground: 225 41% 5%;
+    --accent: 211 100% 50%;
+    --accent-foreground: 228 21% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 225 41% 20%;
