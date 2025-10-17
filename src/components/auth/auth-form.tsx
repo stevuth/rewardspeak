@@ -1,7 +1,7 @@
 "use client";
 
 import { login, signup } from "@/app/auth/actions";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState } from "react";
 import { FuturisticAuthForm } from "./futuristic-auth-form";
 
 export function AuthForm({
@@ -11,12 +11,12 @@ export function AuthForm({
   type: "login" | "signup";
   onSwitch?: () => void;
 }) {
-  const [loginState, loginAction] = useActionState(login, { message: "" });
-  const [signupState, signupAction] = useActionState(signup, { message: "" });
+  const [loginState, loginAction, isLoginPending] = useActionState(login, { message: "" });
+  const [signupState, signupAction, isSignupPending] = useActionState(signup, { message: "" });
 
   const state = type === "login" ? loginState : signupState;
   const formAction = type === "login" ? loginAction : signupAction;
-  const { pending } = (formAction as any).pending; // A bit of a hack to get pending state
+  const pending = type === 'login' ? isLoginPending : isSignupPending;
 
   return (
     <FuturisticAuthForm
