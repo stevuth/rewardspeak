@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Metadata } from "next";
-import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint } from "lucide-react";
+import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatItem } from "@/components/stat-item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,108 +52,94 @@ export default async function MyPeakProfilePage() {
         description="Manage your account and notification settings."
       />
 
-        <Card>
-            <CardContent className="p-6">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="md:col-span-1 flex flex-col items-center text-center">
-                        <Avatar className="h-24 w-24 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-1">
+                <Card className="text-center">
+                    <CardContent className="p-6">
+                        <Avatar className="h-24 w-24 mb-4 mx-auto border-2 border-primary">
                             <AvatarImage src={"https://picsum.photos/seed/avatar1/96/96"} alt={user?.email || "user"} />
                             <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                         </Avatar>
-                        <Button variant="outline"><Upload className="mr-2 h-4 w-4" /> Upload Picture</Button>
-                        <p className="text-xs text-muted-foreground mt-2">PNG, JPG up to 5MB.</p>
-                    </div>
-                    <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                         <StatItem
-                            title="Offers Completed"
-                            value={completedOffersCount}
-                            icon={CheckCircle}
-                            className="bg-muted p-4 rounded-lg"
-                        />
-                        <StatItem
-                            title="Amount Earned"
-                            value={`$${totalAmountEarned.toFixed(2)}`}
-                            icon={DollarSign}
-                            className="bg-muted p-4 rounded-lg"
-                        />
-                        <StatItem
-                            title="Date Joined"
-                            value={dateJoined.toLocaleDateString(undefined, {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })}
-                            icon={CalendarDays}
-                            className="bg-muted p-4 rounded-lg"
-                        />
-                        <StatItem
-                            title="Rewards Peak ID"
-                            value={rewardsPeakId}
-                            icon={Fingerprint}
-                            className="bg-muted p-4 rounded-lg"
-                        />
-                    </div>
-                 </div>
-            </CardContent>
-        </Card>
+                        <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
+                        <p className="text-sm text-muted-foreground">Pro Climber</p>
 
+                        <div className="flex justify-around my-6 text-center">
+                            <div>
+                                <p className="text-2xl font-bold"><AnimatedCounter value={completedOffersCount} /></p>
+                                <p className="text-xs text-muted-foreground">Offers Done</p>
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold">${totalAmountEarned.toFixed(2)}</p>
+                                <p className="text-xs text-muted-foreground">Total Earned</p>
+                            </div>
+                        </div>
 
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="password">Password</TabsTrigger>
-        </TabsList>
-        <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-              <CardDescription>
-                This is how others will see you on the site.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" defaultValue={user?.email} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue={user?.email} />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save Profile</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="password">
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>
-                Update your password here. For security, we'll ask you to confirm your current password.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="current_password">Current Password</Label>
-                <Input id="current_password" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new_password">New Password</Label>
-                <Input id="new_password" type="password" />
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="confirm_password">Confirm New Password</Label>
-                <Input id="confirm_password" type="password" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Update Password</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                        <Button className="w-full">
+                            <UserPlus className="mr-2 h-4 w-4" />
+                            Edit Profile
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="md:col-span-2">
+                 <Tabs defaultValue="profile" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="profile">Profile</TabsTrigger>
+                    <TabsTrigger value="password">Password</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="profile">
+                    <Card>
+                        <CardHeader>
+                        <CardTitle>Account Information</CardTitle>
+                        <CardDescription>
+                            This is how others will see you on the site.
+                        </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Full Name</Label>
+                            <Input id="name" defaultValue={user?.email} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" type="email" defaultValue={user?.email} />
+                        </div>
+                        </CardContent>
+                        <CardFooter>
+                        <Button>Save Profile</Button>
+                        </CardFooter>
+                    </Card>
+                    </TabsContent>
+                    <TabsContent value="password">
+                    <Card>
+                        <CardHeader>
+                        <CardTitle>Password</CardTitle>
+                        <CardDescription>
+                            Update your password here. For security, we'll ask you to confirm your current password.
+                        </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="current_password">Current Password</Label>
+                            <Input id="current_password" type="password" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="new_password">New Password</Label>
+                            <Input id="new_password" type="password" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="confirm_password">Confirm New Password</Label>
+                            <Input id="confirm_password" type="password" />
+                        </div>
+                        </CardContent>
+                        <CardFooter>
+                        <Button>Update Password</Button>
+                        </CardFooter>
+                    </Card>
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </div>
     </div>
   );
 }
