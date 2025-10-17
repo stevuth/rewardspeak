@@ -90,3 +90,31 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@layer utilities {
+  .futuristic-auth-form .floating-label-input:focus ~ label,
+  .futuristic-auth-form .floating-label-input:not(:placeholder-shown) ~ label {
+    @apply -translate-y-5 scale-75 text-secondary;
+  }
+
+  .futuristic-auth-form .animated-border-wrap {
+    @apply relative p-[2px] overflow-hidden rounded-lg;
+  }
+
+  .futuristic-auth-form .animated-border-wrap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background: conic-gradient(from 180deg at 50% 50%, hsl(var(--primary)) 0deg, hsl(var(--secondary)) 180deg, hsl(var(--primary)) 360deg);
+    transition: transform 0.4s ease-in-out;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .futuristic-auth-form .floating-label-input:focus + .animated-border-wrap::before {
+    transform: translateX(0%);
+  }
+}

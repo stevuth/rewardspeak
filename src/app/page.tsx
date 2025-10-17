@@ -263,28 +263,28 @@ function HomePageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent className="p-0 border-0 max-w-md">
+        <DialogContent className="p-0 border-0 max-w-4xl bg-transparent shadow-none">
             <DialogTitle className="sr-only">Log In</DialogTitle>
             <AuthForm type="login" onSwitch={onSwitchForms} />
         </DialogContent>
       </Dialog>
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="p-0 border-0 max-w-md">
+        <DialogContent className="p-0 border-0 max-w-4xl bg-transparent shadow-none">
             <DialogTitle className="sr-only">Sign Up</DialogTitle>
             <AuthForm type="signup" onSwitch={onSwitchForms} />
         </DialogContent>
       </Dialog>
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png?v=4" alt="Rewards Peak Logo" width={40} height={40} />
+          <Image src="/logo.png?v=4" alt="Rewards Peak Logo" width={60} height={60} />
         </Link>
         <nav className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setIsLoginOpen(true)}>
-              <Chrome className="mr-2 h-4 w-4" />
+              <LogIn className="mr-2 h-4 w-4" />
               Sign in
           </Button>
           <Button onClick={() => setIsSignupOpen(true)}>
-                <Users className="mr-2 h-4 w-4"/>
+                <UserPlus className="mr-2 h-4 w-4"/>
                 Sign Up
           </Button>
         </nav>
@@ -407,9 +407,7 @@ function HomePageContent() {
                     <p className="text-muted-foreground mb-6">
                         Join thousands of users earning real rewards every day. Getting started is quick and completely free!
                     </p>
-                    <Button asChild size="lg">
-                        <Link href="/signup">Start Earning</Link>
-                    </Button>
+                    <Button size="lg" onClick={() => setIsSignupOpen(true)}>Start Earning</Button>
                     <div className="mt-8 flex flex-wrap items-center gap-4">
                         <p className="text-sm text-muted-foreground">Trusted by over +1500</p>
                         <div className="flex items-center gap-1">
@@ -558,9 +556,7 @@ function HomePageContent() {
                 <div className="text-center md:text-left">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
                     <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
-                    <Button size="lg" asChild>
-                        <Link href="/signup">Start earning now</Link>
-                    </Button>
+                    <Button size="lg" onClick={() => setIsSignupOpen(true)}>Start earning now</Button>
                 </div>
                 <div className="space-y-4">
                     {recentCashouts.length > 0 ? (
