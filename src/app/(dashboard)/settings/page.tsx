@@ -43,7 +43,7 @@ export default async function MyPeakProfilePage() {
   const totalPoints = profileData?.points ?? 0;
   const totalAmountEarned = totalPoints / 100;
   const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
-  const rewardsPeakId = profileData?.id ? `ID RP-${profileData.id}` : 'ID RP-GUEST';
+  const rewardsPeakId = profileData?.id ? `Rewards Peak ID-${profileData.id}` : 'Rewards Peak ID-GUEST';
 
 
   return (
@@ -149,3 +149,4 @@ export default async function MyPeakProfilePage() {
     </div>
   );
 }
+
