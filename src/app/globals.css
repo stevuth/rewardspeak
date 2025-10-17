@@ -4,80 +4,80 @@
 
 @layer base {
   :root {
-    --background: 270 100% 10%; /* #1A0033 - Dark Purple */
-    --foreground: 0 0% 95%; /* #F2F2F2 - White Gray */
-    --card: 270 100% 13%; /* Slightly lighter purple for cards */
-    --card-foreground: 0 0% 95%; /* #F2F2F2 */
-    --popover: 270 100% 10%; /* #1A0033 */
-    --popover-foreground: 0 0% 95%; /* #F2F2F2 */
-    --primary: 273 71% 60%; /* #9B51E0 - Vivid Violet */
-    --primary-foreground: 0 0% 95%; /* White Gray for contrast */
-    --secondary: 75 100% 50%; /* #C6FF00 - Neon Lime */
-    --secondary-foreground: 270 100% 5%; /* Dark for contrast on buttons */
-    --muted: 270 100% 15%;
+    --background: 272 100% 8%; /* #15002B - Cyber Grape */
+    --foreground: 0 0% 95%; /* #F3F3F3 - Soft White */
+    --card: 272 100% 11%; /* Slightly lighter grape for cards */
+    --card-foreground: 0 0% 95%; /* #F3F3F3 */
+    --popover: 272 100% 8%; /* #15002B */
+    --popover-foreground: 0 0% 95%; /* #F3F3F3 */
+    --primary: 277 79% 53%; /* #8A2BE2 - Bright Violet */
+    --primary-foreground: 0 0% 95%; /* Soft White for contrast */
+    --secondary: 111 100% 54%; /* #39FF14 - Electric Green */
+    --secondary-foreground: 272 100% 8%; /* Dark for contrast on buttons */
+    --muted: 272 100% 13%;
     --muted-foreground: 0 0% 65%;
-    --accent: 75 100% 50%; /* #C6FF00 - Neon Lime for accents */
-    --accent-foreground: 270 100% 5%;
+    --accent: 111 100% 54%; /* #39FF14 - Electric Green for accents */
+    --accent-foreground: 272 100% 8%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 270 100% 15%;
-    --input: 270 100% 15%;
-    --ring: 273 71% 60%; /* Vivid Violet for rings */
-    --chart-1: 273 71% 60%;
-    --chart-2: 75 100% 50%;
+    --border: 272 100% 13%;
+    --input: 272 100% 13%;
+    --ring: 277 79% 53%; /* Bright Violet for rings */
+    --chart-1: 277 79% 53%;
+    --chart-2: 111 100% 54%;
     --chart-3: 330 100% 50%;
     --chart-4: 260 85% 66%;
     --chart-5: 300 89% 66%;
     --radius: 0.75rem;
-    --sidebar-background: 270 100% 10%;
+    --sidebar-background: 272 100% 8%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 273 71% 60%;
+    --sidebar-primary: 277 79% 53%;
     --sidebar-primary-foreground: 0 0% 95%;
-    --sidebar-accent: 270 100% 15%;
+    --sidebar-accent: 272 100% 13%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 270 100% 15%;
-    --sidebar-ring: 273 71% 60%;
+    --sidebar-border: 272 100% 13%;
+    --sidebar-ring: 277 79% 53%;
 
     /* Custom Reward Toast Colors */
-    --reward-toast-start: 270 100% 10%;
-    --reward-toast-end: 273 71% 20%; 
-    --reward-toast-accent: 75 100% 50%;
+    --reward-toast-start: 272 100% 8%;
+    --reward-toast-end: 277 79% 20%; 
+    --reward-toast-accent: 111 100% 54%;
   }
 
   .dark {
-    --background: 270 100% 10%; /* #1A0033 - Dark Purple */
-    --foreground: 0 0% 95%; /* #F2F2F2 - White Gray */
-    --card: 270 100% 13%; /* Slightly lighter purple for cards */
-    --card-foreground: 0 0% 95%; /* #F2F2F2 */
-    --popover: 270 100% 10%; /* #1A0033 */
-    --popover-foreground: 0 0% 95%; /* #F2F2F2 */
-    --primary: 273 71% 60%; /* #9B51E0 - Vivid Violet */
-    --primary-foreground: 0 0% 95%; /* White Gray for contrast */
-    --secondary: 75 100% 50%; /* #C6FF00 - Neon Lime */
-    --secondary-foreground: 270 100% 5%; /* Dark for contrast on buttons */
-    --muted: 270 100% 15%;
+    --background: 272 100% 8%; /* #15002B - Cyber Grape */
+    --foreground: 0 0% 95%; /* #F3F3F3 - Soft White */
+    --card: 272 100% 11%; /* Slightly lighter grape for cards */
+    --card-foreground: 0 0% 95%; /* #F3F3F3 */
+    --popover: 272 100% 8%; /* #15002B */
+    --popover-foreground: 0 0% 95%; /* #F3F3F3 */
+    --primary: 277 79% 53%; /* #8A2BE2 - Bright Violet */
+    --primary-foreground: 0 0% 95%; /* Soft White for contrast */
+    --secondary: 111 100% 54%; /* #39FF14 - Electric Green */
+    --secondary-foreground: 272 100% 8%; /* Dark for contrast on buttons */
+    --muted: 272 100% 13%;
     --muted-foreground: 0 0% 65%;
-    --accent: 75 100% 50%; /* #C6FF00 - Neon Lime for accents */
-    --accent-foreground: 270 100% 5%;
+    --accent: 111 100% 54%; /* #39FF14 - Electric Green for accents */
+    --accent-foreground: 272 100% 8%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 270 100% 15%;
-    --input: 270 100% 15%;
-    --ring: 273 71% 60%; /* Vivid Violet for rings */
-    --chart-1: 273 71% 60%;
-    --chart-2: 75 100% 50%;
+    --border: 272 100% 13%;
+    --input: 272 100% 13%;
+    --ring: 277 79% 53%; /* Bright Violet for rings */
+    --chart-1: 277 79% 53%;
+    --chart-2: 111 100% 54%;
     --chart-3: 330 100% 50%;
     --chart-4: 260 85% 66%;
     --chart-5: 300 89% 66%;
     --radius: 0.75rem;
-    --sidebar-background: 270 100% 10%;
+    --sidebar-background: 272 100% 8%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 273 71% 60%;
+    --sidebar-primary: 277 79% 53%;
     --sidebar-primary-foreground: 0 0% 95%;
-    --sidebar-accent: 270 100% 15%;
+    --sidebar-accent: 272 100% 13%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 270 100% 15%;
-    --sidebar-ring: 273 71% 60%;
+    --sidebar-border: 272 100% 13%;
+    --sidebar-ring: 277 79% 53%;
   }
 }
 

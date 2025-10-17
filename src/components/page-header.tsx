@@ -13,7 +13,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className={cn("space-y-2", className)}>
-      <h1 className="text-3xl font-bold tracking-tight font-headline">{title}</h1>
+      <h1 className="text-3xl font-bold tracking-tight font-headline text-primary">{title}</h1>
       {description && <p className="text-muted-foreground">{description}</p>}
     </div>
   );
