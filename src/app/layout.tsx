@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Orbitron } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
 
-const outfit = Outfit({
+const orbitron = Orbitron({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -43,11 +43,11 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className={`${outfit.variable} font-body antialiased overflow-x-hidden`}>
+      <body className={`${orbitron.variable} font-body antialiased overflow-x-hidden`}>
         {children}
         <Toaster />
         <Analytics />
