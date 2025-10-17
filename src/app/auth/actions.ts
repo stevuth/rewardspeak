@@ -46,7 +46,7 @@ export async function login(
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -55,6 +55,8 @@ export async function login(
     return { message: error.message };
   }
 
+  const userEmail = data.user?.email || '';
+
   revalidatePath('/', 'layout');
-  redirect('/dashboard?login=true');
+  redirect(`/dashboard?event=login&user_email=${encodeURIComponent(userEmail)}`);
 }

@@ -34,7 +34,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { AnimatedCounter } from "@/components/animated-counter";
-import { AuthToastProvider } from "@/components/auth/auth-toast-provider";
 import { WelcomeBonusModal } from "@/components/welcome-bonus-modal";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -68,9 +67,13 @@ export default function DashboardPage() {
     }
     
     // Clean up URL params to prevent re-triggering
-    if (event || searchParams.has('verified')) {
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, '', newUrl);
+    const paramsExist = event || searchParams.has('verified') || searchParams.has('user_email');
+    if (paramsExist) {
+        // Use a timeout to ensure the toast has time to be triggered before cleaning up
+        setTimeout(() => {
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+        }, 100);
     }
 
   }, [searchParams]);
