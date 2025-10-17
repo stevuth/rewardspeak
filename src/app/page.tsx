@@ -61,6 +61,7 @@ import {
   CreditCard,
   DollarSign,
   LogOut,
+  LogIn,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -70,7 +71,7 @@ import { ExclusiveOpportunitiesIllustration } from "@/components/illustrations/e
 import React from 'react';
 import { cn } from '@/lib/utils';
 import Autoplay from "embla-carousel-autoplay"
-import { OfferGridCard } from '@/components/offer-grid-card';
+import { OfferGridCard } from './offer-grid-card';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { AuthForm } from '@/components/auth/auth-form';
 import { useSearchParams } from 'next/navigation';
