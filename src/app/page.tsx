@@ -616,7 +616,7 @@ function HomePageContent() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                     <h3 className="font-bold text-lg mb-4">Browse</h3>
-                    <ul className="space-y-2 text-muted-foreground">
+                    <ul className="space-y-2 text-muted-foreground font-bold">
                         <li><Link href="/climb-and-earn" className="hover:text-primary">Earn</Link></li>
                         <li><Link href="/cash-out-cabin" className="hover:text-primary">Withdraw</Link></li>
                         <li><Link href="/top-climbers" className="hover:text-primary">Leaderboard</Link></li>
@@ -624,7 +624,7 @@ function HomePageContent() {
                 </div>
                  <div>
                     <h3 className="font-bold text-lg mb-4">About</h3>
-                    <ul className="space-y-2 text-muted-foreground">
+                    <ul className="space-y-2 text-muted-foreground font-bold">
                         <li><Link href="/privacy-trail" className="hover:text-primary">Privacy Policy</Link></li>
                         <li><Link href="#" className="hover:text-primary">Cookie Policy</Link></li>
                         <li><Link href="/terms-of-the-peak" className="hover:text-primary">Terms of Service</Link></li>
@@ -633,7 +633,7 @@ function HomePageContent() {
                 </div>
                 <div>
                     <h3 className="font-bold text-lg mb-4">Support</h3>
-                     <ul className="space-y-2 text-muted-foreground">
+                     <ul className="space-y-2 text-muted-foreground font-bold">
                         <li><Link href="/help-station" className="hover:text-primary">Help Center</Link></li>
                         <li><Link href="#" className="hover:text-primary">Contact Us</Link></li>
                     </ul>
