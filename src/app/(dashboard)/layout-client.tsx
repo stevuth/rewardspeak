@@ -180,7 +180,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                     <span className="sr-only">Toggle navigation menu</span>
                 </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="w-full bg-card p-0">
+            <SheetContent side="top" className="w-full bg-card p-0 rounded-b-2xl">
                  <div className="w-full">
                     <div className="p-4 border-b flex items-center justify-between">
                         <Link
