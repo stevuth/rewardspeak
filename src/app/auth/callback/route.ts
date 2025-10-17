@@ -1,23 +1,34 @@
 
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabase/server';
+import { showLoginToast } from '@/lib/reward-toast';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/dashboard';
+  const referralCode = searchParams.get('referral_code');
+  
+  // Create a URL object for the destination, so we can add parameters
+  const redirectUrl = new URL(next, origin);
 
   if (code) {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!error && data.user) {
-      // The database trigger 'on_auth_user_created' handles profile creation and
-      // the subsequent 'on_profile_created' trigger handles recording the referral.
-      // No application-level action is needed here for referrals.
+      // The database trigger 'on_profile_created' handles recording the referral.
+      // This is now fully automated on the database side.
       
-      const redirectUrl = new URL(next, origin);
-      redirectUrl.searchParams.set('verified', 'true');
+      // Add a parameter to the URL to signal a successful login/verification event
+      redirectUrl.searchParams.set('event', 'login');
+      redirectUrl.searchParams.set('user_email', data.user.email || '');
+
+      // Add a parameter if it's a first-time verification
+      if (data.user.email_confirmed_at && new Date().getTime() - new Date(data.user.email_confirmed_at).getTime() < 5000) {
+        redirectUrl.searchParams.set('verified', 'true');
+      }
+
       return NextResponse.redirect(redirectUrl);
     }
 
@@ -25,7 +36,7 @@ export async function GET(request: Request) {
   }
 
   // return the user to an error page with instructions
-  const redirectUrl = new URL('/auth/error', origin);
+  redirectUrl.pathname = '/auth/error';
   redirectUrl.searchParams.set('message', 'Could not verify email. Please try again.');
   return NextResponse.redirect(redirectUrl);
 }

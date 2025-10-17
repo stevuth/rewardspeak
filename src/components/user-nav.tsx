@@ -62,7 +62,7 @@ export function UserNav({ user }: { user: SupabaseUser | null }) {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/?logout=true">
+          <Link href={`/?event=logout&user_email=${user?.email || ''}`}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </Link>

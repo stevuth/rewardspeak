@@ -74,7 +74,7 @@ import { OfferGridCard } from '@/components/offer-grid-card';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { AuthForm } from '@/components/auth/auth-form';
 import { useSearchParams } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { showLogoutToast } from '@/lib/reward-toast';
 
 
 const recentCashouts: any[] = [];
@@ -184,20 +184,16 @@ function HomePageContent() {
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
   
   const searchParams = useSearchParams();
-  const { toast } = useToast();
 
   React.useEffect(() => {
-    if (searchParams.get('logout') === 'true') {
-      toast({
-        title: 'Logged Out',
-        description: "You have been successfully signed out. See you soon!",
-        icon: <LogOut className="text-muted-foreground" />,
-      });
-      // This is a simple way to remove the query param from the URL
-      // to prevent the toast from showing on refresh.
+    const event = searchParams.get('event');
+    const userEmail = searchParams.get('user_email');
+    
+    if (event === 'logout') {
+      showLogoutToast(userEmail);
       window.history.replaceState({}, '', '/');
     }
-  }, [searchParams, toast]);
+  }, [searchParams]);
 
   React.useEffect(() => {
     setIsClient(true);

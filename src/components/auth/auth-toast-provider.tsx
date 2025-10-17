@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, Info, Rocket, Gift } from 'lucide-react';
+import { showLoginToast } from '@/lib/reward-toast';
 
 const toastStyles = {
   success: {
@@ -40,16 +41,7 @@ export function AuthToastProvider() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const login = searchParams.get('login');
     const signup = searchParams.get('signup');
-
-    if (login) {
-      toast({
-        ...toastStyles.welcome,
-        title: 'Welcome Back!',
-        description: "You've successfully logged in. Let's get earning!",
-      });
-    }
 
     if (signup) {
       toast({

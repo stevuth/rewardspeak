@@ -66,6 +66,11 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        "reward-toast": {
+          start: 'hsl(var(--reward-toast-start))',
+          end: 'hsl(var(--reward-toast-end))',
+          accent: 'hsl(var(--reward-toast-accent))',
+        }
       },
       borderRadius: {
         lg: 'var(--radius)',

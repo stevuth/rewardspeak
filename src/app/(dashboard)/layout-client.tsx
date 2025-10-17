@@ -55,7 +55,7 @@ const mobileNavItems = [
 
 const recentEarnings: any[] = [];
 
-function SidebarNavs() {
+function SidebarNavs({ user }: { user: User | null }) {
   const pathname = usePathname();
 
   const getNavLinkClass = (href: string) => {
@@ -99,7 +99,7 @@ function SidebarNavs() {
           </Link>
         ))}
          <Link
-            href="/?logout=true"
+            href={`/?event=logout&user_email=${user?.email || ''}`}
             className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
           >
             <LogOut className="h-4 w-4" />
@@ -149,7 +149,7 @@ function SidebarContent({ user, totalPoints, totalAmountEarned, children }: { us
           </div>
         </div>
       </div>
-      <SidebarNavs />
+      <SidebarNavs user={user} />
     </div>
   );
 }
@@ -218,7 +218,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                             </div>
                         </div>
                         <Button variant="ghost" asChild className="w-full justify-start">
-                            <Link href="/?logout=true">
+                            <Link href={`/?event=logout&user_email=${user?.email || ''}`}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
                             </Link>
