@@ -18,6 +18,7 @@ import { StatItem } from "@/components/stat-item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { AnimatedCounter } from "@/components/animated-counter";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
   title: "My Peak Profile",
@@ -61,7 +62,12 @@ export default async function MyPeakProfilePage() {
                             <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                         </Avatar>
                         <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
-                        <p className="text-sm text-muted-foreground">Pro Climber</p>
+                        
+                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-1">
+                            <span>{rewardsPeakId}</span>
+                            <Separator orientation="vertical" className="h-4" />
+                            <span>Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                        </div>
 
                         <div className="flex justify-around my-6 text-center">
                             <div>
