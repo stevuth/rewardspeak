@@ -88,11 +88,12 @@ function SidebarNavs({ user }: { user: User | null }) {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm ${
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
               pathname.startsWith(item.href)
                 ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:bg-muted"
-            }`}
+            )}
           >
             <item.icon className="h-4 w-4" />
             {item.label}
@@ -118,7 +119,7 @@ function SidebarContent({ user, totalPoints, totalAmountEarned, children }: { us
           href="/dashboard"
           className="flex items-center gap-2 font-semibold text-lg font-headline"
         >
-          <Image src="/logo.png?v=4" alt="Rewards Peak Logo" width={32} height={32} />
+          <Image src="/logo.png?v=4" alt="Rewards Peak Logo" width={40} height={40} />
           <span className="text-xl font-bold">Rewards Peak</span>
         </Link>
         {children}
