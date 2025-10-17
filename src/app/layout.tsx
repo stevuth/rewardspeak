@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Orbitron } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
 
-const orbitron = Orbitron({
+const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -43,11 +44,11 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className={`${orbitron.variable} font-body antialiased overflow-x-hidden`}>
+      <body className={`${poppins.variable} font-sans antialiased overflow-x-hidden`}>
         {children}
         <Toaster />
         <Analytics />
