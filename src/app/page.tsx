@@ -60,6 +60,7 @@ import {
   Badge,
   CreditCard,
   DollarSign,
+  LogOut,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -72,6 +73,8 @@ import Autoplay from "embla-carousel-autoplay"
 import { OfferGridCard } from '@/components/offer-grid-card';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { AuthForm } from '@/components/auth/auth-form';
+import { useSearchParams } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 
 const recentCashouts: any[] = [];
@@ -172,7 +175,7 @@ const FrequentGiveawaysIllustration = () => (
 );
 
 
-export default function Home() {
+function HomePageContent() {
   const featuredOffers = popularOffers.slice(0, 5);
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
@@ -180,6 +183,21 @@ export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
   
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  React.useEffect(() => {
+    if (searchParams.get('logout') === 'true') {
+      toast({
+        title: 'Logged Out',
+        description: "You have been successfully signed out. See you soon!",
+        icon: <LogOut className="text-muted-foreground" />,
+      });
+      // This is a simple way to remove the query param from the URL
+      // to prevent the toast from showing on refresh.
+      window.history.replaceState({}, '', '/');
+    }
+  }, [searchParams, toast]);
 
   React.useEffect(() => {
     setIsClient(true);
@@ -648,4 +666,12 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+export default function Home() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent />
+    </React.Suspense>
+  )
 }

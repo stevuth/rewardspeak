@@ -99,7 +99,7 @@ function SidebarNavs() {
           </Link>
         ))}
          <Link
-            href="/"
+            href="/?logout=true"
             className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted"
           >
             <LogOut className="h-4 w-4" />
@@ -218,7 +218,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                             </div>
                         </div>
                         <Button variant="ghost" asChild className="w-full justify-start">
-                            <Link href="/">
+                            <Link href="/?logout=true">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
                             </Link>
