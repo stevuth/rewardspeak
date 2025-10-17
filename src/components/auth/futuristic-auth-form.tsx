@@ -93,7 +93,7 @@ export function FuturisticAuthForm({
   return (
     <div className="futuristic-auth-form w-full max-w-4xl min-h-[auto] md:min-h-[550px] bg-gradient-to-br from-[#15002B] to-[#240046] rounded-2xl shadow-[0_0_30px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row">
       {/* Left Panel */}
-      <div className="relative w-full md:w-2/5 p-8 md:p-6 flex flex-col justify-center items-center text-center text-white">
+      <div className="relative w-full md:w-2/5 p-6 md:p-6 flex flex-col justify-center items-center text-center text-white">
         <div className="absolute inset-0 bg-black/20 opacity-50 z-0"></div>
         <div className="relative z-10">
           <Image
@@ -176,7 +176,7 @@ export function FuturisticAuthForm({
                 type="submit"
                 disabled={pending}
                 className={cn(
-                    "w-full relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
+                    "w-full h-[54px] relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
                     pending && "bg-secondary/20 text-secondary"
                 )}
               >
