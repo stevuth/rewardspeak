@@ -63,7 +63,7 @@ export default async function MyPeakProfilePage() {
                         </Avatar>
                         <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
                         
-                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-1">
+                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-1">
                             <span>{rewardsPeakId}</span>
                             <Separator orientation="vertical" className="h-4" />
                             <span>Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
@@ -149,4 +149,5 @@ export default async function MyPeakProfilePage() {
     </div>
   );
 }
+
 
