@@ -7,7 +7,6 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/dashboard';
-  const referralCode = searchParams.get('referral_code');
   
   // Create a URL object for the destination, so we can add parameters
   const redirectUrl = new URL(next, origin);
@@ -18,14 +17,15 @@ export async function GET(request: Request) {
     
     if (!error && data.user) {
       // The database trigger 'on_profile_created' handles recording the referral.
-      // This is now fully automated on the database side.
       
       // Add a parameter to the URL to signal a successful login/verification event
       redirectUrl.searchParams.set('event', 'login');
       redirectUrl.searchParams.set('user_email', data.user.email || '');
 
       // Add a parameter if it's a first-time verification
-      if (data.user.email_confirmed_at && new Date().getTime() - new Date(data.user.email_confirmed_at).getTime() < 5000) {
+      // Check if email_confirmed_at is recent (e.g., within the last 5 seconds)
+      const isNewUser = data.user.email_confirmed_at && (new Date().getTime() - new Date(data.user.email_confirmed_at).getTime() < 5000);
+      if (isNewUser) {
         redirectUrl.searchParams.set('verified', 'true');
       }
 
