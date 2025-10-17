@@ -156,7 +156,7 @@ const SecureWithdrawalsIllustration = () => (
     <div className="w-24 h-14 bg-green-500 rounded-lg shadow-lg flex items-center justify-center text-white font-bold text-xl">$10</div>
     {/* Padlock */}
     <div className="absolute -top-2 -right-2 w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
-      <ShieldCheck className="w-5 h-5 text-white" />
+      <ShieldCheck className="w-5 h-5 text-secondary-foreground" />
     </div>
     {/* Coins */}
     <div className="absolute bottom-4 -left-4 w-6 h-6 bg-secondary rounded-full"></div>

@@ -59,11 +59,6 @@ const WithdrawalCard = ({ method }: { method: typeof withdrawalMethods[0] }) => 
   const Icon = iconMap[method.name];
   let bgColor = colorMap[method.name] || "bg-card";
 
-  // Override yellow colors to blue
-  if (method.name === 'Binance Coin') {
-    bgColor = 'bg-secondary';
-  }
-
   return (
     <div className="relative group">
         <Card className={cn("overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl", bgColor)}>
@@ -96,7 +91,7 @@ const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
   }
   if (status === "Pending") {
     return (
-      <Badge variant="outline" className="text-secondary border-secondary/30">
+      <Badge variant="outline" className="text-foreground border-border">
         <Clock className="mr-1 h-3 w-3" />
         Pending
       </Badge>
@@ -150,7 +145,7 @@ export default function CashOutCabinPage() {
                     <TableCell>
                       <StatusBadge status={withdrawal.status} />
                     </TableCell>
-                    <TableCell className="text-right font-bold text-primary">
+                    <TableCell className="text-right font-bold text-secondary">
                       ${(withdrawal.amount / 100).toFixed(2)}
                     </TableCell>
                   </TableRow>

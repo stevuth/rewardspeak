@@ -35,19 +35,19 @@ const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => 
       <Card
         className={cn(
           "flex flex-col items-center text-center p-6 relative transition-all duration-300",
-          isFirst && "bg-primary/10 border-primary/50 -translate-y-4 shadow-lg shadow-primary/20",
+          isFirst && "bg-secondary/10 border-secondary/50 -translate-y-4 shadow-lg shadow-secondary/20",
           (isSecond || isThird) && "bg-card/80"
         )}
       >
-        {isFirst && <Crown className="absolute -top-3 h-6 w-6 text-primary" />}
+        {isFirst && <Crown className="absolute -top-3 h-6 w-6 text-secondary" />}
         {isSecond && <Medal className="absolute top-2 right-2 h-5 w-5 text-gray-400" />}
         {isThird && <Medal className="absolute top-2 right-2 h-5 w-5 text-orange-400" />}
 
-        <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20 text-4xl font-bold">
+        <Avatar className="w-24 h-24 mb-4 border-4 border-secondary/20 text-4xl font-bold">
             <AvatarImage src={user.avatarUrl} alt={user.name} />
             <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <p className="font-bold text-lg text-primary">{user.name}</p>
+        <p className="font-bold text-lg text-secondary">{user.name}</p>
         <p className="text-sm text-muted-foreground">{user.points.toLocaleString()} Points</p>
         <div className="mt-4 flex items-center gap-2 bg-secondary/20 text-secondary font-bold px-4 py-1.5 rounded-full">
             <span>${user.prize?.toLocaleString()}</span>
@@ -182,7 +182,7 @@ export default function TopClimbersPage() {
                         <span className="font-medium">{user.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-bold text-primary">
+                    <TableCell className="text-right font-bold text-secondary">
                       {user.points.toLocaleString()}
                     </TableCell>
                   </TableRow>

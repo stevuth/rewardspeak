@@ -188,7 +188,7 @@ export default function DashboardPage() {
                             <div className="text-xs text-muted-foreground">{offer.partner}</div>
                         </TableCell>
                         <TableCell
-                          className={cn("text-right font-bold", "text-primary")}
+                          className={cn("text-right font-bold", "text-secondary")}
                         >
                           +
                           {offer.points.toLocaleString()}

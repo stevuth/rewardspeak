@@ -39,7 +39,7 @@ const StatusBadge = ({ status }: { status: Offer["status"] }) => {
   }
   if (status === "Pending") {
     return (
-      <Badge variant="outline" className="text-secondary border-secondary/30">
+      <Badge variant="outline" className="text-foreground border-border">
         <Clock className="mr-1 h-3 w-3" />
         Pending
       </Badge>
@@ -79,7 +79,7 @@ const OfferHistoryTable = ({ offers }: { offers: Offer[] }) => (
             </TableCell>
             <TableCell
               className={cn("text-right font-bold", {
-                "text-primary": offer.status === "Completed",
+                "text-secondary": offer.status === "Completed",
                 "text-muted-foreground": offer.status !== "Completed",
               })}
             >

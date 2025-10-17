@@ -20,7 +20,7 @@ const HighlightedMessage = ({ message, username }: { message: string; username?:
   return (
     <>
       {parts[0]}
-      <span className="font-bold text-reward-toast-accent">{username}</span>
+      <span className="font-bold text-accent">{username}</span>
       {parts[1]}
     </>
   );
@@ -31,11 +31,11 @@ export function RewardToast({ message, icon: Icon, username }: RewardToastProps)
     <div
       className={cn(
         "relative flex w-full max-w-sm items-start space-x-4 overflow-hidden rounded-2xl p-4 shadow-lg",
-        "text-white bg-gradient-to-br from-reward-toast-start to-reward-toast-end border border-reward-toast-end/50"
+        "text-white bg-gradient-to-br from-[hsl(var(--reward-toast-start))] to-[hsl(var(--reward-toast-end))] border border-border/50"
       )}
     >
       <div className="flex-shrink-0 mt-1">
-        {Icon && <Icon className="h-6 w-6 text-reward-toast-accent" />}
+        {Icon && <Icon className="h-6 w-6 text-accent" />}
       </div>
       <div className="flex-1 space-y-1 text-sm">
         <p>

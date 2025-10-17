@@ -72,7 +72,7 @@ export default function CompletedPage() {
                       <StatusBadge status={offer.status} />
                     </TableCell>
                     <TableCell
-                      className={cn("text-right font-bold", "text-primary")}
+                      className={cn("text-right font-bold", "text-secondary")}
                     >
                       +
                       {offer.points.toLocaleString()}
