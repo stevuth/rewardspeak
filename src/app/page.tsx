@@ -277,7 +277,7 @@ function HomePageContent() {
       </Dialog>
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png?v=5" alt="Rewards Peak Logo" width={60} height={60} />
+          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={60} height={60} />
         </Link>
         <nav className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setIsLoginOpen(true)}>

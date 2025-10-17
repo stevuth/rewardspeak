@@ -119,7 +119,7 @@ function SidebarContent({ user, totalPoints, totalAmountEarned, children }: { us
           href="/dashboard"
           className="flex items-center gap-2 font-semibold text-lg font-headline"
         >
-          <Image src="/logo.png?v=5" alt="Rewards Peak Logo" width={40} height={40} />
+          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={40} height={40} />
           <span className="text-xl font-bold">Rewards Peak</span>
         </Link>
         {children}
@@ -187,7 +187,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                         href="/dashboard"
                         className="flex items-center gap-2 font-semibold text-lg font-headline"
                         >
-                          <Image src="/logo.png?v=5" alt="Rewards Peak Logo" width={32} height={32} />
+                          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
                           <span className="text-xl font-bold">Rewards Peak</span>
                         </Link>
                         <SheetClose asChild>
