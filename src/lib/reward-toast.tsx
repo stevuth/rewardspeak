@@ -1,8 +1,10 @@
+
 'use client';
 
 import { toast } from '@/hooks/use-toast';
 import { RewardToast } from '@/components/reward-toast';
 import { LogIn, LogOut, Rocket, HandCoins, Target } from 'lucide-react';
+import React from 'react';
 
 const loginMessages = [
   "Hey {username}, it’s a great day to earn more on Rewards Peak!",
@@ -16,23 +18,14 @@ const logoutMessages = [
   "Your wallet’s not full yet 😉 Come back later to top it up!",
 ];
 
+// Directly use the components, not strings.
 const loginIcons = [Rocket, Target, HandCoins];
 const logoutIcons = [LogOut, HandCoins];
 
-// Function to get a random item from an array, avoiding the last one if possible
-const getRandomItem = <T>(array: T[], lastItemKey: string): T => {
-  const lastItem = sessionStorage.getItem(lastItemKey);
-  let availableItems = array;
-
-  if (lastItem && array.length > 1) {
-    availableItems = array.filter(item => JSON.stringify(item) !== lastItem);
-  }
-
-  const randomIndex = Math.floor(Math.random() * availableItems.length);
-  const selected = availableItems[randomIndex];
-  
-  sessionStorage.setItem(lastItemKey, JSON.stringify(selected));
-  return selected;
+// Function to get a random item from an array
+const getRandomItem = <T,>(array: T[]): T => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
 };
 
 const getUsername = (email?: string | null) => {
@@ -42,8 +35,8 @@ const getUsername = (email?: string | null) => {
 
 export const showLoginToast = (email?: string | null) => {
   const username = getUsername(email);
-  const message = getRandomItem(loginMessages, 'lastLoginMessage').replace('{username}', username);
-  const Icon = getRandomItem(loginIcons, 'lastLoginIcon');
+  const message = getRandomItem(loginMessages).replace('{username}', username);
+  const Icon = getRandomItem(loginIcons);
   
   toast({
     duration: 5000,
@@ -53,8 +46,8 @@ export const showLoginToast = (email?: string | null) => {
 
 export const showLogoutToast = (email?: string | null) => {
   const username = getUsername(email);
-  const message = getRandomItem(logoutMessages, 'lastLogoutMessage').replace('{username}', username);
-  const Icon = getRandomItem(logoutIcons, 'lastLogoutIcon');
+  const message = getRandomItem(logoutMessages).replace('{username}', username);
+  const Icon = getRandomItem(logoutIcons);
 
   toast({
     duration: 5000,

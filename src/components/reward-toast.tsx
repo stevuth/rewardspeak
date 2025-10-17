@@ -1,11 +1,13 @@
+
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 type RewardToastProps = {
   message: string;
-  icon: LucideIcon;
+  icon: React.ElementType; // Use ElementType for component props
   username?: string;
 };
 
@@ -33,7 +35,7 @@ export function RewardToast({ message, icon: Icon, username }: RewardToastProps)
       )}
     >
       <div className="flex-shrink-0 mt-1">
-        <Icon className="h-6 w-6 text-reward-toast-accent" />
+        {Icon && <Icon className="h-6 w-6 text-reward-toast-accent" />}
       </div>
       <div className="flex-1 space-y-1 text-sm">
         <p>
