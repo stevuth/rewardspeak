@@ -94,7 +94,7 @@ export function FuturisticAuthForm({
         <div className="absolute inset-0 bg-black/20 opacity-50 z-0"></div>
         <div className="relative z-10">
           <Image
-            src="/logo.png?v=4"
+            src="/logo.png?v=5"
             alt="Rewards Peak Logo"
             width={60}
             height={60}
