@@ -4,80 +4,80 @@
 
 @layer base {
   :root {
-    --background: 229 75% 17%; /* #0B1A4C */
-    --foreground: 240 8% 96%; /* #F5F5F5 */
-    --card: 228 65% 22%;
-    --card-foreground: 240 8% 96%; /* #F5F5F5 */
-    --popover: 229 75% 17%; /* #0B1A4C */
-    --popover-foreground: 240 8% 96%; /* #F5F5F5 */
-    --primary: 217 98% 52%; /* #0D6EFD */
-    --primary-foreground: 240 8% 98%; /* #F5F5F5 */
-    --secondary: 45 100% 50%; /* #FFD700 */
-    --secondary-foreground: 229 75% 10%;
-    --muted: 229 75% 22%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 45 100% 50%; /* #FFD700 */
-    --accent-foreground: 229 75% 10%;
+    --background: 0 0% 7%; /* #121212 */
+    --foreground: 0 0% 92%; /* #EAEAEA */
+    --card: 0 0% 12%; /* A slightly lighter Onyx for cards */
+    --card-foreground: 0 0% 92%; /* #EAEAEA */
+    --popover: 0 0% 7%; /* #121212 */
+    --popover-foreground: 0 0% 92%; /* #EAEAEA */
+    --primary: 330 100% 50%; /* #FF007F */
+    --primary-foreground: 0 0% 92%; /* #EAEAEA */
+    --secondary: 51 100% 50%; /* #FFD700 */
+    --secondary-foreground: 0 0% 7%; /* #121212 */
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 51 100% 50%; /* #FFD700 */
+    --accent-foreground: 0 0% 7%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 229 75% 25%;
-    --input: 229 75% 22%;
-    --ring: 217 98% 52%; /* #0D6EFD */
-    --chart-1: 217 98% 52%;
-    --chart-2: 45 100% 50%;
+    --border: 0 0% 18%;
+    --input: 0 0% 15%;
+    --ring: 330 100% 50%; /* Magenta for rings */
+    --chart-1: 330 100% 50%;
+    --chart-2: 51 100% 50%;
     --chart-3: 180 100% 50%;
     --chart-4: 260 85% 66%;
     --chart-5: 300 89% 66%;
     --radius: 0.75rem;
-    --sidebar-background: 229 75% 17%;
-    --sidebar-foreground: 240 8% 96%;
-    --sidebar-primary: 217 98% 52%;
-    --sidebar-primary-foreground: 240 8% 98%;
-    --sidebar-accent: 229 75% 22%;
-    --sidebar-accent-foreground: 240 8% 98%;
-    --sidebar-border: 229 75% 25%;
-    --sidebar-ring: 217 98% 52%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 330 100% 50%;
+    --sidebar-primary-foreground: 0 0% 92%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 330 100% 50%;
 
     /* Custom Reward Toast Colors */
-    --reward-toast-start: 229 75% 17%;
-    --reward-toast-end: 217 98% 30%;
-    --reward-toast-accent: 45 100% 50%; /* Gold */
+    --reward-toast-start: 0 0% 7%; /* Onyx */
+    --reward-toast-end: 330 100% 20%; /* Darker Magenta */
+    --reward-toast-accent: 51 100% 50%; /* Gold */
   }
 
   .dark {
-    --background: 229 75% 17%; /* #0B1A4C */
-    --foreground: 240 8% 96%; /* #F5F5F5 */
-    --card: 228 65% 22%;
-    --card-foreground: 240 8% 96%; /* #F5F5F5 */
-    --popover: 229 75% 17%; /* #0B1A4C */
-    --popover-foreground: 240 8% 96%; /* #F5F5F5 */
-    --primary: 217 98% 52%; /* #0D6EFD */
-    --primary-foreground: 240 8% 98%; /* #F5F5F5 */
-    --secondary: 45 100% 50%; /* #FFD700 */
-    --secondary-foreground: 229 75% 10%;
-    --muted: 229 75% 22%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 45 100% 50%; /* #FFD700 */
-    --accent-foreground: 229 75% 10%;
+    --background: 0 0% 7%; /* #121212 */
+    --foreground: 0 0% 92%; /* #EAEAEA */
+    --card: 0 0% 12%; /* A slightly lighter Onyx for cards */
+    --card-foreground: 0 0% 92%; /* #EAEAEA */
+    --popover: 0 0% 7%; /* #121212 */
+    --popover-foreground: 0 0% 92%; /* #EAEAEA */
+    --primary: 330 100% 50%; /* #FF007F */
+    --primary-foreground: 0 0% 92%; /* #EAEAEA */
+    --secondary: 51 100% 50%; /* #FFD700 */
+    --secondary-foreground: 0 0% 7%; /* #121212 */
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 51 100% 50%; /* #FFD700 */
+    --accent-foreground: 0 0% 7%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 229 75% 25%;
-    --input: 229 75% 22%;
-    --ring: 217 98% 52%; /* #0D6EFD */
-    --chart-1: 217 98% 52%;
-    --chart-2: 45 100% 50%;
+    --border: 0 0% 18%;
+    --input: 0 0% 15%;
+    --ring: 330 100% 50%; /* Magenta for rings */
+    --chart-1: 330 100% 50%;
+    --chart-2: 51 100% 50%;
     --chart-3: 180 100% 50%;
     --chart-4: 260 85% 66%;
     --chart-5: 300 89% 66%;
     --radius: 0.75rem;
-    --sidebar-background: 229 75% 17%;
-    --sidebar-foreground: 240 8% 96%;
-    --sidebar-primary: 217 98% 52%;
-    --sidebar-primary-foreground: 240 8% 98%;
-    --sidebar-accent: 229 75% 22%;
-    --sidebar-accent-foreground: 240 8% 98%;
-    --sidebar-border: 229 75% 25%;
-    --sidebar-ring: 217 98% 52%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 330 100% 50%;
+    --sidebar-primary-foreground: 0 0% 92%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 330 100% 50%;
   }
 }
 
