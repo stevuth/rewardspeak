@@ -3,7 +3,7 @@
 
 import { toast } from '@/hooks/use-toast';
 import { RewardToast } from '@/components/reward-toast';
-import { LogIn, LogOut, Rocket, HandCoins, Target } from 'lucide-react';
+import { LogOut, Rocket, HandCoins, Target } from 'lucide-react';
 import React from 'react';
 
 const loginMessages = [
@@ -28,6 +28,24 @@ const getRandomItem = <T,>(array: T[]): T => {
   return array[randomIndex];
 };
 
+// Function to get the next item in a rotating sequence
+const getRotatedItem = <T,>(key: string, array: T[]): T => {
+    if (typeof window === 'undefined') {
+      // Fallback for SSR or environments without localStorage
+      return getRandomItem(array);
+    }
+  
+    const lastIndexStr = localStorage.getItem(key);
+    const lastIndex = lastIndexStr ? parseInt(lastIndexStr, 10) : -1;
+    
+    const nextIndex = (lastIndex + 1) % array.length;
+    
+    localStorage.setItem(key, nextIndex.toString());
+    
+    return array[nextIndex];
+};
+
+
 const getUsername = (email?: string | null) => {
     if (!email) return "Climber";
     return email.split('@')[0];
@@ -35,8 +53,8 @@ const getUsername = (email?: string | null) => {
 
 export const showLoginToast = (email?: string | null) => {
   const username = getUsername(email);
-  const message = getRandomItem(loginMessages).replace('{username}', username);
-  const Icon = getRandomItem(loginIcons);
+  const message = getRotatedItem('login_toast_msg', loginMessages).replace('{username}', username);
+  const Icon = getRotatedItem('login_toast_icon', loginIcons);
   
   toast({
     duration: 5000,
@@ -46,8 +64,8 @@ export const showLoginToast = (email?: string | null) => {
 
 export const showLogoutToast = (email?: string | null) => {
   const username = getUsername(email);
-  const message = getRandomItem(logoutMessages).replace('{username}', username);
-  const Icon = getRandomItem(logoutIcons);
+  const message = getRotatedItem('logout_toast_msg', logoutMessages).replace('{username}', username);
+  const Icon = getRotatedItem('logout_toast_icon', logoutIcons);
 
   toast({
     duration: 5000,
