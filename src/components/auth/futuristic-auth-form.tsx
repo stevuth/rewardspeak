@@ -91,7 +91,7 @@ export function FuturisticAuthForm({
   return (
     <div className="futuristic-auth-form w-full max-w-4xl min-h-[auto] md:min-h-[550px] bg-gradient-to-br from-[#15002B] to-[#240046] rounded-2xl shadow-[0_0_30px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row">
       {/* Left Panel */}
-      <div className="relative w-full md:w-2/5 p-6 flex flex-col justify-center items-center text-center text-white">
+      <div className="relative w-full md:w-2/5 p-8 flex flex-col justify-center items-center text-center text-white">
         <div className="absolute inset-0 bg-black/20 opacity-50 z-0"></div>
         <div className="relative z-10">
           <Image
@@ -113,7 +113,7 @@ export function FuturisticAuthForm({
       </div>
 
       {/* Right Panel */}
-      <div className="w-full md:w-3/5 p-6 md:p-12 bg-black/20 backdrop-blur-sm flex flex-col justify-center">
+      <div className="w-full md:w-3/5 p-8 md:p-12 bg-black/20 backdrop-blur-sm flex flex-col justify-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={type}
