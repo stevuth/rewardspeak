@@ -4,7 +4,7 @@
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, UserPlus, LogIn, Mail, Lock } from "lucide-react";
+import { UserPlus, LogIn, Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -89,9 +89,9 @@ export function FuturisticAuthForm({
   const isLogin = type === "login";
 
   return (
-    <div className="futuristic-auth-form w-full max-w-4xl min-h-[auto] md:min-h-[600px] bg-gradient-to-br from-[#15002B] to-[#240046] rounded-2xl shadow-[0_0_30px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row">
+    <div className="futuristic-auth-form w-full max-w-4xl min-h-[auto] md:min-h-[550px] bg-gradient-to-br from-[#15002B] to-[#240046] rounded-2xl shadow-[0_0_30px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row">
       {/* Left Panel */}
-      <div className="relative w-full md:w-2/5 p-6 md:p-8 flex flex-col justify-center items-center text-center text-white">
+      <div className="relative w-full md:w-2/5 p-6 flex flex-col justify-center items-center text-center text-white">
         <div className="absolute inset-0 bg-black/20 opacity-50 z-0"></div>
         <div className="relative z-10">
           <Image
@@ -172,20 +172,46 @@ export function FuturisticAuthForm({
               <button
                 type="submit"
                 disabled={pending}
-                className="w-full flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {pending ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <>
-                    {isLogin ? (
-                      <LogIn className="mr-2 h-5 w-5" />
-                    ) : (
-                      <UserPlus className="mr-2 h-5 w-5" />
-                    )}
-                    {isLogin ? "Sign In Securely" : "Create Account"}
-                  </>
+                className={cn(
+                    "w-full relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
+                    pending && "bg-secondary/20 text-secondary"
                 )}
+              >
+                <AnimatePresence>
+                  {pending ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="w-full text-center"
+                    >
+                      <p className="text-xs font-semibold mb-1.5">Loading your rewards vault...</p>
+                      <div className="w-full bg-secondary/20 rounded-full h-1.5 overflow-hidden">
+                        <motion.div
+                          className="bg-secondary h-1.5 rounded-full"
+                          initial={{ width: '0%' }}
+                          animate={{ width: '100%' }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                        ></motion.div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="ready"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center"
+                    >
+                      {isLogin ? (
+                        <LogIn className="mr-2 h-5 w-5" />
+                      ) : (
+                        <UserPlus className="mr-2 h-5 w-5" />
+                      )}
+                      {isLogin ? "Sign In Securely" : "Create Account"}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </button>
             </form>
             <div className="relative my-6">
