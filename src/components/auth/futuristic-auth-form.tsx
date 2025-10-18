@@ -101,8 +101,9 @@ export function FuturisticAuthForm({
             alt="Rewards Peak Logo"
             width={60}
             height={60}
-            className="mx-auto mb-4"
+            className="mx-auto"
           />
+          <span className="text-sm font-semibold text-gray-300 -mt-2 block mb-4">Rewards Peak</span>
           <h2 className="text-3xl font-bold mb-2">
             {isLogin ? "Welcome Back" : "Start Your Climb"}
           </h2>
