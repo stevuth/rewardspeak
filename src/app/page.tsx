@@ -264,13 +264,13 @@ function HomePageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent className="p-0 border-0 max-w-4xl bg-transparent shadow-none">
+        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
             <DialogTitle className="sr-only">Log In</DialogTitle>
             <AuthForm type="login" onSwitch={onSwitchForms} />
         </DialogContent>
       </Dialog>
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="p-0 border-0 max-w-4xl bg-transparent shadow-none">
+        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
             <DialogTitle className="sr-only">Sign Up</DialogTitle>
             <AuthForm type="signup" onSwitch={onSwitchForms} />
         </DialogContent>
