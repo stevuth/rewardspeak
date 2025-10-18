@@ -16,7 +16,7 @@ type Offer = NotikOffer & {
   imageHint?: string;
   category?: string;
   clickUrl?: string;
-  events: { name: string; payout: number; id: number }[];
+  events?: { name: string; payout: number; id: number }[];
 };
 
 type OfferPreviewModalProps = {
@@ -54,18 +54,36 @@ const modalVariants = {
   },
 };
 
-const FooterContent = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
-    <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div className="text-center sm:text-left">
+const DesktopFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
+    <div className="w-full flex items-center justify-between gap-4">
+      <div className="text-left">
         <p className="text-xs text-muted-foreground">Total Reward</p>
-        <p className="text-xl font-bold text-accent truncate">
+        <p className="text-lg font-bold text-accent truncate">
           {totalPoints.toLocaleString()} Pts (${totalUSD.toFixed(2)})
         </p>
       </div>
       <Button
         onClick={onStartOffer}
         size="lg"
-        className="w-full sm:w-auto font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all"
+        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
+      >
+        Start Offer
+      </Button>
+    </div>
+);
+
+const MobileFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
+    <div className="w-full flex items-center justify-between gap-2">
+      <div className="text-left bg-black/20 border border-border rounded-lg px-3 py-2">
+        <p className="text-xs text-muted-foreground">Total Reward</p>
+        <p className="text-base font-bold text-accent truncate">
+          {totalPoints.toLocaleString()} Pts
+        </p>
+      </div>
+      <Button
+        onClick={onStartOffer}
+        size="lg"
+        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all flex-grow"
       >
         Start Offer
       </Button>
@@ -195,7 +213,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                     
                     {/* Footer content for mobile (inside scroll area) */}
                     <div className="sm:hidden pt-4">
-                       <FooterContent totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
+                       <MobileFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
                     </div>
 
                 </div>
@@ -203,7 +221,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
 
             {/* Fixed Footer for desktop */}
             <div className="hidden sm:flex flex-shrink-0 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent items-center justify-between gap-4">
-               <FooterContent totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
+               <DesktopFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
             </div>
 
           </motion.div>
