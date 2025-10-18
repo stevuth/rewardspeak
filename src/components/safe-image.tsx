@@ -25,7 +25,11 @@ export function SafeImage({
   ...props
 }: SafeImageProps) {
   const [hasError, setHasError] = useState(false);
-  const isExternal = src && (src.startsWith("http") || src.startsWith("https"));
+  
+  // Trim whitespace from the src
+  const cleanSrc = src ? src.trim() : '';
+
+  const isExternal = cleanSrc && (cleanSrc.startsWith("http") || cleanSrc.startsWith("https"));
   const placeholderSrc = `https://picsum.photos/seed/${alt.replace(/\s+/g, '')}/${width || 200}/${height || 200}`;
 
 
@@ -33,7 +37,7 @@ export function SafeImage({
     setHasError(true);
   };
 
-  const finalSrc = !src || hasError ? placeholderSrc : src;
+  const finalSrc = !cleanSrc || hasError ? placeholderSrc : cleanSrc;
 
   if (isExternal || hasError) {
     // Use a standard <img> tag for external sources or as a fallback
@@ -55,7 +59,7 @@ export function SafeImage({
   // Use Next.js <Image> for local assets
   return (
     <NextImage
-      src={src}
+      src={cleanSrc}
       alt={alt}
       width={width}
       height={height}
