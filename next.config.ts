@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'https,
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
@@ -73,6 +73,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'banners.hangmyads.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.digitaloceanspaces.com',
         port: '',
         pathname: '/**',
       },
