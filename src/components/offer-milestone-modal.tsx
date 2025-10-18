@@ -37,6 +37,7 @@ type OfferMilestoneModalProps = {
 
 export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneModalProps) {
   const totalPointsFromEvents = offer.events?.reduce((sum, event) => sum + Math.round(event.payout * 100), 0) || offer.points;
+  const totalDollarValue = (totalPointsFromEvents / 100).toFixed(2);
 
   // Simulate some completed steps for visual demonstration
   const completedStepNames = ["Register", "Reach 100 meters drop depth", "Register."];
@@ -74,6 +75,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
                     offer.events.map((event, index) => {
                     const isCompleted = completedStepNames.includes(event.name);
                     const points = Math.round(event.payout * 100);
+                    const dollarValue = (points / 100).toFixed(2);
                     return (
                         <div key={event.id} className={cn(
                             "flex items-center gap-4 p-3 rounded-lg transition-colors",
@@ -85,9 +87,12 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
                                 <Circle className="h-5 w-5 flex-shrink-0 text-muted-foreground/50" />
                             )}
                             <p className="flex-1 text-sm font-medium">{event.name}</p>
-                            <span className="font-bold text-sm text-accent whitespace-nowrap">
-                                + {points.toLocaleString()} Pts
-                            </span>
+                            <div className="text-right">
+                                <span className="font-bold text-sm text-accent whitespace-nowrap">
+                                    + {points.toLocaleString()} Pts
+                                </span>
+                                <p className="text-xs text-muted-foreground">(${dollarValue})</p>
+                            </div>
                         </div>
                     );
                     })
@@ -95,9 +100,12 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
                     <div className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
                         <Rocket className="h-5 w-5 flex-shrink-0 text-primary" />
                         <p className="flex-1 text-sm font-medium">Complete the offer</p>
-                        <span className="font-bold text-sm text-accent whitespace-nowrap">
-                            + {offer.points.toLocaleString()} Pts
-                        </span>
+                         <div className="text-right">
+                            <span className="font-bold text-sm text-accent whitespace-nowrap">
+                                + {offer.points.toLocaleString()} Pts
+                            </span>
+                             <p className="text-xs text-muted-foreground">(${(offer.points / 100).toFixed(2)})</p>
+                        </div>
                     </div>
                 )}
                 </div>
@@ -107,7 +115,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
         <DialogFooter className="bg-black/20 p-4 sm:p-6 flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 rounded-b-lg">
             <div className="flex-1 text-center sm:text-left">
                 <p className="text-xs text-muted-foreground">Total Reward</p>
-                <p className="text-xl font-bold text-accent">{totalPointsFromEvents.toLocaleString()} Pts</p>
+                <p className="text-xl font-bold text-accent">{totalPointsFromEvents.toLocaleString()} Pts (${totalDollarValue})</p>
             </div>
           <Button 
             type="button" 
