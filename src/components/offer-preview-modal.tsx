@@ -61,7 +61,6 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
     } else {
       document.body.style.overflow = 'unset';
     }
-    // Cleanup function
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -70,9 +69,9 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
   if (!offer) return null;
 
   const totalPayout =
-    (offer.events && offer.events.length > 0)
+    offer.events && offer.events.length > 0
       ? offer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
-      : (offer.payout || 0);
+      : offer.payout || 0;
 
   const totalPoints = Math.round(totalPayout * 1000);
   const totalUSD = totalPayout;
@@ -100,7 +99,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
           <motion.div
             variants={modalVariants}
             onClick={(e) => e.stopPropagation()}
-            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-2xl overflow-hidden border border-primary/20"
+            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] h-[95vh] sm:h-auto sm:max-h-[90vh] max-w-2xl overflow-hidden border border-primary/20"
           >
             {/* Header */}
             <div className="relative flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
@@ -122,15 +121,13 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                   </p>
                 </div>
               </div>
-              <Button
+              <button
                 onClick={onClose}
-                variant="ghost"
-                size="icon"
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
               >
-                <X className="h-5 w-5" />
+                <span className="text-xs uppercase tracking-wider">Close</span>
                 <span className="sr-only">Close</span>
-              </Button>
+              </button>
             </div>
 
             {/* Scrollable Body */}
