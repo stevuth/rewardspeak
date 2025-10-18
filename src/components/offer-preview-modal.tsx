@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Info, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ type Offer = NotikOffer & {
   points?: number;
   imageHint?: string;
   category?: string;
+  clickUrl?: string;
   events: { name: string; payout: number; id: number }[];
 };
 
@@ -54,9 +55,20 @@ const modalVariants = {
 };
 
 export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalProps) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!offer) return null;
 
-  // Safely calculate total payout
   const totalPayout =
     (offer.events && offer.events.length > 0)
       ? offer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
@@ -66,8 +78,8 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
   const totalUSD = totalPayout;
 
   const handleStartOffer = () => {
-    if (offer.click_url) {
-      window.open(offer.click_url, "_blank", "noopener,noreferrer");
+    if (offer.clickUrl) {
+      window.open(offer.clickUrl, "_blank", "noopener,noreferrer");
     }
     onClose();
   };
@@ -88,7 +100,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
           <motion.div
             variants={modalVariants}
             onClick={(e) => e.stopPropagation()}
-            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] sm:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[90vh] overflow-hidden border border-primary/20"
+            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-2xl overflow-hidden border border-primary/20"
           >
             {/* Header */}
             <div className="relative flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
