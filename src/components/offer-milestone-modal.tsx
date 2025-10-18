@@ -51,11 +51,11 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
               alt={offer.title}
               width={80}
               height={80}
-              className="rounded-lg border-2 border-border/50"
+              className="rounded-lg border-2 border-border/50 flex-shrink-0"
             />
             <div className="flex-1">
               <DialogTitle className="text-xl font-bold font-headline">{offer.title}</DialogTitle>
-              <DialogDescription className="text-muted-foreground">{offer.description}</DialogDescription>
+              <DialogDescription className="text-muted-foreground mt-1">{offer.description}</DialogDescription>
               <div className="flex items-center gap-2 mt-2">
                 <Badge variant="secondary">{offer.partner}</Badge>
                 <Badge variant={offer.category === 'Game' ? 'default' : 'outline'} className="capitalize">
@@ -68,7 +68,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
 
         <div className="p-6">
             <h3 className="font-semibold mb-3 text-secondary">Milestones</h3>
-            <ScrollArea className="h-64 pr-4 -mr-4">
+            <ScrollArea className="h-auto max-h-[50vh] pr-4 -mr-4">
                 <div className="space-y-4">
                 {(offer.events && offer.events.length > 0) ? (
                     offer.events.map((event, index) => {
