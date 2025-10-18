@@ -127,7 +127,7 @@ export function FuturisticAuthForm({
             transition={pageTransition}
             className="w-full"
           >
-            <form action={formAction} className="space-y-6">
+            <form action={formAction} className="space-y-4">
               <h1 className="text-3xl font-bold text-white mb-2">
                 {isLogin ? "Sign In" : "Create Account"}
               </h1>
