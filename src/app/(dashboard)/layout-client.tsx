@@ -22,8 +22,8 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { UserNav } from "@/components/user-nav";
@@ -181,6 +181,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                 </Button>
             </SheetTrigger>
             <SheetContent side="top" className="w-full bg-card p-0 rounded-b-2xl">
+                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                  <div className="w-full">
                     <div className="p-4 border-b flex items-center justify-between">
                         <Link
@@ -188,7 +189,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                         className="flex items-center gap-2 font-semibold text-lg font-headline"
                         >
                           <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
-                          <span className="text-xl font-bold">Rewards Peak</span>
+                          <span className="text-lg font-bold">Rewards Peak</span>
                         </Link>
                     </div>
                      <div className="grid grid-cols-2 gap-4 p-4">
