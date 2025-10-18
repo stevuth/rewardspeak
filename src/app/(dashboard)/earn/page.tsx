@@ -26,14 +26,16 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 
   // Safely calculate total payout
-  const totalPayout = Array.isArray(notikOffer.events) && notikOffer.events.length > 0
-    ? notikOffer.events.reduce((sum, event) => sum + event.payout, 0)
-    : notikOffer.payout;
+  const totalPayout =
+    Array.isArray(notikOffer.events) && notikOffer.events.length > 0
+      ? notikOffer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
+      : notikOffer.payout;
   
   const points = Math.round(totalPayout * 1000);
 
   return {
     ...notikOffer,
+    payout: totalPayout, // Ensure the base payout reflects the total
     points: points,
     imageHint: "offer logo",
     category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
