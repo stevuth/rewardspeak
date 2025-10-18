@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
@@ -89,7 +90,13 @@ export default function ClimbAndEarnPage() {
     if (isLoading) {
         return (
             <div className="flex justify-center items-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <Image
+                    src="/logo.png?v=9"
+                    alt="Loading..."
+                    width={80}
+                    height={80}
+                    className="animate-pulse"
+                />
             </div>
         );
     }
