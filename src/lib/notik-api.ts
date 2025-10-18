@@ -99,14 +99,14 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       }
       const data: ApiResponse = await response.json();
 
-      if (data.status === 'success' && data.data?.offers) {
-        const offers = data.data.offers.map(offer => ({
+      if (data.status === 'success' && data.offers?.data) {
+        const offers = data.offers.data.map(offer => ({
           ...offer,
           payout: offer.payout_usd ? parseFloat(offer.payout_usd) : offer.payout,
           payout_usd: offer.payout_usd || String(offer.payout)
         }));
         allOffers = allOffers.concat(offers);
-        nextPageUrl = data.data.next_page_url;
+        nextPageUrl = data.offers.next_page_url;
       } else {
         if (data.message) {
             console.error("API call was not successful:", data.message);
