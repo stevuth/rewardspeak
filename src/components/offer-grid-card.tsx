@@ -11,9 +11,15 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-export function OfferGridCard({ offer, onCardClick }: { offer: Offer & { clickUrl?: string }, onCardClick: () => void }) {
+export function OfferGridCard({ offer }: { offer: Offer & { clickUrl?: string } }) {
+  const handleClick = () => {
+    if (offer.clickUrl) {
+      window.open(offer.clickUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
-    <div onClick={onCardClick} className="cursor-pointer h-full">
+    <div onClick={handleClick} className="cursor-pointer h-full">
         <Card className="overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 group bg-card border-border hover:border-primary/50 flex flex-col h-full">
         <div className="relative">
             <SafeImage

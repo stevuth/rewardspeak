@@ -1,6 +1,4 @@
 
-'use client';
-
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -12,8 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import type { NotikOffer } from "@/lib/notik-api";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
-import { useState, useEffect } from "react";
-import { OfferMilestoneModal } from "@/components/offer-milestone-modal";
+import { getOffers } from "@/lib/notik-api";
 
 type Offer = {
   id: string;
@@ -55,55 +52,18 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 }
 
-export default function ClimbAndEarnPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const [offers, setOffers] = useState<Offer[]>([]);
-  const [userId, setUserId] = useState<string | undefined>(undefined);
-  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
-
-  useEffect(() => {
-    const fetchOffersAndUser = async () => {
-      // In a real client component, you'd use createBrowserClient, but for this structure, we'll fetch on server and pass down
-      // This is a simplified fetch on client for demonstration
-      const res = await fetch('/api/offers');
-      const { offers: rawOffers, user } = await res.json();
-      
-      setUserId(user?.id);
-      
-      const transformed = rawOffers.map((offer: NotikOffer) => transformOffer(offer, user?.id));
-      setOffers(transformed);
-    };
-
-    // We can't use top-level await in client components, so we create a server-side API route
-    // to fetch the data and then call it from the client.
-    // For now, let's pretend we have this API and populate the state.
-    // This part is complex to refactor fully without a real API route.
-    // We will simulate the data fetching.
-    const getInitialData = async () => {
-        const response = await fetch('/api/get-offers');
-        const data = await response.json();
-        const transformedOffers = data.rawOffers.map((o: NotikOffer) => transformOffer(o, data.user?.id));
-        setOffers(transformedOffers);
-    }
-    getInitialData().catch(console.error);
-
-  }, []);
+export default async function ClimbAndEarnPage() {
+  const supabase = createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const rawOffers = await getOffers();
+  
+  const offers = rawOffers.map((offer: NotikOffer) => transformOffer(offer, user?.id));
 
   const gameOffers = offers.filter(o => o.category === "Game");
   const quickTasks = offers.filter(o => o.category !== "Game" && o.category !== "Survey").slice(0, 12);
 
   return (
     <div className="space-y-8">
-      {selectedOffer && (
-        <OfferMilestoneModal
-          offer={selectedOffer}
-          isOpen={!!selectedOffer}
-          onClose={() => setSelectedOffer(null)}
-        />
-      )}
       <PageHeader
         title="Climb & Earn"
         description="Main earning hub that leads to all available earning opportunities."
@@ -125,7 +85,7 @@ export default function ClimbAndEarnPage({
              {offers.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {offers.map((offer) => (
-                        <OfferGridCard key={offer.id} offer={offer} onCardClick={() => setSelectedOffer(offer)} />
+                        <OfferGridCard key={offer.id} offer={offer} />
                     ))}
                 </div>
              ) : (
@@ -140,7 +100,7 @@ export default function ClimbAndEarnPage({
             {gameOffers.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {gameOffers.map((offer) => (
-                        <OfferGridCard key={offer.id} offer={offer} onCardClick={() => setSelectedOffer(offer)} />
+                        <OfferGridCard key={offer.id} offer={offer} />
                     ))}
                 </div>
             ) : (
@@ -155,7 +115,7 @@ export default function ClimbAndEarnPage({
             {quickTasks.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {quickTasks.map((offer) => (
-                        <OfferGridCard key={offer.id} offer={offer} onCardClick={() => setSelectedOffer(offer)} />
+                        <OfferGridCard key={offer.id} offer={offer} />
                     ))}
                 </div>
             ) : (
