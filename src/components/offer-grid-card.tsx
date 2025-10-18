@@ -21,7 +21,11 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferClick: (offer: Offer) => void }) {
-  const totalPayout = offer.events.reduce((sum, event) => sum + event.payout, 0);
+  // Safely calculate total payout
+  const totalPayout = Array.isArray(offer.events) && offer.events.length > 0
+    ? offer.events.reduce((sum, event) => sum + event.payout, 0)
+    : offer.payout;
+
   const totalPoints = Math.round(totalPayout * 1000);
 
   return (
@@ -49,7 +53,7 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
                         {offer.category?.toLowerCase() || 'Offer'}
                     </Badge>
                     <span className="text-sm font-bold text-accent">
-                        ${totalPoints ? (totalPoints / 100).toFixed(2) : (offer.payout_usd || 0)}
+                        ${(totalPoints / 100).toFixed(2)}
                     </span>
                 </div>
             </CardContent>
