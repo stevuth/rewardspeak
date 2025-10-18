@@ -4,20 +4,50 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
-import { popularOffers, quickTasks } from "@/lib/mock-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Metadata } from "next";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-
+import { getOffers } from "@/lib/notik-api";
+import type { NotikOffer } from "@/lib/notik-api";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Climb & Earn",
   description: "Main earning hub that leads to all available earning opportunities.",
 };
 
-export default function ClimbAndEarnPage() {
-    const gameOffers = popularOffers.filter(o => o.category === "Game");
+function transformOffer(notikOffer: NotikOffer, userId: string | undefined): any {
+  let clickUrl = notikOffer.click_url;
+  if (userId) {
+    clickUrl = clickUrl.replace('[user_id]', userId);
+  }
+
+  return {
+    id: notikOffer.offer_id,
+    title: notikOffer.name,
+    partner: notikOffer.network,
+    points: Math.round(parseFloat(notikOffer.payout_usd) * 100),
+    imageUrl: notikOffer.image_url,
+    imageHint: "offer logo",
+    category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game", // Simplified category
+    clickUrl: clickUrl,
+    description: notikOffer.description,
+    countries: notikOffer.countries,
+    platforms: notikOffer.platforms,
+  }
+}
+
+export default async function ClimbAndEarnPage() {
+  const supabase = createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const rawOffers = await getOffers();
+  
+  const popularOffers = rawOffers.map(offer => transformOffer(offer, user?.id));
+
+  const gameOffers = popularOffers.filter(o => o.category === "Game");
+  const quickTasks = popularOffers.filter(o => o.category !== "Game" && o.category !== "Survey").slice(0, 12); // Example, adjust as needed
 
   return (
     <div className="space-y-8">
