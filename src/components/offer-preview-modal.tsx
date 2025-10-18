@@ -3,14 +3,14 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle, Circle, DollarSign, Info } from "lucide-react";
+import { X, CheckCircle, Circle, DollarSign, Info, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { Offer as OfferType } from "@/lib/notik-api";
+import type { NotikOffer } from "@/lib/notik-api";
 import { cn } from "@/lib/utils";
 
-type Offer = OfferType & {
+type Offer = NotikOffer & {
   points?: number;
   imageHint?: string;
   category?: string;
@@ -32,22 +32,20 @@ const modalVariants = {
   hidden: {
     opacity: 0,
     scale: 0.95,
-    y: 50,
   },
   visible: {
     opacity: 1,
     scale: 1,
-    y: 0,
     transition: {
       type: "spring",
       stiffness: 260,
       damping: 30,
+      duration: 0.3
     },
   },
   exit: {
     opacity: 0,
     scale: 0.9,
-    y: 50,
     transition: {
       duration: 0.2,
     },
@@ -57,7 +55,12 @@ const modalVariants = {
 export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalProps) {
   if (!offer) return null;
 
-  const totalPoints = offer.events.reduce((sum, event) => sum + Math.round(event.payout * 1000), 0);
+  // Safely calculate total points
+  const totalPoints =
+    offer.events && offer.events.length > 0
+      ? offer.events.reduce((sum, event) => sum + Math.round((event?.payout || 0) * 1000), 0)
+      : Math.round((offer.payout || 0) * 1000);
+
   const totalUSD = totalPoints / 100;
 
   const handleStartOffer = () => {
@@ -66,6 +69,8 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
     }
     onClose();
   };
+
+  const hasMilestones = offer.events && offer.events.length > 0;
 
   return (
     <AnimatePresence>
@@ -80,9 +85,6 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
         >
           <motion.div
             variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
             onClick={(e) => e.stopPropagation()}
             className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] max-w-2xl h-[95vh] max-h-[800px] overflow-hidden border border-primary/20"
           >
@@ -109,8 +111,8 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
               <Button
                 onClick={onClose}
                 variant="ghost"
-                size="sm"
-                className="absolute top-4 right-4 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                size="icon"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
               >
                 <X className="h-5 w-5" />
                 <span className="sr-only">Close</span>
@@ -126,7 +128,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                     </div>
 
                     <h3 className="font-semibold text-primary pt-2">Milestones</h3>
-                    {offer.events.length > 0 ? (
+                    {hasMilestones ? (
                         <div className="space-y-3">
                         {offer.events.map((event) => {
                             const points = Math.round(event.payout * 1000);
@@ -154,9 +156,8 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                         </div>
                     ) : (
                         <div className="text-center py-8 text-muted-foreground text-sm bg-black/20 rounded-lg">
-                            No specific milestones provided.
-                            <br />
-                            Complete the offer to earn the full reward.
+                            <p className="font-semibold">One-Step Offer</p>
+                            <p className="mt-1">Complete the main objective to earn the full reward.</p>
                         </div>
                     )}
                 </div>
@@ -174,7 +175,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                 <Button
                   onClick={handleStartOffer}
                   size="lg"
-                  className="w-full sm:w-auto font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-shadow"
+                  className="w-full sm:w-auto font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all"
                 >
                   Start Offer
                 </Button>
