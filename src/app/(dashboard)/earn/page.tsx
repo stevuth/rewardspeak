@@ -1,20 +1,16 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import type { NotikOffer } from "@/lib/notik-api";
-import { createSupabaseServerClient } from "@/utils/supabase/server";
-import { getOffers } from "@/lib/notik-api";
+import { Search, Loader2 } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
+import type { NotikOffer } from "@/lib/notik-api";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 
 type Offer = NotikOffer & {
   points: number;
@@ -29,8 +25,8 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
 
-  const payoutValue = notikOffer.payout_usd !== undefined ? notikOffer.payout_usd : notikOffer.payout;
-  const points = Math.round(parseFloat(String(payoutValue)) * 1000);
+  const totalPayout = notikOffer.events.reduce((sum, event) => sum + event.payout, 0);
+  const points = Math.round(totalPayout * 1000);
 
   return {
     ...notikOffer,
@@ -41,8 +37,39 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 }
 
-export default function ClimbAndEarnPage({ allOffers, gameOffers, quickTasks }: { allOffers: Offer[], gameOffers: Offer[], quickTasks: Offer[] }) {
+export default function ClimbAndEarnPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+  const [allOffers, setAllOffers] = useState<Offer[]>([]);
+  const [gameOffers, setGameOffers] = useState<Offer[]>([]);
+  const [quickTasks, setQuickTasks] = useState<Offer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/get-offers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch offers');
+        }
+        const { rawOffers, user } = await response.json();
+        const userId = user?.id;
+
+        if (Array.isArray(rawOffers)) {
+            const transformed = rawOffers.map((o: NotikOffer) => transformOffer(o, userId));
+            setAllOffers(transformed);
+            setGameOffers(transformed.filter((o) => o.category === "Game"));
+            setQuickTasks(transformed.filter((o) => o.category === "App" || o.category === "Quiz"));
+        }
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, []);
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -51,6 +78,35 @@ export default function ClimbAndEarnPage({ allOffers, gameOffers, quickTasks }: 
   const handleCloseModal = () => {
     setSelectedOffer(null);
   };
+  
+  const renderOfferGrid = (offers: Offer[], type: string) => {
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
+
+    if (offers.length > 0) {
+        return (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                {offers.map((offer) => (
+                    <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <Card className="text-center py-12">
+            <CardContent>
+                <p className="text-muted-foreground">No {type} offers right now. Check back soon!</p>
+            </CardContent>
+        </Card>
+    );
+  };
+
 
   return (
     <div className="space-y-8">
@@ -72,49 +128,13 @@ export default function ClimbAndEarnPage({ allOffers, gameOffers, quickTasks }: 
             <TabsTrigger value="quick_tasks">Quick Tasks</TabsTrigger>
           </TabsList>
           <TabsContent value="popular" className="mt-6">
-             {allOffers.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {allOffers.map((offer) => (
-                        <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
-                    ))}
-                </div>
-             ) : (
-                <Card className="text-center py-12">
-                    <CardContent>
-                        <p className="text-muted-foreground">No popular offers right now. Check back soon!</p>
-                    </CardContent>
-                </Card>
-             )}
+            {renderOfferGrid(allOffers, 'popular')}
           </TabsContent>
           <TabsContent value="games" className="mt-6">
-            {gameOffers.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {gameOffers.map((offer) => (
-                        <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick}/>
-                    ))}
-                </div>
-            ) : (
-                <Card className="text-center py-12">
-                    <CardContent>
-                        <p className="text-muted-foreground">No game offers available right now. Check back soon!</p>
-                    </CardContent>
-                </Card>
-            )}
+            {renderOfferGrid(gameOffers, 'game')}
           </TabsContent>
           <TabsContent value="quick_tasks" className="mt-6">
-            {quickTasks.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {quickTasks.map((offer) => (
-                        <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
-                    ))}
-                </div>
-            ) : (
-                 <Card className="text-center py-12">
-                    <CardContent>
-                        <p className="text-muted-foreground">No quick tasks available right now. Check back soon!</p>
-                    </CardContent>
-                </Card>
-            )}
+            {renderOfferGrid(quickTasks, 'quick task')}
           </TabsContent>
         </Tabs>
       </section>
