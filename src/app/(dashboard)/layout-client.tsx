@@ -293,7 +293,7 @@ function MobileBottomNav() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-medium",
+                                "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-bold",
                                 isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
                             )}
                         >
