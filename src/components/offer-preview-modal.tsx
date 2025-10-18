@@ -177,9 +177,9 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
             </ScrollArea>
 
             {/* Footer */}
-            <div className="flex-shrink-0 p-4 sm:p-6 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
-              <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
-                <div className="text-center sm:text-left order-2 sm:order-1">
+            <div className="flex-shrink-0 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
                   <p className="text-xs text-muted-foreground">Total Reward</p>
                   <p className="text-xl font-bold text-accent truncate">
                     {totalPoints.toLocaleString()} Pts (${totalUSD.toFixed(2)})
@@ -188,7 +188,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                 <Button
                   onClick={handleStartOffer}
                   size="lg"
-                  className="w-full sm:w-auto sm:ml-auto font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all order-1 sm:order-2"
+                  className="w-full sm:w-auto font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all"
                 >
                   Start Offer
                 </Button>
