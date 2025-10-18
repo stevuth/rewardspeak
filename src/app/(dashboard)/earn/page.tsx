@@ -134,15 +134,11 @@ export default function ClimbAndEarnPage() {
       </div>
 
       <section>
-        <Tabs defaultValue="popular" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
-            <TabsTrigger value="popular">Popular Offers</TabsTrigger>
+        <Tabs defaultValue="games" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-flex">
             <TabsTrigger value="games">Games</TabsTrigger>
             <TabsTrigger value="quick_tasks">Quick Tasks</TabsTrigger>
           </TabsList>
-          <TabsContent value="popular" className="mt-6">
-            {renderOfferGrid(allOffers, 'popular')}
-          </TabsContent>
           <TabsContent value="games" className="mt-6">
             {renderOfferGrid(gameOffers, 'game')}
           </TabsContent>
