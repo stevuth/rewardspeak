@@ -149,13 +149,20 @@ export function FuturisticAuthForm({
                 label="Email Address"
                 Icon={Mail}
               />
-              <FloatingLabelInput
-                id="password"
-                name="password"
-                type="password"
-                label="Password"
-                Icon={Lock}
-              />
+              <div className="relative">
+                <FloatingLabelInput
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Password"
+                  Icon={Lock}
+                />
+                {isLogin && (
+                    <button type="button" className="absolute top-0 right-0 text-xs font-semibold text-secondary hover:text-secondary/80 transition mt-1">
+                        Forgot Password?
+                    </button>
+                )}
+              </div>
 
               {!isLogin && (
                 <FloatingLabelInput
