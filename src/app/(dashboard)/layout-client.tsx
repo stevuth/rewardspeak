@@ -190,12 +190,6 @@ function MobileSidebar({ user }: { user: User | null }) {
                           <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
                           <span className="text-xl font-bold">Rewards Peak</span>
                         </Link>
-                        <SheetClose asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden">
-                                <X className="h-5 w-5" />
-                                <span className="sr-only">Close</span>
-                            </Button>
-                        </SheetClose>
                     </div>
                      <div className="grid grid-cols-2 gap-4 p-4">
                         <nav className="flex-1 space-y-1">
