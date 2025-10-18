@@ -8,8 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Metadata } from "next";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { getOffers } from "@/lib/notik-api";
-import type { NotikOffer } from "@/lib/notik-api";
+import { getOffers, type NotikOffer } from "@/lib/notik-api";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
@@ -23,11 +22,15 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): any
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
 
+  // Determine the primary payout value
+  const payoutValue = notikOffer.payout_usd !== undefined ? notikOffer.payout_usd : notikOffer.payout;
+  const points = Math.round(parseFloat(String(payoutValue)) * 100);
+
   return {
     id: notikOffer.offer_id,
     title: notikOffer.name,
     partner: notikOffer.network,
-    points: Math.round(parseFloat(notikOffer.payout_usd) * 100),
+    points: points,
     imageUrl: notikOffer.image_url,
     imageHint: "offer logo",
     category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game", // Simplified category

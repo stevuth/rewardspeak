@@ -6,19 +6,28 @@ export interface NotikOffer {
   click_url: string;
   image_url: string;
   network: string;
-  payout_usd: string;
+  payout: number; // Changed from payout_usd: string
+  payout_usd?: string; // Keep for backward compatibility if needed
   countries: string[];
-  platforms: ('ios' | 'android' | 'desktop')[];
+  platforms: ('ios' | 'android' | 'desktop' | 'all')[];
   categories: string[];
+}
+
+interface ApiOfferResponse {
+  data: NotikOffer[];
+  // Other pagination properties if they exist
 }
 
 interface ApiResponse {
   status: string;
-  message?: string; // Make message optional
-  data?: {
+  code?: string;
+  message?: string;
+  offers?: ApiOfferResponse; // This contains the nested data array
+  data?: { // Keep this for the previous structure attempt, just in case
     offers: NotikOffer[];
   };
 }
+
 
 export async function getOffers(): Promise<NotikOffer[]> {
   const apiKey = process.env.NOTIK_API_KEY;
@@ -42,8 +51,13 @@ export async function getOffers(): Promise<NotikOffer[]> {
     }
     const data: ApiResponse = await response.json();
 
-    if (data.status === 'success' && data.data?.offers) {
-      return data.data.offers;
+    if (data.status === 'success' && data.offers?.data) {
+       // The offers are nested inside offers.data
+      return data.offers.data.map(offer => ({
+        ...offer,
+        payout: offer.payout_usd ? parseFloat(offer.payout_usd) : offer.payout, // Ensure payout is a number
+        payout_usd: offer.payout_usd || String(offer.payout)
+      }));
     } else {
       if (data.message) {
         console.error("API call was not successful:", data.message);
