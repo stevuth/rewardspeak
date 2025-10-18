@@ -54,7 +54,7 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
                         {offer.category?.toLowerCase() || 'Offer'}
                     </Badge>
                     <span className="text-sm font-bold text-accent">
-                        ${(totalPoints / 100).toFixed(2)}
+                        ${(totalPoints / 1000).toFixed(2)}
                     </span>
                 </div>
             </CardContent>

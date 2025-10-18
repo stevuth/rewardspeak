@@ -3,12 +3,13 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle, Circle, DollarSign, Info, ArrowLeft } from "lucide-react";
+import { X, Info, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { NotikOffer } from "@/lib/notik-api";
 import { cn } from "@/lib/utils";
+import { Badge } from "./ui/badge";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -55,13 +56,14 @@ const modalVariants = {
 export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalProps) {
   if (!offer) return null;
 
-  // Safely calculate total points
-  const totalPoints =
-    offer.events && offer.events.length > 0
-      ? offer.events.reduce((sum, event) => sum + Math.round((event?.payout || 0) * 1000), 0)
-      : Math.round((offer.payout || 0) * 1000);
+  // Safely calculate total payout
+  const totalPayout =
+    (offer.events && offer.events.length > 0)
+      ? offer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
+      : (offer.payout || 0);
 
-  const totalUSD = totalPoints / 100;
+  const totalPoints = Math.round(totalPayout * 1000);
+  const totalUSD = totalPayout;
 
   const handleStartOffer = () => {
     if (offer.click_url) {
@@ -132,7 +134,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                         <div className="space-y-3">
                         {offer.events.map((event) => {
                             const points = Math.round(event.payout * 1000);
-                            const usdValue = points / 100;
+                            const usdValue = event.payout;
                             return (
                             <div
                                 key={event.id}
