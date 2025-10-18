@@ -44,7 +44,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[90vw] sm:max-w-lg bg-gradient-to-br from-[#15002B] to-[#240046] border-border/50 text-foreground p-0 rounded-lg">
+      <DialogContent className="w-[90vw] sm:max-w-lg bg-gradient-to-br from-[#15002B] to-[#240046] border-border/50 text-foreground p-0 rounded-lg flex flex-col max-h-[85vh]">
         <DialogHeader className="p-4 sm:p-6 pb-0">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <SafeImage
@@ -67,9 +67,9 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
           </div>
         </DialogHeader>
 
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-6 flex-1 min-h-0">
             <h3 className="font-semibold mb-3 text-secondary">Milestones</h3>
-            <ScrollArea className="h-auto max-h-[40vh] pr-4 -mr-4">
+            <ScrollArea className="h-full pr-4 -mr-4">
                 <div className="space-y-4">
                 {(offer.events && offer.events.length > 0) ? (
                     offer.events.map((event, index) => {
