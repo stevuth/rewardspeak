@@ -1,3 +1,4 @@
+
 export interface NotikOffer {
   offer_id: string;
   name: string;
@@ -13,7 +14,7 @@ export interface NotikOffer {
 
 interface ApiResponse {
   status: string;
-  message: string;
+  message?: string; // Make message optional
   data?: {
     offers: NotikOffer[];
   };
@@ -35,6 +36,8 @@ export async function getOffers(): Promise<NotikOffer[]> {
     const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
     if (!response.ok) {
       console.error(`API call failed with status: ${response.status}`);
+      const errorBody = await response.text();
+      console.error("API Error Body:", errorBody);
       return [];
     }
     const data: ApiResponse = await response.json();
@@ -42,7 +45,11 @@ export async function getOffers(): Promise<NotikOffer[]> {
     if (data.status === 'success' && data.data?.offers) {
       return data.data.offers;
     } else {
-      console.error("API call was not successful:", data.message);
+      if (data.message) {
+        console.error("API call was not successful:", data.message);
+      } else {
+        console.error("API call was not successful and returned no message. Full response:", JSON.stringify(data));
+      }
       return [];
     }
   } catch (error) {
