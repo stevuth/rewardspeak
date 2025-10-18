@@ -2,7 +2,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import type { Offer } from "@/lib/mock-data";
 import { SafeImage } from "./safe-image";
 
@@ -12,9 +11,9 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-export function OfferGridCard({ offer }: { offer: Offer & { clickUrl?: string } }) {
+export function OfferGridCard({ offer, onCardClick }: { offer: Offer & { clickUrl?: string }, onCardClick: () => void }) {
   return (
-    <Link href={offer.clickUrl || '#'} target="_blank" rel="noopener noreferrer" className="block h-full">
+    <div onClick={onCardClick} className="cursor-pointer h-full">
         <Card className="overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 group bg-card border-border hover:border-primary/50 flex flex-col h-full">
         <div className="relative">
             <SafeImage
@@ -43,6 +42,6 @@ export function OfferGridCard({ offer }: { offer: Offer & { clickUrl?: string } 
             </div>
         </CardContent>
         </Card>
-    </Link>
+    </div>
   );
 }
