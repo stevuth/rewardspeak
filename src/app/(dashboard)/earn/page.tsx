@@ -25,7 +25,11 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
 
-  const totalPayout = notikOffer.events.reduce((sum, event) => sum + event.payout, 0);
+  // Safely calculate total payout
+  const totalPayout = Array.isArray(notikOffer.events) && notikOffer.events.length > 0
+    ? notikOffer.events.reduce((sum, event) => sum + event.payout, 0)
+    : notikOffer.payout;
+  
   const points = Math.round(totalPayout * 1000);
 
   return {
