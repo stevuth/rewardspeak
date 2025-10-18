@@ -69,7 +69,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
 
         <div className="p-4 sm:p-6">
             <h3 className="font-semibold mb-3 text-secondary">Milestones</h3>
-            <ScrollArea className="h-auto max-h-[40vh] sm:max-h-[50vh] pr-4 -mr-4">
+            <ScrollArea className="h-auto max-h-[40vh] pr-4 -mr-4">
                 <div className="space-y-4">
                 {(offer.events && offer.events.length > 0) ? (
                     offer.events.map((event, index) => {
