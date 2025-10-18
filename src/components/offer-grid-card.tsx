@@ -22,10 +22,11 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferClick: (offer: Offer) => void }) {
   // Safely calculate total payout
-  const totalPayout = Array.isArray(offer.events) && offer.events.length > 0
-    ? offer.events.reduce((sum, event) => sum + event.payout, 0)
-    : offer.payout;
-
+  const totalPayout =
+    (offer.events && offer.events.length > 0)
+      ? offer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
+      : (offer.payout || 0);
+  
   const totalPoints = Math.round(totalPayout * 1000);
 
   return (
