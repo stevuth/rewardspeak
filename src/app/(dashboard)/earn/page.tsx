@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import type { NotikOffer } from "@/lib/notik-api";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
@@ -59,15 +59,20 @@ export default function ClimbAndEarnPage() {
         if (!response.ok) {
           throw new Error('Failed to fetch offers');
         }
-        const { rawOffers, user } = await response.json();
+        const { allOffers: rawAllOffers, topOffers: rawTopOffers, user } = await response.json();
         const userId = user?.id;
 
-        if (Array.isArray(rawOffers)) {
-            const transformed = rawOffers.map((o: NotikOffer) => transformOffer(o, userId));
+        if (Array.isArray(rawAllOffers)) {
+            const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
             setAllOffers(transformed);
+        }
+
+        if (Array.isArray(rawTopOffers)) {
+            const transformed = rawTopOffers.map((o: NotikOffer) => transformOffer(o, userId));
             setGameOffers(transformed.filter((o) => o.category === "Game"));
             setQuickTasks(transformed.filter((o) => o.category === "App" || o.category === "Quiz"));
         }
+        
       } catch (error) {
         console.error("Error fetching offers:", error);
       } finally {
