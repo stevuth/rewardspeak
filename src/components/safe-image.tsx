@@ -33,27 +33,14 @@ export function SafeImage({
     setHasError(true);
   };
 
-  if (!src || hasError) {
-    // Render a placeholder if src is missing or an error occurred
-    // eslint-disable-next-line @next/next/no-img-element
-    return (
-      <img
-        src={placeholderSrc}
-        alt="Placeholder image"
-        width={width}
-        height={height}
-        loading="lazy"
-        className={cn("object-cover", className)}
-      />
-    );
-  }
+  const finalSrc = !src || hasError ? placeholderSrc : src;
 
-  if (isExternal) {
-    // Use a standard <img> tag for external sources
+  if (isExternal || hasError) {
+    // Use a standard <img> tag for external sources or as a fallback
     // eslint-disable-next-line @next/next/no-img-element
     return (
       <img
-        src={src}
+        src={finalSrc}
         alt={alt}
         width={width}
         height={height}

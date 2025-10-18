@@ -98,7 +98,7 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
         break; 
       }
       const data: ApiResponse = await response.json();
-
+      
       if (data.status === 'success' && data.offers?.data) {
         const offers = data.offers.data.map(offer => ({
           ...offer,
@@ -106,6 +106,7 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
           payout_usd: offer.payout_usd || String(offer.payout)
         }));
         allOffers = allOffers.concat(offers);
+        // Correctly assign the next page URL
         nextPageUrl = data.offers.next_page_url;
       } else {
         if (data.message) {
