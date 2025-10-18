@@ -103,7 +103,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
           >
             {/* Header */}
             <div className="relative flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4 min-w-0">
                   <SafeImage
                     src={offer.image_url}
@@ -178,17 +178,17 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
 
             {/* Footer */}
             <div className="flex-shrink-0 p-4 sm:p-6 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="text-center sm:text-left">
+              <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
+                <div className="text-center sm:text-left order-2 sm:order-1">
                   <p className="text-xs text-muted-foreground">Total Reward</p>
-                  <p className="text-xl font-bold text-accent">
+                  <p className="text-xl font-bold text-accent truncate">
                     {totalPoints.toLocaleString()} Pts (${totalUSD.toFixed(2)})
                   </p>
                 </div>
                 <Button
                   onClick={handleStartOffer}
                   size="lg"
-                  className="w-full sm:w-auto font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all"
+                  className="w-full sm:w-auto font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all order-1 sm:order-2"
                 >
                   Start Offer
                 </Button>
