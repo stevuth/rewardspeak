@@ -45,7 +45,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[90vw] sm:max-w-lg bg-gradient-to-br from-[#15002B] to-[#240046] border-border/50 text-foreground p-0 rounded-lg flex flex-col max-h-[85vh]">
-        <DialogHeader className="p-4 sm:p-6 pb-0">
+        <DialogHeader className="p-4 sm:p-6 pb-4">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <SafeImage
               src={offer.imageUrl}
@@ -56,7 +56,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
             />
             <div className="flex-1 text-center sm:text-left">
               <DialogTitle className="text-xl font-bold font-headline">{offer.title}</DialogTitle>
-              <DialogDescription className="text-muted-foreground mt-1">{offer.description}</DialogDescription>
+              <DialogDescription className="text-muted-foreground mt-1 line-clamp-2">{offer.description}</DialogDescription>
               <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
                 <Badge variant="secondary">{offer.partner}</Badge>
                 <Badge variant={offer.category === 'Game' ? 'default' : 'outline'} className="capitalize">
@@ -67,9 +67,9 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
           </div>
         </DialogHeader>
 
-        <div className="flex-1 px-4 sm:px-6 pt-4 min-h-0">
+        <div className="flex-1 px-4 sm:px-6 min-h-0">
           <h3 className="font-semibold mb-3 text-secondary">Milestones</h3>
-          <ScrollArea className="h-full pr-4 -mr-4">
+          <ScrollArea className="h-full pr-2">
               <div className="space-y-4">
               {(offer.events && offer.events.length > 0) ? (
                   offer.events.map((event, index) => {
@@ -112,7 +112,7 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
           </ScrollArea>
         </div>
         
-        <DialogFooter className="bg-black/20 p-4 sm:p-6 flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 rounded-b-lg">
+        <DialogFooter className="bg-black/20 p-4 sm:p-6 mt-4 flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 rounded-b-lg">
             <div className="flex-1 text-center sm:text-left">
                 <p className="text-xs text-muted-foreground">Total Reward</p>
                 <p className="text-xl font-bold text-accent">{totalPointsFromEvents.toLocaleString()} Pts (${totalDollarValue})</p>
