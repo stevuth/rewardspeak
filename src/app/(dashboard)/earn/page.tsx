@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -11,20 +14,13 @@ import { Search } from "lucide-react";
 import type { NotikOffer } from "@/lib/notik-api";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { getOffers } from "@/lib/notik-api";
+import { OfferPreviewModal } from "@/components/offer-preview-modal";
 
-type Offer = {
-  id: string;
-  title: string;
-  partner: string;
+type Offer = NotikOffer & {
   points: number;
-  imageUrl: string;
   imageHint: string;
   category: "Survey" | "Game" | "App" | "Quiz";
   clickUrl: string;
-  description: string;
-  countries: string[];
-  platforms: string[];
-  events?: { id: number; name: string; payout: number }[];
 };
 
 function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Offer {
@@ -34,33 +30,27 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 
   const payoutValue = notikOffer.payout_usd !== undefined ? notikOffer.payout_usd : notikOffer.payout;
-  const points = Math.round(parseFloat(String(payoutValue)) * 100);
+  const points = Math.round(parseFloat(String(payoutValue)) * 1000);
 
   return {
-    id: notikOffer.offer_id,
-    title: notikOffer.name,
-    partner: notikOffer.network,
+    ...notikOffer,
     points: points,
-    imageUrl: notikOffer.image_url,
     imageHint: "offer logo",
     category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
     clickUrl: clickUrl,
-    description: notikOffer.description,
-    countries: notikOffer.countries,
-    platforms: notikOffer.platforms,
-    events: notikOffer.events,
   }
 }
 
-export default async function ClimbAndEarnPage() {
-  const supabase = createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const rawOffers = await getOffers();
-  
-  const offers = rawOffers.map((offer: NotikOffer) => transformOffer(offer, user?.id));
+export default function ClimbAndEarnPage({ allOffers, gameOffers, quickTasks }: { allOffers: Offer[], gameOffers: Offer[], quickTasks: Offer[] }) {
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
 
-  const gameOffers = offers.filter(o => o.category === "Game");
-  const quickTasks = offers.filter(o => o.category !== "Game" && o.category !== "Survey").slice(0, 12);
+  const handleOfferClick = (offer: Offer) => {
+    setSelectedOffer(offer);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedOffer(null);
+  };
 
   return (
     <div className="space-y-8">
@@ -82,10 +72,10 @@ export default async function ClimbAndEarnPage() {
             <TabsTrigger value="quick_tasks">Quick Tasks</TabsTrigger>
           </TabsList>
           <TabsContent value="popular" className="mt-6">
-             {offers.length > 0 ? (
+             {allOffers.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {offers.map((offer) => (
-                        <OfferGridCard key={offer.id} offer={offer} />
+                    {allOffers.map((offer) => (
+                        <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
                     ))}
                 </div>
              ) : (
@@ -100,7 +90,7 @@ export default async function ClimbAndEarnPage() {
             {gameOffers.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {gameOffers.map((offer) => (
-                        <OfferGridCard key={offer.id} offer={offer} />
+                        <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick}/>
                     ))}
                 </div>
             ) : (
@@ -115,7 +105,7 @@ export default async function ClimbAndEarnPage() {
             {quickTasks.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {quickTasks.map((offer) => (
-                        <OfferGridCard key={offer.id} offer={offer} />
+                        <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
                     ))}
                 </div>
             ) : (
@@ -128,6 +118,12 @@ export default async function ClimbAndEarnPage() {
           </TabsContent>
         </Tabs>
       </section>
+      
+      <OfferPreviewModal 
+        isOpen={!!selectedOffer}
+        onClose={handleCloseModal}
+        offer={selectedOffer}
+      />
     </div>
   );
 }
