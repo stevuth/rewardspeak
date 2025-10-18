@@ -69,9 +69,9 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
   if (!offer) return null;
 
   const totalPayout =
-    offer.events && offer.events.length > 0
+    (offer.events && offer.events.length > 0)
       ? offer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
-      : offer.payout || 0;
+      : (offer.payout || 0);
 
   const totalPoints = Math.round(totalPayout * 1000);
   const totalUSD = totalPayout;
@@ -99,35 +99,37 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
           <motion.div
             variants={modalVariants}
             onClick={(e) => e.stopPropagation()}
-            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] h-[95vh] sm:h-auto sm:max-h-[90vh] max-w-2xl overflow-hidden border border-primary/20"
+            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] h-[95vh] max-w-2xl overflow-hidden border border-primary/20"
           >
             {/* Header */}
             <div className="relative flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
-              <div className="flex items-center gap-4">
-                <SafeImage
-                  src={offer.image_url}
-                  alt={offer.name}
-                  width={64}
-                  height={64}
-                  className="rounded-lg border-2 border-primary/30"
-                  data-ai-hint={offer.imageHint}
-                />
-                <div className="flex-1">
-                  <h2 className="text-lg sm:text-xl font-bold font-headline truncate">
-                    {offer.name}
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    from {offer.network}
-                  </p>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0">
+                  <SafeImage
+                    src={offer.image_url}
+                    alt={offer.name}
+                    width={64}
+                    height={64}
+                    className="rounded-lg border-2 border-primary/30 flex-shrink-0"
+                    data-ai-hint={offer.imageHint}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-lg sm:text-xl font-bold font-headline">
+                      {offer.name}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      from {offer.network}
+                    </p>
+                  </div>
                 </div>
+                <button
+                  onClick={onClose}
+                  className="flex-shrink-0 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
+                >
+                  <span className="text-xs uppercase tracking-wider">Close</span>
+                  <span className="sr-only">Close</span>
+                </button>
               </div>
-              <button
-                onClick={onClose}
-                className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
-              >
-                <span className="text-xs uppercase tracking-wider">Close</span>
-                <span className="sr-only">Close</span>
-              </button>
             </div>
 
             {/* Scrollable Body */}
@@ -142,8 +144,8 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                     {hasMilestones ? (
                         <div className="space-y-3">
                         {offer.events.map((event) => {
-                            const points = Math.round(event.payout * 1000);
-                            const usdValue = event.payout;
+                            const points = Math.round((event.payout || 0) * 1000);
+                            const usdValue = event.payout || 0;
                             return (
                             <div
                                 key={event.id}
