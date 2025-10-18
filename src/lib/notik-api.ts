@@ -32,7 +32,7 @@ export async function getOffers(): Promise<NotikOffer[]> {
   const apiUrl = `https://notik.me/api/v2/get-top-converting-offers?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}&omit_survey=1`;
 
   try {
-    const response = await fetch(apiUrl, { cache: 'no-store' });
+    const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
     if (!response.ok) {
       console.error(`API call failed with status: ${response.status}`);
       return [];
