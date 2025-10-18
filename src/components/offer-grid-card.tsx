@@ -1,9 +1,10 @@
-import Image from "next/image";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import type { Offer } from "@/lib/mock-data";
+import { SafeImage } from "./safe-image";
 
 const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg fill="currentColor" viewBox="0 0 512 512" height="1em" width="1em" {...props}>
@@ -16,13 +17,13 @@ export function OfferGridCard({ offer }: { offer: Offer & { clickUrl?: string } 
     <Link href={offer.clickUrl || '#'} target="_blank" rel="noopener noreferrer" className="block h-full">
         <Card className="overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 group bg-card border-border hover:border-primary/50 flex flex-col h-full">
         <div className="relative">
-            <Image
-            src={offer.imageUrl}
-            alt={offer.title}
-            width={200}
-            height={200}
-            className="w-full h-auto aspect-square object-cover"
-            data-ai-hint={offer.imageHint}
+            <SafeImage
+              src={offer.imageUrl}
+              alt={offer.title}
+              width={200}
+              height={200}
+              className="w-full h-auto aspect-square object-cover"
+              data-ai-hint={offer.imageHint}
             />
             {offer.category === "Game" && (
                 <div className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1.5">

@@ -1,8 +1,10 @@
+
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Offer } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { SafeImage } from "@/components/safe-image";
 
 const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg fill="currentColor" viewBox="0 0 512 512" height="1em" width="1em" {...props}>
@@ -10,11 +12,11 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-export function OfferGridCard({ offer }: { offer: Offer }) {
+export function OfferGridCard({ offer }: { offer: Offer & { clickUrl?: string } }) {
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 group bg-card border-border hover:border-primary/50 flex flex-col">
+    <Card className="overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 group bg-card border-border hover:border-primary/50 flex flex-col h-full">
       <div className="relative">
-        <Image
+        <SafeImage
           src={offer.imageUrl}
           alt={offer.title}
           width={200}
@@ -34,7 +36,7 @@ export function OfferGridCard({ offer }: { offer: Offer }) {
           <Badge variant={offer.category === 'Game' ? 'default' : 'secondary'} className="text-xs capitalize">
             {offer.category.toLowerCase()}
           </Badge>
-          <span className="text-sm font-bold text-secondary">
+          <span className="text-sm font-bold text-accent">
             ${(offer.points / 100).toFixed(2)}
           </span>
         </div>
