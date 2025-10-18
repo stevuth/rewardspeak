@@ -67,49 +67,49 @@ export function OfferMilestoneModal({ isOpen, onClose, offer }: OfferMilestoneMo
           </div>
         </DialogHeader>
 
-        <div className="p-4 sm:p-6 flex-1 min-h-0">
-            <h3 className="font-semibold mb-3 text-secondary">Milestones</h3>
-            <ScrollArea className="h-full pr-4 -mr-4">
-                <div className="space-y-4">
-                {(offer.events && offer.events.length > 0) ? (
-                    offer.events.map((event, index) => {
-                    const isCompleted = completedStepNames.includes(event.name);
-                    const points = Math.round(event.payout * 100);
-                    const dollarValue = (points / 100).toFixed(2);
-                    return (
-                        <div key={event.id} className={cn(
-                            "flex items-center gap-4 p-3 rounded-lg transition-colors",
-                            isCompleted ? "bg-green-500/10 text-green-400" : "bg-muted/50"
-                        )}>
-                            {isCompleted ? (
-                                <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-400" />
-                            ) : (
-                                <Circle className="h-5 w-5 flex-shrink-0 text-muted-foreground/50" />
-                            )}
-                            <p className="flex-1 text-sm font-medium">{event.name}</p>
-                            <div className="text-right">
-                                <span className="font-bold text-sm text-accent whitespace-nowrap">
-                                    + {points.toLocaleString()} Pts
-                                </span>
-                                <p className="text-xs text-muted-foreground">(${dollarValue})</p>
-                            </div>
-                        </div>
-                    );
-                    })
-                ) : (
-                    <div className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
-                        <Rocket className="h-5 w-5 flex-shrink-0 text-primary" />
-                        <p className="flex-1 text-sm font-medium">Complete the offer</p>
-                         <div className="text-right">
-                            <span className="font-bold text-sm text-accent whitespace-nowrap">
-                                + {offer.points.toLocaleString()} Pts
-                            </span>
-                             <p className="text-xs text-muted-foreground">(${(offer.points / 100).toFixed(2)})</p>
-                        </div>
-                    </div>
-                )}
-                </div>
-            </ScrollArea>
+        <div className="flex-1 px-4 sm:px-6 pt-4 min-h-0">
+          <h3 className="font-semibold mb-3 text-secondary">Milestones</h3>
+          <ScrollArea className="h-full pr-4 -mr-4">
+              <div className="space-y-4">
+              {(offer.events && offer.events.length > 0) ? (
+                  offer.events.map((event, index) => {
+                  const isCompleted = completedStepNames.includes(event.name);
+                  const points = Math.round(event.payout * 100);
+                  const dollarValue = (points / 100).toFixed(2);
+                  return (
+                      <div key={event.id} className={cn(
+                          "flex items-center gap-4 p-3 rounded-lg transition-colors",
+                          isCompleted ? "bg-green-500/10 text-green-400" : "bg-muted/50"
+                      )}>
+                          {isCompleted ? (
+                              <CheckCircle className="h-5 w-5 flex-shrink-0 text-green-400" />
+                          ) : (
+                              <Circle className="h-5 w-5 flex-shrink-0 text-muted-foreground/50" />
+                          )}
+                          <p className="flex-1 text-sm font-medium">{event.name}</p>
+                          <div className="text-right">
+                              <span className="font-bold text-sm text-accent whitespace-nowrap">
+                                  + {points.toLocaleString()} Pts
+                              </span>
+                              <p className="text-xs text-muted-foreground">(${dollarValue})</p>
+                          </div>
+                      </div>
+                  );
+                  })
+              ) : (
+                  <div className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
+                      <Rocket className="h-5 w-5 flex-shrink-0 text-primary" />
+                      <p className="flex-1 text-sm font-medium">Complete the offer</p>
+                       <div className="text-right">
+                          <span className="font-bold text-sm text-accent whitespace-nowrap">
+                              + {offer.points.toLocaleString()} Pts
+                          </span>
+                           <p className="text-xs text-muted-foreground">(${(offer.points / 100).toFixed(2)})</p>
+                      </div>
+                  </div>
+              )}
+              </div>
+          </ScrollArea>
         </div>
         
         <DialogFooter className="bg-black/20 p-4 sm:p-6 flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 rounded-b-lg">
