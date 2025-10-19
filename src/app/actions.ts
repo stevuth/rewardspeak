@@ -41,9 +41,24 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
             getAllOffers()
         ]);
 
+        // Helper function to remove duplicates based on offer_id
+        const getUniqueOffers = (offers: any[]) => {
+            const seen = new Map();
+            return offers.filter(offer => {
+                const offerId = offer.offer_id;
+                if (seen.has(offerId)) {
+                    return false;
+                } else {
+                    seen.set(offerId, true);
+                    return true;
+                }
+            });
+        };
+
         // Upsert top converting offers
         if (topOffers.length > 0) {
-            const topOffersData = topOffers.map(offer => ({
+            const uniqueTopOffers = getUniqueOffers(topOffers);
+            const topOffersData = uniqueTopOffers.map(offer => ({
                 offer_id: offer.offer_id,
                 name: offer.name,
                 description: offer.description,
@@ -68,7 +83,8 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
 
         // Upsert all offers
         if (allOffers.length > 0) {
-            const allOffersData = allOffers.map(offer => ({
+            const uniqueAllOffers = getUniqueOffers(allOffers);
+            const allOffersData = uniqueAllOffers.map(offer => ({
                 offer_id: offer.offer_id,
                 name: offer.name,
                 description: offer.description,
