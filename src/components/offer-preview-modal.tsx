@@ -155,7 +155,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
             <ScrollArea className="flex-1">
                 <div className="p-4 sm:p-6 space-y-4">
                     <div className="p-4 bg-black/20 rounded-lg border border-border">
-                        <h3 className="font-semibold text-primary mb-2 flex items-center gap-2"><Info className="h-4 w-4"/>Description</h3>
+                        <h3 className="font-semibold text-primary mb-2 flex items-center gap-2"><Info className="h-4 w-4"/>Instructions</h3>
                         <p className="text-sm text-muted-foreground">{offer.description}</p>
                     </div>
 
