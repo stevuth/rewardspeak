@@ -14,26 +14,33 @@ export async function signup(
   const password = formData.get('password') as string;
   const referralCode = formData.get('referral_code') as string;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
-  const emailRedirectTo = new URL('/auth/callback', siteUrl);
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:9002';
+    const emailRedirectTo = new URL('/auth/callback', siteUrl);
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: emailRedirectTo.toString(),
-      data: {
-        referral_code: referralCode || null
-      }
-    },
-  });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: emailRedirectTo.toString(),
+        data: {
+          referral_code: referralCode || null
+        }
+      },
+    });
 
-  if (error) {
-    console.error("Signup error:", error);
-    return { message: error.message };
+    if (error) {
+      // Don't throw, return the error message in the state
+      return { message: error.message };
+    }
+    
+    // On success, redirect to the confirmation page
+    redirect('/auth/confirm');
+
+  } catch (error) {
+    // Catch any other unexpected errors
+    return { message: error instanceof Error ? error.message : "An unexpected error occurred." };
   }
-  
-  redirect('/auth/confirm');
 }
 
 export async function login(
@@ -44,17 +51,25 @@ export async function login(
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
-    return { message: error.message };
+    if (error) {
+      // Don't throw, return the error message in the state
+      return { message: error.message };
+    }
+
+    const userEmail = data.user?.email || '';
+
+    // On success, revalidate and redirect
+    revalidatePath('/', 'layout');
+    redirect(`/dashboard?event=login&user_email=${encodeURIComponent(userEmail)}`);
+
+  } catch (error) {
+    // Catch any other unexpected errors
+    return { message: error instanceof Error ? error.message : "An unexpected error occurred." };
   }
-
-  const userEmail = data.user?.email || '';
-
-  revalidatePath('/', 'layout');
-  redirect(`/dashboard?event=login&user_email=${encodeURIComponent(userEmail)}`);
 }
