@@ -13,11 +13,11 @@ export interface NotikOffer {
   events?: { id: number, name: string, payout: number }[];
 }
 
-// Internal type for handling the raw API response
+// Internal type for handling the raw API response which has inconsistent country and payout types
 interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries'> {
   payout_usd?: string;
-  payout?: number;
-  countries: any; // Can be a string or an array
+  payout?: number | string;
+  countries: any; // Can be a string or an array from the API
 }
 
 interface ApiOfferResponse {
@@ -38,14 +38,16 @@ interface ApiResponse {
 
 // Helper to process and standardize an offer
 function processOffer(rawOffer: RawNotikOffer): NotikOffer {
-  const payoutValue = rawOffer.payout_usd ? parseFloat(rawOffer.payout_usd) : (rawOffer.payout || 0);
-  
+  // Standardize payout to a number, handling both string and number inputs
+  const payoutValue = typeof rawOffer.payout === 'string'
+    ? parseFloat(rawOffer.payout)
+    : (rawOffer.payout || 0);
+
+  // Standardize countries to a string array, handling both string and array inputs
   let countriesArray: string[] = [];
   if (typeof rawOffer.countries === 'string') {
-    // If it's a comma-separated string, split it into an array
     countriesArray = rawOffer.countries.split(',').map(c => c.trim()).filter(Boolean);
   } else if (Array.isArray(rawOffer.countries)) {
-    // If it's already an array, use it directly
     countriesArray = rawOffer.countries;
   }
 
@@ -53,8 +55,8 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
     ...rawOffer,
     payout: payoutValue,
     countries: countriesArray,
-    // Ensure events also have numeric payout
-    events: (rawOffer.events || []).map(e => ({...e, payout: e.payout || 0}))
+    // Ensure events also have numeric payout, handling potential strings
+    events: (rawOffer.events || []).map(e => ({...e, payout: typeof e.payout === 'string' ? parseFloat(e.payout) : (e.payout || 0)}))
   };
 }
 
@@ -71,7 +73,7 @@ export async function getOffers(): Promise<NotikOffer[]> {
   const apiUrl = `https://notik.me/api/v2/get-top-converting-offers?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}&omit_survey=1`;
 
   try {
-    const response = await fetch(apiUrl, { next: { revalidate: 3600 } });
+    const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
     if (!response.ok) {
       console.error(`API call failed with status: ${response.status}`);
       const errorBody = await response.text();
@@ -111,7 +113,7 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
 
   while (nextPageUrl) {
     try {
-      const response = await fetch(nextPageUrl, { next: { revalidate: 900 } });
+      const response = await fetch(nextPageUrl, { next: { revalidate: 900 } }); // Revalidate every 15 minutes
       if (!response.ok) {
         console.error(`API call failed with status: ${response.status} for URL: ${nextPageUrl}`);
         const errorBody = await response.text();
@@ -120,10 +122,14 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       }
       const data: ApiResponse = await response.json();
       
-      if (data.status === 'success' && data.data?.offers) {
-        const offers = data.data.offers.map(processOffer);
+      const offersData = data.data?.offers ?? data.offers?.data;
+
+      if (data.status === 'success' && offersData) {
+        const offers = offersData.map(processOffer);
         allOffers = allOffers.concat(offers);
-        nextPageUrl = data.data.next_page_url;
+        
+        const nextUrlFromData = data.data?.next_page_url ?? data.offers?.next_page_url;
+        nextPageUrl = nextUrlFromData;
       } else {
         if (data.message) {
             console.error("API call was not successful:", data.message);
