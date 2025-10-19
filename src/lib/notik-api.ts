@@ -44,17 +44,19 @@ interface ApiResponse {
 function standardizeCountries(rawCountries: any): string[] {
   let countriesArray: string[] = [];
 
-  if (rawCountries) {
-    if (Array.isArray(rawCountries)) {
-      // Handles case: ["US", "GB"]
-      countriesArray = rawCountries.map(String).filter(Boolean);
-    } else if (typeof rawCountries === 'object') {
-      // Handles case: { "US": "United States", "GB": "United Kingdom" }
-      countriesArray = Object.keys(rawCountries).filter(Boolean);
-    } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
-      // Handles case: "US,GB,CA"
-      countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
-    }
+  if (!rawCountries) {
+    return ["ALL"];
+  }
+
+  if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
+    // Handles case: "US,GB,CA" or "US, GB, CA"
+    countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
+  } else if (Array.isArray(rawCountries)) {
+    // Handles case: ["US", "GB"]
+    countriesArray = rawCountries.map(String).filter(Boolean);
+  } else if (typeof rawCountries === 'object') {
+    // Handles case: { "US": "United States", "GB": "United Kingdom" }
+    countriesArray = Object.keys(rawCountries).filter(Boolean);
   }
 
   // If after all checks the array is empty, default to a universal "ALL"
@@ -77,6 +79,7 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   return {
     ...rawOffer,
+    description: rawOffer.description || rawOffer.name,
     payout: payoutValue,
     countries: finalCountries,
     // Ensure events also have numeric payout, handling potential strings
