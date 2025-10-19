@@ -43,12 +43,22 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
     ? parseFloat(rawOffer.payout)
     : (rawOffer.payout || 0);
 
-  // Standardize countries to a string array, handling both string and array inputs
+  // Robustly standardize countries to a string array
   let countriesArray: string[] = [];
-  if (typeof rawOffer.countries === 'string') {
-    countriesArray = rawOffer.countries.split(',').map(c => c.trim()).filter(Boolean);
-  } else if (Array.isArray(rawOffer.countries)) {
-    countriesArray = rawOffer.countries;
+  const rawCountries = rawOffer.countries;
+
+  if (Array.isArray(rawCountries) && rawCountries.length > 0) {
+      countriesArray = rawCountries.map(String).filter(Boolean);
+  } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
+      countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
+  } else if (rawCountries && typeof rawCountries === 'object' && Object.keys(rawCountries).length > 0) {
+      // Handles cases where it might be an object like { "0": "US", "1": "CA" }
+      countriesArray = Object.values(rawCountries).map(String).filter(Boolean);
+  }
+
+  // If after all checks the array is empty, default to ["ALL"]
+  if (countriesArray.length === 0) {
+    countriesArray = ["ALL"];
   }
 
   return {
