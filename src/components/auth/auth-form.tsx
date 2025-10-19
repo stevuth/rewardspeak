@@ -12,12 +12,16 @@ export function AuthForm({
   type: "login" | "signup";
   onSwitch?: () => void;
 }) {
-  const [loginState, loginAction, isLoginPending] = useActionState(login, { message: "" });
-  const [signupState, signupAction, isSignupPending] = useActionState(signup, { message: "" });
+  const [loginState, loginAction, isLoginPending] = useActionState(login, {
+    message: "",
+  });
+  const [signupState, signupAction, isSignupPending] = useActionState(signup, {
+    message: "",
+  });
 
   const state = type === "login" ? loginState : signupState;
   const formAction = type === "login" ? loginAction : signupAction;
-  const pending = type === 'login' ? isLoginPending : isSignupPending;
+  const pending = type === "login" ? isLoginPending : isSignupPending;
 
   return (
     <FuturisticAuthForm
