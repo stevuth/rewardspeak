@@ -54,7 +54,7 @@ const modalVariants = {
   },
 };
 
-const DesktopFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
+const OfferFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
     <div className="w-full flex items-center justify-between gap-4">
       <div className="text-left">
         <p className="text-xs text-muted-foreground">Total Reward</p>
@@ -66,24 +66,6 @@ const DesktopFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: n
         onClick={onStartOffer}
         size="lg"
         className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
-      >
-        Start Offer
-      </Button>
-    </div>
-);
-
-const MobileFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
-    <div className="w-full flex items-center justify-between gap-2">
-      <div className="text-left bg-black/20 border border-border rounded-lg px-3 py-2">
-        <p className="text-xs text-muted-foreground">Total Reward</p>
-        <p className="text-base font-bold text-accent truncate">
-          {totalPoints.toLocaleString()} Pts
-        </p>
-      </div>
-      <Button
-        onClick={onStartOffer}
-        size="lg"
-        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all flex-grow"
       >
         Start Offer
       </Button>
@@ -210,18 +192,13 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                             <p className="mt-1">Complete the main objective to earn the full reward.</p>
                         </div>
                     )}
-                    
-                    {/* Footer content for mobile (inside scroll area) */}
-                    <div className="sm:hidden pt-4">
-                       <MobileFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
-                    </div>
 
                 </div>
             </ScrollArea>
 
-            {/* Fixed Footer for desktop */}
-            <div className="hidden sm:flex flex-shrink-0 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent items-center justify-between gap-4">
-               <DesktopFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
+            {/* Sticky Footer */}
+            <div className="flex-shrink-0 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
+               <OfferFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
             </div>
 
           </motion.div>
