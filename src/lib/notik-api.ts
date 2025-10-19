@@ -6,17 +6,18 @@ export interface NotikOffer {
   click_url: string;
   image_url: string;
   network: string;
-  payout: number; // Use a single numeric payout field for consistency
+  payout: number;
   countries: string[];
   platforms: ('ios' | 'android' | 'desktop' | 'all')[];
   categories: string[];
   events?: { id: number, name: string, payout: number }[];
 }
 
-// Internal type for handling the raw API response which might have payout_usd as a string
-interface RawNotikOffer extends Omit<NotikOffer, 'payout'> {
+// Internal type for handling the raw API response
+interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries'> {
   payout_usd?: string;
   payout?: number;
+  countries: any; // Can be a string or an array
 }
 
 interface ApiOfferResponse {
@@ -38,9 +39,20 @@ interface ApiResponse {
 // Helper to process and standardize an offer
 function processOffer(rawOffer: RawNotikOffer): NotikOffer {
   const payoutValue = rawOffer.payout_usd ? parseFloat(rawOffer.payout_usd) : (rawOffer.payout || 0);
+  
+  let countriesArray: string[] = [];
+  if (typeof rawOffer.countries === 'string') {
+    // If it's a comma-separated string, split it into an array
+    countriesArray = rawOffer.countries.split(',').map(c => c.trim()).filter(Boolean);
+  } else if (Array.isArray(rawOffer.countries)) {
+    // If it's already an array, use it directly
+    countriesArray = rawOffer.countries;
+  }
+
   return {
     ...rawOffer,
     payout: payoutValue,
+    countries: countriesArray,
     // Ensure events also have numeric payout
     events: (rawOffer.events || []).map(e => ({...e, payout: e.payout || 0}))
   };
@@ -68,8 +80,8 @@ export async function getOffers(): Promise<NotikOffer[]> {
     }
     const data: ApiResponse = await response.json();
 
-    if (data.status === 'success' && data.offers?.data) {
-      return data.offers.data.map(processOffer);
+    if (data.status === 'success' && data.data?.offers) {
+      return data.data.offers.map(processOffer);
     } else {
       if (data.message) {
         console.error("API call was not successful:", data.message);
@@ -108,10 +120,10 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       }
       const data: ApiResponse = await response.json();
       
-      if (data.status === 'success' && data.offers?.data) {
-        const offers = data.offers.data.map(processOffer);
+      if (data.status === 'success' && data.data?.offers) {
+        const offers = data.data.offers.map(processOffer);
         allOffers = allOffers.concat(offers);
-        nextPageUrl = data.offers.next_page_url;
+        nextPageUrl = data.data.next_page_url;
       } else {
         if (data.message) {
             console.error("API call was not successful:", data.message);
