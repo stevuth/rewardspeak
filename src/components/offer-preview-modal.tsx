@@ -118,7 +118,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
           <motion.div
             variants={modalVariants}
             onClick={(e) => e.stopPropagation()}
-            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] sm:max-w-2xl h-auto max-h-[90vh] sm:max-h-[90vh] overflow-hidden border border-primary/20"
+            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-hidden border border-primary/20"
           >
             {/* Header */}
             <div className="relative flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
@@ -152,7 +152,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
             </div>
 
             {/* Scrollable Body */}
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-grow">
                 <div className="p-4 sm:p-6 space-y-4">
                     <div className="p-4 bg-black/20 rounded-lg border border-border">
                         <h3 className="font-semibold text-primary mb-2 flex items-center gap-2"><Info className="h-4 w-4"/>Instructions</h3>
