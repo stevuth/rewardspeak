@@ -61,7 +61,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
             const topOffersData = uniqueTopOffers.map(offer => ({
                 offer_id: offer.offer_id,
                 name: offer.name,
-                description: offer.description,
+                description: offer.description || offer.name, // Fallback to name if description is empty
                 click_url: offer.click_url,
                 image_url: offer.image_url,
                 network: offer.network,
@@ -87,7 +87,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
             const allOffersData = uniqueAllOffers.map(offer => ({
                 offer_id: offer.offer_id,
                 name: offer.name,
-                description: offer.description,
+                description: offer.description || offer.name, // Fallback to name if description is empty
                 click_url: offer.click_url,
                 image_url: offer.image_url,
                 network: offer.network,
