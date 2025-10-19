@@ -6,7 +6,7 @@ import {
   type OptimizeSEOMetaTagsInput,
   type OptimizeSEOMetaTagsOutput,
 } from "@/ai/flows/optimize-seo-meta-tags";
-import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 import { getAllOffers, getOffers } from "@/lib/notik-api";
 import { revalidatePath } from "next/cache";
 
@@ -32,7 +32,7 @@ export async function runSeoOptimizer(
 
 
 export async function syncOffers(): Promise<{ success: boolean; error?: string }> {
-    const supabase = createSupabaseServerClient();
+    const supabase = createSupabaseAdminClient();
 
     try {
         // Fetch offers from both Notik endpoints in parallel
