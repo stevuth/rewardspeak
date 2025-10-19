@@ -15,9 +15,8 @@ export interface NotikOffer {
 
 // Internal type for handling the raw API response which has inconsistent country and payout types
 interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries'> {
-  payout_usd?: string;
   payout?: number | string;
-  countries: any; // Can be a string or an array from the API
+  countries: any; // Can be a string, array, or object from the API
 }
 
 interface ApiOfferResponse {
@@ -47,16 +46,19 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
   let countriesArray: string[] = [];
   const rawCountries = rawOffer.countries;
 
-  if (Array.isArray(rawCountries) && rawCountries.length > 0) {
-      countriesArray = rawCountries.map(String).filter(Boolean);
+  if (rawCountries && typeof rawCountries === 'object') {
+    // This handles the case where countries is an object like { "US": "United States", "GB": "United Kingdom" }
+    // We only need the keys (the country codes).
+    countriesArray = Object.keys(rawCountries);
   } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
-      countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
-  } else if (rawCountries && typeof rawCountries === 'object' && Object.keys(rawCountries).length > 0) {
-      // Handles cases where it might be an object like { "0": "US", "1": "CA" }
-      countriesArray = Object.values(rawCountries).map(String).filter(Boolean);
+    // This handles a comma-separated string like "US,GB,CA"
+    countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
+  } else if (Array.isArray(rawCountries)) {
+    // This handles a simple array of strings.
+    countriesArray = rawCountries.map(String).filter(Boolean);
   }
 
-  // If after all checks the array is empty, default to ["ALL"]
+  // If after all checks the array is empty, default to a universal "ALL"
   if (countriesArray.length === 0) {
     countriesArray = ["ALL"];
   }
