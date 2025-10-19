@@ -55,7 +55,7 @@ const modalVariants = {
 };
 
 const OfferFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
-    <div className="w-full flex items-center justify-between gap-4">
+    <div className="w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
       <div className="text-left">
         <p className="text-xs text-muted-foreground">Total Reward</p>
         <p className="text-lg font-bold text-accent truncate">
@@ -194,13 +194,11 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                     )}
 
                 </div>
+                {/* MOVED FOOTER HERE */}
+                <div className="mt-auto">
+                    <OfferFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
+                </div>
             </ScrollArea>
-
-            {/* Sticky Footer */}
-            <div className="flex-shrink-0 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
-               <OfferFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
-            </div>
-
           </motion.div>
         </motion.div>
       )}
