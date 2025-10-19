@@ -6,31 +6,45 @@ export interface NotikOffer {
   click_url: string;
   image_url: string;
   network: string;
-  payout: number; // Changed from payout_usd: string
-  payout_usd?: string; // Keep for backward compatibility if needed
+  payout: number; // Use a single numeric payout field for consistency
   countries: string[];
   platforms: ('ios' | 'android' | 'desktop' | 'all')[];
   categories: string[];
   events?: { id: number, name: string, payout: number }[];
 }
 
+// Internal type for handling the raw API response which might have payout_usd as a string
+interface RawNotikOffer extends Omit<NotikOffer, 'payout'> {
+  payout_usd?: string;
+  payout?: number;
+}
+
 interface ApiOfferResponse {
-  data: NotikOffer[];
+  data: RawNotikOffer[];
   next_page_url?: string | null;
-  // Other pagination properties if they exist
 }
 
 interface ApiResponse {
   status: string;
   code?: string;
   message?: string;
-  offers?: ApiOfferResponse; // This contains the nested data array
-  data?: { // Keep this for the previous structure attempt, just in case
-    offers: NotikOffer[];
+  offers?: ApiOfferResponse;
+  data?: {
+    offers: RawNotikOffer[];
     next_page_url?: string | null;
   };
 }
 
+// Helper to process and standardize an offer
+function processOffer(rawOffer: RawNotikOffer): NotikOffer {
+  const payoutValue = rawOffer.payout_usd ? parseFloat(rawOffer.payout_usd) : (rawOffer.payout || 0);
+  return {
+    ...rawOffer,
+    payout: payoutValue,
+    // Ensure events also have numeric payout
+    events: (rawOffer.events || []).map(e => ({...e, payout: e.payout || 0}))
+  };
+}
 
 export async function getOffers(): Promise<NotikOffer[]> {
   const apiKey = process.env.NOTIK_API_KEY;
@@ -45,7 +59,7 @@ export async function getOffers(): Promise<NotikOffer[]> {
   const apiUrl = `https://notik.me/api/v2/get-top-converting-offers?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}&omit_survey=1`;
 
   try {
-    const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
+    const response = await fetch(apiUrl, { next: { revalidate: 3600 } });
     if (!response.ok) {
       console.error(`API call failed with status: ${response.status}`);
       const errorBody = await response.text();
@@ -55,12 +69,7 @@ export async function getOffers(): Promise<NotikOffer[]> {
     const data: ApiResponse = await response.json();
 
     if (data.status === 'success' && data.offers?.data) {
-       // The offers are nested inside offers.data
-      return data.offers.data.map(offer => ({
-        ...offer,
-        payout: offer.payout_usd ? parseFloat(offer.payout_usd) : offer.payout, // Ensure payout is a number
-        payout_usd: offer.payout_usd || String(offer.payout)
-      }));
+      return data.offers.data.map(processOffer);
     } else {
       if (data.message) {
         console.error("API call was not successful:", data.message);
@@ -90,7 +99,7 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
 
   while (nextPageUrl) {
     try {
-      const response = await fetch(nextPageUrl, { next: { revalidate: 900 } }); // Revalidate every 15 minutes
+      const response = await fetch(nextPageUrl, { next: { revalidate: 900 } });
       if (!response.ok) {
         console.error(`API call failed with status: ${response.status} for URL: ${nextPageUrl}`);
         const errorBody = await response.text();
@@ -100,13 +109,8 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       const data: ApiResponse = await response.json();
       
       if (data.status === 'success' && data.offers?.data) {
-        const offers = data.offers.data.map(offer => ({
-          ...offer,
-          payout: offer.payout_usd ? parseFloat(offer.payout_usd) : offer.payout,
-          payout_usd: offer.payout_usd || String(offer.payout)
-        }));
+        const offers = data.offers.data.map(processOffer);
         allOffers = allOffers.concat(offers);
-        // Correctly assign the next page URL
         nextPageUrl = data.offers.next_page_url;
       } else {
         if (data.message) {

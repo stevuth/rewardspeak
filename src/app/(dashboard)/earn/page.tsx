@@ -28,10 +28,8 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
 
-  const totalPayout =
-    Array.isArray(notikOffer.events) && notikOffer.events.length > 0
-      ? notikOffer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
-      : notikOffer.payout;
+  // The payout is now consistently a number from the API handler
+  const totalPayout = notikOffer.payout || 0;
   
   const points = Math.round(totalPayout * 1000);
 
@@ -73,12 +71,17 @@ export default function ClimbAndEarnPage() {
       if (Array.isArray(rawAllOffers)) {
           const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
           setAllOffers(transformed);
+      } else {
+          setAllOffers([]);
       }
 
       if (Array.isArray(rawTopOffers)) {
           const transformed = rawTopOffers.map((o: NotikOffer) => transformOffer(o, userId));
           setGameOffers(transformed.filter((o) => o.category === "Game"));
           setQuickTasks(transformed.filter((o) => o.category === "App" || o.category === "Quiz"));
+      } else {
+          setGameOffers([]);
+          setQuickTasks([]);
       }
       
     } catch (error) {
