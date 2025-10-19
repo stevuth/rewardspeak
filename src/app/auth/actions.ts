@@ -22,7 +22,6 @@ export async function signup(
     password,
     options: {
       emailRedirectTo: emailRedirectTo.toString(),
-      // Pass the referral code in the user's metadata
       data: {
         referral_code: referralCode || null
       }
@@ -34,7 +33,6 @@ export async function signup(
     return { message: error.message };
   }
   
-  // The database trigger 'on_auth_user_created' handles profile creation.
   redirect('/auth/confirm');
 }
 
