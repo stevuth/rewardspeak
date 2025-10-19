@@ -48,7 +48,7 @@ function standardizeCountries(rawCountries: any): string[] {
     if (Array.isArray(rawCountries)) {
       // Handles case: ["US", "GB"]
       countriesArray = rawCountries.map(String).filter(Boolean);
-    } else if (typeof rawCountries === 'object' && !Array.isArray(rawCountries)) {
+    } else if (typeof rawCountries === 'object') {
       // Handles case: { "US": "United States", "GB": "United Kingdom" }
       countriesArray = Object.keys(rawCountries).filter(Boolean);
     } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
