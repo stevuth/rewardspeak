@@ -118,7 +118,7 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
           <motion.div
             variants={modalVariants}
             onClick={(e) => e.stopPropagation()}
-            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] h-[95vh] max-w-2xl overflow-hidden border border-primary/20"
+            className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] sm:max-w-2xl h-auto max-h-[90vh] sm:max-h-[90vh] overflow-hidden border border-primary/20"
           >
             {/* Header */}
             <div className="relative flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
@@ -194,11 +194,11 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
                     )}
 
                 </div>
-                {/* MOVED FOOTER HERE */}
-                <div className="mt-auto">
-                    <OfferFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
-                </div>
             </ScrollArea>
+             {/* Sticky Footer */}
+            <div className="mt-auto flex-shrink-0">
+                <OfferFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
+            </div>
           </motion.div>
         </motion.div>
       )}
