@@ -153,7 +153,8 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
         allOffers = allOffers.concat(offers);
         
         const nextUrlFromData = data.data?.next_page_url ?? data.offers?.next_page_url;
-        nextPageUrl = nextUrlFromData;
+        // The API returns the full URL, so we can use it directly
+        nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
       } else {
         if (data.message) {
             console.error("API call was not successful:", data.message);
