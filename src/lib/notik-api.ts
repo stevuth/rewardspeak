@@ -35,6 +35,37 @@ interface ApiResponse {
   };
 }
 
+/**
+ * Standardizes the 'countries' field from the API into a consistent string array.
+ * The API can return this data as an object of key-value pairs, an array, a string, or null.
+ * @param rawCountries - The raw country data from the Notik API.
+ * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
+ */
+function standardizeCountries(rawCountries: any): string[] {
+  let countriesArray: string[] = [];
+
+  if (rawCountries) {
+    if (Array.isArray(rawCountries)) {
+      // Handles case: ["US", "GB"]
+      countriesArray = rawCountries.map(String).filter(Boolean);
+    } else if (typeof rawCountries === 'object' && !Array.isArray(rawCountries)) {
+      // Handles case: { "US": "United States", "GB": "United Kingdom" }
+      countriesArray = Object.keys(rawCountries).filter(Boolean);
+    } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
+      // Handles case: "US,GB,CA"
+      countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
+    }
+  }
+
+  // If after all checks the array is empty, default to a universal "ALL"
+  if (countriesArray.length === 0) {
+    return ["ALL"];
+  }
+
+  return countriesArray;
+}
+
+
 // Helper to process and standardize an offer
 function processOffer(rawOffer: RawNotikOffer): NotikOffer {
   // Standardize payout to a number, handling both string and number inputs
@@ -42,31 +73,12 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
     ? parseFloat(rawOffer.payout)
     : (rawOffer.payout || 0);
 
-  // Robustly standardize countries to a string array
-  let countriesArray: string[] = [];
-  const rawCountries = rawOffer.countries;
-
-  if (rawCountries && typeof rawCountries === 'object') {
-    // This handles the case where countries is an object like { "US": "United States", "GB": "United Kingdom" }
-    // We only need the keys (the country codes).
-    countriesArray = Object.keys(rawCountries);
-  } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
-    // This handles a comma-separated string like "US,GB,CA"
-    countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
-  } else if (Array.isArray(rawCountries)) {
-    // This handles a simple array of strings.
-    countriesArray = rawCountries.map(String).filter(Boolean);
-  }
-
-  // If after all checks the array is empty, default to a universal "ALL"
-  if (countriesArray.length === 0) {
-    countriesArray = ["ALL"];
-  }
+  const finalCountries = standardizeCountries(rawOffer.countries);
 
   return {
     ...rawOffer,
     payout: payoutValue,
-    countries: countriesArray,
+    countries: finalCountries,
     // Ensure events also have numeric payout, handling potential strings
     events: (rawOffer.events || []).map(e => ({...e, payout: typeof e.payout === 'string' ? parseFloat(e.payout) : (e.payout || 0)}))
   };
