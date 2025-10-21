@@ -1,5 +1,4 @@
 
-
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   Gift,
-  Star,
   Trophy,
   Mail,
   Facebook,
@@ -42,8 +40,8 @@ import { cn } from '@/lib/utils';
 import { AuthForm } from '@/components/auth/auth-form';
 import { useSearchParams } from 'next/navigation';
 import { showLogoutToast } from '@/lib/reward-toast';
-import { HeroIllustration } from '@/components/illustrations/hero';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
+import { HeroIllustration } from "@/components/illustrations/hero";
 
 const recentCashouts: any[] = [];
 
@@ -112,7 +110,7 @@ const howItWorksSteps = [
     }
 ];
 
-function HomePageContent() {
+function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
@@ -248,18 +246,22 @@ function HomePageContent() {
                     <p className="text-muted-foreground mb-12">We focus on transparency, high payouts, and a world-class user experience.</p>
                 </div>
 
-                <div className="space-y-16">
+                <div className="grid md:grid-cols-2 gap-x-16 gap-y-12 items-center">
                     {features.map((feature, index) => (
-                        <div key={feature.title} className={cn("grid md:grid-cols-2 gap-8 md:gap-16 items-center", index % 2 !== 0 && "md:grid-flow-row-dense")}>
-                            <div className={cn("flex justify-center", index % 2 !== 0 && "md:col-start-2")}>
-                                <div className="p-8 bg-card rounded-2xl border border-border w-fit">
-                                    {feature.illustration}
-                                </div>
-                            </div>
-                            <div className={cn( "text-center md:text-left", index % 2 !== 0 && "md:col-start-1 md:row-start-1")}>
-                                <h3 className="text-2xl font-bold font-headline mb-2">{feature.title}</h3>
-                                <p className="text-muted-foreground">{feature.description}</p>
-                            </div>
+                        <div
+                        key={feature.title}
+                        className={cn(
+                            "flex gap-6 items-center",
+                            index % 2 === 1 ? "md:flex-row-reverse" : ""
+                        )}
+                        >
+                        <div className="p-4 bg-card rounded-2xl border border-border w-fit shrink-0">
+                            {feature.illustration}
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-bold font-headline mb-2">{feature.title}</h3>
+                            <p className="text-muted-foreground">{feature.description}</p>
+                        </div>
                         </div>
                     ))}
                 </div>
@@ -377,10 +379,32 @@ function HomePageContent() {
   );
 }
 
-export default function Home() {
+async function getFeaturedOffer() {
+    const { createSupabaseServerClient } = await import('@/utils/supabase/server');
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase
+        .from('top_converting_offers')
+        .select('*')
+        .order('payout', { ascending: false })
+        .limit(1)
+        .single();
+    
+    if (error) {
+        console.error("Error fetching featured offer:", error);
+        return null;
+    }
+    
+    return data;
+}
+
+
+export default async function Home() {
+  const featuredOffer = await getFeaturedOffer();
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <HomePageContent />
+      <HomePageContent featuredOffer={featuredOffer} />
     </React.Suspense>
   )
 }
+
+    
