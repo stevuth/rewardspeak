@@ -8,14 +8,13 @@ export async function FeaturedOfferLoader() {
         .from('top_converting_offers')
         .select('*')
         .order('payout', { ascending: false })
-        .limit(1)
-        .single();
+        .limit(2);
     
     if (error) {
-        console.error("Error fetching featured offer:", error);
+        console.error("Error fetching featured offers:", error);
     }
   
-    const featuredOffer = data;
+    const featuredOffers = data || [];
 
-    return <HomePageContent featuredOffer={featuredOffer} />
+    return <HomePageContent featuredOffers={featuredOffers} />
 }

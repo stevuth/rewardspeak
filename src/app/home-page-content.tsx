@@ -41,8 +41,8 @@ import { AuthForm } from '@/components/auth/auth-form';
 import { useSearchParams } from 'next/navigation';
 import { showLogoutToast } from '@/lib/reward-toast';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
-import { HeroIllustration } from "@/components/illustrations/hero";
 import { FeaturedOfferCard } from "@/components/featured-offer-card";
+import { motion } from 'framer-motion';
 
 const recentCashouts: any[] = [];
 
@@ -111,7 +111,7 @@ const howItWorksSteps = [
     }
 ];
 
-export function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
+export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
@@ -213,8 +213,26 @@ export function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
                     </Button>
                 </div>
             </div>
-            <div className="mt-16 flex justify-center">
-                <FeaturedOfferCard offer={featuredOffer} />
+             <div className="mt-16 relative flex justify-center items-center h-80">
+                {featuredOffers.length > 0 && (
+                    <motion.div
+                        className="absolute"
+                        animate={{ y: [0, -10, 0], scale: 1 }}
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                    >
+                        <FeaturedOfferCard offer={featuredOffers[0]} />
+                    </motion.div>
+                )}
+                {featuredOffers.length > 1 && (
+                     <motion.div
+                        className="absolute"
+                        initial={{ scale: 0.9, y: 40, x: 60 }}
+                        animate={{ y: [40, 50, 40], scale: 0.9 }}
+                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                        <FeaturedOfferCard offer={featuredOffers[1]} />
+                    </motion.div>
+                )}
             </div>
         </section>
 
@@ -379,5 +397,3 @@ export function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
     </div>
   );
 }
-
-    
