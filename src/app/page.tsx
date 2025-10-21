@@ -526,31 +526,49 @@ function HomePageContent() {
         </section>
 
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
-                Not your typical rewards platform. <span className="text-primary">Here's the difference</span>
-            </h2>
-            <div className="w-24 h-1 bg-primary mx-auto mb-12"></div>
+          <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
+              Not your typical rewards platform. <span className="text-primary">Here's the difference</span>
+          </h2>
+          <div className="w-24 h-1 bg-primary mx-auto mb-12"></div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                <Card className="p-6 flex flex-col items-center text-center bg-card/50">
-                    <ExclusiveOpportunitiesIllustration />
-                    <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Exclusive opportunities</h3>
-                    <p className="text-sm text-muted-foreground">More earning options than any other platform, available to all users worldwide.</p>
-                </Card>
-                <Card className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
-                    <SignUpBonusIllustration />
-                    <h3 className="font-bold text-lg font-headline mb-2 mt-4">Instant sign up bonus</h3>
-                    <p className="text-sm text-muted-foreground">New users receive a $1 bonus instantly upon signing up.</p>
-                </Card>
-                {features.map((feature, index) => (
-                    <Card key={index} className="p-6 flex flex-col items-center justify-center text-center bg-card/50">
-                        {feature.illustration}
-                        <h3 className="font-bold text-lg font-headline mb-2 mt-4">{feature.title}</h3>
-                        <p className="text-sm text-muted-foreground">{feature.description}</p>
-                    </Card>
-                ))}
-            </div>
-        </section>
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto h-auto md:h-[450px]">
+              <div className="md:col-span-2 md:row-span-2 relative">
+                  <Card className="p-6 flex flex-col items-center text-center bg-card/50 h-full justify-center">
+                      <ExclusiveOpportunitiesIllustration />
+                      <h3 className="font-bold text-lg mt-4 mb-2 font-headline">Exclusive opportunities</h3>
+                      <p className="text-sm text-muted-foreground max-w-xs">More earning options than any other platform, available to all users worldwide.</p>
+                  </Card>
+              </div>
+              <div className="relative">
+                  <Card className="p-6 flex flex-col items-center justify-center text-center bg-card/50 h-full">
+                      <SignUpBonusIllustration />
+                      <h3 className="font-bold text-lg font-headline mb-2 mt-4">Instant sign up bonus</h3>
+                      <p className="text-sm text-muted-foreground">New users receive a $1 bonus instantly upon signing up.</p>
+                  </Card>
+              </div>
+              <div className="relative md:col-span-1">
+                  <Card className="p-6 flex flex-col items-center justify-center text-center bg-card/50 h-full">
+                      <ReferralEarningsIllustration />
+                      <h3 className="font-bold text-lg font-headline mb-2 mt-4">10% lifetime referral earnings</h3>
+                      <p className="text-sm text-muted-foreground">Earn 10% of your referrals' earnings for life.</p>
+                  </Card>
+              </div>
+              <div className="relative md:col-span-1 md:col-start-3 md:row-start-2">
+                  <Card className="p-6 flex flex-col items-center justify-center text-center bg-card/50 h-full">
+                      <SecureWithdrawalsIllustration />
+                      <h3 className="font-bold text-lg font-headline mb-2 mt-4">Withdrawals starting at $10.00</h3>
+                      <p className="text-sm text-muted-foreground">Cash out your earnings quickly and securely.</p>
+                  </Card>
+              </div>
+               <div className="relative md:col-span-1 md:col-start-1 md:row-start-3">
+                   <Card className="p-6 flex flex-col items-center justify-center text-center bg-card/50 h-full">
+                       <FrequentGiveawaysIllustration />
+                       <h3 className="font-bold text-lg font-headline mb-2 mt-4">Frequent giveaways</h3>
+                       <p className="text-sm text-muted-foreground">Participate in regular giveaways for extra rewards.</p>
+                   </Card>
+               </div>
+          </div>
+      </section>
 
         <section className="bg-card/40 py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
