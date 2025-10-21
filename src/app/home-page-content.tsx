@@ -258,9 +258,7 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                 >
                   <div className="flex-1 flex justify-center">
                     <div className="w-48 h-48 flex items-center justify-center bg-card/50 rounded-2xl shadow-lg">
-                      <div className="w-32 h-32 flex items-center justify-center bg-card rounded-xl">
-                         {feature.illustration}
-                      </div>
+                        {feature.illustration}
                     </div>
                   </div>
                   <div className="flex-1 text-center md:text-left">
