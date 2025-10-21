@@ -39,6 +39,7 @@ import { showLogoutToast } from '@/lib/reward-toast';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
+import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/exclusive-opportunities';
 
 const recentCashouts: any[] = [];
 
@@ -53,22 +54,22 @@ const paymentMethods = [
 
 const features = [
     {
-      illustration: <Trophy className="w-12 h-12 text-primary" />,
+      illustration: <Trophy className="w-8 h-8 text-primary" />,
       title: "Exclusive opportunities",
       description: "More earning options than any other platform, available to all users worldwide.",
     },
     {
-      illustration: <Gift className="w-12 h-12 text-primary" />,
+      illustration: <Gift className="w-8 h-8 text-primary" />,
       title: "Instant sign up bonus",
       description: "New users receive a $1 bonus instantly upon signing up.",
     },
     {
-      illustration: <Users className="w-12 h-12 text-primary" />,
+      illustration: <Users className="w-8 h-8 text-primary" />,
       title: "Lifetime referral earnings",
       description: "Earn a percentage of your referrals' earnings for life.",
     },
     {
-      illustration: <Wallet className="w-12 h-12 text-primary" />,
+      illustration: <Wallet className="w-8 h-8 text-primary" />,
       title: "Withdrawals starting at $10.00",
       description: "Cash out your earnings quickly and securely.",
     },
@@ -246,28 +247,27 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                 experience.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center">
-              {features.map((feature, index) => (
-                <div
-                  key={feature.title}
-                  className={cn(
-                    "flex gap-8 items-center",
-                    index % 2 !== 0 && "md:flex-row-reverse"
-                  )}
-                >
-                  <div className="w-32 h-32 flex-shrink-0 p-6 bg-card/50 rounded-xl flex items-center justify-center">
-                    {feature.illustration}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="flex items-center justify-center">
+                <ExclusiveOpportunitiesIllustration />
+              </div>
+              <div className="space-y-8">
+                {features.map((feature) => (
+                  <div key={feature.title} className="flex gap-6 items-start">
+                    <div className="flex-shrink-0 w-12 h-12 p-3 bg-card/50 rounded-xl flex items-center justify-center">
+                      {feature.illustration}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold font-headline mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold font-headline mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>
