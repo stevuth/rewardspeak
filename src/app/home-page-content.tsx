@@ -223,7 +223,7 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {howItWorksSteps.map((step) => (
-                <Card key={step.title} className="animated-border-card text-center p-8 transition-all hover:shadow-lg hover:-translate-y-1 bg-card">
+                <Card key={step.title} className="animated-border-card text-center p-8 transition-all hover:shadow-lg hover:-translate-y-1 bg-card border-transparent">
                     <div className="mb-4 inline-block p-4 bg-primary/10 rounded-xl">
                         <step.icon className="w-10 h-10 text-primary" />
                     </div>
@@ -242,22 +242,17 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                     </h2>
                     <p className="text-muted-foreground mb-12">We focus on transparency, high payouts, and a world-class user experience.</p>
                 </div>
-                <div className="space-y-12">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
                         <div
                             key={feature.title}
-                            className={cn(
-                                'grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center',
-                                index % 2 !== 0 && 'md:[&>*:last-child]:-order-1'
-                            )}
+                            className="text-center flex flex-col items-center"
                         >
-                            <div className="w-64 h-64 p-8 bg-card/50 rounded-xl flex items-center justify-center mx-auto">
+                            <div className="w-24 h-24 p-6 bg-card/50 rounded-xl flex items-center justify-center mx-auto mb-4">
                                 {feature.illustration}
                             </div>
-                            <div className="text-center md:text-left">
-                                <h3 className="text-2xl font-bold font-headline mb-2">{feature.title}</h3>
-                                <p className="text-muted-foreground">{feature.description}</p>
-                            </div>
+                            <h3 className="text-xl font-bold font-headline mb-2">{feature.title}</h3>
+                            <p className="text-muted-foreground text-sm">{feature.description}</p>
                         </div>
                     ))}
                 </div>
