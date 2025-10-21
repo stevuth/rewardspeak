@@ -251,7 +251,7 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                                 index % 2 !== 0 && 'md:[&>*:last-child]:-order-1'
                             )}
                         >
-                            <div className="p-8 bg-card/50 rounded-xl flex items-center justify-center">
+                            <div className="w-64 h-64 p-8 bg-card/50 rounded-xl flex items-center justify-center mx-auto">
                                 {feature.illustration}
                             </div>
                             <div className="text-center md:text-left">
