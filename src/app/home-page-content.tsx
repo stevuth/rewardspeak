@@ -244,13 +244,10 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-x-16 gap-y-12 items-center">
-                    {features.map((feature, index) => (
+                    {features.map((feature) => (
                         <div
                         key={feature.title}
-                        className={cn(
-                            "flex gap-6 items-center",
-                            index % 2 === 1 ? "md:flex-row-reverse" : ""
-                        )}
+                        className="flex gap-6 items-center"
                         >
                         <div className="p-4 bg-card rounded-2xl border border-border w-fit shrink-0">
                             {feature.illustration}
