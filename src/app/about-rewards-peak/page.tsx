@@ -8,7 +8,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -38,3 +37,5 @@ export default function AboutRewardsPeakPage() {
     </div>
   );
 }
+
+    
