@@ -214,24 +214,25 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                 </div>
             </div>
              <div className="mt-16 relative flex justify-center items-center h-80">
-                {featuredOffers.length > 0 && (
+                {featuredOffers.map((offer, index) => (
                     <motion.div
-                        className="absolute origin-bottom"
-                        animate={{ y: [0, -10, 0], rotate: -8 }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                        key={offer.offer_id}
+                        className="absolute origin-bottom-center"
+                        style={{ transformOrigin: '50% 150%' }}
+                        animate={{
+                            y: [Math.sin(index * 0.5) * 10, Math.sin(index * 0.5 + 3.14) * 10, Math.sin(index * 0.5) * 10],
+                            rotate: (index - (featuredOffers.length -1) / 2) * 8
+                        }}
+                        transition={{
+                            duration: 5 + index * 0.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: index * 0.2
+                        }}
                     >
-                        <FeaturedOfferCard offer={featuredOffers[0]} />
+                        <FeaturedOfferCard offer={offer} />
                     </motion.div>
-                )}
-                {featuredOffers.length > 1 && (
-                     <motion.div
-                        className="absolute origin-bottom"
-                        animate={{ y: [10, 0, 10], rotate: 8 }}
-                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                        <FeaturedOfferCard offer={featuredOffers[1]} />
-                    </motion.div>
-                )}
+                ))}
             </div>
         </section>
 
