@@ -1,3 +1,4 @@
+
 "use client";
 
 export function HeroIllustration() {
@@ -66,10 +67,13 @@ export function HeroIllustration() {
           animation: float-medium 7s ease-in-out infinite;
         }
         .bg-grid-pattern {
-            background-image: linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(to right, hsl(var(--border)) 1px, hsl(var(--background)) 1px);
+            background-image: linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(to right, hsl(var(--border)) 1px, hsl(var(--card)) 1px);
             background-size: 2rem 2rem;
         }
       `}</style>
     </div>
   );
 }
+
+
+    
