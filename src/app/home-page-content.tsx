@@ -54,22 +54,22 @@ const paymentMethods = [
 
 const features = [
     {
-      illustration: <Trophy className="w-8 h-8 text-primary" />,
+      illustration: <Trophy className="w-12 h-12 text-primary" />,
       title: "Exclusive opportunities",
       description: "More earning options than any other platform, available to all users worldwide.",
     },
     {
-      illustration: <Gift className="w-8 h-8 text-primary" />,
+      illustration: <Gift className="w-12 h-12 text-primary" />,
       title: "Instant sign up bonus",
       description: "New users receive a $1 bonus instantly upon signing up.",
     },
     {
-      illustration: <Users className="w-8 h-8 text-primary" />,
+      illustration: <Users className="w-12 h-12 text-primary" />,
       title: "Lifetime referral earnings",
       description: "Earn a percentage of your referrals' earnings for life.",
     },
     {
-      illustration: <Wallet className="w-8 h-8 text-primary" />,
+      illustration: <Wallet className="w-12 h-12 text-primary" />,
       title: "Withdrawals starting at $10.00",
       description: "Cash out your earnings quickly and securely.",
     },
@@ -257,9 +257,7 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                   )}
                 >
                   <div className="flex-1 flex justify-center">
-                    <div className="w-48 h-48 flex items-center justify-center bg-card/50 rounded-2xl shadow-lg">
-                        {feature.illustration}
-                    </div>
+                    {feature.illustration}
                   </div>
                   <div className="flex-1 text-center md:text-left">
                     <h3 className="text-2xl font-bold font-headline mb-2">
