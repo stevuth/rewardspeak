@@ -7,11 +7,12 @@ export async function FeaturedOfferLoader() {
 
     // A curated list of offers known to have colorful images.
     const curatedOfferNames = [
-        'Magnet Miner',
-        'Pop Ballon',
-        'Monopoly Go',
-        'Prime Video',
-        'Gardden Gnome',
+        'Video Poker',
+        'Upside',
+        'Richie Games',
+        'RAID Shadow Legends',
+        'Crypto Miner',
+        'Slot Mate',
     ];
 
     const { data: featuredOffers, error } = await supabase
