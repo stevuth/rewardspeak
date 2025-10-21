@@ -138,12 +138,8 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     animation: spin 5s linear infinite;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-  }
-  
-  .animated-border-card:hover::before {
     opacity: 1;
+    transition: opacity 0.3s ease-in-out;
   }
 
   @property --angle {
