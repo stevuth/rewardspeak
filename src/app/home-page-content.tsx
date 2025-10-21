@@ -223,7 +223,7 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {howItWorksSteps.map((step) => (
-                <Card key={step.title} className="animated-border-card text-center p-8 transition-all hover:shadow-lg hover:-translate-y-1 bg-card border-transparent">
+                <Card key={step.title} className="animated-border-card text-center p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-card border-transparent">
                     <div className="mb-4 inline-block p-4 bg-primary/10 rounded-xl">
                         <step.icon className="w-10 h-10 text-primary" />
                     </div>
@@ -235,28 +235,41 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
         </section>
 
         <section className="bg-card/20 py-16 md:py-24">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                 <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
-                        Not your typical rewards platform. <span className="text-primary">Here's the difference</span>
-                    </h2>
-                    <p className="text-muted-foreground mb-12">We focus on transparency, high payouts, and a world-class user experience.</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {features.map((feature, index) => (
-                        <div
-                            key={feature.title}
-                            className="text-center flex flex-col items-center"
-                        >
-                            <div className="w-24 h-24 p-6 bg-card/50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                {feature.illustration}
-                            </div>
-                            <h3 className="text-xl font-bold font-headline mb-2">{feature.title}</h3>
-                            <p className="text-muted-foreground text-sm">{feature.description}</p>
-                        </div>
-                    ))}
-                </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
+                Not your typical rewards platform.{" "}
+                <span className="text-primary">Here's the difference</span>
+              </h2>
+              <p className="text-muted-foreground mb-12">
+                We focus on transparency, high payouts, and a world-class user
+                experience.
+              </p>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center">
+              {features.map((feature, index) => (
+                <div
+                  key={feature.title}
+                  className={cn(
+                    "flex gap-8 items-center",
+                    index % 2 !== 0 && "md:flex-row-reverse"
+                  )}
+                >
+                  <div className="w-32 h-32 flex-shrink-0 p-6 bg-card/50 rounded-xl flex items-center justify-center">
+                    {feature.illustration}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold font-headline mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
         
         <PaymentMethodsMarquee />
