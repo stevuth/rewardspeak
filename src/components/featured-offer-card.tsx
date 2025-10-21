@@ -2,46 +2,44 @@
 "use client";
 
 import { SafeImage } from "./safe-image";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Star } from "lucide-react";
 
-export function FeaturedOfferCard({ offer }: { offer: any }) {
-
-    if (!offer) {
-        return (
-            <div className="relative w-full max-w-lg h-56 rounded-2xl bg-card border-2 border-primary/20 shadow-xl shadow-primary/10 overflow-hidden flex items-center justify-center p-8 text-center">
-                <p className="text-muted-foreground">Could not load a featured offer. Please check back later!</p>
-            </div>
-        );
-    }
-
-    const totalPoints = Math.round(offer.payout * 1000);
-
+export function FeaturedOfferCard({ offer, scale }: { offer: any, scale: number }) {
+  if (!offer) {
     return (
-        <div className="relative w-full max-w-lg h-auto rounded-2xl bg-card border-2 border-primary/20 shadow-xl shadow-primary/10 overflow-hidden group">
-            <div className="p-6 flex flex-col sm:flex-row items-center gap-6">
-                <SafeImage
-                    src={offer.image_url}
-                    alt={offer.name}
-                    width={128}
-                    height={128}
-                    className="rounded-xl border-4 border-primary/30 flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="flex-1 text-center sm:text-left">
-                    <Badge variant="secondary" className="mb-2">Featured Offer</Badge>
-                    <h3 className="text-xl font-bold font-headline text-foreground mb-1">{offer.name}</h3>
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{offer.description}</p>
-                    <div className="flex items-center justify-center sm:justify-start gap-4">
-                        <div className="text-left">
-                            <p className="text-xs text-muted-foreground">REWARD</p>
-                            <p className="text-xl font-bold text-accent">{totalPoints.toLocaleString()} Pts</p>
-                        </div>
-                        <Button className="font-bold bg-accent text-accent-foreground hover:bg-accent/80">
-                            Start Earning
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div className="relative w-full max-w-xs h-64 rounded-2xl bg-card border-2 border-primary/20 shadow-xl shadow-primary/10 overflow-hidden flex items-center justify-center p-8 text-center">
+        <p className="text-muted-foreground">Could not load a featured offer.</p>
+      </div>
     );
+  }
+
+  const totalPayout = offer.payout || 0;
+
+  return (
+    <div
+      className="relative w-48 h-64 rounded-2xl bg-card/80 border border-border/50 shadow-lg overflow-hidden group transition-transform duration-300 ease-in-out"
+      style={{ transform: `scale(${scale})` }}
+    >
+      <SafeImage
+        src={offer.image_url}
+        alt={offer.name}
+        fill
+        className="object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+        <h3 className="font-bold truncate">{offer.name}</h3>
+        <p className="text-xs text-white/80 truncate">{offer.description}</p>
+        <div className="flex justify-between items-center mt-2">
+          <p className="font-bold text-secondary text-lg">
+            ${totalPayout.toFixed(2)}
+          </p>
+          <div className="flex items-center gap-1 text-xs font-bold bg-black/50 px-2 py-1 rounded-full">
+            <Star className="w-3 h-3 text-yellow-400" fill="currentColor" />
+            <span>5.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

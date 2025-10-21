@@ -3,10 +3,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
-import {
     Accordion,
     AccordionContent,
     AccordionItem,
@@ -41,8 +37,8 @@ import { AuthForm } from '@/components/auth/auth-form';
 import { useSearchParams } from 'next/navigation';
 import { showLogoutToast } from '@/lib/reward-toast';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
-import { FeaturedOfferCard } from "@/components/featured-offer-card";
-import { motion } from 'framer-motion';
+import { OfferCarousel } from '@/components/offer-carousel';
+import { Card } from '@/components/ui/card';
 
 const recentCashouts: any[] = [];
 
@@ -213,26 +209,8 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                     </Button>
                 </div>
             </div>
-             <div className="mt-16 relative flex justify-center items-center h-80">
-                {featuredOffers.map((offer, index) => (
-                    <motion.div
-                        key={offer.offer_id}
-                        className="absolute origin-bottom-center"
-                        style={{ transformOrigin: '50% 150%' }}
-                        animate={{
-                            y: [Math.sin(index * 0.5) * 10, Math.sin(index * 0.5 + 3.14) * 10, Math.sin(index * 0.5) * 10],
-                            rotate: (index - (featuredOffers.length -1) / 2) * 8
-                        }}
-                        transition={{
-                            duration: 5 + index * 0.5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: index * 0.2
-                        }}
-                    >
-                        <FeaturedOfferCard offer={offer} />
-                    </motion.div>
-                ))}
+            <div className="mt-16">
+              <OfferCarousel offers={featuredOffers} />
             </div>
         </section>
 
