@@ -214,7 +214,7 @@ export function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
                 </div>
             </div>
             <div className="mt-16 flex justify-center">
-                <HeroIllustration />
+                <FeaturedOfferCard offer={featuredOffer} />
             </div>
         </section>
 
@@ -305,18 +305,6 @@ export function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
             </div>
         </section>
         
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
-                Today's <span className="text-primary">Featured</span> Offer
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-                This is the top converting offer available right now. Jump on it while it's hot!
-            </p>
-            <div className="flex justify-center">
-                <FeaturedOfferCard offer={featuredOffer} />
-            </div>
-        </section>
-
         <section className="bg-card/20 py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
                 <div className="text-center">
