@@ -29,5 +29,8 @@ export async function FeaturedOfferLoader() {
         return <HomePageContent featuredOffers={[]} />;
     }
 
-    return <HomePageContent featuredOffers={featuredOffers || []} />
+    // Ensure offers are unique
+    const uniqueOffers = Array.from(new Map(featuredOffers.map(offer => [offer.offer_id, offer])).values());
+
+    return <HomePageContent featuredOffers={uniqueOffers || []} />
 }
