@@ -6,10 +6,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-  CardDescription,
 } from '@/components/ui/card';
 import {
     Accordion,
@@ -41,8 +37,6 @@ import {
   FileSignature,
 } from 'lucide-react';
 import Image from 'next/image';
-import { popularOffers } from '@/lib/mock-data';
-import { Chrome } from "lucide-react";
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { AuthForm } from '@/components/auth/auth-form';
@@ -62,55 +56,61 @@ const paymentMethods = [
     { icon: BitcoinLogo, name: 'Bitcoin'},
 ];
 
-const SignUpBonusIllustration = () => (
-    <div className="relative w-48 h-32 flex items-center justify-center">
-      {/* Gift Box */}
-      <div className="relative">
-        <div className="w-24 h-20 bg-primary/20 rounded-lg shadow-lg"></div>
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-28 h-6 bg-primary/30 rounded-t-lg"></div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-full bg-primary/10"></div>
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-8 bg-primary/40 rounded-full"></div>
-      </div>
-      {/* Coins */}
-      <div className="absolute top-4 left-8 w-6 h-6 bg-secondary rounded-full animate-bounce"></div>
-      <div className="absolute top-10 right-6 w-8 h-8 bg-secondary/80 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
-       <div className="absolute bottom-4 left-12 w-5 h-5 bg-secondary/60 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
-    </div>
-  );
+const features = [
+    {
+      illustration: <Trophy className="w-12 h-12 text-primary" />,
+      title: "Exclusive opportunities",
+      description: "More earning options than any other platform, available to all users worldwide.",
+    },
+    {
+      illustration: <Gift className="w-12 h-12 text-primary" />,
+      title: "Instant sign up bonus",
+      description: "New users receive a $1 bonus instantly upon signing up.",
+    },
+    {
+      illustration: <Users className="w-12 h-12 text-primary" />,
+      title: "Lifetime referral earnings",
+      description: "Earn a percentage of your referrals' earnings for life.",
+    },
+    {
+      illustration: <Wallet className="w-12 h-12 text-primary" />,
+      title: "Withdrawals starting at $10.00",
+      description: "Cash out your earnings quickly and securely.",
+    },
+];
 
-const ReferralEarningsIllustration = () => (
-  <div className="relative w-48 h-32 flex items-center justify-center">
-    {/* People */}
-    <div className="absolute w-10 h-10 bg-secondary/30 rounded-full top-8 left-8"></div>
-    <div className="absolute w-12 h-12 bg-muted rounded-full top-4 left-1/2 -translate-x-1/2"></div>
-    <div className="absolute w-10 h-10 bg-secondary/30 rounded-full top-8 right-8"></div>
-  </div>
-);
+const faqs = [
+    {
+      question: "How much can I earn?",
+      answer: "Your earnings depend on the tasks you complete. The more offers you do, the more you can earn. There's no limit!"
+    },
+    {
+      question: "How do I get paid?",
+      answer: "You can withdraw your earnings via PayPal, various cryptocurrencies like Bitcoin and Litecoin, and more. Payouts are fast and secure."
+    },
+    {
+        question: "Is Rewards Peak free to use?",
+        answer: "Yes, Rewards Peak is completely free. You'll never be asked to pay for anything. Just sign up and start earning."
+    }
+];
 
-const SecureWithdrawalsIllustration = () => (
-  <div className="relative w-48 h-32 flex items-center justify-center">
-    {/* Banknote */}
-    <div className="w-24 h-14 bg-green-500 rounded-lg shadow-lg flex items-center justify-center text-white font-bold text-xl">$10</div>
-    {/* Padlock */}
-    <div className="absolute -top-2 -right-2 w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
-      <CheckCircle className="w-5 h-5 text-secondary-foreground" />
-    </div>
-    {/* Coins */}
-    <div className="absolute bottom-4 -left-4 w-6 h-6 bg-secondary rounded-full"></div>
-    <div className="absolute -bottom-2 left-0 w-8 h-8 bg-secondary/80 rounded-full"></div>
-  </div>
-);
-
-const FrequentGiveawaysIllustration = () => (
-  <div className="relative w-48 h-32 flex items-center justify-center">
-    <Gift className="w-20 h-20 text-primary" />
-    {/* Stars */}
-    <Star className="absolute top-4 left-8 w-5 h-5 text-secondary fill-secondary" />
-    <Star className="absolute top-8 right-4 w-6 h-6 text-secondary fill-secondary" />
-    <Star className="absolute bottom-4 left-12 w-4 h-4 text-secondary fill-secondary" />
-  </div>
-);
-
+const howItWorksSteps = [
+    {
+      icon: Hand,
+      title: "1. Choose an Offer",
+      description: "Sign up for free and browse through hundreds of new offers and surveys daily."
+    },
+    {
+      icon: FileSignature,
+      title: "2. Complete the Task",
+      description: "Follow the simple on-screen instructions to complete the task. It's that easy."
+    },
+    {
+      icon: DollarSign,
+      title: "3. Get Paid",
+      description: "Redeem your earnings for cash, crypto, or gift cards. Fast and secure payouts."
+    }
+];
 
 function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
@@ -132,62 +132,6 @@ function HomePageContent() {
   React.useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const features = [
-    {
-      illustration: <Trophy className="w-12 h-12 text-primary" />,
-      title: "Exclusive opportunities",
-      description: "More earning options than any other platform, available to all users worldwide.",
-    },
-    {
-      illustration: <Gift className="w-12 h-12 text-primary" />,
-      title: "Instant sign up bonus",
-      description: "New users receive a $1 bonus instantly upon signing up.",
-    },
-    {
-      illustration: <Users className="w-12 h-12 text-primary" />,
-      title: "Lifetime referral earnings",
-      description: "Earn a percentage of your referrals' earnings for life.",
-    },
-    {
-      illustration: <Wallet className="w-12 h-12 text-primary" />,
-      title: "Withdrawals starting at $10.00",
-      description: "Cash out your earnings quickly and securely.",
-    },
-  ];
-
-  const faqs = [
-    {
-      question: "How much can I earn?",
-      answer: "Your earnings depend on the tasks you complete. The more offers you do, the more you can earn. There's no limit!"
-    },
-    {
-      question: "How do I get paid?",
-      answer: "You can withdraw your earnings via PayPal, various cryptocurrencies like Bitcoin and Litecoin, and more. Payouts are fast and secure."
-    },
-    {
-        question: "Is Rewards Peak free to use?",
-        answer: "Yes, Rewards Peak is completely free. You'll never be asked to pay for anything. Just sign up and start earning."
-    }
-  ];
-
-  const howItWorksSteps = [
-    {
-      icon: Hand,
-      title: "1. Choose an Offer",
-      description: "Sign up for free and browse through hundreds of new offers and surveys daily."
-    },
-    {
-      icon: FileSignature,
-      title: "2. Complete the Task",
-      description: "Follow the simple on-screen instructions to complete the task. It's that easy."
-    },
-    {
-      icon: DollarSign,
-      title: "3. Get Paid",
-      description: "Redeem your earnings for cash, crypto, or gift cards. Fast and secure payouts."
-    }
-  ];
 
   const onSwitchForms = () => {
     setIsLoginOpen(!isLoginOpen);
@@ -284,7 +228,7 @@ function HomePageContent() {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {howItWorksSteps.map((step) => (
-                <Card key={step.title} className="text-center p-8 border-border hover:border-primary transition-all hover:shadow-lg hover:-translate-y-1">
+                <Card key={step.title} className="animated-border-card text-center p-8 transition-all hover:shadow-lg hover:-translate-y-1 bg-card">
                     <div className="mb-4 inline-block p-4 bg-primary/10 rounded-xl">
                         <step.icon className="w-10 h-10 text-primary" />
                     </div>
@@ -297,21 +241,26 @@ function HomePageContent() {
 
         <section className="bg-card/20 py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto">
+                 <div className="text-center max-w-3xl mx-auto">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
                         Not your typical rewards platform. <span className="text-primary">Here's the difference</span>
                     </h2>
                     <p className="text-muted-foreground mb-12">We focus on transparency, high payouts, and a world-class user experience.</p>
                 </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                <div className="space-y-16">
                     {features.map((feature, index) => (
-                        <Card key={feature.title} className="p-6 text-center border-border hover:border-secondary transition-colors">
-                            <div className="mb-4 inline-block">
-                                {feature.illustration}
+                        <div key={feature.title} className={cn("grid md:grid-cols-2 gap-8 md:gap-16 items-center", index % 2 !== 0 && "md:grid-flow-row-dense")}>
+                            <div className={cn("flex justify-center", index % 2 !== 0 && "md:col-start-2")}>
+                                <div className="p-8 bg-card rounded-2xl border border-border w-fit">
+                                    {feature.illustration}
+                                </div>
                             </div>
-                            <h3 className="text-lg font-bold font-headline mb-2">{feature.title}</h3>
-                            <p className="text-sm text-muted-foreground">{feature.description}</p>
-                        </Card>
+                            <div className={cn( "text-center md:text-left", index % 2 !== 0 && "md:col-start-1 md:row-start-1")}>
+                                <h3 className="text-2xl font-bold font-headline mb-2">{feature.title}</h3>
+                                <p className="text-muted-foreground">{feature.description}</p>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -435,5 +384,3 @@ export default function Home() {
     </React.Suspense>
   )
 }
-
-    
