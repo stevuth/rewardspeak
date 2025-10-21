@@ -247,27 +247,32 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                 experience.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div className="flex items-center justify-center">
-                <ExclusiveOpportunitiesIllustration />
-              </div>
-              <div className="space-y-8">
-                {features.map((feature) => (
-                  <div key={feature.title} className="flex gap-6 items-start">
-                    <div className="flex-shrink-0 w-12 h-12 p-3 bg-card/50 rounded-xl flex items-center justify-center">
-                      {feature.illustration}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold font-headline mb-1">
-                        {feature.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm">
-                        {feature.description}
-                      </p>
+            <div className="space-y-16">
+              {features.map((feature, index) => (
+                <div
+                  key={feature.title}
+                  className={cn(
+                    "flex flex-col md:flex-row items-center gap-8 md:gap-12",
+                    index % 2 !== 0 && "md:flex-row-reverse"
+                  )}
+                >
+                  <div className="flex-1 flex justify-center">
+                    <div className="w-48 h-48 flex items-center justify-center bg-card/50 rounded-2xl shadow-lg">
+                      <div className="w-32 h-32 flex items-center justify-center bg-card rounded-xl">
+                         {feature.illustration}
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <h3 className="text-2xl font-bold font-headline mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
