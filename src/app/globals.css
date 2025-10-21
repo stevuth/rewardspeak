@@ -127,7 +127,7 @@
     position: absolute;
     inset: 0;
     border-radius: inherit; 
-    padding: 2px;
+    padding: 3px;
     background: conic-gradient(from var(--angle), hsl(var(--primary)/0.5), hsl(var(--secondary)/0.5), hsl(var(--primary)/0.5));
     -webkit-mask: 
       linear-gradient(#fff 0 0) content-box, 
