@@ -13,7 +13,6 @@ export async function FeaturedOfferLoader() {
         'Monopoly Go',
         'Prime Video',
         'Sea Explorer',
-        'Wishing Well',
         'Gardden Gnome',
         'River Dash'
     ];
