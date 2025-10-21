@@ -42,6 +42,8 @@ import { useSearchParams } from 'next/navigation';
 import { showLogoutToast } from '@/lib/reward-toast';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { HeroIllustration } from "@/components/illustrations/hero";
+import { FeaturedOfferCard } from "@/components/featured-offer-card";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
 
 const recentCashouts: any[] = [];
 
@@ -303,6 +305,18 @@ function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
                 </div>
             </div>
         </section>
+        
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
+                Today's <span className="text-primary">Featured</span> Offer
+            </h2>
+            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+                This is the top converting offer available right now. Jump on it while it's hot!
+            </p>
+            <div className="flex justify-center">
+                <FeaturedOfferCard offer={featuredOffer} />
+            </div>
+        </section>
 
         <section className="bg-card/20 py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
@@ -379,8 +393,7 @@ function HomePageContent({ featuredOffer }: { featuredOffer: any }) {
   );
 }
 
-async function getFeaturedOffer() {
-    const { createSupabaseServerClient } = await import('@/utils/supabase/server');
+export default async function Home() {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
         .from('top_converting_offers')
@@ -391,20 +404,13 @@ async function getFeaturedOffer() {
     
     if (error) {
         console.error("Error fetching featured offer:", error);
-        return null;
     }
-    
-    return data;
+  
+    const featuredOffer = data;
+
+    return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <HomePageContent featuredOffer={featuredOffer} />
+        </React.Suspense>
+    )
 }
-
-
-export default async function Home() {
-  const featuredOffer = await getFeaturedOffer();
-  return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <HomePageContent featuredOffer={featuredOffer} />
-    </React.Suspense>
-  )
-}
-
-    
