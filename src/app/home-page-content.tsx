@@ -242,21 +242,15 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
                     </h2>
                     <p className="text-muted-foreground mb-12">We focus on transparency, high payouts, and a world-class user experience.</p>
                 </div>
-
-                <div className="grid md:grid-cols-2 gap-x-16 gap-y-12 items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature) => (
-                        <div
-                        key={feature.title}
-                        className="flex gap-6 items-center"
-                        >
-                        <div className="p-4 bg-card rounded-2xl border border-border w-fit shrink-0">
-                            {feature.illustration}
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-bold font-headline mb-2">{feature.title}</h3>
-                            <p className="text-muted-foreground">{feature.description}</p>
-                        </div>
-                        </div>
+                        <Card key={feature.title} className="bg-card/50 p-6 text-center flex flex-col items-center border border-border/50 hover:border-primary/50 hover:-translate-y-1 transition-transform duration-300">
+                            <div className="p-4 bg-primary/10 rounded-xl mb-4">
+                                {feature.illustration}
+                            </div>
+                            <h3 className="text-lg font-bold font-headline mb-2">{feature.title}</h3>
+                            <p className="text-muted-foreground text-sm flex-grow">{feature.description}</p>
+                        </Card>
                     ))}
                 </div>
             </div>
