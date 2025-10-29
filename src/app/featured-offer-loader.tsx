@@ -16,7 +16,7 @@ export async function FeaturedOfferLoader() {
     ];
 
     const { data: featuredOffers, error } = await supabase
-        .from('all_offers')
+        .from('top_converting_offers')
         .select('*')
         .in('name', curatedOfferNames)
         .order('payout', { ascending: false });
