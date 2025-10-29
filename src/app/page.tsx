@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { FeaturedOfferLoader } from '@/app/featured-offer-loader';
+import { HomePageContent } from "@/app/home-page-content";
 
 
 export default async function Home() {
     return (
         <React.Suspense fallback={<div>Loading...</div>}>
-          <FeaturedOfferLoader />
+          <HomePageContent />
         </React.Suspense>
     )
 }

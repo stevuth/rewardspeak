@@ -54,7 +54,7 @@ const paymentMethods = [
 
 const features = [
     {
-      illustration: <Trophy className="w-12 h-12 text-primary" />,
+      illustration: <ExclusiveOpportunitiesIllustration />,
       title: "Exclusive opportunities",
       description: "More earning options than any other platform, available to all users worldwide.",
     },
@@ -108,12 +108,30 @@ const howItWorksSteps = [
     }
 ];
 
-export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
+export function HomePageContent() {
+  const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
   
   const searchParams = useSearchParams();
+
+  React.useEffect(() => {
+    async function fetchOffers() {
+      try {
+        const response = await fetch('/api/featured-offers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch offers');
+        }
+        const data = await response.json();
+        setFeaturedOffers(data.featuredOffers || []);
+      } catch (error) {
+        console.error("Error fetching featured offers:", error);
+        setFeaturedOffers([]);
+      }
+    }
+    fetchOffers();
+  }, []);
 
   React.useEffect(() => {
     const event = searchParams.get('event');
@@ -236,41 +254,31 @@ export function HomePageContent({ featuredOffers }: { featuredOffers: any[] }) {
         </section>
 
         <section className="bg-card/20 py-16 md:py-24">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
-                Not your typical rewards platform.{" "}
-                <span className="text-primary">Here's the difference</span>
-              </h2>
-              <p className="text-muted-foreground mb-12">
-                We focus on transparency, high payouts, and a world-class user
-                experience.
-              </p>
-            </div>
-            <div className="space-y-16">
-              {features.map((feature, index) => (
-                <div
-                  key={feature.title}
-                  className={cn(
-                    "flex flex-col md:flex-row items-center gap-8 md:gap-12",
-                    index % 2 !== 0 && "md:flex-row-reverse"
-                  )}
-                >
-                  <div className="flex-1 flex justify-center">
-                    {feature.illustration}
-                  </div>
-                  <div className="flex-1 text-center md:text-left">
-                    <h3 className="text-2xl font-bold font-headline mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {feature.description}
-                    </p>
-                  </div>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid md:grid-cols-2 gap-16 items-center">
+                    <div className="flex justify-center">
+                        <ExclusiveOpportunitiesIllustration />
+                    </div>
+                    <div className="text-center md:text-left">
+                        <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
+                            Not your typical rewards platform. <span className="text-primary">Here's the difference</span>
+                        </h2>
+                        <div className="space-y-6 mt-8">
+                            {features.slice(1).map((feature) => (
+                                <div key={feature.title} className="flex items-start gap-4">
+                                    <div className="flex-shrink-0 p-3 bg-primary/10 rounded-full">
+                                        {feature.illustration}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold font-headline">{feature.title}</h3>
+                                        <p className="text-muted-foreground">{feature.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-              ))}
             </div>
-          </div>
         </section>
         
         <PaymentMethodsMarquee />

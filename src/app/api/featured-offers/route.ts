@@ -1,11 +1,11 @@
 
-import { HomePageContent } from "@/app/home-page-content";
+import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 
-export async function FeaturedOfferLoader() {
-    const supabase = createSupabaseServerClient();
-
-    // A curated list of offers known to have colorful images.
+export async function GET() {
+  const supabase = createSupabaseServerClient();
+  
+  try {
     const curatedOfferNames = [
         'Video Poker',
         'Upside',
@@ -22,12 +22,16 @@ export async function FeaturedOfferLoader() {
         .order('payout', { ascending: false });
 
     if (error) {
-        console.error("Error fetching featured offers:", error);
-        return <HomePageContent featuredOffers={[]} />;
+        throw error;
     }
 
-    // Ensure offers are unique by name
     const uniqueOffers = Array.from(new Map(featuredOffers.map(offer => [offer.name, offer])).values());
 
-    return <HomePageContent featuredOffers={uniqueOffers || []} />
+    return NextResponse.json({ featuredOffers: uniqueOffers });
+
+  } catch (error) {
+    console.error("API route get-offers error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch offers from the database.";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
 }
