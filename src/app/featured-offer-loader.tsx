@@ -1,9 +1,9 @@
 
 import { HomePageContent } from "@/app/home-page-content";
-import { createSupabaseAdminClient } from "@/utils/supabase/admin";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
 
 export async function FeaturedOfferLoader() {
-    const supabase = createSupabaseAdminClient();
+    const supabase = createSupabaseServerClient();
 
     // A curated list of offers known to have colorful images.
     const curatedOfferNames = [
