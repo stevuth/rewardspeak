@@ -123,58 +123,13 @@ export function HomePageContent() {
 
   React.useEffect(() => {
     async function fetchOffers() {
-      const supabase = createSupabaseBrowserClient();
-      const curatedOfferNames = [
-          'Raid: Shadow Legends',
-          'Richie Games',
-          'Upside',
-          'Bingo Vacation',
-          'Crypto Miner',
-          'Slot Mate',
-          'Binance',
-          'TikTok'
-      ];
-  
       try {
-        const fetchPromises = curatedOfferNames.map(name =>
-            supabase
-                .from('top_converting_offers')
-                .select('*')
-                .like('name', `%${name}%`)
-                .limit(1)
-                .single()
-        );
-
-        const results = await Promise.all(fetchPromises);
-        
-        let offers = results
-            .map(res => res.data)
-            .filter(offer => offer !== null);
-            
-        if (offers.length < 4) {
-            console.warn("Could not find all curated offers, fetching top paying as fallback.");
-            const { data: topOffers, error: topOffersError } = await supabase
-                .from('top_converting_offers')
-                .select('*')
-                .order('payout', { ascending: false })
-                .limit(8);
-
-            if (topOffersError) throw topOffersError;
-            
-            if (topOffers) {
-              offers = [...offers, ...topOffers];
-            }
+        const response = await fetch(`/api/featured-offers?t=${new Date().getTime()}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
-
-        const uniqueOffersMap = new Map();
-        for (const offer of offers) {
-            if (!uniqueOffersMap.has(offer.name) || uniqueOffersMap.get(offer.name).payout < offer.payout) {
-                uniqueOffersMap.set(offer.name, offer);
-            }
-        }
-        const uniqueOffers = Array.from(uniqueOffersMap.values());
-        setFeaturedOffers(uniqueOffers);
-
+        const data = await response.json();
+        setFeaturedOffers(data.featuredOffers || []);
       } catch (error) {
         console.error("Error fetching featured offers:", error);
         setFeaturedOffers([]);
@@ -404,46 +359,47 @@ export function HomePageContent() {
 
       <footer className="bg-card/40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 className="font-bold text-lg mb-4">Browse</h3>
-                    <ul className="space-y-2 text-muted-foreground font-bold">
-                        <li><Link href="/climb-and-earn" className="hover:text-primary">Earn</Link></li>
-                        <li><Link href="/cash-out-cabin" className="hover:text-primary">Withdraw</Link></li>
-                        <li><Link href="/top-climbers" className="hover:text-primary">Leaderboard</Link></li>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-4">
+                    <Link href="/" className="flex items-center gap-2 mb-4">
+                        <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={40} height={40} />
+                        <span className="text-xl font-bold">Rewards Peak</span>
+                    </Link>
+                    <p className="text-muted-foreground text-sm max-w-xs">
+                        Climb to the top with every reward you earn. Simple tasks, real money.
+                    </p>
+                </div>
+                <div className="lg:col-span-2">
+                    <h3 className="font-semibold text-foreground mb-4">Browse</h3>
+                    <ul className="space-y-3 text-muted-foreground">
+                        <li><Link href="/earn" className="hover:text-primary transition-colors">Earn</Link></li>
+                        <li><Link href="/withdraw" className="hover:text-primary transition-colors">Withdraw</Link></li>
+                        <li><Link href="/leaderboard" className="hover:text-primary transition-colors">Leaderboard</Link></li>
                     </ul>
                 </div>
-                 <div>
-                    <h3 className="font-bold text-lg mb-4">About</h3>
-                    <ul className="space-y-2 text-muted-foreground font-bold">
-                        <li><Link href="/privacy-trail" className="hover:text-primary">Privacy Policy</Link></li>
-                        <li><Link href="#" className="hover:text-primary">Cookie Policy</Link></li>
-                        <li><Link href="/terms-of-the-peak" className="hover:text-primary">Terms of Service</Link></li>
-                        <li><Link href="/about-rewards-peak" className="hover:text-primary">About Us</Link></li>
+                 <div className="lg:col-span-2">
+                    <h3 className="font-semibold text-foreground mb-4">About</h3>
+                    <ul className="space-y-3 text-muted-foreground">
+                        <li><Link href="/about-rewards-peak" className="hover:text-primary transition-colors">About Us</Link></li>
+                        <li><Link href="/privacy-trail" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                        <li><Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                     </ul>
                 </div>
-                <div>
-                    <h3 className="font-bold text-lg mb-4">Support</h3>
-                     <ul className="space-y-2 text-muted-foreground font-bold">
-                        <li><Link href="/help-station" className="hover:text-primary">Help Center</Link></li>
-                        <li><Link href="#" className="hover:text-primary">Contact Us</Link></li>
+                <div className="lg:col-span-2">
+                    <h3 className="font-semibold text-foreground mb-4">Support</h3>
+                     <ul className="space-y-3 text-muted-foreground">
+                        <li><Link href="/support" className="hover:text-primary transition-colors">Help Center</Link></li>
+                        <li><Link href="/support" className="hover:text-primary transition-colors">Contact Us</Link></li>
                     </ul>
-                </div>
-                <div>
-                    <h3 className="font-bold text-lg mb-4">Community</h3>
-                    <div className="flex space-x-4">
-                        <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>
-                        <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
-                        <Link href="#" className="text-muted-foreground hover:text-primary"><Twitter /></Link>
-                        <Link href="#" className="text-muted-foreground hover:text-primary"><MessageCircle /></Link>
-                    </div>
                 </div>
             </div>
-            <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-                <p>&copy; 2024 Rewards Peak. All rights reserved.</p>
-                 <div className="flex items-center gap-4 mt-4 md:mt-0">
-                    <Link href="/privacy-trail" className="hover:text-primary">Privacy Policy</Link>
-                    <Link href="/terms-of-the-peak" className="hover:text-primary">Terms of Service</Link>
+            <div className="border-t border-border mt-8 pt-8 flex flex-col-reverse sm:flex-row justify-between items-center gap-y-4">
+                <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
+                <div className="flex items-center space-x-4">
+                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook size={20} /></Link>
+                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={20} /></Link>
+                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter size={20} /></Link>
+                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><MessageCircle size={20} /></Link>
                 </div>
             </div>
         </div>
