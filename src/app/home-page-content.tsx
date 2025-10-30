@@ -41,6 +41,7 @@ import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
 import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/exclusive-opportunities';
 import { createSupabaseBrowserClient } from '@/utils/supabase/client';
+import { PhoneWithOffersIllustration } from '@/components/illustrations/phone-with-offers';
 
 const recentCashouts: any[] = [];
 
@@ -124,12 +125,46 @@ export function HomePageContent() {
   React.useEffect(() => {
     async function fetchOffers() {
       try {
-        const response = await fetch(`/api/featured-offers?t=${new Date().getTime()}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+        const supabase = createSupabaseBrowserClient();
+        const curatedOfferNames = [
+          "Raid: Shadow Legends", 
+          "Richie Games", 
+          "Upside", 
+          "Bingo Vacation", 
+          "Crypto Miner", 
+          "Slot Mate", 
+          "Binance", 
+          "TikTok"
+        ];
+        
+        const queries = curatedOfferNames.map(name => 
+            supabase.from('top_converting_offers').select('*').like('name', `%${name}%`).limit(1)
+        );
+
+        const results = await Promise.all(queries);
+        
+        let fetched: any[] = [];
+        results.forEach(res => {
+            if (res.data) {
+                fetched.push(...res.data);
+            }
+        });
+
+        // Remove duplicates by name
+        const uniqueOffers = Array.from(new Map(fetched.map(offer => [offer.name, offer])).values());
+
+        if (uniqueOffers.length > 0) {
+            setFeaturedOffers(uniqueOffers);
+        } else {
+            // Fallback to top offers if no curated offers are found
+            const { data: topOffers } = await supabase
+                .from('top_converting_offers')
+                .select('*')
+                .order('payout', { ascending: false })
+                .limit(10);
+            setFeaturedOffers(topOffers || []);
         }
-        const data = await response.json();
-        setFeaturedOffers(data.featuredOffers || []);
+
       } catch (error) {
         console.error("Error fetching featured offers:", error);
         setFeaturedOffers([]);
@@ -237,33 +272,34 @@ export function HomePageContent() {
               <OfferCarousel offers={featuredOffers} />
             </div>
         </section>
-
+        
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-            <div className="text-center max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
-                    Get paid in <span className="text-secondary">3 easy steps</span>
-                </h2>
-                <p className="text-muted-foreground mb-16 md:mb-24">
-                    Join thousands of users earning real rewards every day. Getting started is quick and completely free!
-                </p>
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <div className="flex justify-center">
+              <PhoneWithOffersIllustration />
             </div>
-            <div className="relative">
-                <div className="absolute left-1/2 top-8 hidden h-[calc(100%-4rem)] w-0.5 bg-border md:block" aria-hidden="true"></div>
-                <div className="space-y-16 md:space-y-0 md:grid md:grid-cols-3 md:gap-12">
-                {howItWorksSteps.map((step, index) => (
-                    <div key={step.title} className="relative text-center">
-                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center justify-center w-16 h-16 bg-background rounded-full border-2 border-border">
-                        <span className="text-3xl font-bold text-primary">{index + 1}</span>
+            <div>
+              <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4 text-center md:text-left">
+                  Get paid in <span className="text-secondary">3 easy steps</span>
+              </h2>
+              <p className="text-muted-foreground mb-8 text-center md:text-left">
+                  Join thousands of users earning real rewards every day. Getting started is quick and completely free!
+              </p>
+              <ul className="space-y-6">
+                {howItWorksSteps.map((step) => (
+                  <li key={step.title} className="flex items-start gap-4">
+                    <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-full font-bold text-lg">
+                      {step.title.charAt(0)}
                     </div>
-                    <div className="mb-4 inline-block p-4 bg-primary/10 rounded-xl">
-                        <step.icon className="w-10 h-10 text-primary" />
+                    <div>
+                      <h3 className="text-lg font-bold font-headline">{step.title}</h3>
+                      <p className="text-muted-foreground">{step.description}</p>
                     </div>
-                    <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
-                    <p className="text-muted-foreground">{step.description}</p>
-                    </div>
+                  </li>
                 ))}
-                </div>
+              </ul>
             </div>
+          </div>
         </section>
 
         <section className="bg-card/20 py-16 md:py-24">
@@ -390,6 +426,13 @@ export function HomePageContent() {
                      <ul className="space-y-3 text-muted-foreground">
                         <li><Link href="/support" className="hover:text-primary transition-colors">Help Center</Link></li>
                         <li><Link href="/support" className="hover:text-primary transition-colors">Contact Us</Link></li>
+                    </ul>
+                </div>
+                <div className="lg:col-span-2">
+                     <h3 className="font-semibold text-foreground mb-4">Legal</h3>
+                     <ul className="space-y-3 text-muted-foreground">
+                        <li><Link href="/privacy-trail" className="hover:text-primary transition-colors">Privacy</Link></li>
+                        <li><Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms</Link></li>
                     </ul>
                 </div>
             </div>
