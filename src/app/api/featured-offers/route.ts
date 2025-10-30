@@ -54,7 +54,7 @@ export async function GET() {
     }
     const uniqueOffers = Array.from(uniqueOffersMap.values());
 
-    return NextResponse.json({ featuredOffers: uniqueOffers });
+    return NextResponse.json({ featuredOffers: uniqueOffers }, { headers: { 'Cache-Control': 'no-store' } });
 
   } catch (error) {
     console.error("API route get-offers error:", error);
