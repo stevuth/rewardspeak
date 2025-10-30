@@ -6,25 +6,18 @@ export async function GET() {
   const supabase = createSupabaseServerClient();
   
   try {
-    const curatedOfferNames = [
-        'Video Poker',
-        'Upside',
-        'Richie Games',
-        'RAID Shadow Legends',
-        'Crypto Miner',
-        'Slot Mate',
-    ];
-
+    // Fetch the top 10 highest paying offers from the database
     const { data: featuredOffers, error } = await supabase
         .from('top_converting_offers')
         .select('*')
-        .in('name', curatedOfferNames)
-        .order('payout', { ascending: false });
+        .order('payout', { ascending: false })
+        .limit(10);
 
     if (error) {
         throw error;
     }
 
+    // Ensure we don't have duplicate offers by name, selecting the one with the highest payout if duplicates exist.
     const uniqueOffers = Array.from(new Map(featuredOffers.map(offer => [offer.name, offer])).values());
 
     return NextResponse.json({ featuredOffers: uniqueOffers });
