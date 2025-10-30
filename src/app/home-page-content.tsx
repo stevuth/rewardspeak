@@ -40,6 +40,7 @@ import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, Et
 import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
 import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/exclusive-opportunities';
+import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 
 const recentCashouts: any[] = [];
 
@@ -118,13 +119,63 @@ export function HomePageContent() {
 
   React.useEffect(() => {
     async function fetchOffers() {
+      const supabase = createSupabaseBrowserClient();
+      const curatedOfferNames = [
+          'Raid: Shadow Legends',
+          'Richie Games',
+          'Upside',
+          'Bingo Vacation',
+          'Crypto Miner', // Using partial name for broader match
+          'Slot Mate', // Using partial name for broader match
+          'Binance',
+          'TikTok'
+      ];
+  
       try {
-        const response = await fetch(`/api/featured-offers?t=${new Date().getTime()}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch offers');
+        // Build an array of promises for each name search
+        const fetchPromises = curatedOfferNames.map(name =>
+            supabase
+                .from('top_converting_offers')
+                .select('*')
+                .like('name', `%${name}%`) 
+                .limit(1) // Get the first match for each name
+                .single() // Expect a single result or null
+        );
+
+        // Execute all queries in parallel
+        const results = await Promise.all(fetchPromises);
+        
+        let offers = results
+            .map(res => res.data)
+            .filter(offer => offer !== null); // Filter out any null results
+            
+        // If not enough curated offers are found, fetch top paying as a fallback
+        if (offers.length < 4) {
+            console.warn("Could not find all curated offers, fetching top paying as fallback.");
+            const { data: topOffers, error: topOffersError } = await supabase
+                .from('top_converting_offers')
+                .select('*')
+                .order('payout', { ascending: false })
+                .limit(8);
+
+            if (topOffersError) throw topOffersError;
+            
+            // Combine and ensure no duplicates
+            if (topOffers) {
+              offers = [...offers, ...topOffers];
+            }
         }
-        const data = await response.json();
-        setFeaturedOffers(data.featuredOffers || []);
+
+        // Ensure we don't have duplicate offers by name, selecting the one with the highest payout if duplicates exist.
+        const uniqueOffersMap = new Map();
+        for (const offer of offers) {
+            if (!uniqueOffersMap.has(offer.name) || uniqueOffersMap.get(offer.name).payout < offer.payout) {
+                uniqueOffersMap.set(offer.name, offer);
+            }
+        }
+        const uniqueOffers = Array.from(uniqueOffersMap.values());
+        setFeaturedOffers(uniqueOffers);
+
       } catch (error) {
         console.error("Error fetching featured offers:", error);
         setFeaturedOffers([]);
