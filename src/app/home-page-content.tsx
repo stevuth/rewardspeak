@@ -389,7 +389,7 @@ export function HomePageContent() {
                 </div>
                 <Accordion type="single" collapsible className="w-full">
                     {faqs.map((faq, index) => (
-                        <AccordionItem value={`item-${index}`} key={index}>
+                        <AccordionItem value={`item-${index}`} key={index} className="group">
                             <AccordionTrigger>{faq.question}</AccordionTrigger>
                             <AccordionContent>
                             {faq.answer}
