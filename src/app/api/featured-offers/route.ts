@@ -6,12 +6,23 @@ export async function GET() {
   const supabase = createSupabaseServerClient();
   
   try {
-    // Fetch the top 10 highest paying offers from the database
+    // Define the curated list of offer names to feature
+    const curatedOfferNames = [
+        'Raid: Shadow Legends',
+        'Richie Games',
+        'Upside',
+        'Bingo Vacation',
+        'Crypto Miner Tycoon', // Assuming this is the full name for "crypto miner"
+        'Slot Mate - Vegas Slot Casino', // Assuming this is the full name for "slot mate"
+        'Binance',
+        'TikTok'
+    ];
+
+    // Fetch offers that match the names in our curated list
     const { data: featuredOffers, error } = await supabase
         .from('top_converting_offers')
         .select('*')
-        .order('payout', { ascending: false })
-        .limit(10);
+        .in('name', curatedOfferNames);
 
     if (error) {
         throw error;
