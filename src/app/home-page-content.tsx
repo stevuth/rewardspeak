@@ -55,24 +55,28 @@ const paymentMethods = [
 
 const features = [
     {
+      icon: Users,
+      title: "Community of Earners",
+      description: "Join thousands of members worldwide who are cashing out real money on a daily basis. With a vibrant community, you're part of a global network of ambitious earners.",
       illustration: <ExclusiveOpportunitiesIllustration />,
-      title: "Exclusive opportunities",
-      description: "More earning options than any other platform, available to all users worldwide.",
     },
     {
-      illustration: <Gift className="w-12 h-12 text-primary" />,
-      title: "Instant sign up bonus",
-      description: "New users receive a $1 bonus instantly upon signing up.",
+      icon: Gift,
+      title: "Instant Sign-Up Bonus",
+      description: "We get you started on the right foot. New users receive a $1 bonus instantly upon signing up, so you're already earning from the moment you join.",
+      illustration: <Gift className="w-24 h-24 text-primary" />,
     },
     {
-      illustration: <Users className="w-12 h-12 text-primary" />,
-      title: "Lifetime referral earnings",
-      description: "Earn a percentage of your referrals' earnings for life.",
+      icon: UserPlus,
+      title: "Lifetime Referral Earnings",
+      description: "The earning doesn't stop with you. Invite your friends and earn a percentage of their earnings for life. The more they earn, the more you earn.",
+      illustration: <Users className="w-24 h-24 text-primary" />,
     },
     {
-      illustration: <Wallet className="w-12 h-12 text-primary" />,
-      title: "Withdrawals starting at $10.00",
-      description: "Cash out your earnings quickly and securely.",
+      icon: Wallet,
+      title: "Withdrawals from just $10.00",
+      description: "Access your earnings quickly and securely. With low withdrawal minimums, you can cash out your hard-earned rewards without the long wait.",
+      illustration: <Wallet className="w-24 h-24 text-primary" />,
     },
 ];
 
@@ -125,31 +129,28 @@ export function HomePageContent() {
           'Richie Games',
           'Upside',
           'Bingo Vacation',
-          'Crypto Miner', // Using partial name for broader match
-          'Slot Mate', // Using partial name for broader match
+          'Crypto Miner',
+          'Slot Mate',
           'Binance',
           'TikTok'
       ];
   
       try {
-        // Build an array of promises for each name search
         const fetchPromises = curatedOfferNames.map(name =>
             supabase
                 .from('top_converting_offers')
                 .select('*')
-                .like('name', `%${name}%`) 
-                .limit(1) // Get the first match for each name
-                .single() // Expect a single result or null
+                .like('name', `%${name}%`)
+                .limit(1)
+                .single()
         );
 
-        // Execute all queries in parallel
         const results = await Promise.all(fetchPromises);
         
         let offers = results
             .map(res => res.data)
-            .filter(offer => offer !== null); // Filter out any null results
+            .filter(offer => offer !== null);
             
-        // If not enough curated offers are found, fetch top paying as a fallback
         if (offers.length < 4) {
             console.warn("Could not find all curated offers, fetching top paying as fallback.");
             const { data: topOffers, error: topOffersError } = await supabase
@@ -160,13 +161,11 @@ export function HomePageContent() {
 
             if (topOffersError) throw topOffersError;
             
-            // Combine and ensure no duplicates
             if (topOffers) {
               offers = [...offers, ...topOffers];
             }
         }
 
-        // Ensure we don't have duplicate offers by name, selecting the one with the highest payout if duplicates exist.
         const uniqueOffersMap = new Map();
         for (const offer of offers) {
             if (!uniqueOffersMap.has(offer.name) || uniqueOffersMap.get(offer.name).payout < offer.payout) {
@@ -286,48 +285,58 @@ export function HomePageContent() {
 
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
             <div className="text-center max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">Get paid in <span className="text-secondary">3 easy steps</span></h2>
-                <p className="text-muted-foreground mb-12">
+                <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
+                    Get paid in <span className="text-secondary">3 easy steps</span>
+                </h2>
+                <p className="text-muted-foreground mb-16 md:mb-24">
                     Join thousands of users earning real rewards every day. Getting started is quick and completely free!
                 </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              {howItWorksSteps.map((step) => (
-                <Card key={step.title} className="animated-border-card text-center p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-card border-transparent">
+            <div className="relative">
+                <div className="absolute left-1/2 top-8 hidden h-[calc(100%-4rem)] w-0.5 bg-border md:block" aria-hidden="true"></div>
+                <div className="space-y-16 md:space-y-0 md:grid md:grid-cols-3 md:gap-12">
+                {howItWorksSteps.map((step, index) => (
+                    <div key={step.title} className="relative text-center">
+                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center justify-center w-16 h-16 bg-background rounded-full border-2 border-border">
+                        <span className="text-3xl font-bold text-primary">{index + 1}</span>
+                    </div>
                     <div className="mb-4 inline-block p-4 bg-primary/10 rounded-xl">
                         <step.icon className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
                     <p className="text-muted-foreground">{step.description}</p>
-                </Card>
-              ))}
+                    </div>
+                ))}
+                </div>
             </div>
         </section>
 
         <section className="bg-card/20 py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid md:grid-cols-2 gap-16 items-center">
-                    <div className="flex justify-center">
-                        <ExclusiveOpportunitiesIllustration />
-                    </div>
-                    <div className="text-center md:text-left">
-                        <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
-                            Not your typical rewards platform. <span className="text-primary">Here's the difference</span>
-                        </h2>
-                        <div className="space-y-6 mt-8">
-                            {features.slice(1).map((feature) => (
-                                <div key={feature.title} className="flex items-start gap-4">
-                                    <div className="flex-shrink-0 p-3 bg-primary/10 rounded-full">
-                                        {feature.illustration}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold font-headline">{feature.title}</h3>
-                                        <p className="text-muted-foreground">{feature.description}</p>
-                                    </div>
+                <div className="text-center max-w-3xl mx-auto mb-16">
+                    <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
+                        Not your typical <span className="text-primary">rewards platform</span>
+                    </h2>
+                    <p className="text-muted-foreground">Here’s what makes Rewards Peak different from the rest.</p>
+                </div>
+                <div className="grid grid-cols-1 gap-y-16">
+                    {features.map((feature, index) => (
+                        <div key={feature.title} className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+                            <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
+                                <div className="w-48 h-48 flex items-center justify-center bg-card p-8 rounded-2xl shadow-lg">
+                                    {feature.illustration}
                                 </div>
-                            ))}
+                            </div>
+                            <div className="text-center md:text-left">
+                                <div className="inline-flex items-center gap-3 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold mb-4">
+                                    <feature.icon className="w-4 h-4" />
+                                    <span>{feature.title}</span>
+                                </div>
+                                <h3 className="text-2xl md:text-3xl font-bold font-headline mb-4">{feature.title}</h3>
+                                <p className="text-muted-foreground text-lg">{feature.description}</p>
+                            </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </section>
