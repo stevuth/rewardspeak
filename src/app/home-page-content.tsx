@@ -119,7 +119,7 @@ export function HomePageContent() {
   React.useEffect(() => {
     async function fetchOffers() {
       try {
-        const response = await fetch('/api/featured-offers');
+        const response = await fetch(`/api/featured-offers?t=${new Date().getTime()}`);
         if (!response.ok) {
           throw new Error('Failed to fetch offers');
         }

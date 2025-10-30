@@ -12,8 +12,8 @@ export async function GET() {
         'Richie Games',
         'Upside',
         'Bingo Vacation',
-        'Crypto Miner',
-        'Slot Mate',
+        'Crypto Miner Tycoon', // Corrected full name
+        'Slot Mate - Vegas Slot Casino', // Corrected full name
         'Binance',
         'TikTok'
     ];
