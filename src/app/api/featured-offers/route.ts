@@ -6,20 +6,20 @@ export async function GET() {
   const supabase = createSupabaseServerClient();
   
   try {
-    // Define the curated list of offer names to feature
+    // Define the curated list of full, exact offer names to feature
     const curatedOfferNames = [
         'Raid: Shadow Legends',
         'Richie Games',
         'Upside',
         'Bingo Vacation',
-        'Crypto Miner Tycoon', // Assuming this is the full name for "crypto miner"
-        'Slot Mate - Vegas Slot Casino', // Assuming this is the full name for "slot mate"
+        'Crypto Miner Tycoon', // Using the full name
+        'Slot Mate - Vegas Slot Casino', // Using the full name
         'Binance',
         'TikTok'
     ];
 
     // Fetch offers that match the names in our curated list
-    const { data: featuredOffers, error } = await supabase
+    let { data: featuredOffers, error } = await supabase
         .from('top_converting_offers')
         .select('*')
         .in('name', curatedOfferNames);
@@ -27,9 +27,32 @@ export async function GET() {
     if (error) {
         throw error;
     }
+    
+    // Fallback: If no curated offers are found, fetch the top 8 highest paying offers.
+    if (!featuredOffers || featuredOffers.length === 0) {
+        const { data: topOffers, error: topOffersError } = await supabase
+            .from('top_converting_offers')
+            .select('*')
+            .order('payout', { ascending: false })
+            .limit(8);
+
+        if (topOffersError) {
+            throw topOffersError;
+        }
+        featuredOffers = topOffers;
+    }
+
 
     // Ensure we don't have duplicate offers by name, selecting the one with the highest payout if duplicates exist.
-    const uniqueOffers = Array.from(new Map(featuredOffers.map(offer => [offer.name, offer])).values());
+    const uniqueOffersMap = new Map();
+    if (featuredOffers) {
+        for (const offer of featuredOffers) {
+            if (!uniqueOffersMap.has(offer.name) || uniqueOffersMap.get(offer.name).payout < offer.payout) {
+                uniqueOffersMap.set(offer.name, offer);
+            }
+        }
+    }
+    const uniqueOffers = Array.from(uniqueOffersMap.values());
 
     return NextResponse.json({ featuredOffers: uniqueOffers });
 
