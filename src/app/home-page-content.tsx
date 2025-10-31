@@ -133,7 +133,7 @@ export function HomePageContent() {
         const heroOfferNames = [
             "Monopoly Go",
             "TikTok",
-            "Mafia City",
+            "The Grand Mafia",
             "Alibaba.com",
             "Animals & Coins",
             "Sea Explorer",
@@ -144,8 +144,7 @@ export function HomePageContent() {
         const { data: heroData, error: heroError } = await supabase
             .from('top_converting_offers')
             .select('*')
-            .or(heroNameFilters)
-            .limit(heroOfferNames.length);
+            .or(heroNameFilters);
 
         if (heroError) throw heroError;
 
