@@ -131,7 +131,6 @@ const shuffleArray = (array: any[]) => {
 
 export function HomePageContent() {
   const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
-  const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
@@ -139,31 +138,50 @@ export function HomePageContent() {
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
+    // Unique list of offer names to display in the hero section.
+    const heroOfferNames = [
+        "raid shadow", 
+        "richie games", 
+        "upside", 
+        "bingo vacation", 
+        "crypto miner", 
+        "slot mate", 
+        "binance", 
+        "tiktok"
+    ];
+
     async function fetchAllOffers() {
       try {
         const supabase = createSupabaseBrowserClient();
         
-        // Fetch latest 10 offers from top_converting_offers
-        const { data: topOffers, error: topOffersError } = await supabase
+        // Fetch a general pool of the latest offers to filter from.
+        const { data: offerPool, error: fetchError } = await supabase
           .from('top_converting_offers')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(10);
+          .limit(100); // Fetch a larger pool to increase chances of finding matches
 
-        if (topOffersError) throw topOffersError;
+        if (fetchError) throw fetchError;
         
-        // Shuffle the array to get a random order
-        setFeaturedOffers(shuffleArray(topOffers || []));
+        const foundOffers: any[] = [];
+        const foundNames = new Set();
 
-        // The logic for fetching specific phone offers was causing errors.
-        // The EarnByGamingIllustration component has its own default offers.
-        // We will let it use those defaults by not passing any props.
-        // setPhoneCardOffers([]); // This is not needed
+        // Find one match for each name in the desired order
+        heroOfferNames.forEach(name => {
+            const offer = offerPool.find(o => 
+                o.name.toLowerCase().includes(name) && !foundNames.has(o.name)
+            );
+            if (offer) {
+                foundOffers.push(offer);
+                foundNames.add(offer.name);
+            }
+        });
+
+        setFeaturedOffers(foundOffers);
 
       } catch (error: any) {
         console.error("Error fetching offers:", error.message || error);
         setFeaturedOffers([]);
-        setPhoneCardOffers([]);
       }
     }
     fetchAllOffers();
@@ -328,7 +346,7 @@ export function HomePageContent() {
                         transition={{ duration: 0.5 }}
                         className="flex items-center justify-center md:mb-0"
                     >
-                         <EarnByGamingIllustration offers={phoneCardOffers} />
+                         <EarnByGamingIllustration />
                     </motion.div>
                 </div>
             </div>
