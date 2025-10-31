@@ -3,13 +3,12 @@
 
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Info, CheckCircle } from "lucide-react";
+import { X, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { NotikOffer } from "@/lib/notik-api";
 import { cn } from "@/lib/utils";
-import { Badge } from "./ui/badge";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -42,7 +41,7 @@ const modalVariants = {
       type: "spring",
       stiffness: 260,
       damping: 30,
-      duration: 0.3
+      duration: 0.3,
     },
   },
   exit: {
@@ -54,43 +53,54 @@ const modalVariants = {
   },
 };
 
-const OfferFooter = ({ totalPoints, totalUSD, onStartOffer }: { totalPoints: number, totalUSD: number, onStartOffer: () => void }) => (
-    <div className="w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
-      <div className="text-left">
-        <p className="text-xs text-muted-foreground">Total Reward</p>
-        <p className="text-lg font-bold text-accent truncate">
-          {totalPoints.toLocaleString()} Pts (${totalUSD.toFixed(2)})
-        </p>
-      </div>
-      <Button
-        onClick={onStartOffer}
-        size="lg"
-        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
-      >
-        Start Offer
-      </Button>
+const OfferFooter = ({
+  totalPoints,
+  totalUSD,
+  onStartOffer,
+}: {
+  totalPoints: number;
+  totalUSD: number;
+  onStartOffer: () => void;
+}) => (
+  <div className="w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
+    <div className="text-left">
+      <p className="text-xs text-muted-foreground">Total Reward</p>
+      <p className="text-lg font-bold text-accent truncate">
+        {totalPoints.toLocaleString()} Pts (${totalUSD.toFixed(2)})
+      </p>
     </div>
+    <Button
+      onClick={onStartOffer}
+      size="lg"
+      className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
+    >
+      Start Offer
+    </Button>
+  </div>
 );
 
-
-export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalProps) {
+export function OfferPreviewModal({
+  isOpen,
+  onClose,
+  offer,
+}: OfferPreviewModalProps) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   if (!offer) return null;
 
   const totalPayout =
-    (offer.events && offer.events.length > 0)
+    offer.events && offer.events.length > 0
       ? offer.events.reduce((sum, event) => sum + (event?.payout || 0), 0)
-      : (offer.payout || 0);
+      : offer.payout || 0;
 
   const totalPoints = Math.round(totalPayout * 1000);
   const totalUSD = totalPayout;
@@ -153,51 +163,65 @@ export function OfferPreviewModal({ isOpen, onClose, offer }: OfferPreviewModalP
 
             {/* Scrollable Body */}
             <ScrollArea className="flex-grow">
-                <div className="p-4 sm:p-6 space-y-4">
-                    <div className="p-4 bg-black/20 rounded-lg border border-border">
-                        <h3 className="font-semibold text-primary mb-2 flex items-center gap-2"><Info className="h-4 w-4"/>Instructions</h3>
-                        <p className="text-sm text-muted-foreground">{offer.description}</p>
-                    </div>
-
-                    <h3 className="font-semibold text-primary pt-2">Milestones</h3>
-                    {hasMilestones ? (
-                        <div className="space-y-3">
-                        {offer.events.map((event) => {
-                            const points = Math.round((event.payout || 0) * 1000);
-                            const usdValue = event.payout || 0;
-                            return (
-                            <div
-                                key={event.id}
-                                className="bg-black/20 p-4 rounded-lg border border-border transition-all hover:border-primary/50"
-                            >
-                                <div className="flex justify-between items-start">
-                                <div>
-                                    <p className="font-semibold">{event.name}</p>
-                                    <p className="text-xs text-muted-foreground mt-1">Complete this step to earn</p>
-                                </div>
-                                <div className="text-right flex-shrink-0 ml-4">
-                                    <p className="font-bold text-accent">
-                                    +{points.toLocaleString()} Pts
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">(${usdValue.toFixed(2)})</p>
-                                </div>
-                                </div>
-                            </div>
-                            );
-                        })}
-                        </div>
-                    ) : (
-                        <div className="text-center py-8 text-muted-foreground text-sm bg-black/20 rounded-lg">
-                            <p className="font-semibold">One-Step Offer</p>
-                            <p className="mt-1">Complete the main objective to earn the full reward.</p>
-                        </div>
-                    )}
-
+              <div className="p-4 sm:p-6 space-y-4">
+                <div className="p-4 bg-black/20 rounded-lg border border-border">
+                  <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Instructions
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {offer.description}
+                  </p>
                 </div>
+
+                <h3 className="font-semibold text-primary pt-2">Milestones</h3>
+                {hasMilestones ? (
+                  <div className="space-y-3">
+                    {offer.events.map((event) => {
+                      const points = Math.round((event.payout || 0) * 1000);
+                      const usdValue = event.payout || 0;
+                      return (
+                        <div
+                          key={event.id}
+                          className="bg-black/20 p-4 rounded-lg border border-border transition-all hover:border-primary/50"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold">{event.name}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Complete this step to earn
+                              </p>
+                            </div>
+                            <div className="text-right flex-shrink-0 ml-4">
+                              <p className="font-bold text-accent">
+                                +{points.toLocaleString()} Pts
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                (${usdValue.toFixed(2)})
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground text-sm bg-black/20 rounded-lg">
+                    <p className="font-semibold">One-Step Offer</p>
+                    <p className="mt-1">
+                      Complete the main objective to earn the full reward.
+                    </p>
+                  </div>
+                )}
+              </div>
             </ScrollArea>
-             {/* Sticky Footer */}
+            {/* Sticky Footer */}
             <div className="mt-auto flex-shrink-0">
-                <OfferFooter totalPoints={totalPoints} totalUSD={totalUSD} onStartOffer={handleStartOffer} />
+              <OfferFooter
+                totalPoints={totalPoints}
+                totalUSD={totalUSD}
+                onStartOffer={handleStartOffer}
+              />
             </div>
           </motion.div>
         </motion.div>
