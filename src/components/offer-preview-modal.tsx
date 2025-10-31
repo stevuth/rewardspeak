@@ -3,11 +3,11 @@
 
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { SafeImage } from "@/components/safe-image";
 import type { NotikOffer } from "@/lib/notik-api";
+import { ScrollArea } from "./ui/scroll-area";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -153,60 +153,60 @@ export function OfferPreviewModal({
           >
             <OfferHeader offer={offer} onClose={onClose} />
 
-            <ScrollArea className="flex-grow min-h-0">
-                <div className="p-4 sm:p-6 space-y-4">
-                  <div className="p-4 bg-black/20 rounded-lg border border-border">
-                    <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
-                      <Info className="h-4 w-4" />
-                      Instructions
-                    </h3>
-                    <div
-                      className="text-sm text-muted-foreground prose prose-invert prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: offer.description }}
-                    />
-                  </div>
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="p-4 sm:p-6 space-y-4">
+                <div className="p-4 bg-black/20 rounded-lg border border-border">
+                  <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Instructions
+                  </h3>
+                  <div
+                    className="text-sm text-muted-foreground prose prose-invert prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: offer.description }}
+                  />
+                </div>
 
-                  <h3 className="font-semibold text-primary pt-2">Milestones</h3>
-                  {hasMilestones ? (
-                    <div className="space-y-3">
-                      {offer.events?.map((event) => {
-                        const points = Math.round((event.payout || 0) * 1000);
-                        const usdValue = event.payout || 0;
-                        return (
-                          <div
-                            key={event.id}
-                            className="bg-black/20 p-4 rounded-lg border border-border transition-all hover:border-primary/50"
-                          >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <p className="font-semibold">{event.name}</p>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  Complete this step to earn
-                                </p>
-                              </div>
-                              <div className="text-right flex-shrink-0 ml-4">
-                                <p className="font-bold text-accent">
-                                  +{points.toLocaleString()} Pts
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  (${usdValue.toFixed(2)})
-                                </p>
-                              </div>
+                <h3 className="font-semibold text-primary pt-2">Milestones</h3>
+                {hasMilestones ? (
+                  <div className="space-y-3">
+                    {offer.events?.map((event) => {
+                      const points = Math.round((event.payout || 0) * 1000);
+                      const usdValue = event.payout || 0;
+                      return (
+                        <div
+                          key={event.id}
+                          className="bg-black/20 p-4 rounded-lg border border-border transition-all hover:border-primary/50"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold">{event.name}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Complete this step to earn
+                              </p>
+                            </div>
+                            <div className="text-right flex-shrink-0 ml-4">
+                              <p className="font-bold text-accent">
+                                +{points.toLocaleString()} Pts
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                (${usdValue.toFixed(2)})
+                              </p>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground text-sm bg-black/20 rounded-lg">
-                      <p className="font-semibold">One-Step Offer</p>
-                      <p className="mt-1">
-                        Complete the main objective to earn the full reward.
-                      </p>
-                    </div>
-                  )}
-                </div>
-            </ScrollArea>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground text-sm bg-black/20 rounded-lg">
+                    <p className="font-semibold">One-Step Offer</p>
+                    <p className="mt-1">
+                      Complete the main objective to earn the full reward.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
             
             <OfferFooter
               totalPoints={totalPoints}
