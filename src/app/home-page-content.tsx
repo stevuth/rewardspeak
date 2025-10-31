@@ -138,13 +138,11 @@ export function HomePageContent() {
           "Alibaba.com",
           "Animals & Coins",
         ];
-        
-        const heroNameFilters = heroOfferNames.map(name => `name.ilike.%${name}%`).join(',');
-        
+
+        const heroNamePatterns = heroOfferNames.map(name => `%${name}%`);
+
         const { data: heroData, error: heroError } = await supabase
-            .from('top_converting_offers')
-            .select('*')
-            .or(heroNameFilters);
+            .rpc('get_offers_by_names', { names: heroNamePatterns });
 
         if (heroError) throw heroError;
 
@@ -158,6 +156,7 @@ export function HomePageContent() {
         if (uniqueHeroOffers.length > 0) {
             setFeaturedOffers(uniqueHeroOffers);
         } else {
+            // Fallback if RPC returns no offers
             const { data: topOffers } = await supabase
                 .from('top_converting_offers')
                 .select('*')
