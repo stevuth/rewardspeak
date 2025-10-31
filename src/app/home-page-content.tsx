@@ -137,7 +137,6 @@ export function HomePageContent() {
             "Alibaba.com",
             "Animals & Coins",
             "Sea Explorer",
-            "Grab a Toy"
         ];
         
         const heroNameFilters = heroOfferNames.map(name => `name.ilike.%${name}%`).join(',');
@@ -469,5 +468,3 @@ export function HomePageContent() {
     </div>
   );
 }
-
-    
