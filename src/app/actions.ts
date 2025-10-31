@@ -30,6 +30,15 @@ export async function runSeoOptimizer(
   }
 }
 
+// Helper to split an array into chunks
+function chunk<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
 
 export async function syncOffers(): Promise<{ success: boolean; error?: string }> {
     const supabase = createSupabaseAdminClient();
@@ -55,6 +64,8 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
             });
         };
 
+        const BATCH_SIZE = 500;
+
         // Upsert top converting offers
         if (topOffers.length > 0) {
             const uniqueTopOffers = getUniqueOffers(topOffers);
@@ -71,13 +82,17 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                 categories: offer.categories,
                 events: offer.events,
             }));
-            const { error: topOffersError } = await supabase
-                .from('top_converting_offers')
-                .upsert(topOffersData, { onConflict: 'offer_id' });
+            
+            const topOfferChunks = chunk(topOffersData, BATCH_SIZE);
+            for (const topChunk of topOfferChunks) {
+                const { error: topOffersError } = await supabase
+                    .from('top_converting_offers')
+                    .upsert(topChunk, { onConflict: 'offer_id' });
 
-            if (topOffersError) {
-                console.error('Error upserting top converting offers:', topOffersError);
-                throw new Error(topOffersError.message);
+                if (topOffersError) {
+                    console.error('Error upserting a chunk of top converting offers:', topOffersError);
+                    throw new Error(topOffersError.message);
+                }
             }
         }
 
@@ -98,13 +113,16 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                 events: offer.events,
             }));
 
-            const { error: allOffersError } = await supabase
-                .from('all_offers')
-                .upsert(allOffersData, { onConflict: 'offer_id' });
+            const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
+            for (const allChunk of allOfferChunks) {
+                const { error: allOffersError } = await supabase
+                    .from('all_offers')
+                    .upsert(allChunk, { onConflict: 'offer_id' });
 
-            if (allOffersError) {
-                console.error('Error upserting all offers:', allOffersError);
-                throw new Error(allOffersError.message);
+                if (allOffersError) {
+                    console.error('Error upserting a chunk of all offers:', allOffersError);
+                    throw new Error(allOffersError.message);
+                }
             }
         }
         
