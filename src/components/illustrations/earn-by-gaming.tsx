@@ -44,16 +44,16 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
   return (
     <div className="relative w-72 h-[450px] flex items-center justify-center">
       {/* Phone Body */}
-      <div className="relative w-full h-full bg-[#1C1C1E] rounded-[40px] border-4 border-gray-800 shadow-2xl shadow-black/50 overflow-hidden">
+      <div className="relative w-full h-full bg-card rounded-[40px] border-4 border-border shadow-2xl shadow-black/50 overflow-hidden">
         {/* Notch */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-b-xl z-20"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-background rounded-b-xl z-20"></div>
         {/* Screen Content */}
-        <div className="absolute inset-x-0 top-6 bottom-2 rounded-[30px] bg-black p-4 space-y-2">
+        <div className="absolute inset-x-0 top-6 bottom-2 rounded-[30px] bg-background p-4 space-y-2">
             <div className="flex justify-between items-center px-2 py-2">
-                 <p className="text-white text-xs">09:41</p>
+                 <p className="text-muted-foreground text-xs">09:41</p>
                  {/* Icons for status bar */}
             </div>
-            <h2 className="text-white text-2xl font-bold px-2 mb-2">Games</h2>
+            <h2 className="text-foreground text-2xl font-bold px-2 mb-2">Games</h2>
             <div className="space-y-2">
                  {displayOffers.map((offer, index) => (
                     <GameOffer 

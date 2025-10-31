@@ -302,16 +302,16 @@ export function HomePageContent() {
         
         <section className="py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-[#0C0C0D] rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center overflow-hidden">
+                <div className="bg-card rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center overflow-hidden">
                     <div className="space-y-6">
                         <span className="text-secondary font-bold text-sm tracking-widest">GAMES</span>
-                        <h2 className="text-3xl md:text-5xl font-bold font-headline text-white">
+                        <h2 className="text-3xl md:text-5xl font-bold font-headline text-foreground">
                             Earn Cash by Playing Mobile Games
                         </h2>
                         <p className="text-muted-foreground">
                             Explore new mobile games, complete in-game challenges, and earn real money. Turn your gaming time into a rewarding experience and maximize your earnings!
                         </p>
-                        <Button variant="link" className="p-0 text-white font-bold" onClick={() => setIsSignupOpen(true)}>
+                        <Button variant="link" className="p-0 text-foreground font-bold" onClick={() => setIsSignupOpen(true)}>
                             Sign up <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
