@@ -162,7 +162,7 @@ export function OfferPreviewModal({
             </div>
 
             {/* Scrollable Body */}
-            <ScrollArea className="flex-grow">
+            <ScrollArea className="flex-grow min-h-0">
               <div className="p-4 sm:p-6 space-y-4">
                 <div className="p-4 bg-black/20 rounded-lg border border-border">
                   <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
