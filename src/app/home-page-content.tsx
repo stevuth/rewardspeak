@@ -117,62 +117,44 @@ const howItWorksSteps = [
     }
 ];
 
-const heroOfferNames = [
-    "Raid: Shadow Legends",
-    "Richie Games",
-    "Upside",
-    "Bingo Vacation",
-    "Crypto Miner",
-    "Slot Mate",
-    "Binance",
-    "TikTok"
+const heroOffers = [
+    { offer_id: '1', name: "RAID: Shadow Legends", payout: 55.48, image_url: "https://play-lh.googleusercontent.com/y3jD5Y3g3N3dY0dGqfR72PAz2P5OHI22zSg-Y2iPn3L_T2x3yP5jL-8pA-oN5e0SgA", description: "Epic RPG" },
+    { offer_id: '2', name: "Richie Games", payout: 21.00, image_url: "https://3423.efuserassets.com/images/150/19084.png", description: "Mobile Games" },
+    { offer_id: '3', name: "Upside", payout: 4.80, image_url: "https://play-lh.googleusercontent.com/I6h-2G3r2J4hHk5I-if8Hj-Noo-3ge30gW3VchXo-a2GfDOU9m5OQ3eWl8ESs4L1Kgo", description: "Cashback on Gas" },
+    { offer_id: '4', name: "Bingo Vacation", payout: 16.00, image_url: "https://play-lh.googleusercontent.com/S9sJ1GjL-t-gVGeKNsT8CUSqg3M9o_2w4-L3vY1qCswJ2_i-kI2sPscQ33A1R1Npxw", description: "Classic Bingo Fun" },
+    { offer_id: '5', name: "Crypto Miner", payout: 24.50, image_url: "https://api.lootably.com/offer-images/a6c22f03-68d7-4c00-bf7f-3b479e000490.png", description: "Mine Crypto" },
+    { offer_id: '6', name: "Slot Mate", payout: 10.50, image_url: "https://play-lh.googleusercontent.com/unC2mG0s5g2hCysj0-23I2O5yNnL_2k2qAI2dJ4o_c25R-iT5ORhYQ2b-43Qv0o-vAU", description: "Vegas Slots" },
+    { offer_id: '7', name: "Binance", payout: 20.00, image_url: "https://play-lh.googleusercontent.com/J9Wb2I3-l3xG-63jKyS0bJ042pC29n-pqM-sD4_9i1Kez8IQP14b-2i0b33lPfk2-2A", description: "Crypto Exchange" },
+    { offer_id: '8', name: "TikTok", payout: 2.10, image_url: "https://play-lh.googleusercontent.com/CYjZ2hVYI4QYf5wADeE-XbBUS-hPzL-XPp79-g_i92PAk-fT2-S40gEDi-F-m-l0m_g", description: "Social Media" }
 ];
-
 
 export function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
-  const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
   const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
 
   const searchParams = useSearchParams();
 
-  React.useEffect(() => {
-    async function fetchAllOffers() {
+   React.useEffect(() => {
+    async function fetchPhoneOffers() {
         const supabase = createSupabaseBrowserClient();
         try {
             const { data, error } = await supabase
                 .from('all_offers')
                 .select('*')
-                .order('created_at', { ascending: false })
-                .limit(200);
+                .contains('categories', ['GAME'])
+                .limit(4);
 
             if (error) throw error;
             
-            if (data) {
-                // For hero, filter for the specific offers requested
-                const heroOffersList = heroOfferNames.map(name => 
-                    data.find(offer => offer.name.toLowerCase().includes(name.toLowerCase()))
-                ).filter(Boolean); // Filter out any not found
-
-                // De-duplicate
-                const uniqueHeroOffers = Array.from(new Map(heroOffersList.map(offer => [offer.offer_id, offer])).values());
-                setFeaturedOffers(uniqueHeroOffers);
-                
-                // For phone, filter for games and take the first 4
-                const gameOffers = data.filter(offer => 
-                    Array.isArray(offer.categories) && offer.categories.some((cat: string) => cat.toUpperCase() === 'GAME')
-                ).slice(0, 4);
-                setPhoneCardOffers(gameOffers);
-            }
+            setPhoneCardOffers(data || []);
         } catch (error: any) {
-            console.error("Error fetching offers:", error.message || error);
-            setFeaturedOffers([]);
+            console.error("Error fetching phone offers:", error.message || error);
             setPhoneCardOffers([]);
         }
     }
-    fetchAllOffers();
+    fetchPhoneOffers();
   }, []);
 
   React.useEffect(() => {
@@ -286,7 +268,7 @@ export function HomePageContent() {
                 </motion.div>
             </div>
             <div className="mt-16">
-              <OfferCarousel offers={featuredOffers} />
+              <OfferCarousel offers={heroOffers} />
             </div>
         </section>
         
@@ -498,3 +480,5 @@ export function HomePageContent() {
     </div>
   );
 }
+
+    

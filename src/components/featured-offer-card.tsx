@@ -43,3 +43,5 @@ export function FeaturedOfferCard({ offer, scale }: { offer: any, scale: number 
     </div>
   );
 }
+
+    
