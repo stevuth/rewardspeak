@@ -7,7 +7,6 @@ import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import type { NotikOffer } from "@/lib/notik-api";
-import { ScrollArea } from "./ui/scroll-area";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -153,8 +152,8 @@ export function OfferPreviewModal({
           >
             <OfferHeader offer={offer} onClose={onClose} />
 
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <div className="p-4 sm:p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 sm:p-6 space-y-4 pb-24">
                 <div className="p-4 bg-black/20 rounded-lg border border-border">
                   <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
                     <Info className="h-4 w-4" />
