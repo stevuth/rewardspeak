@@ -42,7 +42,6 @@ import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
 import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/exclusive-opportunities';
 import { createSupabaseBrowserClient } from '@/utils/supabase/client';
-import { PhoneWithOffersIllustration } from '@/components/illustrations/phone-with-offers';
 import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 
 const recentCashouts: any[] = [];
@@ -132,14 +131,13 @@ export function HomePageContent() {
         
         // Fetch offers for Hero Carousel
         const heroOfferNames = [
-          "Raid: Shadow Legends", 
-          "Richie Games", 
-          "Upside", 
-          "Bingo Vacation", 
-          "Crypto Miner", 
-          "Slot Mate", 
-          "Binance", 
-          "TikTok"
+            "Monopoly Go",
+            "TikTok",
+            "Mafia City",
+            "Alibaba.com",
+            "Animals & Coins",
+            "Sea Explorer",
+            "Grab a Toy"
         ];
         
         const heroQueries = heroOfferNames.map(name => 
