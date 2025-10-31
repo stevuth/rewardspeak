@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import { getWannadsOffers } from "@/lib/wannads-api";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -9,21 +10,19 @@ export async function GET() {
     try {
         const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) {
-            return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
-        }
+        let rewardsPeakId = 'guest'; // Default to a guest ID
 
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-        
-        if (!profile) {
-            return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+        if (user) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('user_id', user.id)
+              .single();
+            
+            if (profile) {
+                rewardsPeakId = profile.id;
+            }
         }
-        
-        const rewardsPeakId = profile.id;
         
         // Get user's IP address from headers
         const forwarded = headers().get('x-forwarded-for')
