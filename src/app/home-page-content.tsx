@@ -118,6 +118,7 @@ const howItWorksSteps = [
 
 export function HomePageContent() {
   const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
+  const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
@@ -125,10 +126,12 @@ export function HomePageContent() {
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
-    async function fetchOffers() {
+    async function fetchAllOffers() {
       try {
         const supabase = createSupabaseBrowserClient();
-        const curatedOfferNames = [
+        
+        // Fetch offers for Hero Carousel
+        const heroOfferNames = [
           "Raid: Shadow Legends", 
           "Richie Games", 
           "Upside", 
@@ -139,26 +142,24 @@ export function HomePageContent() {
           "TikTok"
         ];
         
-        const queries = curatedOfferNames.map(name => 
+        const heroQueries = heroOfferNames.map(name => 
             supabase.from('top_converting_offers').select('*').like('name', `%${name}%`).limit(1)
         );
 
-        const results = await Promise.all(queries);
+        const heroResults = await Promise.all(heroQueries);
         
-        let fetched: any[] = [];
-        results.forEach(res => {
+        let fetchedHeroOffers: any[] = [];
+        heroResults.forEach(res => {
             if (res.data) {
-                fetched.push(...res.data);
+                fetchedHeroOffers.push(...res.data);
             }
         });
 
-        // Remove duplicates by name
-        const uniqueOffers = Array.from(new Map(fetched.map(offer => [offer.name, offer])).values());
-
-        if (uniqueOffers.length > 0) {
-            setFeaturedOffers(uniqueOffers);
+        const uniqueHeroOffers = Array.from(new Map(fetchedHeroOffers.map(offer => [offer.name, offer])).values());
+        
+        if (uniqueHeroOffers.length > 0) {
+            setFeaturedOffers(uniqueHeroOffers);
         } else {
-            // Fallback to top offers if no curated offers are found
             const { data: topOffers } = await supabase
                 .from('top_converting_offers')
                 .select('*')
@@ -167,12 +168,37 @@ export function HomePageContent() {
             setFeaturedOffers(topOffers || []);
         }
 
+        // Fetch offers for Phone Card
+        const phoneOfferNames = [
+          "Slot Mate",
+          "Casino World",
+          "The Grand Mafia",
+          "Matching Story"
+        ];
+        
+        const phoneQueries = phoneOfferNames.map(name => 
+            supabase.from('all_offers').select('*').like('name', `%${name}%`).limit(1)
+        );
+        
+        const phoneResults = await Promise.all(phoneQueries);
+        
+        let fetchedPhoneOffers: any[] = [];
+        phoneResults.forEach(res => {
+            if (res.data) {
+                fetchedPhoneOffers.push(...res.data);
+            }
+        });
+
+        const uniquePhoneOffers = Array.from(new Map(fetchedPhoneOffers.map(offer => [offer.name, offer])).values());
+        setPhoneCardOffers(uniquePhoneOffers);
+
       } catch (error) {
-        console.error("Error fetching featured offers:", error);
+        console.error("Error fetching offers:", error);
         setFeaturedOffers([]);
+        setPhoneCardOffers([]);
       }
     }
-    fetchOffers();
+    fetchAllOffers();
   }, []);
 
   React.useEffect(() => {
@@ -291,7 +317,7 @@ export function HomePageContent() {
                         </Button>
                     </div>
                     <div className="flex items-center justify-center -mb-24 md:mb-0">
-                         <EarnByGamingIllustration offers={featuredOffers.slice(0, 4)} />
+                         <EarnByGamingIllustration offers={phoneCardOffers} />
                     </div>
                 </div>
             </div>
