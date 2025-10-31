@@ -139,7 +139,7 @@ export function OfferPreviewModal({
           >
             <OfferHeader offer={offer} onClose={onClose} />
 
-            <div className="flex-grow overflow-y-auto min-h-0">
+            <div className="flex-grow overflow-y-auto min-h-0 pb-24">
               <div className="p-4 sm:p-6 space-y-4">
                 <div className="p-4 bg-black/20 rounded-lg border border-border">
                   <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
@@ -205,7 +205,7 @@ export function OfferPreviewModal({
                       </div>
                       <Button
                         onClick={handleStartOffer}
-                        size="lg"
+                        size="default"
                         className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all w-full sm:w-auto shrink-0"
                       >
                         Start Offer
