@@ -62,7 +62,7 @@ const OfferFooter = ({
   totalUSD: number;
   onStartOffer: () => void;
 }) => (
-  <div className="w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
+  <div className="w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent flex-shrink-0">
     <div className="text-left">
       <p className="text-xs text-muted-foreground">Total Reward</p>
       <p className="text-lg font-bold text-accent truncate">
@@ -169,9 +169,10 @@ export function OfferPreviewModal({
                     <Info className="h-4 w-4" />
                     Instructions
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {offer.description}
-                  </p>
+                  <div
+                    className="text-sm text-muted-foreground prose prose-invert prose-sm"
+                    dangerouslySetInnerHTML={{ __html: offer.description }}
+                  />
                 </div>
 
                 <h3 className="font-semibold text-primary pt-2">Milestones</h3>
@@ -216,13 +217,11 @@ export function OfferPreviewModal({
               </div>
             </ScrollArea>
             {/* Sticky Footer */}
-            <div className="mt-auto flex-shrink-0">
-              <OfferFooter
-                totalPoints={totalPoints}
-                totalUSD={totalUSD}
-                onStartOffer={handleStartOffer}
-              />
-            </div>
+            <OfferFooter
+              totalPoints={totalPoints}
+              totalUSD={totalUSD}
+              onStartOffer={handleStartOffer}
+            />
           </motion.div>
         </motion.div>
       )}
