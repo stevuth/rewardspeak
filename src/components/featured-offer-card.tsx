@@ -26,7 +26,7 @@ export function FeaturedOfferCard({ offer, scale }: { offer: any, scale: number 
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
         <h3 className="font-bold truncate">{offer.name}</h3>
         <p className="text-xs text-white/80 truncate">{offer.description}</p>
