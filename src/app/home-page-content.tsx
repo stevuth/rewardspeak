@@ -117,15 +117,15 @@ const howItWorksSteps = [
     }
 ];
 
-const heroOffers = [
-    { offer_id: '1', name: 'Raid: Shadow Legends', payout: 25.50, image_url: 'https://admin.notik.me/images/offers/424/1684534720_raid.jpeg', description: 'RPG' },
-    { offer_id: '2', name: 'Richie Games', payout: 18.00, image_url: 'https://admin.notik.me/images/offers/137/1699903960_richie-games.png', description: 'Game Platform' },
-    { offer_id: '3', name: 'Upside', payout: 5.20, image_url: 'https://admin.notik.me/images/offers/137/1706645398_upside.png', description: 'Cash Back' },
-    { offer_id: '4', name: 'Bingo Vacation', payout: 12.00, image_url: 'https://admin.notik.me/images/offers/137/1709217898_bingo-vacation-hd.png', description: 'Game' },
-    { offer_id: '5', name: 'Crypto Miner', payout: 7.80, image_url: 'https://admin.notik.me/images/offers/137/1699904230_crypto-miner.png', description: 'Game' },
-    { offer_id: '6', name: 'Slot Mate', payout: 15.00, image_url: 'https://admin.notik.me/images/offers/424/1720211186_slotmate.jpeg', description: 'Game' },
-    { offer_id: '7', name: 'Binance', payout: 20.00, image_url: 'https://admin.notik.me/images/offers/424/1680193404_binance.jpeg', description: 'Crypto' },
-    { offer_id: '8', name: 'TikTok', payout: 2.50, image_url: 'https://admin.notik.me/images/offers/137/1715870188_tiktok.png', description: 'Social' },
+const targetOfferNames = [
+    'Raid: Shadow Legends',
+    'Richie Games',
+    'Upside',
+    'Bingo Vacation',
+    'Crypto Miner',
+    'Slot Mate',
+    'Binance',
+    'TikTok',
 ];
 
 
@@ -133,34 +133,44 @@ export function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
+  const [heroOffers, setHeroOffers] = React.useState<any[]>([]);
   const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
 
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
-    async function fetchPhoneOffers() {
-      try {
+    async function fetchAllOffers() {
         const supabase = createSupabaseBrowserClient();
-        const { data, error } = await supabase
-          .from('all_offers')
-          .select('*')
-          .limit(50);
+        try {
+            const { data, error } = await supabase
+                .from('all_offers')
+                .select('*')
+                .limit(100);
 
-        if (error) throw error;
-        
-        if (data) {
-            const gameOffers = data.filter(offer => 
-                Array.isArray(offer.categories) && offer.categories.includes('GAME')
-            ).slice(0, 4);
-            setPhoneCardOffers(gameOffers);
+            if (error) throw error;
+            
+            if (data) {
+                // Filter for Hero Offers
+                const foundHeroOffers = targetOfferNames.map(targetName => {
+                    return data.find(offer => offer.name.toLowerCase().includes(targetName.toLowerCase()));
+                }).filter(Boolean); // filter(Boolean) removes any undefined values if an offer wasn't found
+
+                const uniqueHeroOffers = Array.from(new Map(foundHeroOffers.map(offer => [offer!.offer_id, offer])).values());
+                setHeroOffers(uniqueHeroOffers);
+
+                // Filter for Phone Card Offers
+                const gameOffers = data.filter(offer => 
+                    Array.isArray(offer.categories) && offer.categories.includes('GAME')
+                ).slice(0, 4);
+                setPhoneCardOffers(gameOffers);
+            }
+        } catch (error: any) {
+            console.error("Error fetching offers:", error.message || error);
+            setHeroOffers([]);
+            setPhoneCardOffers([]);
         }
-
-      } catch (error: any) {
-        console.error("Error fetching phone offers:", error.message || error);
-        setPhoneCardOffers([]);
-      }
     }
-    fetchPhoneOffers();
+    fetchAllOffers();
   }, []);
 
   React.useEffect(() => {
