@@ -14,7 +14,6 @@ import type { NotikOffer } from "@/lib/notik-api";
 import { syncOffers } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import type { WannadsOffer } from "@/lib/wannads-api";
 
 type Offer = NotikOffer & {
   points: number;
@@ -43,33 +42,10 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 }
 
-function transformWannadsOffer(wannadsOffer: WannadsOffer): Offer {
-    const points = Math.round(parseFloat(wannadsOffer.payout) * 1000);
-
-    return {
-        offer_id: wannadsOffer.id,
-        name: wannadsOffer.campaign_name,
-        description: wannadsOffer.description,
-        click_url: wannadsOffer.url,
-        image_url: wannadsOffer.icon,
-        network: "Wannads",
-        payout: parseFloat(wannadsOffer.payout),
-        countries: wannadsOffer.countries,
-        platforms: [wannadsOffer.device as 'ios' | 'android' | 'desktop' | 'all'],
-        categories: [wannadsOffer.category],
-        points: points,
-        imageHint: "offer logo",
-        category: "Quiz", // Wannads offers are categorized as quick tasks/quizzes here
-        clickUrl: wannadsOffer.url,
-    };
-}
-
-
 export default function ClimbAndEarnPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
   const [gameOffers, setGameOffers] = useState<Offer[]>([]);
-  const [quickTasks, setQuickTasks] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
@@ -77,23 +53,15 @@ export default function ClimbAndEarnPage() {
   const fetchOffers = async () => {
     setIsLoading(true);
     try {
-      const [notikResponse, wannadsResponse] = await Promise.all([
-        fetch('/api/get-offers'),
-        fetch('/api/wannads-offers')
-      ]);
+      const notikResponse = await fetch('/api/get-offers');
 
       if (!notikResponse.ok) {
         throw new Error('Failed to fetch Notik offers');
       }
-      if (!wannadsResponse.ok) {
-        throw new Error('Failed to fetch Wannads offers');
-      }
 
       const notikData = await notikResponse.json();
-      const wannadsData = await wannadsResponse.json();
       
       if (notikData.error) throw new Error(notikData.error);
-      if (wannadsData.error) throw new Error(wannadsData.error);
 
       const { allOffers: rawAllOffers, topOffers: rawTopOffers, user } = notikData;
       const userId = user?.id;
@@ -113,13 +81,6 @@ export default function ClimbAndEarnPage() {
       } else {
           setGameOffers([]);
       }
-
-      let transformedWannadsOffers: Offer[] = [];
-      if(Array.isArray(wannadsData.wannadsOffers)) {
-        transformedWannadsOffers = wannadsData.wannadsOffers.map(transformWannadsOffer);
-      }
-      
-      setQuickTasks(transformedWannadsOffers);
       
     } catch (error) {
       console.error("Error fetching offers:", error);
@@ -220,19 +181,15 @@ export default function ClimbAndEarnPage() {
 
       <section>
         <Tabs defaultValue="all_offers" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
+          <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-flex">
             <TabsTrigger value="all_offers">All offers</TabsTrigger>
             <TabsTrigger value="games">Games</TabsTrigger>
-            <TabsTrigger value="quick_tasks">Quick Tasks</TabsTrigger>
           </TabsList>
           <TabsContent value="all_offers" className="mt-6">
             {renderOfferGrid(allOffers, 'offer')}
           </TabsContent>
           <TabsContent value="games" className="mt-6">
             {renderOfferGrid(gameOffers, 'game')}
-          </TabsContent>
-          <TabsContent value="quick_tasks" className="mt-6">
-            {renderOfferGrid(quickTasks, 'quick task')}
           </TabsContent>
         </Tabs>
       </section>
