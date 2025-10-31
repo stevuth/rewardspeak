@@ -164,9 +164,12 @@ export function HomePageContent() {
         
         const phoneQueries = phoneOfferNames.map(name => `name.ilike.%${name}%`);
         
+        // Correctly build the .or() filter string
+        const orFilter = phoneQueries.join(',');
+
         const { data: phoneData, error: phoneError } = await supabase
             .from('all_offers')
-            .or(phoneQueries.join(','))
+            .or(orFilter)
             .limit(4);
 
         if (phoneError) throw phoneError;
@@ -511,3 +514,4 @@ export function HomePageContent() {
     </div>
   );
 }
+
