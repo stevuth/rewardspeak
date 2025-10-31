@@ -139,10 +139,13 @@ export function HomePageContent() {
           "Animals & Coins",
         ];
 
-        const heroNamePatterns = heroOfferNames.map(name => `%${name}%`);
+        const heroNamePatterns = heroOfferNames.map(name => `name.ilike.%${name}%`);
 
         const { data: heroData, error: heroError } = await supabase
-            .rpc('get_offers_by_names', { names: heroNamePatterns });
+            .from('all_offers')
+            .select('*')
+            .or(heroNamePatterns.join(','))
+            .limit(5);
 
         if (heroError) throw heroError;
 
@@ -156,7 +159,7 @@ export function HomePageContent() {
         if (uniqueHeroOffers.length > 0) {
             setFeaturedOffers(uniqueHeroOffers);
         } else {
-            // Fallback if RPC returns no offers
+            // Fallback if no specific offers are found
             const { data: topOffers } = await supabase
                 .from('top_converting_offers')
                 .select('*')
