@@ -44,8 +44,13 @@ import { Card } from '@/components/ui/card';
 import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/exclusive-opportunities';
 import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
+import { motion } from 'framer-motion';
 
-const recentCashouts: any[] = [];
+const recentCashouts = [
+    { name: "John D.", amount: 25.50, currency: "PayPal", time: "2m ago", icon: PaypalLogo },
+    { name: "Maria S.", amount: 50.00, currency: "Bitcoin", time: "5m ago", icon: BitcoinLogo },
+    { name: "Chen W.", amount: 15.20, currency: "Litecoin", time: "8m ago", icon: LitecoinLogo },
+];
 
 const paymentMethods = [
     { icon: PaypalLogo, name: 'Paypal'},
@@ -279,19 +284,34 @@ export function HomePageContent() {
       <main className="flex-1">
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter mb-4 font-headline">
+                <motion.h1 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-4xl md:text-6xl font-extrabold tracking-tighter mb-4 font-headline"
+                >
                     Earn <span className="text-primary">Real Money</span> For Simple Online Tasks
-                </h1>
-                <p className="text-lg md:text-xl text-muted-foreground mb-8">
+                </motion.h1>
+                <motion.p 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    className="text-lg md:text-xl text-muted-foreground mb-8"
+                >
                     Join thousands of users who are getting paid for playing games, completing surveys, and finishing simple tasks.
                     Get a <span className="font-bold text-secondary">$1 bonus</span> just for signing up.
-                </p>
-                <div className="flex justify-center gap-4">
+                </motion.p>
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="flex justify-center gap-4"
+                >
                     <Button size="lg" onClick={() => setIsSignupOpen(true)} className="font-bold">
                         Start Earning Now
                         <DollarSign className="ml-2 h-4 w-4" />
                     </Button>
-                </div>
+                </motion.div>
             </div>
             <div className="mt-16">
               <OfferCarousel offers={featuredOffers} />
@@ -301,13 +321,26 @@ export function HomePageContent() {
         <section className="py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-card rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center overflow-hidden">
-                    <div className="space-y-6">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.5 }}
+                        transition={{ duration: 0.5 }}
+                        className="space-y-6"
+                    >
                         <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
                             Get Paid in 3 Easy Steps
                         </h2>
                         <div className="space-y-6">
-                            {howItWorksSteps.map((step) => (
-                                <div key={step.title} className="flex items-start gap-4">
+                            {howItWorksSteps.map((step, i) => (
+                                <motion.div 
+                                    key={step.title}
+                                    initial={{ opacity: 0, x: -30 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: i * 0.2 }}
+                                    className="flex items-start gap-4"
+                                >
                                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary border-2 border-primary/20 shrink-0 mt-1">
                                         <step.icon className="w-5 h-5" />
                                     </div>
@@ -315,16 +348,22 @@ export function HomePageContent() {
                                         <h3 className="text-lg font-bold font-headline">{step.title}</h3>
                                         <p className="text-muted-foreground text-sm">{step.description}</p>
                                     </div>
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
                         <Button variant="link" className="p-0 text-foreground font-bold" onClick={() => setIsSignupOpen(true)}>
                             Sign up to start earning <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
-                    </div>
-                    <div className="flex items-center justify-center md:mb-0">
+                    </motion.div>
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true, amount: 0.5 }}
+                        transition={{ duration: 0.5 }}
+                        className="flex items-center justify-center -mb-24 md:mb-0"
+                    >
                          <EarnByGamingIllustration offers={phoneCardOffers} />
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </section>
@@ -339,7 +378,14 @@ export function HomePageContent() {
                 </div>
                 <div className="grid grid-cols-1 gap-y-16">
                     {features.map((feature, index) => (
-                        <div key={feature.title} className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+                        <motion.div 
+                            key={feature.title}
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.6 }}
+                            className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
+                        >
                             <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
                                 <div className="w-48 h-48 flex items-center justify-center bg-card p-8 rounded-2xl shadow-lg">
                                     {feature.illustration}
@@ -353,7 +399,7 @@ export function HomePageContent() {
                                 <h3 className="text-2xl md:text-3xl font-bold font-headline mb-4">{feature.title}</h3>
                                 <p className="text-muted-foreground text-lg">{feature.description}</p>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>
@@ -371,20 +417,28 @@ export function HomePageContent() {
                 <div className="space-y-4">
                     {recentCashouts.length > 0 ? (
                         recentCashouts.map((cashout, index) => (
-                            <Card key={index} className="bg-card/80 backdrop-blur-sm p-4">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4 overflow-hidden">
-                                        <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
-                                            {/* cashout.icon */}
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.2 }}
+                            >
+                                <Card className="bg-card/80 backdrop-blur-sm p-4">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4 overflow-hidden">
+                                            <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
+                                                <cashout.icon className="w-6 h-6 text-muted-foreground" />
+                                            </div>
+                                            <div className="truncate">
+                                                <p className="font-bold text-sm truncate">{cashout.name}</p>
+                                                <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
+                                            </div>
                                         </div>
-                                        <div className="truncate">
-                                            <p className="font-bold text-sm truncate">{cashout.name}</p>
-                                            <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
-                                        </div>
+                                        <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
                                     </div>
-                                    <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
-                                </div>
-                            </Card>
+                                </Card>
+                            </motion.div>
                         ))
                     ) : (
                         <Card className="bg-card/80 backdrop-blur-sm p-8 text-center border-dashed">
@@ -470,5 +524,7 @@ export function HomePageContent() {
     </div>
   );
 }
+
+    
 
     

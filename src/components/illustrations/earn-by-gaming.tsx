@@ -49,7 +49,7 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-background rounded-b-xl z-20"></div>
         {/* Screen Content */}
         <div className="absolute inset-x-0 top-6 bottom-2 rounded-[30px] bg-background p-4 space-y-2">
-            <div className="flex justify-between items-center px-2 py-2">
+            <div className="flex justify-between items-center px-2 py-1">
                  <p className="text-muted-foreground text-xs">09:41</p>
                  {/* Icons for status bar */}
             </div>
@@ -70,3 +70,5 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
     </div>
   );
 }
+
+    
