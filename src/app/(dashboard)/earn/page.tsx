@@ -14,6 +14,7 @@ import type { NotikOffer } from "@/lib/notik-api";
 import { syncOffers } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import type { WannadsOffer } from "@/lib/wannads-api";
 
 type Offer = NotikOffer & {
   points: number;
@@ -28,7 +29,6 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
 
-  // The payout is now consistently a number from the API handler
   const totalPayout = notikOffer.payout || 0;
   
   const points = Math.round(totalPayout * 1000);
@@ -43,6 +43,28 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 }
 
+function transformWannadsOffer(wannadsOffer: WannadsOffer): Offer {
+    const points = Math.round(parseFloat(wannadsOffer.payout) * 1000);
+
+    return {
+        offer_id: wannadsOffer.id,
+        name: wannadsOffer.campaign_name,
+        description: wannadsOffer.description,
+        click_url: wannadsOffer.url,
+        image_url: wannadsOffer.icon,
+        network: "Wannads",
+        payout: parseFloat(wannadsOffer.payout),
+        countries: wannadsOffer.countries,
+        platforms: [wannadsOffer.device as 'ios' | 'android' | 'desktop' | 'all'],
+        categories: [wannadsOffer.category],
+        points: points,
+        imageHint: "offer logo",
+        category: "Quiz", // Wannads offers are categorized as quick tasks/quizzes here
+        clickUrl: wannadsOffer.url,
+    };
+}
+
+
 export default function ClimbAndEarnPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
@@ -55,34 +77,49 @@ export default function ClimbAndEarnPage() {
   const fetchOffers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/get-offers');
-      if (!response.ok) {
-        throw new Error('Failed to fetch offers');
+      const [notikResponse, wannadsResponse] = await Promise.all([
+        fetch('/api/get-offers'),
+        fetch('/api/wannads-offers')
+      ]);
+
+      if (!notikResponse.ok) {
+        throw new Error('Failed to fetch Notik offers');
       }
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
+      if (!wannadsResponse.ok) {
+        throw new Error('Failed to fetch Wannads offers');
       }
 
-      const { allOffers: rawAllOffers, topOffers: rawTopOffers, user } = data;
+      const notikData = await notikResponse.json();
+      const wannadsData = await wannadsResponse.json();
+      
+      if (notikData.error) throw new Error(notikData.error);
+      if (wannadsData.error) throw new Error(wannadsData.error);
+
+      const { allOffers: rawAllOffers, topOffers: rawTopOffers, user } = notikData;
       const userId = user?.id;
 
+      let transformedNotikOffers: Offer[] = [];
       if (Array.isArray(rawAllOffers)) {
-          const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
-          setAllOffers(transformed);
+          transformedNotikOffers = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
+          setAllOffers(transformedNotikOffers);
       } else {
           setAllOffers([]);
       }
 
+      let transformedTopOffers: Offer[] = [];
       if (Array.isArray(rawTopOffers)) {
-          const transformed = rawTopOffers.map((o: NotikOffer) => transformOffer(o, userId));
-          setGameOffers(transformed.filter((o) => o.category === "Game"));
-          setQuickTasks(transformed.filter((o) => o.category === "App" || o.category === "Quiz"));
+          transformedTopOffers = rawTopOffers.map((o: NotikOffer) => transformOffer(o, userId));
+          setGameOffers(transformedTopOffers.filter((o) => o.category === "Game"));
       } else {
           setGameOffers([]);
-          setQuickTasks([]);
       }
+
+      let transformedWannadsOffers: Offer[] = [];
+      if(Array.isArray(wannadsData.wannadsOffers)) {
+        transformedWannadsOffers = wannadsData.wannadsOffers.map(transformWannadsOffer);
+      }
+      
+      setQuickTasks(transformedWannadsOffers);
       
     } catch (error) {
       console.error("Error fetching offers:", error);
