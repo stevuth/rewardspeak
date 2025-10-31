@@ -131,7 +131,7 @@ export function OfferPreviewModal({
           >
             <OfferHeader offer={offer} onClose={onClose} />
 
-            <div className="overflow-y-auto">
+            <div className="overflow-y-auto flex-grow min-h-0">
               <div className="p-4 sm:p-6 space-y-4">
                 <div className="p-4 bg-black/20 rounded-lg border border-border">
                   <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
@@ -174,7 +174,7 @@ export function OfferPreviewModal({
                           </div>
                           {isLast && (
                             <div className="mt-6 pt-4 border-t border-border/50">
-                                <div className="flex items-center justify-between gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <div className="text-left">
                                         <p className="text-xs text-muted-foreground">Total Reward</p>
                                         <p className="text-lg font-bold text-accent truncate">
@@ -184,7 +184,7 @@ export function OfferPreviewModal({
                                     <Button
                                         onClick={handleStartOffer}
                                         size="lg"
-                                        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
+                                        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all w-full sm:w-auto shrink-0"
                                     >
                                         Start Offer
                                     </Button>
@@ -202,7 +202,7 @@ export function OfferPreviewModal({
                       Complete the main objective to earn the full reward.
                     </p>
                     <div className="mt-6 pt-4">
-                        <div className="flex items-center justify-center gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4">
                             <div className="text-center">
                                 <p className="text-xs text-muted-foreground">Total Reward</p>
                                 <p className="text-lg font-bold text-accent truncate">
@@ -212,7 +212,7 @@ export function OfferPreviewModal({
                             <Button
                                 onClick={handleStartOffer}
                                 size="lg"
-                                className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
+                                className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all w-full sm:w-auto shrink-0"
                             >
                                 Start Offer
                             </Button>
