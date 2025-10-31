@@ -140,24 +140,27 @@ export function HomePageContent() {
             "Grab a Toy"
         ];
         
-        const heroQueries = heroOfferNames.map(name => 
-            supabase.from('top_converting_offers').select('*').like('name', `%${name}%`).limit(1)
-        );
-
-        const heroResults = await Promise.all(heroQueries);
+        const heroNameFilters = heroOfferNames.map(name => `name.ilike.%${name}%`).join(',');
         
+        const { data: heroData, error: heroError } = await supabase
+            .from('top_converting_offers')
+            .select('*')
+            .or(heroNameFilters)
+            .limit(heroOfferNames.length);
+
+        if (heroError) throw heroError;
+
         let fetchedHeroOffers: any[] = [];
-        heroResults.forEach(res => {
-            if (res.data) {
-                fetchedHeroOffers.push(...res.data);
-            }
-        });
+        if (heroData) {
+            fetchedHeroOffers = heroData;
+        }
 
         const uniqueHeroOffers = Array.from(new Map(fetchedHeroOffers.map(offer => [offer.name, offer])).values());
         
         if (uniqueHeroOffers.length > 0) {
             setFeaturedOffers(uniqueHeroOffers);
         } else {
+            // Fallback to top offers if specific ones aren't found
             const { data: topOffers } = await supabase
                 .from('top_converting_offers')
                 .select('*')
@@ -466,3 +469,5 @@ export function HomePageContent() {
     </div>
   );
 }
+
+    
