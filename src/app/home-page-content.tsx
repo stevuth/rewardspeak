@@ -143,8 +143,7 @@ export function HomePageContent() {
             const supabase = createSupabaseBrowserClient();
             const { data, error } = await supabase
               .from('all_offers')
-              .select('*')
-              .contains('categories', ['GAME'])
+              .contains('categories', JSON.stringify(['GAME']))
               .limit(4);
 
             if (error) throw error;
