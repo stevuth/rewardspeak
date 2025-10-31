@@ -126,14 +126,14 @@ const targetOfferNames = [
     'Slot Mate',
     'Binance',
     'TikTok',
-];
+].map(name => name.toLowerCase());
 
 
 export function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
-  const [heroOffers, setHeroOffers] = React.useState<any[]>([]);
+  const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
   const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
 
   const searchParams = useSearchParams();
@@ -151,22 +151,25 @@ export function HomePageContent() {
             
             if (data) {
                 // Filter for Hero Offers
-                const foundHeroOffers = targetOfferNames.map(targetName => {
-                    return data.find(offer => offer.name.toLowerCase().includes(targetName.toLowerCase()));
-                }).filter(Boolean); // filter(Boolean) removes any undefined values if an offer wasn't found
-
-                const uniqueHeroOffers = Array.from(new Map(foundHeroOffers.map(offer => [offer!.offer_id, offer])).values());
-                setHeroOffers(uniqueHeroOffers);
+                const uniqueOffers = new Map();
+                targetOfferNames.forEach(targetName => {
+                    const foundOffer = data.find(offer => offer.name.toLowerCase().includes(targetName));
+                    if (foundOffer && !uniqueOffers.has(foundOffer.offer_id)) {
+                        uniqueOffers.set(foundOffer.offer_id, foundOffer);
+                    }
+                });
+                const finalHeroOffers = Array.from(uniqueOffers.values());
+                setFeaturedOffers(finalHeroOffers);
 
                 // Filter for Phone Card Offers
                 const gameOffers = data.filter(offer => 
-                    Array.isArray(offer.categories) && offer.categories.includes('GAME')
+                    Array.isArray(offer.categories) && offer.categories.some((cat: string) => cat.toUpperCase() === 'GAME')
                 ).slice(0, 4);
                 setPhoneCardOffers(gameOffers);
             }
         } catch (error: any) {
             console.error("Error fetching offers:", error.message || error);
-            setHeroOffers([]);
+            setFeaturedOffers([]);
             setPhoneCardOffers([]);
         }
     }
@@ -284,7 +287,7 @@ export function HomePageContent() {
                 </motion.div>
             </div>
             <div className="mt-16">
-              <OfferCarousel offers={heroOffers} />
+              <OfferCarousel offers={featuredOffers} />
             </div>
         </section>
         
