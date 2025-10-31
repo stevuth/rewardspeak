@@ -141,13 +141,22 @@ export function HomePageContent() {
     async function fetchPhoneOffers() {
         try {
             const supabase = createSupabaseBrowserClient();
+            // Fetch a pool of offers to filter on the client
             const { data, error } = await supabase
               .from('all_offers')
-              .contains('categories', JSON.stringify(['GAME']))
-              .limit(4);
+              .select('*')
+              .limit(50);
 
             if (error) throw error;
-            setPhoneCardOffers(data || []);
+            
+            if (data) {
+                // Filter for game offers on the client
+                const gameOffers = data.filter(offer => 
+                    Array.isArray(offer.categories) && offer.categories.includes('GAME')
+                ).slice(0, 4);
+                setPhoneCardOffers(gameOffers);
+            }
+
         } catch (error: any) {
             console.error("Error fetching phone offers:", error.message || error);
             setPhoneCardOffers([]);
