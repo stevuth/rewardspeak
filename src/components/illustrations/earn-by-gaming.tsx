@@ -49,12 +49,12 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-b-xl z-20"></div>
         {/* Screen Content */}
         <div className="absolute inset-x-0 top-6 bottom-2 rounded-[30px] bg-black p-4 space-y-2">
-            <div className="flex justify-between items-center px-2 py-4">
+            <div className="flex justify-between items-center px-2 py-2">
                  <p className="text-white text-xs">09:41</p>
                  {/* Icons for status bar */}
             </div>
-            <h2 className="text-white text-2xl font-bold px-2 mb-4">Games</h2>
-            <div className="space-y-3">
+            <h2 className="text-white text-2xl font-bold px-2 mb-2">Games</h2>
+            <div className="space-y-2">
                  {displayOffers.map((offer, index) => (
                     <GameOffer 
                         key={offer.offer_id || index}
