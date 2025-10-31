@@ -30,6 +30,7 @@ import {
   Users,
   FileSignature,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
@@ -100,17 +101,17 @@ const faqs = [
 const howItWorksSteps = [
     {
       icon: Hand,
-      title: "1. Choose an Offer",
+      title: "Choose an Offer",
       description: "Sign up for free and browse through hundreds of new offers and surveys daily."
     },
     {
       icon: FileSignature,
-      title: "2. Complete the Task",
+      title: "Complete the Task",
       description: "Follow the simple on-screen instructions to complete the task. It's that easy."
     },
     {
       icon: DollarSign,
-      title: "3. Get Paid",
+      title: "Get Paid",
       description: "Redeem your earnings for cash, crypto, or gift cards. Fast and secure payouts."
     }
 ];
@@ -296,45 +297,32 @@ export function HomePageContent() {
               <OfferCarousel offers={featuredOffers} />
             </div>
         </section>
-
-        <section className="py-16 md:py-24 bg-card/20">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
-                    Get Started in 3 Easy Steps
-                </h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-                    Start your journey to earning rewards today. It's simple, fast, and free to join.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    {howItWorksSteps.map((step) => (
-                        <div key={step.title} className="flex flex-col items-center">
-                            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4 border-2 border-primary/20">
-                                <step.icon className="w-8 h-8" />
-                            </div>
-                            <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
-                            <p className="text-muted-foreground">{step.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
         
         <section className="py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-card rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center overflow-hidden">
+                <div className="bg-card rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center overflow-hidden">
                     <div className="space-y-6">
-                        <span className="text-secondary font-bold text-sm tracking-widest">GAMES</span>
-                        <h2 className="text-3xl md:text-5xl font-bold font-headline text-foreground">
-                            Earn Cash by Playing Mobile Games
+                        <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
+                            Get Paid in 3 Easy Steps
                         </h2>
-                        <p className="text-muted-foreground">
-                            Explore new mobile games, complete in-game challenges, and earn real money. Turn your gaming time into a rewarding experience and maximize your earnings!
-                        </p>
+                        <div className="space-y-6">
+                            {howItWorksSteps.map((step) => (
+                                <div key={step.title} className="flex items-start gap-4">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary border-2 border-primary/20 shrink-0 mt-1">
+                                        <step.icon className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold font-headline">{step.title}</h3>
+                                        <p className="text-muted-foreground text-sm">{step.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                         <Button variant="link" className="p-0 text-foreground font-bold" onClick={() => setIsSignupOpen(true)}>
-                            Sign up <ArrowRight className="ml-2 h-4 w-4" />
+                            Sign up to start earning <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
-                    <div className="flex items-center justify-center -mb-24 md:mb-0">
+                    <div className="flex items-center justify-center md:mb-0">
                          <EarnByGamingIllustration offers={phoneCardOffers} />
                     </div>
                 </div>
