@@ -129,14 +129,13 @@ export function HomePageContent() {
       try {
         const supabase = createSupabaseBrowserClient();
         
-        // Fetch offers for Hero Carousel
         const heroOfferNames = [
-            "Monopoly Go",
-            "TikTok",
-            "The Grand Mafia",
-            "Alibaba.com",
-            "Animals & Coins",
-            "Sea Explorer",
+          "Monopoly Go",
+          "TikTok",
+          "The Grand Mafia",
+          "Alibaba.com",
+          "Animals & Coins",
+          "Sea Explorer",
         ];
         
         const heroNameFilters = heroOfferNames.map(name => `name.ilike.%${name}%`).join(',');
@@ -158,7 +157,6 @@ export function HomePageContent() {
         if (uniqueHeroOffers.length > 0) {
             setFeaturedOffers(uniqueHeroOffers);
         } else {
-            // Fallback to top offers if specific ones aren't found
             const { data: topOffers } = await supabase
                 .from('top_converting_offers')
                 .select('*')
@@ -167,7 +165,6 @@ export function HomePageContent() {
             setFeaturedOffers(topOffers || []);
         }
 
-        // Fetch offers for Phone Card
         const phoneOfferNames = [
           "Slot Mate",
           "Casino World",
@@ -299,6 +296,28 @@ export function HomePageContent() {
               <OfferCarousel offers={featuredOffers} />
             </div>
         </section>
+
+        <section className="py-16 md:py-24 bg-card/20">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
+                    Get Started in 3 Easy Steps
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
+                    Start your journey to earning rewards today. It's simple, fast, and free to join.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    {howItWorksSteps.map((step) => (
+                        <div key={step.title} className="flex flex-col items-center">
+                            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4 border-2 border-primary/20">
+                                <step.icon className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
+                            <p className="text-muted-foreground">{step.description}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
         
         <section className="py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -413,7 +432,7 @@ export function HomePageContent() {
 
       </main>
 
-      <footer className="bg-card/40">
+      <footer className="bg-card/40 border-t border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                 <div className="md:col-span-4">
@@ -451,10 +470,6 @@ export function HomePageContent() {
             </div>
             <div className="border-t border-border mt-8 pt-8 flex flex-col-reverse sm:flex-row justify-between items-center gap-y-4">
                 <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
-                 <div className="flex items-center sm:ml-auto sm:mr-8 gap-x-4">
-                    <Link href="/privacy-trail" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy</Link>
-                    <Link href="/terms-of-the-peak" className="text-sm text-muted-foreground hover:text-primary transition-colors">Terms</Link>
-                </div>
                 <div className="flex items-center space-x-4">
                     <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook size={20} /></Link>
                     <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={20} /></Link>
@@ -467,3 +482,5 @@ export function HomePageContent() {
     </div>
   );
 }
+
+    
