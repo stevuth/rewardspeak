@@ -4,19 +4,19 @@
 import { SafeImage } from "../safe-image";
 
 const GameOffer = ({
-  imageUrl,
+  image_url,
   imageHint,
   title,
   reward,
 }: {
-  imageUrl: string;
+  image_url: string;
   imageHint: string;
   title: string;
   reward: string;
 }) => (
   <div className="flex items-center gap-3 p-2 rounded-lg">
     <SafeImage
-      src={imageUrl}
+      src={image_url}
       alt={title}
       width={48}
       height={48}
@@ -58,7 +58,7 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
                  {displayOffers.map((offer, index) => (
                     <GameOffer 
                         key={offer.offer_id || index}
-                        imageUrl={offer.image_url} 
+                        image_url={offer.image_url} 
                         imageHint="game logo" 
                         title={offer.name} 
                         reward={`$${(offer.payout || 0).toFixed(2)} USD`} 
@@ -70,5 +70,3 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
     </div>
   );
 }
-
-    

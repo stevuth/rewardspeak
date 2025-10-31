@@ -117,7 +117,7 @@ const howItWorksSteps = [
     }
 ];
 
-const targetOfferNames = [
+const heroOfferNames = [
     'Raid: Shadow Legends',
     'Richie Games',
     'Upside',
@@ -126,7 +126,7 @@ const targetOfferNames = [
     'Slot Mate',
     'Binance',
     'TikTok',
-].map(name => name.toLowerCase());
+];
 
 
 export function HomePageContent() {
@@ -145,22 +145,29 @@ export function HomePageContent() {
             const { data, error } = await supabase
                 .from('all_offers')
                 .select('*')
-                .limit(100);
+                .order('created_at', { ascending: false })
+                .limit(200);
 
             if (error) throw error;
             
             if (data) {
-                // Filter for Hero Offers
                 const uniqueOffers = new Map();
-                targetOfferNames.forEach(targetName => {
-                    const foundOffer = data.find(offer => offer.name.toLowerCase().includes(targetName));
-                    if (foundOffer && !uniqueOffers.has(foundOffer.offer_id)) {
-                        uniqueOffers.set(foundOffer.offer_id, foundOffer);
-                    }
-                });
-                const finalHeroOffers = Array.from(uniqueOffers.values());
-                setFeaturedOffers(finalHeroOffers);
+                const lowerCaseHeroNames = heroOfferNames.map(name => name.toLowerCase());
 
+                for (const offer of data) {
+                    const offerNameLower = offer.name.toLowerCase();
+                    const matchedName = lowerCaseHeroNames.find(heroName => offerNameLower.includes(heroName));
+                    if (matchedName && !uniqueOffers.has(matchedName)) {
+                        uniqueOffers.set(matchedName, offer);
+                    }
+                }
+                
+                const finalHeroOffers = heroOfferNames
+                    .map(name => uniqueOffers.get(name.toLowerCase()))
+                    .filter(Boolean); // Filter out any undefined values if an offer wasn't found
+                
+                setFeaturedOffers(finalHeroOffers);
+                
                 // Filter for Phone Card Offers
                 const gameOffers = data.filter(offer => 
                     Array.isArray(offer.categories) && offer.categories.some((cat: string) => cat.toUpperCase() === 'GAME')
