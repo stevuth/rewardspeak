@@ -29,6 +29,7 @@ import {
   LogIn,
   Users,
   FileSignature,
+  ArrowRight,
 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
@@ -42,6 +43,7 @@ import { Card } from '@/components/ui/card';
 import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/exclusive-opportunities';
 import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { PhoneWithOffersIllustration } from '@/components/illustrations/phone-with-offers';
+import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 
 const recentCashouts: any[] = [];
 
@@ -273,33 +275,26 @@ export function HomePageContent() {
             </div>
         </section>
         
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-            <div className="flex justify-center">
-              <PhoneWithOffersIllustration />
-            </div>
-            <div>
-              <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4 text-center md:text-left">
-                  Get paid in <span className="text-secondary">3 easy steps</span>
-              </h2>
-              <p className="text-muted-foreground mb-8 text-center md:text-left">
-                  Join thousands of users earning real rewards every day. Getting started is quick and completely free!
-              </p>
-              <ul className="space-y-6">
-                {howItWorksSteps.map((step) => (
-                  <li key={step.title} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-full font-bold text-lg">
-                      {step.title.charAt(0)}
+        <section className="py-16 md:py-24">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="bg-[#0C0C0D] rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center overflow-hidden">
+                    <div className="space-y-6">
+                        <span className="text-secondary font-bold text-sm tracking-widest">GAMES</span>
+                        <h2 className="text-3xl md:text-5xl font-bold font-headline text-white">
+                            Earn Cash by Playing Mobile Games
+                        </h2>
+                        <p className="text-muted-foreground">
+                            Explore new mobile games, complete in-game challenges, and earn real money. Turn your gaming time into a rewarding experience and maximize your earnings!
+                        </p>
+                        <Button variant="link" className="p-0 text-white font-bold" onClick={() => setIsSignupOpen(true)}>
+                            Sign up <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold font-headline">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
+                    <div className="flex items-center justify-center -mb-24 md:mb-0">
+                         <EarnByGamingIllustration />
                     </div>
-                  </li>
-                ))}
-              </ul>
+                </div>
             </div>
-          </div>
         </section>
 
         <section className="bg-card/20 py-16 md:py-24">
@@ -395,8 +390,8 @@ export function HomePageContent() {
 
       <footer className="bg-card/40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-4">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div className="md:col-span-4">
                     <Link href="/" className="flex items-center gap-2 mb-4">
                         <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={40} height={40} />
                         <span className="text-xl font-bold">Rewards Peak</span>
@@ -405,39 +400,36 @@ export function HomePageContent() {
                         Climb to the top with every reward you earn. Simple tasks, real money.
                     </p>
                 </div>
-                <div className="lg:col-span-2">
+                <div className="md:col-span-2 md:col-start-7">
                     <h3 className="font-semibold text-foreground mb-4">Browse</h3>
-                    <ul className="space-y-3 text-muted-foreground">
+                    <ul className="space-y-3 text-sm text-muted-foreground">
                         <li><Link href="/earn" className="hover:text-primary transition-colors">Earn</Link></li>
                         <li><Link href="/withdraw" className="hover:text-primary transition-colors">Withdraw</Link></li>
                         <li><Link href="/leaderboard" className="hover:text-primary transition-colors">Leaderboard</Link></li>
                     </ul>
                 </div>
-                 <div className="lg:col-span-2">
+                 <div className="md:col-span-2">
                     <h3 className="font-semibold text-foreground mb-4">About</h3>
-                    <ul className="space-y-3 text-muted-foreground">
+                    <ul className="space-y-3 text-sm text-muted-foreground">
                         <li><Link href="/about-rewards-peak" className="hover:text-primary transition-colors">About Us</Link></li>
                         <li><Link href="/privacy-trail" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
                         <li><Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                     </ul>
                 </div>
-                <div className="lg:col-span-2">
+                <div className="md:col-span-2">
                     <h3 className="font-semibold text-foreground mb-4">Support</h3>
-                     <ul className="space-y-3 text-muted-foreground">
+                     <ul className="space-y-3 text-sm text-muted-foreground">
                         <li><Link href="/support" className="hover:text-primary transition-colors">Help Center</Link></li>
                         <li><Link href="/support" className="hover:text-primary transition-colors">Contact Us</Link></li>
-                    </ul>
-                </div>
-                <div className="lg:col-span-2">
-                     <h3 className="font-semibold text-foreground mb-4">Legal</h3>
-                     <ul className="space-y-3 text-muted-foreground">
-                        <li><Link href="/privacy-trail" className="hover:text-primary transition-colors">Privacy</Link></li>
-                        <li><Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms</Link></li>
                     </ul>
                 </div>
             </div>
             <div className="border-t border-border mt-8 pt-8 flex flex-col-reverse sm:flex-row justify-between items-center gap-y-4">
                 <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
+                 <div className="flex items-center sm:ml-auto sm:mr-8 gap-x-4">
+                    <Link href="/privacy-trail" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy</Link>
+                    <Link href="/terms-of-the-peak" className="text-sm text-muted-foreground hover:text-primary transition-colors">Terms</Link>
+                </div>
                 <div className="flex items-center space-x-4">
                     <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook size={20} /></Link>
                     <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={20} /></Link>
