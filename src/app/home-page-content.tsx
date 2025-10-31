@@ -178,18 +178,20 @@ export function HomePageContent() {
           "Matching Story"
         ];
         
-        const phoneQueries = phoneOfferNames.map(name => 
-            supabase.from('all_offers').select('*').like('name', `%${name}%`).limit(1)
-        );
+        const phoneQueries = phoneOfferNames.map(name => `name.ilike.%${name}%`);
         
-        const phoneResults = await Promise.all(phoneQueries);
-        
+        const { data: phoneData, error: phoneError } = await supabase
+            .from('all_offers')
+            .select('*')
+            .or(phoneQueries.join(','))
+            .limit(4);
+
+        if (phoneError) throw phoneError;
+
         let fetchedPhoneOffers: any[] = [];
-        phoneResults.forEach(res => {
-            if (res.data) {
-                fetchedPhoneOffers.push(...res.data);
-            }
-        });
+        if (phoneData) {
+            fetchedPhoneOffers = phoneData;
+        }
 
         const uniquePhoneOffers = Array.from(new Map(fetchedPhoneOffers.map(offer => [offer.name, offer])).values());
         setPhoneCardOffers(uniquePhoneOffers);
@@ -360,7 +362,7 @@ export function HomePageContent() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true, amount: 0.5 }}
                         transition={{ duration: 0.5 }}
-                        className="flex items-center justify-center -mb-24 md:mb-0"
+                        className="flex items-center justify-center md:mb-0 -mb-24"
                     >
                          <EarnByGamingIllustration offers={phoneCardOffers} />
                     </motion.div>
@@ -474,49 +476,51 @@ export function HomePageContent() {
 
       </main>
 
-      <footer className="bg-card/40 border-t border-border">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-                <div className="md:col-span-4">
-                    <Link href="/" className="flex items-center gap-2 mb-4">
-                        <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={40} height={40} />
-                        <span className="text-xl font-bold">Rewards Peak</span>
-                    </Link>
-                    <p className="text-muted-foreground text-sm max-w-xs">
-                        Climb to the top with every reward you earn. Simple tasks, real money.
-                    </p>
-                </div>
-                <div className="md:col-span-2 md:col-start-7">
-                    <h3 className="font-semibold text-foreground mb-4">Browse</h3>
-                    <ul className="space-y-3 text-sm text-muted-foreground">
-                        <li><Link href="/earn" className="hover:text-primary transition-colors">Earn</Link></li>
-                        <li><Link href="/withdraw" className="hover:text-primary transition-colors">Withdraw</Link></li>
-                        <li><Link href="/leaderboard" className="hover:text-primary transition-colors">Leaderboard</Link></li>
-                    </ul>
-                </div>
-                 <div className="md:col-span-2">
-                    <h3 className="font-semibold text-foreground mb-4">About</h3>
-                    <ul className="space-y-3 text-sm text-muted-foreground">
-                        <li><Link href="/about-rewards-peak" className="hover:text-primary transition-colors">About Us</Link></li>
-                        <li><Link href="/privacy-trail" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-                        <li><Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-                    </ul>
-                </div>
-                <div className="md:col-span-2">
-                    <h3 className="font-semibold text-foreground mb-4">Support</h3>
-                     <ul className="space-y-3 text-sm text-muted-foreground">
-                        <li><Link href="/support" className="hover:text-primary transition-colors">Help Center</Link></li>
-                        <li><Link href="/support" className="hover:text-primary transition-colors">Contact Us</Link></li>
-                    </ul>
-                </div>
+      <footer className="relative bg-card mt-24 pt-24 pb-12 text-center">
+        <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]">
+            <svg
+                data-name="Layer 1"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 1200 120"
+                preserveAspectRatio="none"
+                className="relative block w-[calc(100%+1.3px)] h-[150px]"
+                style={{ filter: 'drop-shadow(0 -5px 5px rgba(0,0,0,0.1))' }}
+            >
+                <path
+                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31.74,904.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                className="fill-card"
+                ></path>
+            </svg>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <Link href="/" className="inline-flex items-center gap-2 mb-6">
+                <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={50} height={50} />
+                <span className="text-2xl font-bold font-headline">Rewards Peak</span>
+            </Link>
+            <p className="text-muted-foreground text-base max-w-md mx-auto">
+                Climb to the top with every reward you earn. Simple tasks, real money.
+            </p>
+            
+            <nav className="flex justify-center gap-4 md:gap-8 my-8">
+                <Link href="/earn" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Earn</Link>
+                <Link href="/withdraw" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Withdraw</Link>
+                <Link href="/leaderboard" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Leaderboard</Link>
+                <Link href="/support" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Support</Link>
+            </nav>
+
+            <div className="flex justify-center space-x-6 mb-8">
+                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook size={22} /></Link>
+                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={22} /></Link>
+                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter size={22} /></Link>
+                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><MessageCircle size={22} /></Link>
             </div>
-            <div className="border-t border-border mt-8 pt-8 flex flex-col-reverse sm:flex-row justify-between items-center gap-y-4">
-                <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
-                <div className="flex items-center space-x-4">
-                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook size={20} /></Link>
-                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={20} /></Link>
-                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter size={20} /></Link>
-                    <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><MessageCircle size={20} /></Link>
+
+            <div className="border-t border-border/50 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+                <p>&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
+                <div className="flex gap-4">
+                    <Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms of Service</Link>
+                    <Link href="/privacy-trail" className="hover:text-primary transition-colors">Privacy Policy</Link>
                 </div>
             </div>
         </div>
@@ -524,7 +528,3 @@ export function HomePageContent() {
     </div>
   );
 }
-
-    
-
-    
