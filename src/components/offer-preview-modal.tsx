@@ -73,32 +73,6 @@ const OfferHeader = ({ offer, onClose }: { offer: Offer; onClose: () => void }) 
     </div>
 );
 
-const OfferFooter = ({
-  totalPoints,
-  totalUSD,
-  onStartOffer,
-}: {
-  totalPoints: number;
-  totalUSD: number;
-  onStartOffer: () => void;
-}) => (
-  <div className="flex-shrink-0 w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
-    <div className="text-left">
-      <p className="text-xs text-muted-foreground">Total Reward</p>
-      <p className="text-lg font-bold text-accent truncate">
-        {totalPoints.toLocaleString()} Pts (${totalUSD.toFixed(2)})
-      </p>
-    </div>
-    <Button
-      onClick={onStartOffer}
-      size="lg"
-      className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
-    >
-      Start Offer
-    </Button>
-  </div>
-);
-
 export function OfferPreviewModal({
   isOpen,
   onClose,
@@ -152,8 +126,8 @@ export function OfferPreviewModal({
           >
             <OfferHeader offer={offer} onClose={onClose} />
 
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-4 sm:p-6 space-y-4 pb-24">
+            <div className="overflow-y-auto">
+              <div className="p-4 sm:p-6 space-y-4">
                 <div className="p-4 bg-black/20 rounded-lg border border-border">
                   <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
                     <Info className="h-4 w-4" />
@@ -204,14 +178,24 @@ export function OfferPreviewModal({
                     </p>
                   </div>
                 )}
+                
+                <div className="flex items-center justify-between gap-4 pt-6">
+                  <div className="text-left">
+                    <p className="text-xs text-muted-foreground">Total Reward</p>
+                    <p className="text-lg font-bold text-accent truncate">
+                      {totalPoints.toLocaleString()} Pts (${totalUSD.toFixed(2)})
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleStartOffer}
+                    size="lg"
+                    className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all shrink-0"
+                  >
+                    Start Offer
+                  </Button>
+                </div>
               </div>
             </div>
-            
-            <OfferFooter
-              totalPoints={totalPoints}
-              totalUSD={totalUSD}
-              onStartOffer={handleStartOffer}
-            />
           </motion.div>
         </motion.div>
       )}
