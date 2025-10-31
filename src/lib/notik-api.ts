@@ -44,24 +44,33 @@ interface ApiResponse {
 function standardizeCountries(rawCountries: any): string[] {
   let countriesArray: string[] = [];
 
-  if (!rawCountries) {
+  if (!rawCountries || (typeof rawCountries === 'object' && Object.keys(rawCountries).length === 0)) {
     return ["ALL"];
   }
 
-  if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
-    // Handles case: "US,GB,CA" or "US, GB, CA"
-    countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
-  } else if (Array.isArray(rawCountries)) {
+  if (Array.isArray(rawCountries)) {
     // Handles case: ["US", "GB"]
     countriesArray = rawCountries.map(String).filter(Boolean);
+  } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
+    // Handles case: "US,GB,CA" or "US, GB, CA"
+    countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
   } else if (typeof rawCountries === 'object') {
-    // Handles case: { "US": "United States", "GB": "United Kingdom" }
+    // Handles case: { "US": "United States", "GB": "United Kingdom" } or sometimes just { "0": "US", "1": "GB" }
     countriesArray = Object.keys(rawCountries).filter(Boolean);
   }
 
   // If after all checks the array is empty, default to a universal "ALL"
   if (countriesArray.length === 0) {
     return ["ALL"];
+  }
+  
+  // A final check in case the API returns an object like {0: 'US', 1: 'GB'}
+  // The keys would be '0', '1'. We should use the values instead.
+  if (countriesArray.every(key => !isNaN(parseInt(key)))) {
+      const values = Object.values(rawCountries).map(String).filter(Boolean);
+      if (values.length > 0) {
+          return values;
+      }
   }
 
   return countriesArray;
