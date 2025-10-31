@@ -3,12 +3,11 @@
 
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { NotikOffer } from "@/lib/notik-api";
-import { cn } from "@/lib/utils";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -30,28 +29,50 @@ const backdropVariants = {
 };
 
 const modalVariants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.95,
-  },
+  hidden: { opacity: 0, scale: 0.95 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 260,
-      damping: 30,
-      duration: 0.3,
-    },
+    transition: { type: "spring", stiffness: 260, damping: 30, duration: 0.3 },
   },
   exit: {
     opacity: 0,
     scale: 0.9,
-    transition: {
-      duration: 0.2,
-    },
+    transition: { duration: 0.2 },
   },
 };
+
+const OfferHeader = ({ offer, onClose }: { offer: Offer; onClose: () => void }) => (
+    <div className="flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
+        <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+            <SafeImage
+                src={offer.image_url}
+                alt={offer.name}
+                width={64}
+                height={64}
+                className="rounded-lg border-2 border-primary/30 flex-shrink-0"
+                data-ai-hint={offer.imageHint}
+            />
+            <div className="flex-1 min-w-0">
+                <h2 className="text-lg sm:text-xl font-bold font-headline truncate">
+                {offer.name}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                from {offer.network}
+                </p>
+            </div>
+            </div>
+            <button
+                onClick={onClose}
+                className="flex-shrink-0 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
+            >
+            <span className="text-xs uppercase tracking-wider">Close</span>
+            <span className="sr-only">Close</span>
+            </button>
+        </div>
+    </div>
+);
 
 const OfferFooter = ({
   totalPoints,
@@ -62,7 +83,7 @@ const OfferFooter = ({
   totalUSD: number;
   onStartOffer: () => void;
 }) => (
-  <div className="w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent flex-shrink-0">
+  <div className="flex-shrink-0 w-full flex items-center justify-between gap-4 p-4 border-t border-primary/20 bg-gradient-to-t from-black/30 to-transparent">
     <div className="text-left">
       <p className="text-xs text-muted-foreground">Total Reward</p>
       <p className="text-lg font-bold text-accent truncate">
@@ -130,38 +151,8 @@ export function OfferPreviewModal({
             onClick={(e) => e.stopPropagation()}
             className="relative flex flex-col bg-[#15002B] text-[#F2F2F2] rounded-2xl shadow-2xl w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-hidden border border-primary/20"
           >
-            {/* Header */}
-            <div className="relative flex-shrink-0 p-4 sm:p-6 border-b border-primary/20">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-4 min-w-0">
-                  <SafeImage
-                    src={offer.image_url}
-                    alt={offer.name}
-                    width={64}
-                    height={64}
-                    className="rounded-lg border-2 border-primary/30 flex-shrink-0"
-                    data-ai-hint={offer.imageHint}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-lg sm:text-xl font-bold font-headline">
-                      {offer.name}
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      from {offer.network}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="flex-shrink-0 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
-                >
-                  <span className="text-xs uppercase tracking-wider">Close</span>
-                  <span className="sr-only">Close</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Scrollable Body */}
+            <OfferHeader offer={offer} onClose={onClose} />
+            
             <ScrollArea className="flex-grow min-h-0">
               <div className="p-4 sm:p-6 space-y-4">
                 <div className="p-4 bg-black/20 rounded-lg border border-border">
@@ -170,7 +161,7 @@ export function OfferPreviewModal({
                     Instructions
                   </h3>
                   <div
-                    className="text-sm text-muted-foreground prose prose-invert prose-sm"
+                    className="text-sm text-muted-foreground prose prose-invert prose-sm max-w-none"
                     dangerouslySetInnerHTML={{ __html: offer.description }}
                   />
                 </div>
@@ -216,7 +207,7 @@ export function OfferPreviewModal({
                 )}
               </div>
             </ScrollArea>
-            {/* Sticky Footer */}
+            
             <OfferFooter
               totalPoints={totalPoints}
               totalUSD={totalUSD}
