@@ -128,28 +128,26 @@ export function HomePageContent() {
 
   React.useEffect(() => {
     async function fetchPhoneOffers() {
-        const supabase = createSupabaseBrowserClient();
-        try {
-            // Fetch a broader set of offers first
-            const { data, error } = await supabase
-                .from('all_offers')
-                .select('*')
-                .limit(50); 
+      const supabase = createSupabaseBrowserClient();
+      try {
+        const { data, error } = await supabase
+            .from('all_offers')
+            .select('*')
+            .limit(50); 
 
-            if (error) throw error;
-
-            // Filter for games on the client side
-            if (data) {
-                const gameOffers = data.filter(offer => 
-                    Array.isArray(offer.categories) && offer.categories.includes('GAME')
-                ).slice(0, 4); // Take the first 4 game offers
-                setPhoneCardOffers(gameOffers);
-            }
-            
-        } catch (error: any) {
-            console.error("Error fetching phone offers:", error.message || error);
-            setPhoneCardOffers([]);
+        if (error) throw error;
+        
+        if (data) {
+            const gameOffers = data.filter(offer => 
+                Array.isArray(offer.categories) && offer.categories.includes('GAME')
+            ).slice(0, 4);
+            setPhoneCardOffers(gameOffers);
         }
+
+      } catch (error: any) {
+        console.error("Error fetching phone offers:", error.message || error);
+        setPhoneCardOffers([]);
+      }
     }
     fetchPhoneOffers();
   }, []);
@@ -157,15 +155,28 @@ export function HomePageContent() {
   React.useEffect(() => {
     async function fetchFeaturedOffers() {
       const supabase = createSupabaseBrowserClient();
+      const offerNames = ["upside", "bingo vacation", "crypto miner", "slot mate"];
+      const orFilter = offerNames.map(name => `name.ilike.%${name}%`).join(',');
+
       try {
         const { data, error } = await supabase
           .from('all_offers')
           .select('*')
-          .order('payout', { ascending: false })
+          .or(orFilter)
           .limit(20);
 
         if (error) throw error;
-        setFeaturedOffers(data || []);
+        
+        const uniqueOffers = new Map();
+        offerNames.forEach(name => {
+          const bestMatch = data.find(offer => offer.name.toLowerCase().includes(name));
+          if (bestMatch && !uniqueOffers.has(bestMatch.offer_id)) {
+            uniqueOffers.set(bestMatch.offer_id, bestMatch);
+          }
+        });
+
+        setFeaturedOffers(Array.from(uniqueOffers.values()));
+        
       } catch (error: any) {
         console.error("Error fetching featured offers:", error.message || error);
         setFeaturedOffers([]);
