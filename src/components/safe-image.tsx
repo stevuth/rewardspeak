@@ -30,7 +30,10 @@ export function SafeImage({
   const cleanSrc = src ? src.trim() : '';
 
   const isExternal = cleanSrc && (cleanSrc.startsWith("http") || cleanSrc.startsWith("https"));
-  const placeholderSrc = `https://picsum.photos/seed/${alt.replace(/\s+/g, '')}/${width || 200}/${height || 200}`;
+  
+  // Ensure alt text is a string before calling replace on it
+  const safeAlt = alt || 'placeholder';
+  const placeholderSrc = `https://picsum.photos/seed/${safeAlt.replace(/\s+/g, '')}/${width || 200}/${height || 200}`;
 
 
   const handleError = () => {
