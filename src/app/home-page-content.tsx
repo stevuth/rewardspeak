@@ -117,6 +117,18 @@ const howItWorksSteps = [
     }
 ];
 
+const heroOfferNames = [
+    "Raid: Shadow Legends",
+    "Richie Games",
+    "Upside",
+    "Bingo Vacation",
+    "Crypto Miner",
+    "Slot Mate",
+    "Binance",
+    "TikTok"
+];
+
+
 export function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
@@ -127,20 +139,26 @@ export function HomePageContent() {
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
-    async function fetchOffers() {
+    async function fetchAllOffers() {
         const supabase = createSupabaseBrowserClient();
         try {
             const { data, error } = await supabase
                 .from('all_offers')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(20);
+                .limit(200);
 
             if (error) throw error;
             
             if (data) {
-                // For hero, just take the first 8
-                setFeaturedOffers(data.slice(0, 8));
+                // For hero, filter for the specific offers requested
+                const heroOffersList = heroOfferNames.map(name => 
+                    data.find(offer => offer.name.toLowerCase().includes(name.toLowerCase()))
+                ).filter(Boolean); // Filter out any not found
+
+                // De-duplicate
+                const uniqueHeroOffers = Array.from(new Map(heroOffersList.map(offer => [offer.offer_id, offer])).values());
+                setFeaturedOffers(uniqueHeroOffers);
                 
                 // For phone, filter for games and take the first 4
                 const gameOffers = data.filter(offer => 
@@ -154,7 +172,7 @@ export function HomePageContent() {
             setPhoneCardOffers([]);
         }
     }
-    fetchOffers();
+    fetchAllOffers();
   }, []);
 
   React.useEffect(() => {
