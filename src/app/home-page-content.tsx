@@ -46,11 +46,13 @@ import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 import { motion } from 'framer-motion';
 
-const recentCashouts = [
-    { name: "John D.", amount: 25.50, currency: "PayPal", time: "2m ago", icon: PaypalLogo },
-    { name: "Maria S.", amount: 50.00, currency: "Bitcoin", time: "5m ago", icon: BitcoinLogo },
-    { name: "Chen W.", amount: 15.20, currency: "Litecoin", time: "8m ago", icon: LitecoinLogo },
-];
+// const recentCashouts = [
+//     { name: "John D.", amount: 25.50, currency: "PayPal", time: "2m ago", icon: PaypalLogo },
+//     { name: "Maria S.", amount: 50.00, currency: "Bitcoin", time: "5m ago", icon: BitcoinLogo },
+//     { name: "Chen W.", amount: 15.20, currency: "Litecoin", time: "8m ago", icon: LitecoinLogo },
+// ];
+
+const recentCashouts: any[] = [];
 
 const paymentMethods = [
     { icon: PaypalLogo, name: 'Paypal'},
@@ -362,7 +364,7 @@ export function HomePageContent() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true, amount: 0.5 }}
                         transition={{ duration: 0.5 }}
-                        className="flex items-center justify-center md:mb-0 -mb-24"
+                        className="flex items-center justify-center md:mb-0"
                     >
                          <EarnByGamingIllustration offers={phoneCardOffers} />
                     </motion.div>
