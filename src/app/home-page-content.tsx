@@ -117,18 +117,6 @@ const howItWorksSteps = [
     }
 ];
 
-const heroOfferNames = [
-    'Raid: Shadow Legends',
-    'Richie Games',
-    'Upside',
-    'Bingo Vacation',
-    'Crypto Miner',
-    'Slot Mate',
-    'Binance',
-    'TikTok',
-];
-
-
 export function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
@@ -139,36 +127,22 @@ export function HomePageContent() {
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
-    async function fetchAllOffers() {
+    async function fetchOffers() {
         const supabase = createSupabaseBrowserClient();
         try {
             const { data, error } = await supabase
                 .from('all_offers')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(200);
+                .limit(20);
 
             if (error) throw error;
             
             if (data) {
-                const uniqueOffers = new Map();
-                const lowerCaseHeroNames = heroOfferNames.map(name => name.toLowerCase());
-
-                for (const offer of data) {
-                    const offerNameLower = offer.name.toLowerCase();
-                    const matchedName = lowerCaseHeroNames.find(heroName => offerNameLower.includes(heroName));
-                    if (matchedName && !uniqueOffers.has(matchedName)) {
-                        uniqueOffers.set(matchedName, offer);
-                    }
-                }
+                // For hero, just take the first 8
+                setFeaturedOffers(data.slice(0, 8));
                 
-                const finalHeroOffers = heroOfferNames
-                    .map(name => uniqueOffers.get(name.toLowerCase()))
-                    .filter(Boolean); // Filter out any undefined values if an offer wasn't found
-                
-                setFeaturedOffers(finalHeroOffers);
-                
-                // Filter for Phone Card Offers
+                // For phone, filter for games and take the first 4
                 const gameOffers = data.filter(offer => 
                     Array.isArray(offer.categories) && offer.categories.some((cat: string) => cat.toUpperCase() === 'GAME')
                 ).slice(0, 4);
@@ -180,7 +154,7 @@ export function HomePageContent() {
             setPhoneCardOffers([]);
         }
     }
-    fetchAllOffers();
+    fetchOffers();
   }, []);
 
   React.useEffect(() => {
