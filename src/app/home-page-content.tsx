@@ -291,7 +291,7 @@ export function HomePageContent() {
                         </Button>
                     </div>
                     <div className="flex items-center justify-center -mb-24 md:mb-0">
-                         <EarnByGamingIllustration />
+                         <EarnByGamingIllustration offers={featuredOffers.slice(0, 4)} />
                     </div>
                 </div>
             </div>

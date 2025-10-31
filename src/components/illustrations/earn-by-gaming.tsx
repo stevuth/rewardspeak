@@ -31,7 +31,16 @@ const GameOffer = ({
   </div>
 );
 
-export function EarnByGamingIllustration() {
+const defaultOffers = [
+    { image_url: "https://picsum.photos/seed/game1/48/48", name: "Alice's Mergeland", payout: 9.00 },
+    { image_url: "https://picsum.photos/seed/game2/48/48", name: "Age of Coins: Master Of Spins", payout: 12.40 },
+    { image_url: "https://picsum.photos/seed/game3/48/48", name: "Coin Master", payout: 8.90 },
+    { image_url: "https://picsum.photos/seed/game4/48/48", name: "Lords Mobile: Kingdom Wars", payout: 15.50 },
+];
+
+export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
+  const displayOffers = (offers && offers.length > 0) ? offers : defaultOffers;
+  
   return (
     <div className="relative w-72 h-[450px] flex items-center justify-center">
       {/* Phone Body */}
@@ -46,10 +55,15 @@ export function EarnByGamingIllustration() {
             </div>
             <h2 className="text-white text-2xl font-bold px-2 mb-4">Games</h2>
             <div className="space-y-3">
-                 <GameOffer imageUrl="https://picsum.photos/seed/game1/48/48" imageHint="fantasy rabbit character" title="Alice's Mergeland" reward="$9.00 USD" />
-                 <GameOffer imageUrl="https://picsum.photos/seed/game2/48/48" imageHint="fox character adventure" title="Age of Coins: Master Of Spins" reward="$12.40 USD" />
-                 <GameOffer imageUrl="https://picsum.photos/seed/game3/48/48" imageHint="pig character cartoon" title="Coin Master" reward="$8.90 USD" />
-                 <GameOffer imageUrl="https://picsum.photos/seed/game4/48/48" imageHint="warrior character fantasy" title="Lords Mobile: Kingdom Wars" reward="$15.50 USD" />
+                 {displayOffers.map((offer, index) => (
+                    <GameOffer 
+                        key={offer.offer_id || index}
+                        imageUrl={offer.image_url} 
+                        imageHint="game logo" 
+                        title={offer.name} 
+                        reward={`$${(offer.payout || 0).toFixed(2)} USD`} 
+                    />
+                 ))}
             </div>
         </div>
       </div>
