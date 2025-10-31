@@ -131,15 +131,12 @@ export function HomePageContent() {
       try {
         const supabase = createSupabaseBrowserClient();
         
-        // Fetch top 10 highest paying offers for the hero carousel
-        const { data: topOffers, error: topOffersError } = await supabase
-            .from('top_converting_offers')
-            .select('*')
-            .order('payout', { ascending: false })
-            .limit(10);
+        // Fetch 10 random offers for the hero carousel
+        const { data: randomOffers, error: randomOffersError } = await supabase
+            .rpc('get_random_top_offers', { limit_count: 10 });
 
-        if (topOffersError) throw topOffersError;
-        setFeaturedOffers(topOffers || []);
+        if (randomOffersError) throw randomOffersError;
+        setFeaturedOffers(randomOffers || []);
 
         const phoneOfferNames = [
           "Slot Mate",
@@ -498,5 +495,3 @@ export function HomePageContent() {
     </div>
   );
 }
-
-    
