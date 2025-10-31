@@ -144,7 +144,7 @@ export function HomePageContent() {
             const { data, error } = await supabase
               .from('all_offers')
               .select('*')
-              .ilike('categories', '%GAME%')
+              .contains('categories', ['GAME'])
               .limit(4);
 
             if (error) throw error;
