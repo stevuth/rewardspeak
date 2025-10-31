@@ -117,74 +117,44 @@ const howItWorksSteps = [
     }
 ];
 
-// Fisher-Yates shuffle algorithm
-const shuffleArray = (array: any[]) => {
-  let currentIndex = array.length, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-  }
-  return array;
-}
-
+// Hardcoded list of offers to ensure they always display correctly.
+const heroOffers = [
+    { offer_id: 'raid', name: 'Raid: Shadow Legends', payout: 25.50, image_url: 'https://picsum.photos/seed/raid/200/200' },
+    { offer_id: 'richie', name: 'Richie Games', payout: 18.00, image_url: 'https://picsum.photos/seed/richie/200/200' },
+    { offer_id: 'upside', name: 'Upside', payout: 5.20, image_url: 'https://picsum.photos/seed/upside/200/200' },
+    { offer_id: 'bingo', name: 'Bingo Vacation', payout: 12.00, image_url: 'https://picsum.photos/seed/bingo/200/200' },
+    { offer_id: 'crypto', name: 'Crypto Miner', payout: 7.80, image_url: 'https://picsum.photos/seed/crypto/200/200' },
+    { offer_id: 'slot', name: 'Slot Mate', payout: 15.00, image_url: 'https://picsum.photos/seed/slot/200/200' },
+    { offer_id: 'binance', name: 'Binance', payout: 20.00, image_url: 'https://picsum.photos/seed/binance/200/200' },
+    { offer_id: 'tiktok', name: 'TikTok', payout: 2.50, image_url: 'https://picsum.photos/seed/tiktok/200/200' },
+];
 
 export function HomePageContent() {
-  const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
-  
+  const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
+
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
-    // Unique list of offer names to display in the hero section.
-    const heroOfferNames = [
-        "raid shadow", 
-        "richie games", 
-        "upside", 
-        "bingo vacation", 
-        "crypto miner", 
-        "slot mate", 
-        "binance", 
-        "tiktok"
-    ];
+    async function fetchPhoneOffers() {
+        try {
+            const supabase = createSupabaseBrowserClient();
+            const { data, error } = await supabase
+              .from('all_offers')
+              .select('*')
+              .ilike('categories', '%GAME%')
+              .limit(4);
 
-    async function fetchAllOffers() {
-      try {
-        const supabase = createSupabaseBrowserClient();
-        
-        // Fetch a general pool of the latest offers to filter from.
-        const { data: offerPool, error: fetchError } = await supabase
-          .from('top_converting_offers')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(100); // Fetch a larger pool to increase chances of finding matches
-
-        if (fetchError) throw fetchError;
-        
-        const foundOffers: any[] = [];
-        const foundNames = new Set();
-
-        // Find one match for each name in the desired order
-        heroOfferNames.forEach(name => {
-            const offer = offerPool.find(o => 
-                o.name.toLowerCase().includes(name) && !foundNames.has(o.name)
-            );
-            if (offer) {
-                foundOffers.push(offer);
-                foundNames.add(offer.name);
-            }
-        });
-
-        setFeaturedOffers(foundOffers);
-
-      } catch (error: any) {
-        console.error("Error fetching offers:", error.message || error);
-        setFeaturedOffers([]);
-      }
+            if (error) throw error;
+            setPhoneCardOffers(data || []);
+        } catch (error: any) {
+            console.error("Error fetching phone offers:", error.message || error);
+            setPhoneCardOffers([]);
+        }
     }
-    fetchAllOffers();
+    fetchPhoneOffers();
   }, []);
 
   React.useEffect(() => {
@@ -298,7 +268,7 @@ export function HomePageContent() {
                 </motion.div>
             </div>
             <div className="mt-16">
-              <OfferCarousel offers={featuredOffers} />
+              <OfferCarousel offers={heroOffers} />
             </div>
         </section>
         
@@ -346,7 +316,7 @@ export function HomePageContent() {
                         transition={{ duration: 0.5 }}
                         className="flex items-center justify-center md:mb-0"
                     >
-                         <EarnByGamingIllustration />
+                         <EarnByGamingIllustration offers={phoneCardOffers} />
                     </motion.div>
                 </div>
             </div>
