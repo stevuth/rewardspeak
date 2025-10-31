@@ -140,15 +140,24 @@ export function HomePageContent() {
     async function fetchPhoneOffers() {
         const supabase = createSupabaseBrowserClient();
         try {
+            // Fetch a broader set of offers first
             const { data, error } = await supabase
                 .from('all_offers')
                 .select('*')
-                .contains('categories', ['GAME'])
-                .limit(4);
+                .limit(50); // Fetch more to increase chance of finding games
 
             if (error) throw error;
+
+            // Filter for games on the client side
+            if (data) {
+                const gameOffers = data.filter(offer => 
+                    Array.isArray(offer.categories) && offer.categories.includes('GAME')
+                ).slice(0, 4); // Take the first 4 game offers
+                setPhoneCardOffers(gameOffers);
+            } else {
+                setPhoneCardOffers([]);
+            }
             
-            setPhoneCardOffers(data || []);
         } catch (error: any) {
             console.error("Error fetching phone offers:", error.message || error);
             setPhoneCardOffers([]);
@@ -480,5 +489,3 @@ export function HomePageContent() {
     </div>
   );
 }
-
-    
