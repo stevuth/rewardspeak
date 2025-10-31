@@ -155,32 +155,10 @@ export function HomePageContent() {
         // Shuffle the array to get a random order
         setFeaturedOffers(shuffleArray(topOffers || []));
 
-        const phoneOfferNames = [
-          "Slot Mate",
-          "Casino World",
-          "The Grand Mafia",
-          "Matching Story"
-        ];
-        
-        const phoneQueries = phoneOfferNames.map(name => `name.ilike.%${name}%`);
-        
-        // Correctly build the .or() filter string
-        const orFilter = phoneQueries.join(',');
-
-        const { data: phoneData, error: phoneError } = await supabase
-            .from('all_offers')
-            .or(orFilter)
-            .limit(4);
-
-        if (phoneError) throw phoneError;
-
-        let fetchedPhoneOffers: any[] = [];
-        if (phoneData) {
-            fetchedPhoneOffers = phoneData;
-        }
-
-        const uniquePhoneOffers = Array.from(new Map(fetchedPhoneOffers.map(offer => [offer.name, offer])).values());
-        setPhoneCardOffers(uniquePhoneOffers);
+        // The logic for fetching specific phone offers was causing errors.
+        // The EarnByGamingIllustration component has its own default offers.
+        // We will let it use those defaults by not passing any props.
+        // setPhoneCardOffers([]); // This is not needed
 
       } catch (error: any) {
         console.error("Error fetching offers:", error.message || error);
@@ -514,4 +492,3 @@ export function HomePageContent() {
     </div>
   );
 }
-
