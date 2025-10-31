@@ -117,6 +117,18 @@ const howItWorksSteps = [
     }
 ];
 
+// Fisher-Yates shuffle algorithm
+const shuffleArray = (array: any[]) => {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+
+
 export function HomePageContent() {
   const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
   const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
@@ -131,11 +143,17 @@ export function HomePageContent() {
       try {
         const supabase = createSupabaseBrowserClient();
         
-        const { data: randomOffers, error: randomOffersError } = await supabase
-            .rpc('get_random_top_offers', { limit_count: 10 });
+        // Fetch latest 10 offers from top_converting_offers
+        const { data: topOffers, error: topOffersError } = await supabase
+          .from('top_converting_offers')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10);
 
-        if (randomOffersError) throw randomOffersError;
-        setFeaturedOffers(randomOffers || []);
+        if (topOffersError) throw topOffersError;
+        
+        // Shuffle the array to get a random order
+        setFeaturedOffers(shuffleArray(topOffers || []));
 
         const phoneOfferNames = [
           "Slot Mate",
@@ -148,7 +166,6 @@ export function HomePageContent() {
         
         const { data: phoneData, error: phoneError } = await supabase
             .from('all_offers')
-            .select('*')
             .or(phoneQueries.join(','))
             .limit(4);
 
