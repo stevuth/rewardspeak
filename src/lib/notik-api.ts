@@ -42,38 +42,41 @@ interface ApiResponse {
  * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
  */
 function standardizeCountries(rawCountries: any): string[] {
-  let countriesArray: string[] = [];
-
+  // If rawCountries is falsy, empty, or an empty object, it's global.
   if (!rawCountries || (typeof rawCountries === 'object' && Object.keys(rawCountries).length === 0)) {
     return ["ALL"];
   }
 
+  // Case 1: It's an array of strings (e.g., ["US", "GB"])
   if (Array.isArray(rawCountries)) {
-    // Handles case: ["US", "GB"]
-    countriesArray = rawCountries.map(String).filter(Boolean);
-  } else if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
-    // Handles case: "US,GB,CA" or "US, GB, CA"
-    countriesArray = rawCountries.split(',').map(c => c.trim()).filter(Boolean);
-  } else if (typeof rawCountries === 'object') {
-    // Handles case: { "US": "United States", "GB": "United Kingdom" } or sometimes just { "0": "US", "1": "GB" }
-    countriesArray = Object.keys(rawCountries).filter(Boolean);
+    const countries = rawCountries.map(String).filter(Boolean);
+    return countries.length > 0 ? countries : ["ALL"];
   }
 
-  // If after all checks the array is empty, default to a universal "ALL"
-  if (countriesArray.length === 0) {
-    return ["ALL"];
-  }
-  
-  // A final check in case the API returns an object like {0: 'US', 1: 'GB'}
-  // The keys would be '0', '1'. We should use the values instead.
-  if (countriesArray.every(key => !isNaN(parseInt(key)))) {
-      const values = Object.values(rawCountries).map(String).filter(Boolean);
-      if (values.length > 0) {
-          return values;
-      }
+  // Case 2: It's a comma-separated string (e.g., "US,GB,CA")
+  if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
+    const countries = rawCountries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
+    return countries.length > 0 ? countries : ["ALL"];
   }
 
-  return countriesArray;
+  // Case 3: It's an object (e.g., { "US": "United States" } or { "0": "US" })
+  if (typeof rawCountries === 'object') {
+    // If keys are country codes (e.g., "US", "GB"), use the keys.
+    const keys = Object.keys(rawCountries);
+    const isCountryCodeKey = keys.every(key => /^[A-Z]{2}$/.test(key.toUpperCase()));
+    if (isCountryCodeKey) {
+      return keys.length > 0 ? keys : ["ALL"];
+    }
+
+    // If keys are numeric indices (e.g., "0", "1"), use the values.
+    const values = Object.values(rawCountries).map(String).filter(Boolean);
+    if (values.length > 0) {
+      return values;
+    }
+  }
+
+  // Default fallback if no other condition is met.
+  return ["ALL"];
 }
 
 
