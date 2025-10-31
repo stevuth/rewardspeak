@@ -131,42 +131,15 @@ export function HomePageContent() {
       try {
         const supabase = createSupabaseBrowserClient();
         
-        const heroOfferNames = [
-          "Monopoly Go",
-          "TikTok",
-          "The Grand Mafia",
-          "Alibaba.com",
-          "Animals & Coins",
-        ];
-
-        const heroNamePatterns = heroOfferNames.map(name => `name.ilike.%${name}%`);
-
-        const { data: heroData, error: heroError } = await supabase
-            .from('all_offers')
+        // Fetch top 10 highest paying offers for the hero carousel
+        const { data: topOffers, error: topOffersError } = await supabase
+            .from('top_converting_offers')
             .select('*')
-            .or(heroNamePatterns.join(','))
-            .limit(5);
+            .order('payout', { ascending: false })
+            .limit(10);
 
-        if (heroError) throw heroError;
-
-        let fetchedHeroOffers: any[] = [];
-        if (heroData) {
-            fetchedHeroOffers = heroData;
-        }
-
-        const uniqueHeroOffers = Array.from(new Map(fetchedHeroOffers.map(offer => [offer.name, offer])).values());
-        
-        if (uniqueHeroOffers.length > 0) {
-            setFeaturedOffers(uniqueHeroOffers);
-        } else {
-            // Fallback if no specific offers are found
-            const { data: topOffers } = await supabase
-                .from('top_converting_offers')
-                .select('*')
-                .order('payout', { ascending: false })
-                .limit(10);
-            setFeaturedOffers(topOffers || []);
-        }
+        if (topOffersError) throw topOffersError;
+        setFeaturedOffers(topOffers || []);
 
         const phoneOfferNames = [
           "Slot Mate",
@@ -525,3 +498,5 @@ export function HomePageContent() {
     </div>
   );
 }
+
+    
