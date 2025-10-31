@@ -131,7 +131,6 @@ export function HomePageContent() {
       try {
         const supabase = createSupabaseBrowserClient();
         
-        // Fetch 10 random offers for the hero carousel
         const { data: randomOffers, error: randomOffersError } = await supabase
             .rpc('get_random_top_offers', { limit_count: 10 });
 
@@ -163,8 +162,8 @@ export function HomePageContent() {
         const uniquePhoneOffers = Array.from(new Map(fetchedPhoneOffers.map(offer => [offer.name, offer])).values());
         setPhoneCardOffers(uniquePhoneOffers);
 
-      } catch (error) {
-        console.error("Error fetching offers:", error);
+      } catch (error: any) {
+        console.error("Error fetching offers:", error.message || error);
         setFeaturedOffers([]);
         setPhoneCardOffers([]);
       }
