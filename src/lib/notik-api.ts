@@ -42,28 +42,28 @@ interface ApiResponse {
  * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
  */
 function standardizeCountries(rawCountries: any): string[] {
-  // Case 1: Handle null, undefined, or empty string by returning a default global value.
+  // Case 1: Handle null, undefined, or empty string.
   if (!rawCountries || rawCountries === "") {
-    return ["ALL"];
+    return [];
   }
 
-  // Case 2: Handle if it's already a valid array.
+  // Case 2: Handle if it's already a valid array of strings.
   if (Array.isArray(rawCountries)) {
     const countries = rawCountries.map(String).filter(Boolean); // Ensure all items are strings and not empty
-    return countries.length > 0 ? countries : ["ALL"];
+    return countries.length > 0 ? countries : [];
   }
 
   // Case 3: Handle a comma-separated string.
   if (typeof rawCountries === 'string') {
     const countries = rawCountries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
-    return countries.length > 0 ? countries : ["ALL"];
+    return countries.length > 0 ? countries : [];
   }
 
-  // Case 4: Handle an object. This can be { "US": "United States" } or { "0": "US" }.
+  // Case 4: Handle an object like { "US": "United States" } or { "0": "US" }.
   if (typeof rawCountries === 'object' && !Array.isArray(rawCountries)) {
     const keys = Object.keys(rawCountries);
     if (keys.length === 0) {
-      return ["ALL"];
+      return [];
     }
     // Check if keys are valid 2-letter country codes.
     const isCountryCodeKey = keys.every(key => /^[A-Z]{2}$/.test(key.toUpperCase()));
@@ -78,30 +78,28 @@ function standardizeCountries(rawCountries: any): string[] {
   }
 
   // Fallback for any other unexpected type or empty collection.
-  return ["ALL"];
+  return [];
 }
 
 
 // Helper to process and standardize an offer
 function processOffer(rawOffer: RawNotikOffer): NotikOffer {
-  // 🔍 DEBUG: Log what we receive
-  if (!rawOffer.countries) {
-    console.log(`⚠️ Offer ${rawOffer.offer_id} has NO countries field in API response`);
-  } else {
-    console.log(`✓ Offer ${rawOffer.offer_id} countries (raw):`, typeof rawOffer.countries, rawOffer.countries);
-  }
-  
   const payoutValue = typeof rawOffer.payout === 'string'
     ? parseFloat(rawOffer.payout)
     : (rawOffer.payout || 0);
 
-  const finalCountries = standardizeCountries(rawOffer.countries);
-  
-  console.log(`✓ Offer ${rawOffer.offer_id} countries (processed):`, finalCountries);
+  let finalCountries = standardizeCountries(rawOffer.countries);
+  let description = rawOffer.description || rawOffer.name;
+
+  // If standardization fails, embed the raw data in the description for debugging
+  if (finalCountries.length === 0) {
+    description += ` -- RAW_COUNTRIES: ${JSON.stringify(rawOffer.countries)}`;
+    finalCountries = ["ALL"]; // Set a default to prevent database errors
+  }
 
   return {
     ...rawOffer,
-    description: rawOffer.description || rawOffer.name,
+    description: description,
     payout: payoutValue,
     countries: finalCountries,
     events: (rawOffer.events || []).map(e => ({
@@ -172,9 +170,6 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
         break; 
       }
       const data: ApiResponse = await response.json();
-      
-      // 🔍 ADD THIS: Log raw API response
-      console.log("Raw API response sample:", JSON.stringify(data.data?.offers?.[0] || data.offers?.data?.[0], null, 2));
       
       const offersData = data.data?.offers ?? data.offers?.data;
 

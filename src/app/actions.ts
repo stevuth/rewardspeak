@@ -55,14 +55,6 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
         console.log(`Fetched ${topOffers.length} top converting offers.`);
         console.log(`Fetched ${allOffers.length} total offers.`);
 
-        // 🔍 CHECK: What does the first offer look like?
-        if (topOffers.length > 0) {
-            console.log("📊 First top offer:", JSON.stringify(topOffers[0], null, 2));
-        }
-        if (allOffers.length > 0) {
-            console.log("📊 First all offer:", JSON.stringify(allOffers[0], null, 2));
-        }
-
         const prepareOffersData = (offers: NotikOffer[]) => {
             const seen = new Map();
             const uniqueOffers = offers.filter(offer => {
@@ -84,7 +76,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     image_url: offer.image_url,
                     network: offer.network,
                     payout: offer.payout,
-                    countries: offer.countries, // This should now be a safe, standardized array
+                    countries: offer.countries, // This is now guaranteed to be an array by processOffer
                     platforms: offer.platforms,
                     categories: offer.categories,
                     events: offer.events,
@@ -99,25 +91,16 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
         // Upsert top converting offers
         if (topOffers.length > 0) {
             const topOffersData = prepareOffersData(topOffers);
-            console.log("📤 About to insert top offer:", JSON.stringify(topOffersData[0], null, 2));
-            
             const topOfferChunks = chunk(topOffersData, BATCH_SIZE);
 
             for (const topChunk of topOfferChunks) {
-                const { data, error: topOffersError } = await supabase
+                const { error: topOffersError } = await supabase
                     .from('top_converting_offers')
-                    .upsert(topChunk, { onConflict: 'offer_id' })
-                    .select('offer_id, countries')
-                    .limit(1);
+                    .upsert(topChunk, { onConflict: 'offer_id' });
 
                 if (topOffersError) {
                     console.error('❌ Error upserting top converting offers:', topOffersError);
                     throw new Error(topOffersError.message);
-                }
-                
-                // 🔍 CHECK: What did Supabase actually store?
-                if (data && data.length > 0) {
-                    console.log("✅ Supabase stored (top):", data[0]);
                 }
             }
             console.log(`Successfully upserted ${topOffersData.length} top converting offers.`);
@@ -126,25 +109,16 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
         // Similar for all offers...
         if (allOffers.length > 0) {
             const allOffersData = prepareOffersData(allOffers);
-            console.log("📤 About to insert all offer:", JSON.stringify(allOffersData[0], null, 2));
-
             const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
 
             for (const allChunk of allOfferChunks) {
-                const { data, error: allOffersError } = await supabase
+                const { error: allOffersError } = await supabase
                     .from('all_offers')
-                    .upsert(allChunk, { onConflict: 'offer_id' })
-                    .select('offer_id, countries')
-                    .limit(1);
+                    .upsert(allChunk, { onConflict: 'offer_id' });
 
                 if (allOffersError) {
                     console.error('❌ Error upserting all offers:', allOffersError);
                     throw new Error(allOffersError.message);
-                }
-                
-                // 🔍 CHECK: What did Supabase actually store?
-                if (data && data.length > 0) {
-                    console.log("✅ Supabase stored (all):", data[0]);
                 }
             }
             console.log(`Successfully upserted ${allOffersData.length} total offers.`);
