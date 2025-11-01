@@ -42,21 +42,28 @@ interface ApiResponse {
  * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
  */
 function standardizeCountries(rawCountries: any): string[] {
+  console.log('Standardizing countries. Input:', JSON.stringify(rawCountries));
+
   // If rawCountries is falsy, empty, or an empty object, it's global.
   if (!rawCountries || (typeof rawCountries === 'object' && Object.keys(rawCountries).length === 0)) {
+    console.log('Result: ["ALL"] (Falsy or empty object)');
     return ["ALL"];
   }
 
   // Case 1: It's an array of strings (e.g., ["US", "GB"])
   if (Array.isArray(rawCountries)) {
     const countries = rawCountries.map(String).filter(Boolean);
-    return countries.length > 0 ? countries : ["ALL"];
+    const result = countries.length > 0 ? countries : ["ALL"];
+    console.log('Result from Array:', result);
+    return result;
   }
 
   // Case 2: It's a comma-separated string (e.g., "US,GB,CA")
   if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
     const countries = rawCountries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
-    return countries.length > 0 ? countries : ["ALL"];
+    const result = countries.length > 0 ? countries : ["ALL"];
+    console.log('Result from String:', result);
+    return result;
   }
 
   // Case 3: It's an object (e.g., { "US": "United States" } or { "0": "US" })
@@ -65,17 +72,21 @@ function standardizeCountries(rawCountries: any): string[] {
     const keys = Object.keys(rawCountries);
     const isCountryCodeKey = keys.every(key => /^[A-Z]{2}$/.test(key.toUpperCase()));
     if (isCountryCodeKey) {
-      return keys.length > 0 ? keys : ["ALL"];
+      const result = keys.length > 0 ? keys : ["ALL"];
+      console.log('Result from Object Keys:', result);
+      return result;
     }
 
     // If keys are numeric indices (e.g., "0", "1"), use the values.
     const values = Object.values(rawCountries).map(String).filter(Boolean);
     if (values.length > 0) {
+      console.log('Result from Object Values:', values);
       return values;
     }
   }
 
   // Default fallback if no other condition is met.
+  console.log('Result: ["ALL"] (Default fallback)');
   return ["ALL"];
 }
 
@@ -122,6 +133,13 @@ export async function getOffers(): Promise<NotikOffer[]> {
     const data: ApiResponse = await response.json();
 
     if (data.status === 'success' && data.data?.offers) {
+      // Log raw country data for the first few offers
+      console.log("--- Raw Top Converting Offers Data ---");
+      data.data.offers.slice(0, 3).forEach(offer => {
+        console.log(`Offer ID: ${offer.offer_id}, Raw Countries: ${JSON.stringify(offer.countries)}`);
+      });
+      console.log("------------------------------------");
+
       return data.data.offers.map(processOffer);
     } else {
       if (data.message) {
@@ -149,9 +167,12 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
 
   let allOffers: NotikOffer[] = [];
   let nextPageUrl: string | null | undefined = `https://notik.me/api/v2/get-offers/all?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}`;
+  let pageCount = 0;
 
-  while (nextPageUrl) {
+  while (nextPageUrl && pageCount < 1) { // Limit to 1 page for debugging
+    pageCount++;
     try {
+      console.log(`Fetching page ${pageCount} from: ${nextPageUrl}`);
       const response = await fetch(nextPageUrl, { next: { revalidate: 900 } }); // Revalidate every 15 minutes
       if (!response.ok) {
         console.error(`API call failed with status: ${response.status} for URL: ${nextPageUrl}`);
@@ -164,12 +185,24 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       const offersData = data.data?.offers ?? data.offers?.data;
 
       if (data.status === 'success' && offersData) {
+        // Log raw country data for a sample from this page
+        console.log(`--- Raw Data from All Offers (Page ${pageCount}) ---`);
+        offersData.slice(0, 3).forEach(offer => {
+          console.log(`Offer ID: ${offer.offer_id}, Raw Countries: ${JSON.stringify(offer.countries)}`);
+        });
+        console.log("------------------------------------");
+
         const offers = offersData.map(processOffer);
         allOffers = allOffers.concat(offers);
         
         const nextUrlFromData = data.data?.next_page_url ?? data.offers?.next_page_url;
-        // The API returns the full URL, so we can use it directly
-        nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
+        
+        // FOR DEBUGGING: To avoid fetching all pages, we'll stop after one.
+        // In production, you would use the full logic.
+        // nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
+        console.log("Debug mode: stopping after one page. Full sync would continue.");
+        nextPageUrl = null; // Stop after one page for debugging
+
       } else {
         if (data.message) {
             console.error("API call was not successful:", data.message);
