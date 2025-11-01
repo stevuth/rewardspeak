@@ -40,10 +40,6 @@ function chunk<T>(array: T[], size: number): T[][] {
 
 
 export async function syncOffers(): Promise<{ success: boolean; error?: string }> {
-    console.log("=============================================");
-    console.log("🚀 LOOK HERE! SYNC OFFERS LOGS WILL APPEAR BELOW 🚀");
-    console.log("=============================================");
-    console.log("Starting offer sync process...");
     const supabase = createSupabaseAdminClient();
 
     try {
@@ -52,9 +48,6 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
             getAllOffers()
         ]);
         
-        console.log(`Fetched ${topOffers.length} top converting offers.`);
-        console.log(`Fetched ${allOffers.length} total offers.`);
-
         const prepareOffersData = (offers: NotikOffer[]) => {
             const seen = new Map();
             const uniqueOffers = offers.filter(offer => {
@@ -76,7 +69,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     image_url: offer.image_url,
                     network: offer.network,
                     payout: offer.payout,
-                    countries: offer.countries, // This is now guaranteed to be an array by processOffer
+                    countries: offer.countries, // This is now guaranteed to be a valid array by processOffer
                     platforms: offer.platforms,
                     categories: offer.categories,
                     events: offer.events,
@@ -103,7 +96,6 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     throw new Error(topOffersError.message);
                 }
             }
-            console.log(`Successfully upserted ${topOffersData.length} top converting offers.`);
         }
 
         // Similar for all offers...
@@ -121,10 +113,8 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     throw new Error(allOffersError.message);
                 }
             }
-            console.log(`Successfully upserted ${allOffersData.length} total offers.`);
         }
         
-        console.log("Offer sync process completed. Revalidating /earn path.");
         revalidatePath('/earn');
         return { success: true };
 

@@ -42,28 +42,28 @@ interface ApiResponse {
  * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
  */
 function standardizeCountries(rawCountries: any): string[] {
-  // Case 1: Handle null, undefined, or empty string.
+  // Case 1: Handle null, undefined, or empty string. Default to global.
   if (!rawCountries || rawCountries === "") {
-    return [];
+    return ["ALL"];
   }
 
   // Case 2: Handle if it's already a valid array of strings.
   if (Array.isArray(rawCountries)) {
     const countries = rawCountries.map(String).filter(Boolean); // Ensure all items are strings and not empty
-    return countries.length > 0 ? countries : [];
+    return countries.length > 0 ? countries : ["ALL"];
   }
 
   // Case 3: Handle a comma-separated string.
   if (typeof rawCountries === 'string') {
     const countries = rawCountries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
-    return countries.length > 0 ? countries : [];
+    return countries.length > 0 ? countries : ["ALL"];
   }
 
   // Case 4: Handle an object like { "US": "United States" } or { "0": "US" }.
   if (typeof rawCountries === 'object' && !Array.isArray(rawCountries)) {
     const keys = Object.keys(rawCountries);
     if (keys.length === 0) {
-      return [];
+      return ["ALL"];
     }
     // Check if keys are valid 2-letter country codes.
     const isCountryCodeKey = keys.every(key => /^[A-Z]{2}$/.test(key.toUpperCase()));
@@ -78,7 +78,7 @@ function standardizeCountries(rawCountries: any): string[] {
   }
 
   // Fallback for any other unexpected type or empty collection.
-  return [];
+  return ["ALL"];
 }
 
 
@@ -89,17 +89,10 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
     : (rawOffer.payout || 0);
 
   let finalCountries = standardizeCountries(rawOffer.countries);
-  let description = rawOffer.description || rawOffer.name;
-
-  // If standardization fails, embed the raw data in the description for debugging
-  if (finalCountries.length === 0) {
-    description += ` -- RAW_COUNTRIES: ${JSON.stringify(rawOffer.countries)}`;
-    finalCountries = ["ALL"]; // Set a default to prevent database errors
-  }
 
   return {
     ...rawOffer,
-    description: description,
+    description: rawOffer.description || rawOffer.name,
     payout: payoutValue,
     countries: finalCountries,
     events: (rawOffer.events || []).map(e => ({
