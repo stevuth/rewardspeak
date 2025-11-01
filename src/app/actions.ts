@@ -74,7 +74,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                 image_url: offer.image_url,
                 network: offer.network,
                 payout: offer.payout,
-                countries: offer.countries, // This is now correctly processed by notik-api.ts
+                countries: offer.countries,
                 platforms: offer.platforms,
                 categories: offer.categories,
                 events: offer.events,
