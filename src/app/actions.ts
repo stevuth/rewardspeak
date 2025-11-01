@@ -7,7 +7,7 @@ import {
   type OptimizeSEOMetaTagsOutput,
 } from "@/ai/flows/optimize-seo-meta-tags";
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
-import { getAllOffers, getOffers } from "@/lib/notik-api";
+import { getAllOffers, getOffers, type NotikOffer } from "@/lib/notik-api";
 import { revalidatePath } from "next/cache";
 
 type ActionResult = {
@@ -50,10 +50,10 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
             getAllOffers()
         ]);
 
-        // Helper function to remove duplicates based on offer_id
-        const getUniqueOffers = (offers: any[]) => {
+        // Helper function to remove duplicates and prepare data for upsert
+        const prepareOffersData = (offers: NotikOffer[]) => {
             const seen = new Map();
-            return offers.filter(offer => {
+            const uniqueOffers = offers.filter(offer => {
                 const offerId = offer.offer_id;
                 if (seen.has(offerId)) {
                     return false;
@@ -62,28 +62,29 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     return true;
                 }
             });
+
+            return uniqueOffers.map(offer => ({
+                offer_id: offer.offer_id,
+                name: offer.name,
+                description: offer.description || offer.name,
+                click_url: offer.click_url,
+                image_url: offer.image_url,
+                network: offer.network,
+                payout: offer.payout,
+                countries: offer.countries, // This is now correctly processed by notik-api.ts
+                platforms: offer.platforms,
+                categories: offer.categories,
+                events: offer.events,
+            }));
         };
 
         const BATCH_SIZE = 500;
 
         // Upsert top converting offers
         if (topOffers.length > 0) {
-            const uniqueTopOffers = getUniqueOffers(topOffers);
-            const topOffersData = uniqueTopOffers.map(offer => ({
-                offer_id: offer.offer_id,
-                name: offer.name,
-                description: offer.description || offer.name, // Fallback to name if description is empty
-                click_url: offer.click_url,
-                image_url: offer.image_url,
-                network: offer.network,
-                payout: offer.payout,
-                countries: offer.countries,
-                platforms: offer.platforms,
-                categories: offer.categories,
-                events: offer.events,
-            }));
-            
+            const topOffersData = prepareOffersData(topOffers);
             const topOfferChunks = chunk(topOffersData, BATCH_SIZE);
+
             for (const topChunk of topOfferChunks) {
                 const { error: topOffersError } = await supabase
                     .from('top_converting_offers')
@@ -98,22 +99,9 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
 
         // Upsert all offers
         if (allOffers.length > 0) {
-            const uniqueAllOffers = getUniqueOffers(allOffers);
-            const allOffersData = uniqueAllOffers.map(offer => ({
-                offer_id: offer.offer_id,
-                name: offer.name,
-                description: offer.description || offer.name, // Fallback to name if description is empty
-                click_url: offer.click_url,
-                image_url: offer.image_url,
-                network: offer.network,
-                payout: offer.payout,
-                countries: offer.countries,
-                platforms: offer.platforms,
-                categories: offer.categories,
-                events: offer.events,
-            }));
-
+            const allOffersData = prepareOffersData(allOffers);
             const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
+
             for (const allChunk of allOfferChunks) {
                 const { error: allOffersError } = await supabase
                     .from('all_offers')
