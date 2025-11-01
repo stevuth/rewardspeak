@@ -68,12 +68,12 @@ function standardizeCountries(rawCountries: any): string[] {
     // Check if keys are valid 2-letter country codes.
     const isCountryCodeKey = keys.every(key => /^[A-Z]{2}$/.test(key.toUpperCase()));
     if (isCountryCodeKey) {
-      return keys;
+      return keys.map(k => k.toUpperCase());
     }
     // Otherwise, assume the values are the country codes.
     const values = Object.values(rawCountries).map(String).filter(Boolean);
     if (values.length > 0) {
-      return values;
+      return values.map(v => v.toUpperCase());
     }
   }
 
@@ -90,7 +90,7 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   const finalCountries = standardizeCountries(rawOffer.countries);
 
-  const processedOffer = {
+  return {
     ...rawOffer,
     description: rawOffer.description || rawOffer.name,
     payout: payoutValue,
@@ -100,8 +100,6 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
       payout: typeof e.payout === 'string' ? parseFloat(e.payout) : (e.payout || 0)
     }))
   };
-
-  return processedOffer;
 }
 
 export async function getOffers(): Promise<NotikOffer[]> {

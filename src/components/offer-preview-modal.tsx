@@ -3,11 +3,11 @@
 
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Info } from "lucide-react";
+import { Info, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import type { NotikOffer } from "@/lib/notik-api";
-import { Separator } from "./ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -120,6 +120,7 @@ export function OfferPreviewModal({
   };
 
   const hasMilestones = offer.events && offer.events.length > 0;
+  const allowedCountries = offer.countries || ["ALL"];
 
   return (
     <AnimatePresence>
@@ -150,6 +151,18 @@ export function OfferPreviewModal({
                     className="text-sm text-muted-foreground prose prose-invert prose-sm max-w-none"
                     dangerouslySetInnerHTML={{ __html: offer.description }}
                   />
+                </div>
+                
+                <div className="p-4 bg-black/20 rounded-lg border border-border">
+                  <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    Allowed Countries
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {allowedCountries.map((country) => (
+                      <Badge key={country} variant="outline">{country}</Badge>
+                    ))}
+                  </div>
                 </div>
 
                 <h3 className="font-semibold text-primary pt-2">Milestones</h3>
