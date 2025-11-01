@@ -40,6 +40,7 @@ function chunk<T>(array: T[], size: number): T[][] {
 
 
 export async function syncOffers(): Promise<{ success: boolean; error?: string }> {
+    console.log("Starting offer sync process...");
     const supabase = createSupabaseAdminClient();
 
     try {
@@ -48,6 +49,9 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
             getOffers(),
             getAllOffers()
         ]);
+        
+        console.log(`Fetched ${topOffers.length} top converting offers.`);
+        console.log(`Fetched ${allOffers.length} total offers.`);
 
         // Helper function to remove duplicates and prepare data for upsert
         const prepareOffersData = (offers: NotikOffer[]) => {
@@ -82,6 +86,8 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
         // Upsert top converting offers
         if (topOffers.length > 0) {
             const topOffersData = prepareOffersData(topOffers);
+            console.log("Sample of processed top offers country data:", topOffersData.slice(0, 3).map(o => ({id: o.offer_id, countries: o.countries})));
+            
             const topOfferChunks = chunk(topOffersData, BATCH_SIZE);
 
             for (const topChunk of topOfferChunks) {
@@ -94,11 +100,14 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     throw new Error(topOffersError.message);
                 }
             }
+            console.log(`Successfully upserted ${topOffersData.length} top converting offers.`);
         }
 
         // Upsert all offers
         if (allOffers.length > 0) {
             const allOffersData = prepareOffersData(allOffers);
+            console.log("Sample of processed all offers country data:", allOffersData.slice(0, 3).map(o => ({id: o.offer_id, countries: o.countries})));
+
             const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
 
             for (const allChunk of allOfferChunks) {
@@ -111,8 +120,10 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     throw new Error(allOffersError.message);
                 }
             }
+            console.log(`Successfully upserted ${allOffersData.length} total offers.`);
         }
         
+        console.log("Offer sync process completed. Revalidating /earn path.");
         // Revalidate the path to show the new data
         revalidatePath('/earn');
         return { success: true };
