@@ -42,28 +42,21 @@ interface ApiResponse {
  * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
  */
 function standardizeCountries(rawCountries: any): string[] {
-  console.log('Standardizing countries. Input:', JSON.stringify(rawCountries));
-
   // If rawCountries is falsy, empty, or an empty object, it's global.
   if (!rawCountries || (typeof rawCountries === 'object' && Object.keys(rawCountries).length === 0)) {
-    console.log('Result: ["ALL"] (Falsy or empty object)');
     return ["ALL"];
   }
 
   // Case 1: It's an array of strings (e.g., ["US", "GB"])
   if (Array.isArray(rawCountries)) {
     const countries = rawCountries.map(String).filter(Boolean);
-    const result = countries.length > 0 ? countries : ["ALL"];
-    console.log('Result from Array:', result);
-    return result;
+    return countries.length > 0 ? countries : ["ALL"];
   }
 
   // Case 2: It's a comma-separated string (e.g., "US,GB,CA")
   if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
     const countries = rawCountries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
-    const result = countries.length > 0 ? countries : ["ALL"];
-    console.log('Result from String:', result);
-    return result;
+    return countries.length > 0 ? countries : ["ALL"];
   }
 
   // Case 3: It's an object (e.g., { "US": "United States" } or { "0": "US" })
@@ -72,41 +65,47 @@ function standardizeCountries(rawCountries: any): string[] {
     const keys = Object.keys(rawCountries);
     const isCountryCodeKey = keys.every(key => /^[A-Z]{2}$/.test(key.toUpperCase()));
     if (isCountryCodeKey) {
-      const result = keys.length > 0 ? keys : ["ALL"];
-      console.log('Result from Object Keys:', result);
-      return result;
+      return keys.length > 0 ? keys : ["ALL"];
     }
 
     // If keys are numeric indices (e.g., "0", "1"), use the values.
     const values = Object.values(rawCountries).map(String).filter(Boolean);
     if (values.length > 0) {
-      console.log('Result from Object Values:', values);
       return values;
     }
   }
 
   // Default fallback if no other condition is met.
-  console.log('Result: ["ALL"] (Default fallback)');
   return ["ALL"];
 }
 
 
 // Helper to process and standardize an offer
 function processOffer(rawOffer: RawNotikOffer): NotikOffer {
-  // Standardize payout to a number, handling both string and number inputs
+  // 🔍 DEBUG: Log what we receive
+  if (!rawOffer.countries) {
+    console.log(`⚠️ Offer ${rawOffer.offer_id} has NO countries field in API response`);
+  } else {
+    console.log(`✓ Offer ${rawOffer.offer_id} countries (raw):`, typeof rawOffer.countries, rawOffer.countries);
+  }
+  
   const payoutValue = typeof rawOffer.payout === 'string'
     ? parseFloat(rawOffer.payout)
     : (rawOffer.payout || 0);
 
   const finalCountries = standardizeCountries(rawOffer.countries);
+  
+  console.log(`✓ Offer ${rawOffer.offer_id} countries (processed):`, finalCountries);
 
   return {
     ...rawOffer,
     description: rawOffer.description || rawOffer.name,
     payout: payoutValue,
     countries: finalCountries,
-    // Ensure events also have numeric payout, handling potential strings
-    events: (rawOffer.events || []).map(e => ({...e, payout: typeof e.payout === 'string' ? parseFloat(e.payout) : (e.payout || 0)}))
+    events: (rawOffer.events || []).map(e => ({
+      ...e, 
+      payout: typeof e.payout === 'string' ? parseFloat(e.payout) : (e.payout || 0)
+    }))
   };
 }
 
@@ -133,13 +132,6 @@ export async function getOffers(): Promise<NotikOffer[]> {
     const data: ApiResponse = await response.json();
 
     if (data.status === 'success' && data.data?.offers) {
-      // Log raw country data for the first few offers
-      console.log("--- Raw Top Converting Offers Data ---");
-      data.data.offers.slice(0, 3).forEach(offer => {
-        console.log(`Offer ID: ${offer.offer_id}, Raw Countries: ${JSON.stringify(offer.countries)}`);
-      });
-      console.log("------------------------------------");
-
       return data.data.offers.map(processOffer);
     } else {
       if (data.message) {
@@ -185,21 +177,11 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       const offersData = data.data?.offers ?? data.offers?.data;
 
       if (data.status === 'success' && offersData) {
-        // Log raw country data for a sample from this page
-        console.log(`--- Raw Data from All Offers (Page ${pageCount}) ---`);
-        offersData.slice(0, 3).forEach(offer => {
-          console.log(`Offer ID: ${offer.offer_id}, Raw Countries: ${JSON.stringify(offer.countries)}`);
-        });
-        console.log("------------------------------------");
-
         const offers = offersData.map(processOffer);
         allOffers = allOffers.concat(offers);
         
         const nextUrlFromData = data.data?.next_page_url ?? data.offers?.next_page_url;
         
-        // FOR DEBUGGING: To avoid fetching all pages, we'll stop after one.
-        // In production, you would use the full logic.
-        // nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
         console.log("Debug mode: stopping after one page. Full sync would continue.");
         nextPageUrl = null; // Stop after one page for debugging
 

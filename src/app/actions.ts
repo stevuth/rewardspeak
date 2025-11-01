@@ -44,7 +44,6 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
     const supabase = createSupabaseAdminClient();
 
     try {
-        // Fetch offers from both Notik endpoints in parallel
         const [topOffers, allOffers] = await Promise.all([
             getOffers(),
             getAllOffers()
@@ -53,7 +52,14 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
         console.log(`Fetched ${topOffers.length} top converting offers.`);
         console.log(`Fetched ${allOffers.length} total offers.`);
 
-        // Helper function to remove duplicates and prepare data for upsert
+        // 🔍 CHECK: What does the first offer look like?
+        if (topOffers.length > 0) {
+            console.log("📊 First top offer:", JSON.stringify(topOffers[0], null, 2));
+        }
+        if (allOffers.length > 0) {
+            console.log("📊 First all offer:", JSON.stringify(allOffers[0], null, 2));
+        }
+
         const prepareOffersData = (offers: NotikOffer[]) => {
             const seen = new Map();
             const uniqueOffers = offers.filter(offer => {
@@ -66,19 +72,29 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                 }
             });
 
-            return uniqueOffers.map(offer => ({
-                offer_id: offer.offer_id,
-                name: offer.name,
-                description: offer.description || offer.name,
-                click_url: offer.click_url,
-                image_url: offer.image_url,
-                network: offer.network,
-                payout: offer.payout,
-                countries: offer.countries,
-                platforms: offer.platforms,
-                categories: offer.categories,
-                events: offer.events,
-            }));
+            return uniqueOffers.map(offer => {
+                // 🔍 CHECK: What are we about to insert?
+                const prepared = {
+                    offer_id: offer.offer_id,
+                    name: offer.name,
+                    description: offer.description || offer.name,
+                    click_url: offer.click_url,
+                    image_url: offer.image_url,
+                    network: offer.network,
+                    payout: offer.payout,
+                    countries: offer.countries,
+                    platforms: offer.platforms,
+                    categories: offer.categories,
+                    events: offer.events,
+                };
+                
+                // Log if countries is missing
+                if (!prepared.countries || prepared.countries.length === 0) {
+                    console.log(`⚠️ Prepared offer ${prepared.offer_id} has empty countries:`, prepared.countries);
+                }
+                
+                return prepared;
+            });
         };
 
         const BATCH_SIZE = 500;
@@ -86,45 +102,58 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
         // Upsert top converting offers
         if (topOffers.length > 0) {
             const topOffersData = prepareOffersData(topOffers);
-            console.log("Sample of processed top offers country data:", topOffersData.slice(0, 3).map(o => ({id: o.offer_id, countries: o.countries})));
+            console.log("📤 About to insert top offer:", JSON.stringify(topOffersData[0], null, 2));
             
             const topOfferChunks = chunk(topOffersData, BATCH_SIZE);
 
             for (const topChunk of topOfferChunks) {
-                const { error: topOffersError } = await supabase
+                const { data, error: topOffersError } = await supabase
                     .from('top_converting_offers')
-                    .upsert(topChunk, { onConflict: 'offer_id' });
+                    .upsert(topChunk, { onConflict: 'offer_id' })
+                    .select('offer_id, countries')
+                    .limit(1);
 
                 if (topOffersError) {
-                    console.error('Error upserting a chunk of top converting offers:', topOffersError);
+                    console.error('❌ Error upserting top converting offers:', topOffersError);
                     throw new Error(topOffersError.message);
+                }
+                
+                // 🔍 CHECK: What did Supabase actually store?
+                if (data && data.length > 0) {
+                    console.log("✅ Supabase stored (top):", data[0]);
                 }
             }
             console.log(`Successfully upserted ${topOffersData.length} top converting offers.`);
         }
 
-        // Upsert all offers
+        // Similar for all offers...
         if (allOffers.length > 0) {
             const allOffersData = prepareOffersData(allOffers);
-            console.log("Sample of processed all offers country data:", allOffersData.slice(0, 3).map(o => ({id: o.offer_id, countries: o.countries})));
+            console.log("📤 About to insert all offer:", JSON.stringify(allOffersData[0], null, 2));
 
             const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
 
             for (const allChunk of allOfferChunks) {
-                const { error: allOffersError } = await supabase
+                const { data, error: allOffersError } = await supabase
                     .from('all_offers')
-                    .upsert(allChunk, { onConflict: 'offer_id' });
+                    .upsert(allChunk, { onConflict: 'offer_id' })
+                    .select('offer_id, countries')
+                    .limit(1);
 
                 if (allOffersError) {
-                    console.error('Error upserting a chunk of all offers:', allOffersError);
+                    console.error('❌ Error upserting all offers:', allOffersError);
                     throw new Error(allOffersError.message);
+                }
+                
+                // 🔍 CHECK: What did Supabase actually store?
+                if (data && data.length > 0) {
+                    console.log("✅ Supabase stored (all):", data[0]);
                 }
             }
             console.log(`Successfully upserted ${allOffersData.length} total offers.`);
         }
         
         console.log("Offer sync process completed. Revalidating /earn path.");
-        // Revalidate the path to show the new data
         revalidatePath('/earn');
         return { success: true };
 
