@@ -88,9 +88,9 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
     ? parseFloat(rawOffer.payout)
     : (rawOffer.payout || 0);
 
-  let finalCountries = standardizeCountries(rawOffer.countries);
+  const finalCountries = standardizeCountries(rawOffer.countries);
 
-  return {
+  const processedOffer = {
     ...rawOffer,
     description: rawOffer.description || rawOffer.name,
     payout: payoutValue,
@@ -100,6 +100,8 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
       payout: typeof e.payout === 'string' ? parseFloat(e.payout) : (e.payout || 0)
     }))
   };
+
+  return processedOffer;
 }
 
 export async function getOffers(): Promise<NotikOffer[]> {
