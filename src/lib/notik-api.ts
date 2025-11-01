@@ -37,53 +37,59 @@ interface ApiResponse {
 
 /**
  * Standardizes the 'countries' field from the API into a consistent string array.
- * The API can return this data as an object of key-value pairs, an array, a string, or null.
+ * This function is designed to be very robust and handle various unexpected formats.
  * @param rawCountries - The raw country data from the Notik API.
  * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
  */
 function standardizeCountries(rawCountries: any): string[] {
-  // If rawCountries is falsy, empty, or an empty object, it's global.
-  if (!rawCountries || (typeof rawCountries === 'object' && Object.keys(rawCountries).length === 0)) {
+  // Case 1: Handle null, undefined, or empty string by returning a default global value.
+  if (!rawCountries || rawCountries === "") {
     return ["ALL"];
   }
 
-  // Case 1: It's an array of strings (e.g., ["US", "GB"])
+  // Case 2: Handle if it's already a valid array.
   if (Array.isArray(rawCountries)) {
-    const countries = rawCountries.map(String).filter(Boolean);
+    const countries = rawCountries.map(String).filter(Boolean); // Ensure all items are strings and not empty
     return countries.length > 0 ? countries : ["ALL"];
   }
 
-  // Case 2: It's a comma-separated string (e.g., "US,GB,CA")
-  if (typeof rawCountries === 'string' && rawCountries.trim() !== '') {
+  // Case 3: Handle a comma-separated string.
+  if (typeof rawCountries === 'string') {
     const countries = rawCountries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
     return countries.length > 0 ? countries : ["ALL"];
   }
 
-  // Case 3: It's an object (e.g., { "US": "United States" } or { "0": "US" })
-  if (typeof rawCountries === 'object') {
-    // If keys are country codes (e.g., "US", "GB"), use the keys.
+  // Case 4: Handle an object. This can be { "US": "United States" } or { "0": "US" }.
+  if (typeof rawCountries === 'object' && !Array.isArray(rawCountries)) {
     const keys = Object.keys(rawCountries);
+    if (keys.length === 0) {
+      return ["ALL"];
+    }
+    // Check if keys are valid 2-letter country codes.
     const isCountryCodeKey = keys.every(key => /^[A-Z]{2}$/.test(key.toUpperCase()));
     if (isCountryCodeKey) {
-      return keys.length > 0 ? keys : ["ALL"];
+      return keys;
     }
-
-    // If keys are numeric indices (e.g., "0", "1"), use the values.
+    // Otherwise, assume the values are the country codes.
     const values = Object.values(rawCountries).map(String).filter(Boolean);
     if (values.length > 0) {
       return values;
     }
   }
 
-  // Default fallback if no other condition is met.
+  // Fallback for any other unexpected type or empty collection.
   return ["ALL"];
 }
 
 
 // Helper to process and standardize an offer
 function processOffer(rawOffer: RawNotikOffer): NotikOffer {
-  // 🔍 ADD LOGGING HERE
-  console.log('Processing offer:', rawOffer.offer_id, 'raw countries:', rawOffer.countries);
+  // 🔍 DEBUG: Log what we receive
+  if (!rawOffer.countries) {
+    console.log(`⚠️ Offer ${rawOffer.offer_id} has NO countries field in API response`);
+  } else {
+    console.log(`✓ Offer ${rawOffer.offer_id} countries (raw):`, typeof rawOffer.countries, rawOffer.countries);
+  }
   
   const payoutValue = typeof rawOffer.payout === 'string'
     ? parseFloat(rawOffer.payout)
@@ -91,8 +97,7 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   const finalCountries = standardizeCountries(rawOffer.countries);
   
-  // 🔍 ADD LOGGING HERE
-  console.log('Standardized countries:', finalCountries);
+  console.log(`✓ Offer ${rawOffer.offer_id} countries (processed):`, finalCountries);
 
   return {
     ...rawOffer,

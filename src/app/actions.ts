@@ -84,19 +84,11 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     image_url: offer.image_url,
                     network: offer.network,
                     payout: offer.payout,
-                    // 🔧 FIX: Ensure countries is never undefined/null
-                    countries: offer.countries && offer.countries.length > 0 
-                        ? offer.countries 
-                        : ["ALL"],
+                    countries: offer.countries, // This should now be a safe, standardized array
                     platforms: offer.platforms,
                     categories: offer.categories,
                     events: offer.events,
                 };
-
-                // Log if countries is missing
-                if (!prepared.countries || prepared.countries.length === 0) {
-                    console.log(`⚠️ Prepared offer ${prepared.offer_id} has empty countries:`, prepared.countries);
-                }
                 
                 return prepared;
             });
