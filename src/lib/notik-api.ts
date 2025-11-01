@@ -82,12 +82,8 @@ function standardizeCountries(rawCountries: any): string[] {
 
 // Helper to process and standardize an offer
 function processOffer(rawOffer: RawNotikOffer): NotikOffer {
-  // 🔍 DEBUG: Log what we receive
-  if (!rawOffer.countries) {
-    console.log(`⚠️ Offer ${rawOffer.offer_id} has NO countries field in API response`);
-  } else {
-    console.log(`✓ Offer ${rawOffer.offer_id} countries (raw):`, typeof rawOffer.countries, rawOffer.countries);
-  }
+  // 🔍 ADD LOGGING HERE
+  console.log('Processing offer:', rawOffer.offer_id, 'raw countries:', rawOffer.countries);
   
   const payoutValue = typeof rawOffer.payout === 'string'
     ? parseFloat(rawOffer.payout)
@@ -95,7 +91,8 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   const finalCountries = standardizeCountries(rawOffer.countries);
   
-  console.log(`✓ Offer ${rawOffer.offer_id} countries (processed):`, finalCountries);
+  // 🔍 ADD LOGGING HERE
+  console.log('Standardized countries:', finalCountries);
 
   return {
     ...rawOffer,
@@ -159,13 +156,10 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
 
   let allOffers: NotikOffer[] = [];
   let nextPageUrl: string | null | undefined = `https://notik.me/api/v2/get-offers/all?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}`;
-  let pageCount = 0;
 
-  while (nextPageUrl && pageCount < 1) { // Limit to 1 page for debugging
-    pageCount++;
+  while (nextPageUrl) {
     try {
-      console.log(`Fetching page ${pageCount} from: ${nextPageUrl}`);
-      const response = await fetch(nextPageUrl, { next: { revalidate: 900 } }); // Revalidate every 15 minutes
+      const response = await fetch(nextPageUrl, { next: { revalidate: 900 } });
       if (!response.ok) {
         console.error(`API call failed with status: ${response.status} for URL: ${nextPageUrl}`);
         const errorBody = await response.text();
@@ -174,6 +168,9 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       }
       const data: ApiResponse = await response.json();
       
+      // 🔍 ADD THIS: Log raw API response
+      console.log("Raw API response sample:", JSON.stringify(data.data?.offers?.[0] || data.offers?.data?.[0], null, 2));
+      
       const offersData = data.data?.offers ?? data.offers?.data;
 
       if (data.status === 'success' && offersData) {
@@ -181,10 +178,7 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
         allOffers = allOffers.concat(offers);
         
         const nextUrlFromData = data.data?.next_page_url ?? data.offers?.next_page_url;
-        
-        console.log("Debug mode: stopping after one page. Full sync would continue.");
-        nextPageUrl = null; // Stop after one page for debugging
-
+        nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
       } else {
         if (data.message) {
             console.error("API call was not successful:", data.message);

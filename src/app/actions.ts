@@ -72,29 +72,22 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                 }
             });
 
-            return uniqueOffers.map(offer => {
-                // 🔍 CHECK: What are we about to insert?
-                const prepared = {
-                    offer_id: offer.offer_id,
-                    name: offer.name,
-                    description: offer.description || offer.name,
-                    click_url: offer.click_url,
-                    image_url: offer.image_url,
-                    network: offer.network,
-                    payout: offer.payout,
-                    countries: offer.countries,
-                    platforms: offer.platforms,
-                    categories: offer.categories,
-                    events: offer.events,
-                };
-                
-                // Log if countries is missing
-                if (!prepared.countries || prepared.countries.length === 0) {
-                    console.log(`⚠️ Prepared offer ${prepared.offer_id} has empty countries:`, prepared.countries);
-                }
-                
-                return prepared;
-            });
+            return uniqueOffers.map(offer => ({
+                offer_id: offer.offer_id,
+                name: offer.name,
+                description: offer.description || offer.name,
+                click_url: offer.click_url,
+                image_url: offer.image_url,
+                network: offer.network,
+                payout: offer.payout,
+                // 🔧 FIX: Ensure countries is never undefined/null
+                countries: offer.countries && offer.countries.length > 0 
+                    ? offer.countries 
+                    : ["ALL"],
+                platforms: offer.platforms,
+                categories: offer.categories,
+                events: offer.events,
+            }));
         };
 
         const BATCH_SIZE = 500;
