@@ -43,7 +43,7 @@ interface ApiResponse {
  */
 function standardizeCountries(rawCountryCode: any): string[] {
   // Case 1: Handle null, undefined, or empty string. Default to global.
-  if (!rawCountryCode || rawCountryCode === "") {
+  if (rawCountryCode === undefined || rawCountryCode === null || rawCountryCode === "") {
     return ["ALL"];
   }
 
