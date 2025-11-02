@@ -78,4 +78,35 @@ export type Withdrawal = {
 export const withdrawalHistory: Withdrawal[] = [];
 
 
-export const offerWalls: any[] = [];
+export const offerWalls = [
+    {
+      name: "AdGate Media",
+      logo: getPlaceholder("adgate-logo").url,
+      hint: getPlaceholder("adgate-logo").hint,
+    },
+    {
+      name: "OfferToro",
+      logo: getPlaceholder("offertoro-logo").url,
+      hint: getPlaceholder("offertoro-logo").hint,
+    },
+    {
+      name: "CPX Research",
+      logo: "https://picsum.photos/seed/cpx/64/64",
+      hint: "chart logo"
+    },
+    {
+      name: "TimeWall",
+      logo: getPlaceholder("timewall-logo").url,
+      hint: getPlaceholder("timewall-logo").hint,
+    },
+    {
+        name: "Lootably",
+        logo: "https://picsum.photos/seed/lootably/64/64",
+        hint: "gift logo"
+    },
+    {
+        name: "Notik",
+        logo: "https://picsum.photos/seed/notik/64/64",
+        hint: "letter N"
+    }
+  ];
