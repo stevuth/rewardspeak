@@ -14,13 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
-import { Badge } from "@/components/ui/badge";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import { SafeImage } from "@/components/safe-image";
+import { OfferDetailsRow } from "./offer-details-row";
 
 export const metadata: Metadata = {
   title: "Admin: Manage Offers",
@@ -74,38 +72,13 @@ export default async function ManageOffersPage({
                 <TableHead>Countries</TableHead>
                 <TableHead>Platforms</TableHead>
                 <TableHead>Categories</TableHead>
-                <TableHead>Offer ID</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {offers.length > 0 ? (
                 offers.map((offer) => (
-                  <TableRow key={offer.offer_id}>
-                    <TableCell>
-                        <SafeImage src={offer.image_url} alt={offer.name} width={40} height={40} className="rounded-md object-cover" />
-                    </TableCell>
-                    <TableCell className="font-medium">{offer.name}</TableCell>
-                    <TableCell>{offer.network}</TableCell>
-                    <TableCell>${offer.payout.toFixed(2)}</TableCell>
-                    <TableCell>
-                        <div className="flex flex-wrap gap-1 max-w-xs">
-                            {(offer.countries || []).map((country: string) => <Badge key={country}>{country}</Badge>)}
-                        </div>
-                    </TableCell>
-                    <TableCell>
-                         <div className="flex flex-wrap gap-1">
-                            {(offer.platforms || []).map((platform: string) => <Badge variant="secondary" key={platform}>{platform}</Badge>)}
-                        </div>
-                    </TableCell>
-                    <TableCell>
-                         <div className="flex flex-wrap gap-1">
-                            {(offer.categories || []).map((category: string) => <Badge variant="outline" key={category}>{category}</Badge>)}
-                        </div>
-                    </TableCell>
-                    <TableCell>
-                        <Badge variant="secondary">{offer.offer_id}</Badge>
-                    </TableCell>
-                  </TableRow>
+                  <OfferDetailsRow key={offer.offer_id} offer={offer} />
                 ))
               ) : (
                 <TableRow>
@@ -142,3 +115,4 @@ export default async function ManageOffersPage({
     </div>
   );
 }
+
