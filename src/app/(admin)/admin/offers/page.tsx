@@ -19,13 +19,15 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
+import { SafeImage } from "@/components/safe-image";
 
 export const metadata: Metadata = {
   title: "Admin: Manage Offers",
   description: "View and manage all offers in the database.",
 };
 
-const OFFERS_PER_PAGE = 50;
+const OFFERS_PER_PAGE = 20;
 
 async function getPaginatedOffers(page: number = 1) {
   const supabase = createSupabaseServerClient();
@@ -65,10 +67,13 @@ export default async function ManageOffersPage({
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-16">Image</TableHead>
                 <TableHead className="w-[300px]">Name</TableHead>
                 <TableHead>Network</TableHead>
                 <TableHead>Payout</TableHead>
                 <TableHead>Countries</TableHead>
+                <TableHead>Platforms</TableHead>
+                <TableHead>Categories</TableHead>
                 <TableHead>Offer ID</TableHead>
               </TableRow>
             </TableHeader>
@@ -76,11 +81,26 @@ export default async function ManageOffersPage({
               {offers.length > 0 ? (
                 offers.map((offer) => (
                   <TableRow key={offer.offer_id}>
+                    <TableCell>
+                        <SafeImage src={offer.image_url} alt={offer.name} width={40} height={40} className="rounded-md object-cover" />
+                    </TableCell>
                     <TableCell className="font-medium">{offer.name}</TableCell>
                     <TableCell>{offer.network}</TableCell>
                     <TableCell>${offer.payout.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge>{offer.countries.join(', ')}</Badge>
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                            {(offer.countries || []).map((country: string) => <Badge key={country}>{country}</Badge>)}
+                        </div>
+                    </TableCell>
+                    <TableCell>
+                         <div className="flex flex-wrap gap-1">
+                            {(offer.platforms || []).map((platform: string) => <Badge variant="secondary" key={platform}>{platform}</Badge>)}
+                        </div>
+                    </TableCell>
+                    <TableCell>
+                         <div className="flex flex-wrap gap-1">
+                            {(offer.categories || []).map((category: string) => <Badge variant="outline" key={category}>{category}</Badge>)}
+                        </div>
                     </TableCell>
                     <TableCell>
                         <Badge variant="secondary">{offer.offer_id}</Badge>
@@ -89,7 +109,7 @@ export default async function ManageOffersPage({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
                     No offers found.
                   </TableCell>
                 </TableRow>
