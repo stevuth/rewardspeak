@@ -2,8 +2,6 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import type { NotikOffer } from "@/lib/notik-api";
 import { SafeImage } from "./safe-image";
 
@@ -32,10 +30,7 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
             </div>
             <CardContent className="p-2 flex-grow flex flex-col">
                 <h3 className="font-semibold text-sm truncate flex-grow mb-1.5">{offer.name}</h3>
-                <div className="flex justify-between items-center gap-2">
-                    <Badge variant="secondary" className="text-[10px] leading-none shrink-0 px-2 py-1 bg-secondary text-secondary-foreground">
-                        {offer.category?.toLowerCase() || 'Offer'}
-                    </Badge>
+                <div className="flex justify-end items-center gap-2">
                     <span className="text-sm font-bold text-secondary truncate text-right flex-1 min-w-0">
                         ${(points / 1000).toFixed(2)}
                     </span>
