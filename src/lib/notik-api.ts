@@ -16,7 +16,7 @@ export interface NotikOffer {
 // Internal type for handling the raw API response which has inconsistent country and payout types
 interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries'> {
   payout?: number | string;
-  countries: any; // Can be a string, array, or object from the API
+  country_code: any; // Changed from 'countries' to match API response. Can be a string, array, or object.
 }
 
 interface ApiOfferResponse {
@@ -36,32 +36,36 @@ interface ApiResponse {
 }
 
 /**
- * Standardizes the 'countries' field from the API into a consistent string array.
+ * Standardizes the 'country_code' field from the API into a consistent string array.
  * This function is designed to be very robust and handle various unexpected formats.
- * @param rawCountries - The raw country data from the Notik API.
+ * @param rawCountryCode - The raw country data from the Notik API.
  * @returns A string array of country codes. Defaults to ["ALL"] if input is empty or invalid.
  */
-function standardizeCountries(rawCountries: any): string[] {
+function standardizeCountries(rawCountryCode: any): string[] {
   // Case 1: Handle null, undefined, or empty string. Default to global.
-  if (!rawCountries || rawCountries === "") {
+  if (!rawCountryCode || rawCountryCode === "") {
     return ["ALL"];
   }
 
-  // Case 2: Handle if it's already a valid array of strings.
-  if (Array.isArray(rawCountries)) {
-    const countries = rawCountries.map(String).filter(Boolean); // Ensure all items are strings and not empty
+  // Case 2: Handle if it's already a valid array.
+  if (Array.isArray(rawCountryCode)) {
+    // Handle the specific case where the API returns ["all"] for global offers.
+    if (rawCountryCode.length === 1 && rawCountryCode[0].toLowerCase() === 'all') {
+      return ["ALL"];
+    }
+    const countries = rawCountryCode.map(c => String(c).toUpperCase()).filter(Boolean); // Ensure all items are uppercase strings and not empty
     return countries.length > 0 ? countries : ["ALL"];
   }
 
   // Case 3: Handle a comma-separated string.
-  if (typeof rawCountries === 'string') {
-    const countries = rawCountries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
+  if (typeof rawCountryCode === 'string') {
+    const countries = rawCountryCode.split(',').map(c => c.trim().toUpperCase()).filter(Boolean);
     return countries.length > 0 ? countries : ["ALL"];
   }
 
   // Case 4: Handle an object like { "US": "United States" } or { "0": "US" }.
-  if (typeof rawCountries === 'object' && !Array.isArray(rawCountries)) {
-    const keys = Object.keys(rawCountries);
+  if (typeof rawCountryCode === 'object' && !Array.isArray(rawCountryCode)) {
+    const keys = Object.keys(rawCountryCode);
     if (keys.length === 0) {
       return ["ALL"];
     }
@@ -71,7 +75,7 @@ function standardizeCountries(rawCountries: any): string[] {
       return keys.map(k => k.toUpperCase());
     }
     // Otherwise, assume the values are the country codes.
-    const values = Object.values(rawCountries).map(String).filter(Boolean);
+    const values = Object.values(rawCountryCode).map(String).filter(Boolean);
     if (values.length > 0) {
       return values.map(v => v.toUpperCase());
     }
@@ -88,7 +92,7 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
     ? parseFloat(rawOffer.payout)
     : (rawOffer.payout || 0);
 
-  const finalCountries = standardizeCountries(rawOffer.countries);
+  const finalCountries = standardizeCountries(rawOffer.country_code);
 
   return {
     ...rawOffer,
