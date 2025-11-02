@@ -32,7 +32,7 @@ type Offer = {
 export function OfferDetailsRow({ offer }: { offer: Offer }) {
   const [isOpen, setIsOpen] = useState(false);
   // Use a more reliable unique ID source if available, but for client-side this is okay.
-  const [uniqueId] = useState(() => `details-${offer.offer_id.replace(/[^a-zA-Z0-9]/g, "")}-${Math.random().toString(36).substr(2, 9)}`);
+  const [uniqueId] = useState(() => `details-${randomUUID()}`);
 
   return (
     <>
