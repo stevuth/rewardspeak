@@ -16,7 +16,7 @@ export interface NotikOffer {
 // Internal type for handling the raw API response which has inconsistent country and payout types
 interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries'> {
   payout?: number | string;
-  country_code: any; // Changed from 'countries' to match API response. Can be a string, array, or object.
+  country_code: any; // Can be a string, array, or object.
 }
 
 interface ApiOfferResponse {
@@ -28,7 +28,7 @@ interface ApiResponse {
   status: string;
   code?: string;
   message?: string;
-  offers?: ApiOfferResponse | RawNotikOffer[];
+  offers?: RawNotikOffer[];
   data?: {
     offers: RawNotikOffer[];
     next_page_url?: string | null;
@@ -120,7 +120,7 @@ export async function getOffers(): Promise<NotikOffer[]> {
 
   try {
     const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
-    const rawText = await response.text(); // Get raw text for debugging
+    const rawText = await response.text(); 
 
     if (!response.ok) {
         throw new Error(`API call failed with status: ${response.status}. Body: ${rawText}`);
@@ -137,21 +137,8 @@ export async function getOffers(): Promise<NotikOffer[]> {
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    // Return a single dummy offer with the error message in the description for debugging
-    return [
-      {
-        offer_id: 'DEBUG_ERROR',
-        name: 'Error Fetching Top Offers',
-        description: `DEBUG_INFO: ${errorMessage}`,
-        click_url: '#',
-        image_url: '',
-        network: 'DEBUG',
-        payout: 0,
-        countries: ["ERROR"],
-        platforms: ['desktop'],
-        categories: ['debug'],
-      }
-    ];
+    console.error("Error in getOffers:", errorMessage);
+    return [];
   }
 }
 
@@ -179,13 +166,13 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       }
       const data: ApiResponse = await response.json();
       
-      const offersData = data.data?.offers ?? (data.offers as ApiOfferResponse)?.data;
+      const offersData = data.data?.offers;
 
       if (data.status === 'success' && Array.isArray(offersData)) {
         const offers = offersData.map(processOffer);
         allOffers = allOffers.concat(offers);
         
-        const nextUrlFromData = data.data?.next_page_url ?? (data.offers as ApiOfferResponse)?.next_page_url;
+        const nextUrlFromData = data.data?.next_page_url;
         nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
       } else {
         if (data.message) {
