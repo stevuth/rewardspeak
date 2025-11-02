@@ -20,6 +20,7 @@ import {
   X,
   ClipboardList,
   LayoutGrid,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +47,7 @@ const secondaryNavItems = [
   { href: "/settings", label: "My Peak Profile", icon: Settings },
   { href: "/history", label: "Quest Log", icon: Clock },
   { href: "/support", label: "Help Station", icon: CircleHelp },
+  { href: "/admin", label: "Admin Portal", icon: Shield },
 ];
 
 const mobileNavItems = [
