@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   X,
   ClipboardList,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +36,8 @@ import { AnimatedCounter } from "@/components/animated-counter";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
-    { href: "/earn", label: "Climb & Earn", icon: Mountain },
+    { href: "/earn", label: "Climb & Earn", icon: LayoutGrid },
+    { href: "/offerwalls", label: "Offerwalls", icon: Mountain },
     { href: "/surveys", label: "Surveys", icon: ClipboardList },
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
     { href: "/referrals", label: "Invite & Climb", icon: Users },

@@ -108,6 +108,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.timebucks.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'timewall.io',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
