@@ -3,16 +3,25 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { Input } from "@/components/ui/input";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import type { NotikOffer } from "@/lib/notik-api";
 import { syncOffers } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
 
 type Offer = NotikOffer & {
   points: number;
@@ -20,6 +29,38 @@ type Offer = NotikOffer & {
   category: "Survey" | "Game" | "App" | "Quiz";
   clickUrl: string;
 };
+
+const offerwalls = [
+    {
+        slug: "timewall",
+        name: "TimeWall",
+        description: "Complete tasks, surveys, and more to earn points.",
+        logoUrl: "https://timewall.io/img/timewall_logo_on_dark.png",
+        logoHint: "timewall logo",
+        bgColor: "bg-green-500"
+    }
+]
+
+const OfferwallCard = ({ wall }: { wall: typeof offerwalls[0] }) => (
+    <Link href={`/offerwalls/${wall.slug}`} className="block group">
+        <Card className={cn("relative overflow-hidden h-48 flex flex-col items-center justify-center text-white transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl", wall.bgColor)}>
+            <Image
+                src={wall.logoUrl}
+                alt={`${wall.name} logo`}
+                width={120}
+                height={60}
+                className="object-contain"
+                data-ai-hint={wall.logoHint}
+            />
+            <div className="absolute bottom-4">
+                 <div className="bg-black/20 text-white text-xs font-semibold px-4 py-1.5 rounded-md backdrop-blur-sm">
+                    {wall.name}
+                 </div>
+            </div>
+        </Card>
+    </Link>
+);
+
 
 function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Offer {
   let clickUrl = notikOffer.click_url;
@@ -168,6 +209,28 @@ export default function ClimbAndEarnPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input placeholder="Search for offers..." className="pl-9" />
       </div>
+
+       <section>
+        <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
+          Offer Providers
+        </h2>
+         <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {offerwalls.map((wall) => (
+                <CarouselItem key={wall.slug} className="basis-1/2 md:basis-1/3 lg:basis-1/5">
+                  <OfferwallCard wall={wall} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute top-1/2 -translate-y-1/2 -left-4 hidden lg:flex" />
+            <CarouselNext className="absolute top-1/2 -translate-y-1/2 -right-4 hidden lg:flex" />
+          </Carousel>
+      </section>
 
       <section>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
