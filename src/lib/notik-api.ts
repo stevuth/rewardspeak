@@ -19,11 +19,6 @@ interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries'> {
   country_code: any; // Can be a string, array, or object.
 }
 
-interface ApiOfferResponse {
-  data: RawNotikOffer[];
-  next_page_url?: string | null;
-}
-
 interface ApiResponse {
   status: string;
   code?: string;
@@ -120,20 +115,20 @@ export async function getOffers(): Promise<NotikOffer[]> {
 
   try {
     const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
-    const rawText = await response.text(); 
-
+    
     if (!response.ok) {
+        const rawText = await response.text();
         throw new Error(`API call failed with status: ${response.status}. Body: ${rawText}`);
     }
     
-    const data: ApiResponse = JSON.parse(rawText);
+    const data: ApiResponse = await response.json();
     
     const offersData = data.offers as RawNotikOffer[];
 
     if (data.status === 'success' && Array.isArray(offersData)) {
       return offersData.map(processOffer);
     } else {
-      throw new Error(`API status not 'success' or offers not an array. Raw response: ${rawText}`);
+      throw new Error(`API status not 'success' or offers not an array.`);
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
