@@ -35,8 +35,7 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
   const [uniqueId] = useState(() => `details-${randomUUID()}`);
 
   return (
-    <>
-      <Collapsible asChild>
+    <Collapsible asChild>
         <>
           <TableRow>
             <TableCell>
@@ -95,8 +94,9 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
               </CollapsibleTrigger>
             </TableCell>
           </TableRow>
-          <TableRow className={isOpen ? "" : "hidden"}>
-              <CollapsibleContent asChild id={uniqueId}>
+          
+          <CollapsibleContent asChild id={uniqueId}>
+            <TableRow>
                 <TableCell colSpan={8}>
                   <div className="p-4 bg-muted/50 rounded-lg space-y-4">
                     <div>
@@ -138,10 +138,10 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
                     )}
                   </div>
                 </TableCell>
-              </CollapsibleContent>
-          </TableRow>
+            </TableRow>
+          </CollapsibleContent>
         </>
-      </Collapsible>
-    </>
+    </Collapsible>
   );
 }
+
