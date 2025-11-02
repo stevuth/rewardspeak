@@ -28,7 +28,7 @@ interface ApiResponse {
   status: string;
   code?: string;
   message?: string;
-  offers?: ApiOfferResponse;
+  offers?: ApiOfferResponse | RawNotikOffer[];
   data?: {
     offers: RawNotikOffer[];
     next_page_url?: string | null;
@@ -127,10 +127,11 @@ export async function getOffers(): Promise<NotikOffer[]> {
       return [];
     }
     const data: ApiResponse = await response.json();
+    
+    // Corrected logic: top converting offers are in data.offers
+    const offersData = data.offers as RawNotikOffer[];
 
-    const offersData = data.data?.offers;
-
-    if (data.status === 'success' && offersData) {
+    if (data.status === 'success' && Array.isArray(offersData)) {
       return offersData.map(processOffer);
     } else {
       if (data.message) {
@@ -170,13 +171,13 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       }
       const data: ApiResponse = await response.json();
       
-      const offersData = data.data?.offers ?? data.offers?.data;
+      const offersData = data.data?.offers ?? (data.offers as ApiOfferResponse)?.data;
 
-      if (data.status === 'success' && offersData) {
+      if (data.status === 'success' && Array.isArray(offersData)) {
         const offers = offersData.map(processOffer);
         allOffers = allOffers.concat(offers);
         
-        const nextUrlFromData = data.data?.next_page_url ?? data.offers?.next_page_url;
+        const nextUrlFromData = data.data?.next_page_url ?? (data.offers as ApiOfferResponse)?.next_page_url;
         nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
       } else {
         if (data.message) {
@@ -194,3 +195,4 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
 
   return allOffers;
 }
+
