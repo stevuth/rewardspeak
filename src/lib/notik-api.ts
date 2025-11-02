@@ -53,7 +53,7 @@ function standardizeCountries(rawCountryCode: any): string[] {
     if (rawCountryCode.length === 1 && rawCountryCode[0].toLowerCase() === 'all') {
       return ["ALL"];
     }
-    const countries = rawCountryCode.map(c => String(c).toUpperCase()).filter(Boolean); // Ensure all items are uppercase strings and not empty
+    const countries = rawCountryCode.map(c => String(c).toUpperCase().trim()).filter(Boolean); // Ensure all items are uppercase strings and not empty
     return countries.length > 0 ? countries : ["ALL"];
   }
 
