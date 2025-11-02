@@ -27,7 +27,23 @@ export const metadata: Metadata = {
 
 const OFFERS_PER_PAGE = 20;
 
-async function getPaginatedOffers(page: number = 1) {
+// Explicitly type the Offer object based on the database schema
+type Offer = {
+  offer_id: string;
+  name: string;
+  description: string;
+  click_url: string;
+  image_url: string;
+  network: string;
+  payout: number;
+  countries: string[];
+  platforms: string[];
+  categories: string[];
+  events: { id: number; name: string; payout: number }[];
+  created_at: string;
+};
+
+async function getPaginatedOffers(page: number = 1): Promise<{ offers: Offer[], count: number }> {
   const supabase = createSupabaseServerClient();
   const from = (page - 1) * OFFERS_PER_PAGE;
   const to = from + OFFERS_PER_PAGE - 1;
@@ -42,7 +58,8 @@ async function getPaginatedOffers(page: number = 1) {
     console.error("Error fetching offers:", error);
     return { offers: [], count: 0 };
   }
-  return { offers: data, count: count || 0 };
+  // Cast the data to the Offer[] type to ensure type safety
+  return { offers: data as Offer[], count: count || 0 };
 }
 
 export default async function ManageOffersPage({
@@ -93,7 +110,7 @@ export default async function ManageOffersPage({
         <CardFooter>
             <div className="flex w-full justify-between items-center text-sm text-muted-foreground">
                 <div>
-                    Showing {offers.length} of {count} offers
+                    Showing {((currentPage - 1) * OFFERS_PER_PAGE) + 1} - {Math.min(currentPage * OFFERS_PER_PAGE, count)} of {count} offers
                 </div>
                 <div className="flex items-center gap-2">
                     <Button asChild variant="outline" disabled={currentPage <= 1}>
@@ -115,4 +132,3 @@ export default async function ManageOffersPage({
     </div>
   );
 }
-
