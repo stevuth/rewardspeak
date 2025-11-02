@@ -128,8 +128,10 @@ export async function getOffers(): Promise<NotikOffer[]> {
     }
     const data: ApiResponse = await response.json();
 
-    if (data.status === 'success' && data.data?.offers) {
-      return data.data.offers.map(processOffer);
+    const offersData = data.data?.offers;
+
+    if (data.status === 'success' && offersData) {
+      return offersData.map(processOffer);
     } else {
       if (data.message) {
         console.error("API call was not successful:", data.message);
