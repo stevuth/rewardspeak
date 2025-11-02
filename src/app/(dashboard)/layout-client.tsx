@@ -50,7 +50,6 @@ const secondaryNavItems = [
 
 const mobileNavItems = [
     { href: "/earn", label: "Climb & Earn", icon: Mountain },
-    { href: "/surveys", label: "Surveys", icon: ClipboardList },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
     { href: "/settings", label: "My Profile", icon: Settings },
@@ -283,7 +282,7 @@ function MobileBottomNav() {
     const pathname = usePathname();
     return (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-4 gap-2">
                 {mobileNavItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
