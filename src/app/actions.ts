@@ -7,7 +7,7 @@ import {
   type OptimizeSEOMetaTagsOutput,
 } from "@/ai/flows/optimize-seo-meta-tags";
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
-import { getAllOffers, getOffers, type NotikOffer } from "@/lib/notik-api";
+import { getAllOffers, type NotikOffer } from "@/lib/notik-api";
 import { revalidatePath } from "next/cache";
 
 type ActionResult = {
@@ -46,13 +46,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
     const supabase = createSupabaseAdminClient();
 
     try {
-        // Fetch top offers first
-        const topOffers = await getOffers();
-
-        // Wait for 2 seconds to avoid rate-limiting
-        await delay(2000);
-
-        // Fetch all other offers
+        // Fetch all offers
         const allOffers = await getAllOffers();
         
         const prepareOffersData = (offers: NotikOffer[]) => {
@@ -88,24 +82,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
 
         const BATCH_SIZE = 500;
 
-        // Upsert top converting offers
-        if (topOffers.length > 0) {
-            const topOffersData = prepareOffersData(topOffers);
-            const topOfferChunks = chunk(topOffersData, BATCH_SIZE);
-
-            for (const topChunk of topOfferChunks) {
-                const { error: topOffersError } = await supabase
-                    .from('top_converting_offers')
-                    .upsert(topChunk, { onConflict: 'offer_id' });
-
-                if (topOffersError) {
-                    console.error('❌ Error upserting top converting offers:', topOffersError);
-                    throw new Error(topOffersError.message);
-                }
-            }
-        }
-
-        // Similar for all offers...
+        // Upsert all offers...
         if (allOffers.length > 0) {
             const allOffersData = prepareOffersData(allOffers);
             const allOfferChunks = chunk(allOffersData, BATCH_SIZE);

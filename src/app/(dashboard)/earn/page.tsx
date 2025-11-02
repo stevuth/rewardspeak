@@ -6,7 +6,6 @@ import Image from "next/image";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search, RefreshCw } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
@@ -45,7 +44,6 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
 export default function ClimbAndEarnPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
-  const [gameOffers, setGameOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
@@ -63,7 +61,7 @@ export default function ClimbAndEarnPage() {
       
       if (notikData.error) throw new Error(notikData.error);
 
-      const { allOffers: rawAllOffers, topOffers: rawTopOffers, user } = notikData;
+      const { allOffers: rawAllOffers, user } = notikData;
       const userId = user?.id;
 
       let transformedNotikOffers: Offer[] = [];
@@ -74,14 +72,6 @@ export default function ClimbAndEarnPage() {
           setAllOffers([]);
       }
 
-      let transformedTopOffers: Offer[] = [];
-      if (Array.isArray(rawTopOffers)) {
-          transformedTopOffers = rawTopOffers.map((o: NotikOffer) => transformOffer(o, userId));
-          setGameOffers(transformedTopOffers.filter((o) => o.category === "Game"));
-      } else {
-          setGameOffers([]);
-      }
-      
     } catch (error) {
       console.error("Error fetching offers:", error);
       toast({
@@ -180,18 +170,10 @@ export default function ClimbAndEarnPage() {
       </div>
 
       <section>
-        <Tabs defaultValue="all_offers" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-flex">
-            <TabsTrigger value="all_offers">All offers</TabsTrigger>
-            <TabsTrigger value="games">Games</TabsTrigger>
-          </TabsList>
-          <TabsContent value="all_offers" className="mt-6">
-            {renderOfferGrid(allOffers, 'offer')}
-          </TabsContent>
-          <TabsContent value="games" className="mt-6">
-            {renderOfferGrid(gameOffers, 'game')}
-          </TabsContent>
-        </Tabs>
+        <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
+          All Offers
+        </h2>
+        {renderOfferGrid(allOffers, 'offer')}
       </section>
       
       <OfferPreviewModal 

@@ -8,19 +8,12 @@ export async function GET() {
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Fetch offers from your database tables in parallel
-    const [topOffersResponse, allOffersResponse] = await Promise.all([
-      supabase.from('top_converting_offers').select('*'),
-      supabase.from('all_offers').select('*')
-    ]);
+    // Fetch offers from your database table
+    const { data: allOffers, error: allOffersError } = await supabase.from('all_offers').select('*');
 
-    if (topOffersResponse.error) throw topOffersResponse.error;
-    if (allOffersResponse.error) throw allOffersResponse.error;
+    if (allOffersError) throw allOffersError;
 
-    const topOffers = topOffersResponse.data;
-    const allOffers = allOffersResponse.data;
-
-    return NextResponse.json({ topOffers, allOffers, user });
+    return NextResponse.json({ allOffers, user });
   } catch (error) {
     console.error("API route get-offers error:", error);
     const errorMessage = error instanceof Error ? error.message : "Failed to fetch offers from the database.";
