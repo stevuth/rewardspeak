@@ -50,7 +50,7 @@ function standardizeCountries(rawCountryCode: any): string[] {
   // Case 2: Handle if it's already a valid array.
   if (Array.isArray(rawCountryCode)) {
     // Handle the specific case where the API returns ["all"] for global offers.
-    if (rawCountryCode.length === 1 && rawCountryCode[0].toLowerCase() === 'all') {
+    if (rawCountryCode.length === 1 && String(rawCountryCode[0]).toLowerCase() === 'all') {
       return ["ALL"];
     }
     const countries = rawCountryCode.map(c => String(c).toUpperCase().trim()).filter(Boolean); // Ensure all items are uppercase strings and not empty
@@ -120,30 +120,38 @@ export async function getOffers(): Promise<NotikOffer[]> {
 
   try {
     const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
+    const rawText = await response.text(); // Get raw text for debugging
+
     if (!response.ok) {
-      console.error(`API call failed with status: ${response.status}`);
-      const errorBody = await response.text();
-      console.error("API Error Body:", errorBody);
-      return [];
+        throw new Error(`API call failed with status: ${response.status}. Body: ${rawText}`);
     }
-    const data: ApiResponse = await response.json();
     
-    // Corrected logic: top converting offers are in data.offers
+    const data: ApiResponse = JSON.parse(rawText);
+    
     const offersData = data.offers as RawNotikOffer[];
 
     if (data.status === 'success' && Array.isArray(offersData)) {
       return offersData.map(processOffer);
     } else {
-      if (data.message) {
-        console.error("API call was not successful:", data.message);
-      } else {
-        console.error("API call was not successful and returned no message. Full response:", JSON.stringify(data));
-      }
-      return [];
+      throw new Error(`API status not 'success' or offers not an array. Raw response: ${rawText}`);
     }
   } catch (error) {
-    console.error("Failed to fetch offers:", error);
-    return [];
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    // Return a single dummy offer with the error message in the description for debugging
+    return [
+      {
+        offer_id: 'DEBUG_ERROR',
+        name: 'Error Fetching Top Offers',
+        description: `DEBUG_INFO: ${errorMessage}`,
+        click_url: '#',
+        image_url: '',
+        network: 'DEBUG',
+        payout: 0,
+        countries: ["ERROR"],
+        platforms: ['desktop'],
+        categories: ['debug'],
+      }
+    ];
   }
 }
 
@@ -195,4 +203,3 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
 
   return allOffers;
 }
-
