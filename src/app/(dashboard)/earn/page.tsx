@@ -38,6 +38,14 @@ const offerwalls = [
         logoUrl: "https://timewall.io/img/timewall_logo_on_dark.png",
         logoHint: "timewall logo",
         bgColor: "bg-green-500"
+    },
+    {
+        slug: "theoremreach",
+        name: "TheoremReach",
+        description: "High-quality surveys for direct rewards.",
+        logoUrl: "https://publishers.theoremreach.com/packs/images/logo-icon-4027a12eb2c56c5b9ca470636aa023c7.svg",
+        logoHint: "theoremreach logo",
+        bgColor: "bg-blue-500"
     }
 ]
 

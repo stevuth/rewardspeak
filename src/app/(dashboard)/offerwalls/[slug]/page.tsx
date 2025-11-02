@@ -18,6 +18,14 @@ const offerwalls: Record<string, Offerwall> = {
     timewall: {
         name: "TimeWall",
         getIframeUrl: (userId) => `https://timewall.io/users/login?oid=eeade03b99a53feb&uid=${userId}`
+    },
+    theoremreach: {
+        name: "TheoremReach",
+        getIframeUrl: (userId) => {
+            const apiKey = process.env.NEXT_PUBLIC_THEOREMREACH_API_KEY;
+            const transactionId = `${userId}-${Date.now()}`;
+            return `https://theoremreach.com/respondent_entry/direct?api_key=${apiKey}&user_id=${userId}&transaction_id=${transactionId}`;
+        }
     }
 };
 

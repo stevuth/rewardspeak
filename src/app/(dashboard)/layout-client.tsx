@@ -37,7 +37,6 @@ import { AnimatedCounter } from "@/components/animated-counter";
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
     { href: "/earn", label: "Climb & Earn", icon: LayoutGrid },
-    { href: "/surveys", label: "Surveys", icon: ClipboardList },
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
     { href: "/referrals", label: "Invite & Climb", icon: Users },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
