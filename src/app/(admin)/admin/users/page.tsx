@@ -3,9 +3,6 @@ import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Table,
@@ -24,25 +21,40 @@ export const metadata: Metadata = {
   description: "View and manage all registered users.",
 };
 
-async function getAllUsers() {
+// We define a type for the joined data for better type safety.
+type UserProfile = {
+    id: string;
+    user_id: string;
+    points: number;
+    users: {
+        email: string | null;
+        created_at: string;
+    } | null;
+}
+
+async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
+  // Corrected query: Select from 'profiles' and explicitly join with 'users' from the auth schema.
   const { data, error } = await supabase
     .from('profiles')
     .select(`
         id,
         user_id,
         points,
-        users (
+        users:users (
             email,
             created_at
         )
     `);
 
   if (error) {
-    console.error("Error fetching users:", error);
+    // The error object might be empty, so we log a more descriptive message.
+    console.error("Error fetching users:", error.message || 'An unknown error occurred');
     return [];
   }
-  return data;
+
+  // Ensure data is not null and fits the UserProfile type
+  return data || [];
 }
 
 export default async function ManageUsersPage() {
@@ -70,13 +82,11 @@ export default async function ManageUsersPage() {
                 users.map((profile) => (
                   <TableRow key={profile.id}>
                     <TableCell className="font-medium">
-                      {/* @ts-ignore */}
-                      {profile.users?.email}
+                      {profile.users?.email ?? 'N/A'}
                     </TableCell>
                     <TableCell>{profile.points}</TableCell>
                     <TableCell>
-                      {/* @ts-ignore */}
-                      {new Date(profile.users?.created_at).toLocaleDateString()}
+                      {profile.users ? new Date(profile.users.created_at).toLocaleDateString() : 'N/A'}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{profile.id}</Badge>
