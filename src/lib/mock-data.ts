@@ -90,9 +90,9 @@ export const offerWalls = [
       hint: getPlaceholder("offertoro-logo").hint,
     },
     {
-      name: "CPX Research",
-      logo: getPlaceholder("cpalead-logo").url,
-      hint: getPlaceholder("cpalead-logo").hint,
+      name: "TheoremReach",
+      logo: "https://publishers.theoremreach.com/packs/images/logo-icon-4027a12eb2c56c5b9ca470636aa023c7.svg",
+      hint: "survey logo",
     },
     {
       name: "TimeWall",
@@ -100,4 +100,5 @@ export const offerWalls = [
       hint: getPlaceholder("timewall-logo").hint,
     },
   ];
+
 

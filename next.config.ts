@@ -68,6 +68,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'publishers.theoremreach.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'main-p.agmcdn.com',
         port: '',
         pathname: '/**',
