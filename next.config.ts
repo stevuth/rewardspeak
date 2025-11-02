@@ -91,7 +91,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'https|http',
         hostname: 'media.go2speed.org',
         port: '',
         pathname: '/**',

@@ -23,9 +23,8 @@ interface ApiResponse {
   status: string;
   code?: string;
   message?: string;
-  offers?: RawNotikOffer[];
-  data?: {
-    offers: RawNotikOffer[];
+  data: {
+    offers?: RawNotikOffer[];
     next_page_url?: string | null;
   };
 }
@@ -118,17 +117,23 @@ export async function getOffers(): Promise<NotikOffer[]> {
     
     if (!response.ok) {
         const rawText = await response.text();
+        // If we get a 429, it's a rate limit error, not a code error. We can just return empty and let the next sync try again.
+        if (response.status === 429) {
+          console.warn("Notik API rate limit hit for top converting offers. Skipping this cycle.");
+          return [];
+        }
         throw new Error(`API call failed with status: ${response.status}. Body: ${rawText}`);
     }
     
     const data: ApiResponse = await response.json();
     
-    const offersData = data.offers as RawNotikOffer[];
+    const offersData = data.data?.offers;
 
     if (data.status === 'success' && Array.isArray(offersData)) {
       return offersData.map(processOffer);
     } else {
-      throw new Error(`API status not 'success' or offers not an array.`);
+      console.warn(`API status for top offers not 'success' or offers not an array. Status: ${data.status}`);
+      return [];
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -154,6 +159,10 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
     try {
       const response = await fetch(nextPageUrl, { next: { revalidate: 900 } });
       if (!response.ok) {
+        if (response.status === 429) {
+          console.warn(`Notik API rate limit hit for all offers at page: ${nextPageUrl}. Stopping sync for this cycle.`);
+          break; 
+        }
         console.error(`API call failed with status: ${response.status} for URL: ${nextPageUrl}`);
         const errorBody = await response.text();
         console.error("API Error Body:", errorBody);
