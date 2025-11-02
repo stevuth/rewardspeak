@@ -38,15 +38,22 @@ function chunk<T>(array: T[], size: number): T[][] {
   return chunks;
 }
 
+// Helper to introduce a delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 
 export async function syncOffers(): Promise<{ success: boolean; error?: string }> {
     const supabase = createSupabaseAdminClient();
 
     try {
-        const [topOffers, allOffers] = await Promise.all([
-            getOffers(),
-            getAllOffers()
-        ]);
+        // Fetch top offers first
+        const topOffers = await getOffers();
+
+        // Wait for 2 seconds to avoid rate-limiting
+        await delay(2000);
+
+        // Fetch all other offers
+        const allOffers = await getAllOffers();
         
         const prepareOffersData = (offers: NotikOffer[]) => {
             const seen = new Map();
@@ -69,7 +76,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string }
                     image_url: offer.image_url,
                     network: offer.network,
                     payout: offer.payout,
-                    countries: offer.countries, // This is now guaranteed to be a valid array by processOffer
+                    countries: offer.countries,
                     platforms: offer.platforms,
                     categories: offer.categories,
                     events: offer.events,
