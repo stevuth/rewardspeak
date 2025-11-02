@@ -5,10 +5,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { Input } from "@/components/ui/input";
-import { Search, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import type { NotikOffer } from "@/lib/notik-api";
 import { syncOffers } from "@/app/actions";
@@ -95,6 +95,7 @@ export default function ClimbAndEarnPage() {
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [syncLog, setSyncLog] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchOffers = async () => {
@@ -139,9 +140,11 @@ export default function ClimbAndEarnPage() {
 
   const handleSyncOffers = async () => {
     setIsSyncing(true);
+    setSyncLog(null);
     toast({ title: "Syncing offers...", description: "Fetching the latest offers from our partners." });
 
     const result = await syncOffers();
+    setSyncLog(result.log || 'No log message returned.');
     
     if (result.success) {
         toast({ title: "Sync complete!", description: "Offers have been updated successfully." });
@@ -212,6 +215,17 @@ export default function ClimbAndEarnPage() {
           {isSyncing ? 'Syncing...' : 'Sync Offers'}
         </Button>
       </div>
+
+      {syncLog && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Sync Log</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre className="text-xs bg-muted p-4 rounded-md whitespace-pre-wrap">{syncLog}</pre>
+          </CardContent>
+        </Card>
+      )}
       
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

@@ -38,73 +38,67 @@ function chunk<T>(array: T[], size: number): T[][] {
   return chunks;
 }
 
-// Helper to introduce a delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-
-export async function syncOffers(): Promise<{ success: boolean; error?: string }> {
+export async function syncOffers(): Promise<{ success: boolean; error?: string, log?: string }> {
     const supabase = createSupabaseAdminClient();
+    let log = "Sync process started...\n";
 
     try {
-        // Fetch all offers
+        log += "Fetching all offers from the API...\n";
         const allOffers = await getAllOffers();
+        log += `Fetched ${allOffers.length} offers from the API.\n`;
         
-        const prepareOffersData = (offers: NotikOffer[]) => {
-            const seen = new Map();
-            const uniqueOffers = offers.filter(offer => {
-                const offerId = offer.offer_id;
-                if (seen.has(offerId)) {
-                    return false;
-                } else {
-                    seen.set(offerId, true);
-                    return true;
-                }
-            });
+        if (allOffers.length === 0) {
+            log += "No offers to sync. Exiting.\n";
+            revalidatePath('/earn');
+            return { success: true, log };
+        }
 
-            return uniqueOffers.map(offer => {
-                const prepared = {
-                    offer_id: offer.offer_id,
-                    name: offer.name,
-                    description: offer.description || offer.name,
-                    click_url: offer.click_url,
-                    image_url: offer.image_url,
-                    network: offer.network,
-                    payout: offer.payout,
-                    countries: offer.countries,
-                    platforms: offer.platforms,
-                    categories: offer.categories,
-                    events: offer.events,
-                };
-                
-                return prepared;
-            });
+        const prepareOffersData = (offers: NotikOffer[]) => {
+            return offers.map(offer => ({
+                offer_id: offer.offer_id,
+                name: offer.name,
+                description: offer.description || "",
+                click_url: offer.click_url,
+                image_url: offer.image_url,
+                network: offer.network,
+                payout: offer.payout,
+                countries: offer.countries,
+                platforms: offer.platforms,
+                categories: offer.categories,
+                events: offer.events,
+            }));
         };
 
         const BATCH_SIZE = 500;
+        const allOffersData = prepareOffersData(allOffers);
+        const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
 
-        // Upsert all offers...
-        if (allOffers.length > 0) {
-            const allOffersData = prepareOffersData(allOffers);
-            const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
+        log += `Prepared ${allOffersData.length} unique offers for database update. Splitting into ${allOfferChunks.length} chunk(s).\n`;
 
-            for (const allChunk of allOfferChunks) {
-                const { error: allOffersError } = await supabase
-                    .from('all_offers')
-                    .upsert(allChunk, { onConflict: 'offer_id' });
+        for (let i = 0; i < allOfferChunks.length; i++) {
+            const allChunk = allOfferChunks[i];
+            log += `Upserting chunk ${i + 1}/${allOfferChunks.length} with ${allChunk.length} offers...\n`;
+            const { error: allOffersError } = await supabase
+                .from('all_offers')
+                .upsert(allChunk, { onConflict: 'offer_id' });
 
-                if (allOffersError) {
-                    console.error('❌ Error upserting all offers:', allOffersError);
-                    throw new Error(allOffersError.message);
-                }
+            if (allOffersError) {
+                log += `❌ Error upserting chunk ${i + 1}: ${allOffersError.message}\n`;
+                console.error('❌ Error upserting all offers:', allOffersError);
+                throw new Error(allOffersError.message);
             }
+            log += `✅ Chunk ${i + 1} upserted successfully.\n`;
         }
         
+        log += "Revalidating path /earn...\n";
         revalidatePath('/earn');
-        return { success: true };
+        log += "Sync complete!";
+        return { success: true, log };
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during offer sync.";
+        log += `❌ Sync failed: ${errorMessage}`;
         console.error("Sync Offers Error:", errorMessage);
-        return { success: false, error: errorMessage };
+        return { success: false, error: errorMessage, log };
     }
 }
