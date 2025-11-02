@@ -14,9 +14,10 @@ export interface NotikOffer {
 }
 
 // Internal type for handling the raw API response which has inconsistent country and payout types
-interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries'> {
+interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries' | 'description'> {
   payout?: number | string;
   country_code: any; // Can be a string, array, or object.
+  description: string;
 }
 
 interface ApiResponse {
@@ -90,7 +91,7 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   return {
     ...rawOffer,
-    description: rawOffer.description || rawOffer.name,
+    description: rawOffer.description || "",
     payout: payoutValue,
     countries: finalCountries,
     events: (rawOffer.events || []).map(e => ({
