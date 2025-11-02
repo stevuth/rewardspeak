@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
+  CardFooter
 } from "@/components/ui/card";
 import {
   Table,
@@ -15,20 +16,27 @@ import {
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import type { Metadata } from "next";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Admin: Manage Offers",
   description: "View and manage all offers in the database.",
 };
 
-async function getAllOffers() {
+const OFFERS_PER_PAGE = 50;
+
+async function getPaginatedOffers(page: number = 1) {
   const supabase = createSupabaseServerClient();
-  // Supabase has a default limit of 1000 rows. We'll fetch a large number for the admin page.
+  const from = (page - 1) * OFFERS_PER_PAGE;
+  const to = from + OFFERS_PER_PAGE - 1;
+
   const { data, error, count } = await supabase
     .from('all_offers')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
-    .limit(5000);
+    .range(from, to);
 
   if (error) {
     console.error("Error fetching offers:", error);
@@ -37,14 +45,20 @@ async function getAllOffers() {
   return { offers: data, count: count || 0 };
 }
 
-export default async function ManageOffersPage() {
-  const { offers, count } = await getAllOffers();
+export default async function ManageOffersPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
+  const currentPage = Number(searchParams.page) || 1;
+  const { offers, count } = await getPaginatedOffers(currentPage);
+  const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
 
   return (
     <div className="space-y-8">
       <PageHeader
         title="Manage Offers"
-        description={`Showing ${offers.length} of ${count} total offers in the database.`}
+        description={`Showing page ${currentPage} of ${totalPages}. Total offers: ${count}.`}
       />
       <Card>
         <CardContent className="pt-6">
@@ -83,6 +97,27 @@ export default async function ManageOffersPage() {
             </TableBody>
           </Table>
         </CardContent>
+        <CardFooter>
+            <div className="flex w-full justify-between items-center text-sm text-muted-foreground">
+                <div>
+                    Showing {offers.length} of {count} offers
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button asChild variant="outline" disabled={currentPage <= 1}>
+                        <Link href={`/admin/offers?page=${currentPage - 1}`}>
+                            <ChevronLeft className="h-4 w-4 mr-2" />
+                            Previous
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" disabled={currentPage >= totalPages}>
+                         <Link href={`/admin/offers?page=${currentPage + 1}`}>
+                            Next
+                            <ChevronRight className="h-4 w-4 ml-2" />
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+        </CardFooter>
       </Card>
     </div>
   );
