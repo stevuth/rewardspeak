@@ -47,7 +47,7 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
                 className="rounded-md object-cover"
               />
             </TableCell>
-            <TableCell className="font-medium">{offer.name}</TableCell>
+            <TableCell className="font-medium max-w-xs truncate">{offer.name}</TableCell>
             <TableCell>{offer.network}</TableCell>
             <TableCell>${offer.payout.toFixed(2)}</TableCell>
             <TableCell>
