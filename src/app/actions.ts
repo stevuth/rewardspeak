@@ -44,7 +44,8 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
 
     try {
         log += "Fetching all offers from the API...\n";
-        const allOffers = await getAllOffers();
+        const { offers: allOffers, log: apiLog } = await getAllOffers();
+        log += apiLog;
         log += `Fetched ${allOffers.length} offers from the API.\n`;
         
         if (allOffers.length === 0) {

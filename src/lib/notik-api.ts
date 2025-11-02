@@ -91,7 +91,7 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   return {
     ...rawOffer,
-    description: rawOffer.description || "",
+    description: (rawOffer.description && rawOffer.description.trim() !== '') ? rawOffer.description.trim() : '',
     payout: payoutValue,
     countries: finalCountries,
     events: (rawOffer.events || []).map(e => ({
@@ -101,27 +101,30 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
   };
 }
 
-export async function getOffers(): Promise<NotikOffer[]> {
+export async function getOffers(): Promise<{ offers: NotikOffer[], log: string }> {
   const apiKey = process.env.NOTIK_API_KEY;
   const pubId = process.env.NOTIK_PUB_ID;
   const appId = process.env.NOTIK_APP_ID;
+  let log = '';
 
   if (!apiKey || !pubId || !appId) {
-    console.error("Notik API credentials are not set in environment variables.");
-    return [];
+    log = "Error: Notik API credentials are not set in environment variables.";
+    console.error(log);
+    return { offers: [], log };
   }
 
   const apiUrl = `https://notik.me/api/v2/get-top-converting-offers?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}&omit_survey=1`;
+  log += `Requesting URL: ${apiUrl}\n`;
 
   try {
     const response = await fetch(apiUrl, { next: { revalidate: 3600 } }); // Revalidate every hour
     
     if (!response.ok) {
         const rawText = await response.text();
-        // If we get a 429, it's a rate limit error, not a code error. We can just return empty and let the next sync try again.
         if (response.status === 429) {
-          console.warn("Notik API rate limit hit for top converting offers. Skipping this cycle.");
-          return [];
+          log += "Warning: Notik API rate limit hit for top converting offers. Skipping this cycle.\n";
+          console.warn(log);
+          return { offers: [], log };
         }
         throw new Error(`API call failed with status: ${response.status}. Body: ${rawText}`);
     }
@@ -131,42 +134,54 @@ export async function getOffers(): Promise<NotikOffer[]> {
     const offersData = data.data?.offers;
 
     if (data.status === 'success' && Array.isArray(offersData)) {
-      return offersData.map(processOffer);
+      log += `API returned success with ${offersData.length} offers.\n`;
+      return { offers: offersData.map(processOffer), log };
     } else {
-      console.warn(`API status for top offers not 'success' or offers not an array. Status: ${data.status}`);
-      return [];
+      log += `API status not 'success' or offers not an array. Status: ${data.status}. Message: ${data.message || 'N/A'}\n`;
+      console.warn(log);
+      return { offers: [], log };
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error in getOffers:", errorMessage);
-    return [];
+    log += `Error in getOffers: ${errorMessage}\n`;
+    console.error(log);
+    return { offers: [], log };
   }
 }
 
-export async function getAllOffers(): Promise<NotikOffer[]> {
-  const apiKey = process.env.NOTIK_API_KEY;
-  const pubId = process.env.NOTIK_PUB_ID;
-  const appId = process.env.NOTIK_APP_ID;
+export async function getAllOffers(): Promise<{ offers: NotikOffer[], log: string }> {
+  const apiKey = process.env.NOTIK_API_KEY || process.env.NEXT_PUBLIC_NOTIK_API_KEY;
+  const pubId = process.env.NOTIK_PUB_ID || process.env.NEXT_PUBLIC_NOTIK_PUB_ID;
+  const appId = process.env.NOTIK_APP_ID || process.env.NEXT_PUBLIC_NOTIK_APP_ID;
+  
+  let log = '';
 
   if (!apiKey || !pubId || !appId) {
-    console.error("Notik API credentials are not set in environment variables.");
-    return [];
+    log = "CRITICAL ERROR: Notik API credentials (API_KEY, PUB_ID, APP_ID) are not set in environment variables.\n";
+    console.error(log);
+    return { offers: [], log };
   }
 
   let allOffers: NotikOffer[] = [];
+  let pageNum = 1;
   let nextPageUrl: string | null | undefined = `https://notik.me/api/v2/get-offers/all?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}`;
+  
+  log += `Starting offer sync...\n`;
 
   while (nextPageUrl) {
+    log += `Fetching page ${pageNum}: ${nextPageUrl}\n`;
+    console.log(`Fetching page ${pageNum}: ${nextPageUrl}`);
     try {
-      const response = await fetch(nextPageUrl, { next: { revalidate: 900 } });
+      const response = await fetch(nextPageUrl, { cache: 'no-store' });
       if (!response.ok) {
         if (response.status === 429) {
-          console.warn(`Notik API rate limit hit for all offers at page: ${nextPageUrl}. Stopping sync for this cycle.`);
+          log += `Warning: Notik API rate limit hit at page ${pageNum}. Stopping sync for this cycle.\n`;
+          console.warn(log);
           break; 
         }
-        console.error(`API call failed with status: ${response.status} for URL: ${nextPageUrl}`);
         const errorBody = await response.text();
-        console.error("API Error Body:", errorBody);
+        log += `ERROR: API call failed with status ${response.status} for URL: ${nextPageUrl}. Body: ${errorBody}\n`;
+        console.error(log);
         break; 
       }
       const data: ApiResponse = await response.json();
@@ -174,24 +189,28 @@ export async function getAllOffers(): Promise<NotikOffer[]> {
       const offersData = data.data?.offers;
 
       if (data.status === 'success' && Array.isArray(offersData)) {
-        const offers = offersData.map(processOffer);
-        allOffers = allOffers.concat(offers);
+        const processedOffers = offersData.map(processOffer);
+        allOffers = allOffers.concat(processedOffers);
+        log += `Page ${pageNum} successful. Fetched ${processedOffers.length} offers. Total so far: ${allOffers.length}.\n`;
         
         const nextUrlFromData = data.data?.next_page_url;
         nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
-      } else {
-        if (data.message) {
-            console.error("API call was not successful:", data.message);
-        } else {
-            console.error("API call was not successful and returned no message. Full response:", JSON.stringify(data));
+        if (!nextPageUrl) {
+          log += 'No more pages to fetch.\n';
         }
+        pageNum++;
+      } else {
+        log += `API call for page ${pageNum} was not successful. Status: ${data.status}, Message: ${data.message || 'No message'}. Response: ${JSON.stringify(data)}\n`;
+        console.error(log);
         break;
       }
     } catch (error) {
-      console.error(`Failed to fetch offers from ${nextPageUrl}:`, error);
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during fetch.";
+      log += `FATAL ERROR on page ${pageNum}: ${errorMessage}\n`;
+      console.error(log);
       break; 
     }
   }
-
-  return allOffers;
+  log += `Sync finished. Total unique offers processed: ${allOffers.length}.\n`;
+  return { offers: allOffers, log };
 }
