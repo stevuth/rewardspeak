@@ -32,10 +32,10 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
             </div>
             <CardContent className="p-2 flex-grow flex flex-col">
                 <h3 className="font-semibold text-sm truncate flex-grow mb-1">{offer.name}</h3>
-                <div className="flex justify-between items-center rounded-md bg-primary/20 px-2 py-1">
-                    <span className="text-[10px] font-bold text-primary-foreground/80 capitalize flex-shrink-0 mr-1">
+                <div className="flex justify-between items-center">
+                    <Badge variant="secondary" className="text-[9px] capitalize px-1.5 py-0.5">
                         {offer.category?.toLowerCase() || 'Offer'}
-                    </span>
+                    </Badge>
                     <span className="text-xs font-bold text-secondary truncate">
                         ${(points / 1000).toFixed(2)}
                     </span>
