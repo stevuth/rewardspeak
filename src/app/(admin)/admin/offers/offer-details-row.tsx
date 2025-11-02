@@ -101,9 +101,9 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
                   <div className="p-4 bg-muted/50 rounded-lg space-y-4">
                     <div>
                       <h4 className="font-semibold text-sm">Offer ID</h4>
-                      <p className="text-xs text-muted-foreground">
+                      <div className="text-xs text-muted-foreground">
                         <Badge variant="secondary">{offer.offer_id}</Badge>
-                      </p>
+                      </div>
                     </div>
                     <div>
                       <h4 className="font-semibold text-sm">Description</h4>
