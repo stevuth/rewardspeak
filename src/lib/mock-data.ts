@@ -81,32 +81,23 @@ export const withdrawalHistory: Withdrawal[] = [];
 export const offerWalls = [
     {
       name: "AdGate Media",
-      logo: "https://admin.notik.me/assets/offerwalls/adgatemedia.png",
-      hint: "company logo",
+      logo: getPlaceholder("adgate-logo").url,
+      hint: getPlaceholder("adgate-logo").hint,
     },
     {
       name: "OfferToro",
-      logo: "https://static.offertoro.com/images/logo.png",
-      hint: "bull logo",
+      logo: getPlaceholder("offertoro-logo").url,
+      hint: getPlaceholder("offertoro-logo").hint,
     },
     {
       name: "CPX Research",
-      logo: "https://admin.notik.me/assets/offerwalls/cpx_research.png",
-      hint: "chart logo"
+      logo: getPlaceholder("cpalead-logo").url,
+      hint: getPlaceholder("cpalead-logo").hint,
     },
     {
       name: "TimeWall",
-      logo: "https://admin.notik.me/assets/offerwalls/timewall.png",
-      hint: "clock logo",
+      logo: getPlaceholder("timewall-logo").url,
+      hint: getPlaceholder("timewall-logo").hint,
     },
-    {
-        name: "Lootably",
-        logo: "https://api.lootably.com/images/whitelabel-logo.png",
-        hint: "gift logo"
-    },
-    {
-        name: "Notik",
-        logo: "https://publisher.notik.me/assets/img/logo-white.png",
-        hint: "letter N"
-    }
   ];
+
