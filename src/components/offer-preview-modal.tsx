@@ -169,12 +169,12 @@ export function OfferPreviewModal({
                 
                 <div className="space-y-3">
                   {hasMilestones ? (
-                    offer.events?.map((event) => {
+                    offer.events?.map((event, index) => {
                       const points = Math.round((event.payout || 0) * 1000);
                       const usdValue = event.payout || 0;
                       return (
                         <div
-                          key={event.id}
+                          key={`${event.id}-${event.name}-${index}`}
                           className="bg-black/20 p-4 rounded-lg border border-border transition-all hover:border-primary/50"
                         >
                           <div className="flex justify-between items-start">
