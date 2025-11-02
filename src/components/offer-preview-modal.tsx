@@ -145,7 +145,7 @@ export function OfferPreviewModal({
                 <div className="p-4 bg-black/20 rounded-lg border border-border">
                   <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
                     <Info className="h-4 w-4" />
-                    Instructions
+                    Description
                   </h3>
                   <div
                     className="text-sm text-muted-foreground prose prose-invert prose-sm max-w-none"
