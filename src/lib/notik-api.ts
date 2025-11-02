@@ -17,15 +17,15 @@ export interface NotikOffer {
 interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries' | 'description'> {
   payout?: number | string;
   country_code: any; // Can be a string, array, or object.
-  description: string;
+  description1?: string;
 }
 
 interface ApiResponse {
   status: string;
   code?: string;
   message?: string;
-  data: {
-    offers?: RawNotikOffer[];
+  offers: {
+    data?: RawNotikOffer[];
     next_page_url?: string | null;
   };
 }
@@ -89,9 +89,11 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   const finalCountries = standardizeCountries(rawOffer.country_code);
 
+  const description = (rawOffer.description1 && rawOffer.description1.trim()) ? rawOffer.description1.trim() : '';
+
   return {
     ...rawOffer,
-    description: (rawOffer.description && rawOffer.description.trim() !== '') ? rawOffer.description.trim() : '',
+    description: description,
     payout: payoutValue,
     countries: finalCountries,
     events: (rawOffer.events || []).map(e => ({
@@ -131,7 +133,7 @@ export async function getOffers(): Promise<{ offers: NotikOffer[], log: string }
     
     const data: ApiResponse = await response.json();
     
-    const offersData = data.data?.offers;
+    const offersData = data.offers?.data;
 
     if (data.status === 'success' && Array.isArray(offersData)) {
       log += `API returned success with ${offersData.length} offers.\n`;
@@ -186,14 +188,14 @@ export async function getAllOffers(): Promise<{ offers: NotikOffer[], log: strin
       }
       const data: ApiResponse = await response.json();
       
-      const offersData = data.data?.offers;
+      const offersData = data.offers?.data;
 
       if (data.status === 'success' && Array.isArray(offersData)) {
         const processedOffers = offersData.map(processOffer);
         allOffers = allOffers.concat(processedOffers);
         log += `Page ${pageNum} successful. Fetched ${processedOffers.length} offers. Total so far: ${allOffers.length}.\n`;
         
-        const nextUrlFromData = data.data?.next_page_url;
+        const nextUrlFromData = data.offers?.next_page_url;
         nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
         if (!nextPageUrl) {
           log += 'No more pages to fetch.\n';
