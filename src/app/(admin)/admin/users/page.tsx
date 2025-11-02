@@ -54,7 +54,7 @@ async function getAllUsers(): Promise<UserProfile[]> {
   }
 
   // Ensure data is not null and fits the UserProfile type
-  return data || [];
+  return data as UserProfile[] || [];
 }
 
 export default async function ManageUsersPage() {
