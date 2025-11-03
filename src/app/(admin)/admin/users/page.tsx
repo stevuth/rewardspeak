@@ -24,26 +24,27 @@ export const metadata: Metadata = {
 // We define a type for the joined data for better type safety.
 type UserProfile = {
     id: string;
-    user_id: string;
-    points: number;
-    users: {
-        email: string | null;
-        created_at: string;
+    email: string | null;
+    created_at: string;
+    profiles: {
+        id: string;
+        points: number;
     } | null;
 }
 
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
-  // Corrected query: Select from 'profiles' and explicitly join with 'users' from the auth schema.
+  
+  // Query from the `users` table in the `auth` schema and join the `profiles` table.
   const { data, error } = await supabase
-    .from('profiles')
+    .from('users')
     .select(`
         id,
-        user_id,
-        points,
-        users:user_id (
-            email,
-            created_at
+        email,
+        created_at,
+        profiles (
+            id,
+            points
         )
     `);
 
@@ -79,17 +80,17 @@ export default async function ManageUsersPage() {
             </TableHeader>
             <TableBody>
               {users.length > 0 ? (
-                users.map((profile) => (
-                  <TableRow key={profile.id}>
+                users.map((user) => (
+                  <TableRow key={user.id}>
                     <TableCell className="font-medium">
-                      {profile.users?.email ?? 'N/A'}
+                      {user.email ?? 'N/A'}
                     </TableCell>
-                    <TableCell>{profile.points}</TableCell>
+                    <TableCell>{user.profiles?.points ?? 0}</TableCell>
                     <TableCell>
-                      {profile.users ? new Date(profile.users.created_at).toLocaleDateString() : 'N/A'}
+                      {new Date(user.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{profile.id}</Badge>
+                      <Badge variant="outline">{user.profiles?.id ?? 'N/A'}</Badge>
                     </TableCell>
                   </TableRow>
                 ))
