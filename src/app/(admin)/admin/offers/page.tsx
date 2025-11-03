@@ -1,9 +1,14 @@
 
+'use client';
+
+import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
-  CardFooter
+  CardFooter,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import {
   Table,
@@ -13,19 +18,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createSupabaseServerClient } from "@/utils/supabase/server";
-import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { OfferDetailsRow } from "./offer-details-row";
-
-export const metadata: Metadata = {
-  title: "Admin: Manage Offers",
-  description: "View and manage all offers in the database.",
-};
-
-const OFFERS_PER_PAGE = 20;
+import { syncOffers } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
 
 // Explicitly type the Offer object based on the database schema
 type Offer = {
@@ -43,40 +41,94 @@ type Offer = {
   created_at: string;
 };
 
-async function getPaginatedOffers(page: number = 1): Promise<{ offers: Offer[], count: number }> {
-  const supabase = createSupabaseServerClient();
-  const from = (page - 1) * OFFERS_PER_PAGE;
-  const to = from + OFFERS_PER_PAGE - 1;
-
-  const { data, error, count } = await supabase
-    .from('all_offers')
-    .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(from, to);
-
-  if (error) {
-    console.error("Error fetching offers:", error);
-    return { offers: [], count: 0 };
-  }
-  // Cast the data to the Offer[] type to ensure type safety
-  return { offers: data as Offer[], count: count || 0 };
-}
-
-export default async function ManageOffersPage({
+export default function ManageOffersPage({
   searchParams,
 }: {
   searchParams: { page?: string };
 }) {
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncLog, setSyncLog] = useState<string | null>(null);
+  const { toast } = useToast();
+
   const currentPage = Number(searchParams.page) || 1;
-  const { offers, count } = await getPaginatedOffers(currentPage);
+  const OFFERS_PER_PAGE = 20;
   const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+
+  const fetchOffers = async (page: number) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/get-offers-paginated?page=${page}&limit=${OFFERS_PER_PAGE}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch offers");
+      }
+      const { offers: fetchedOffers, count: totalCount } = await response.json();
+      setOffers(fetchedOffers);
+      setCount(totalCount);
+    } catch (error) {
+      console.error("Error fetching offers:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not fetch offers.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useState(() => {
+    fetchOffers(currentPage);
+  });
+
+  const handleSyncOffers = async () => {
+    setIsSyncing(true);
+    setSyncLog(null);
+    toast({ title: "Syncing offers...", description: "Fetching the latest offers from our partners." });
+
+    const result = await syncOffers();
+    setSyncLog(result.log || 'No log message returned.');
+    
+    if (result.success) {
+        toast({ title: "Sync complete!", description: "Offers have been updated successfully." });
+        await fetchOffers(currentPage); // Refetch offers
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Sync failed",
+            description: result.error || "An unknown error occurred during sync.",
+        });
+    }
+    
+    setIsSyncing(false);
+  };
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title="Manage Offers"
-        description={`Showing page ${currentPage} of ${totalPages}. Total offers: ${count}.`}
-      />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageHeader
+          title="Manage Offers"
+          description={`Showing page ${currentPage} of ${totalPages}. Total offers: ${count}.`}
+        />
+        <Button onClick={handleSyncOffers} disabled={isSyncing}>
+          <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+          {isSyncing ? 'Syncing...' : 'Sync Offers'}
+        </Button>
+      </div>
+
+       {syncLog && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Sync Log</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre className="text-xs bg-muted p-4 rounded-md whitespace-pre-wrap">{syncLog}</pre>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardContent className="pt-6">
           <Table>
@@ -93,7 +145,13 @@ export default async function ManageOffersPage({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {offers.length > 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center h-24">
+                    Loading offers...
+                  </TableCell>
+                </TableRow>
+              ) : offers.length > 0 ? (
                 offers.map((offer) => (
                   <OfferDetailsRow key={offer.offer_id} offer={offer} />
                 ))
