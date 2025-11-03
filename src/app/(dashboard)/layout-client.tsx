@@ -44,8 +44,8 @@ const navItems = [
 ];
 
 const secondaryNavItems = [
-  { href: "/settings", label: "My Peak Profile", icon: Settings },
   { href: "/history", label: "Quest Log", icon: Clock },
+  { href: "/settings", label: "My Peak Profile", icon: Settings },
   { href: "/support", label: "Help Station", icon: CircleHelp },
 ];
 
@@ -333,5 +333,7 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
         </SidebarProvider>
     )
 }
+
+    
 
     
