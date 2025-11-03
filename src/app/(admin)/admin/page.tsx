@@ -1,7 +1,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Users } from "lucide-react";
+import { List, Users, Star } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -23,6 +23,12 @@ const adminSections = [
         title: "Manage Offers",
         description: "View and manage all offers in the database.",
         icon: List,
+    },
+    {
+        href: "/admin/featured-content",
+        title: "Featured Content",
+        description: "Set featured and top converting offers.",
+        icon: Star,
     },
 ]
 

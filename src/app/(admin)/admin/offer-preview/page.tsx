@@ -17,7 +17,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { OfferCard } from "@/components/offer-card";
-import { offerWalls, popularOffers } from "@/lib/mock-data";
+import { offerWalls } from "@/lib/mock-data";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
+import { Loader2 } from "lucide-react";
 
 type Offer = NotikOffer & {
   points: number;
@@ -33,7 +35,6 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 
   const totalPayout = notikOffer.payout || 0;
-  
   const points = Math.round(totalPayout * 1000);
 
   return {
@@ -49,48 +50,58 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
 export default function OfferPreviewPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
+  const [topConvertingOffers, setTopConvertingOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchOffers = async () => {
-    setIsLoading(true);
-    try {
-      const notikResponse = await fetch('/api/get-offers');
-
-      if (!notikResponse.ok) {
-        throw new Error('Failed to fetch offers');
-      }
-
-      const notikData = await notikResponse.json();
-      
-      if (notikData.error) throw new Error(notikData.error);
-
-      const { allOffers: rawAllOffers, user } = notikData;
-      const userId = user?.id;
-
-      let transformedNotikOffers: Offer[] = [];
-      if (Array.isArray(rawAllOffers)) {
-          transformedNotikOffers = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
-          setAllOffers(transformedNotikOffers);
-      } else {
-          setAllOffers([]);
-      }
-
-    } catch (error) {
-      console.error("Error fetching offers:", error);
-      toast({
-          variant: "destructive",
-          title: "Error fetching offers",
-          description: error instanceof Error ? error.message : "An unknown error occurred.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchOffers = async () => {
+      setIsLoading(true);
+      try {
+        const supabase = createSupabaseBrowserClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        const userId = user?.id;
+
+        // Fetch all offers for the main grid
+        const { data: rawAllOffers, error: allOffersError } = await supabase.from('all_offers').select('*');
+        if (allOffersError) throw allOffersError;
+        if (Array.isArray(rawAllOffers)) {
+            const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
+            setAllOffers(transformed);
+        }
+
+        // Fetch top converting offers
+        const { data: featuredContent, error: featuredContentError } = await supabase.from('featured_content').select('content_type, offer_ids');
+        if (featuredContentError) throw featuredContentError;
+
+        const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
+        
+        if (topConvertingIds.length > 0) {
+            const { data: topOffersData, error: topOffersError } = await supabase
+                .from('all_offers')
+                .select('*')
+                .in('offer_id', topConvertingIds);
+
+            if (topOffersError) throw topOffersError;
+            
+            const transformedTop = topOffersData.map((o: NotikOffer) => transformOffer(o, userId));
+            setTopConvertingOffers(transformedTop);
+        }
+
+      } catch (error) {
+        console.error("Error fetching offers for preview:", error);
+        toast({
+            variant: "destructive",
+            title: "Error fetching offers",
+            description: error instanceof Error ? error.message : "An unknown error occurred.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchOffers();
-  }, []);
+  }, [toast]);
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -101,20 +112,6 @@ export default function OfferPreviewPage() {
   };
   
   const renderOfferGrid = (offers: Offer[]) => {
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center py-12">
-                <Image
-                    src="/logo.png?v=9"
-                    alt="Loading..."
-                    width={80}
-                    height={80}
-                    className="animate-pulse"
-                />
-            </div>
-        );
-    }
-
     if (offers.length > 0) {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -135,6 +132,14 @@ export default function OfferPreviewPage() {
         </Card>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -183,17 +188,17 @@ export default function OfferPreviewPage() {
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
           Top Converting Offers Preview
         </h2>
-        {popularOffers.length > 0 ? (
+        {topConvertingOffers.length > 0 ? (
             <div className="space-y-4">
-            {popularOffers.slice(0, 3).map((offer) => (
-                <OfferCard key={offer.id} offer={offer} />
+            {topConvertingOffers.slice(0, 3).map((offer) => (
+                <OfferCard key={offer.offer_id} offer={offer} />
             ))}
             </div>
         ) : (
             <Card className="text-center py-12 col-span-full">
               <CardContent>
                 <p className="text-muted-foreground">
-                  No top converting offers configured.
+                  No top converting offers configured. Set them in the "Featured Content" section.
                 </p>
               </CardContent>
             </Card>

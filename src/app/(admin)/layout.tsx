@@ -10,7 +10,8 @@ import {
   List,
   ArrowLeft,
   Menu,
-  Eye
+  Eye,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,6 +22,7 @@ const adminNavItems = [
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/offers", label: "Offers", icon: List },
     { href: "/admin/offer-preview", label: "Offer Preview", icon: Eye },
+    { href: "/admin/featured-content", label: "Featured Content", icon: Star },
 ];
 
 function AdminHeader() {

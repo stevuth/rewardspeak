@@ -67,8 +67,10 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
             log += `✅ Chunk ${i + 1} upserted successfully.\n`;
         }
         
-        log += "Revalidating path /earn...\n";
+        log += "Revalidating paths /earn, /dashboard, and /admin/offer-preview...\n";
         revalidatePath('/earn');
+        revalidatePath('/dashboard');
+        revalidatePath('/admin/offer-preview');
         log += "Sync complete!";
         return { success: true, log };
 
@@ -78,4 +80,46 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
         console.error("Sync Offers Error:", errorMessage);
         return { success: false, error: errorMessage, log };
     }
+}
+
+
+export async function getFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers'): Promise<{data: string[] | null, error: string | null}> {
+    const supabase = createSupabaseAdminClient();
+    const { data, error } = await supabase
+        .from('featured_content')
+        .select('offer_ids')
+        .eq('content_type', contentType)
+        .single();
+    
+    if (error) {
+        if (error.code === 'PGRST116') { // "Not a single row was found"
+            return { data: [], error: null }; // Return empty array if no entry exists yet
+        }
+        console.error("Error fetching featured content:", error);
+        return { data: null, error: error.message };
+    }
+    return { data: data.offer_ids, error: null };
+}
+
+export async function updateFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers', offerIds: string[]): Promise<{success: boolean, error?: string}> {
+    const supabase = createSupabaseAdminClient();
+
+    const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+            content_type: contentType,
+            offer_ids: offerIds,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'content_type' });
+
+    if (error) {
+        console.error("Error updating featured content:", error);
+        return { success: false, error: error.message };
+    }
+    
+    // Revalidate paths where this content is displayed
+    revalidatePath('/dashboard');
+    revalidatePath('/admin/offer-preview');
+
+    return { success: true };
 }
