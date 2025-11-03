@@ -9,7 +9,6 @@ import {
   Users,
   List,
   ArrowLeft,
-  Wand2,
   Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,6 @@ const adminNavItems = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/offers", label: "Offers", icon: List },
-    { href: "/admin/seo", label: "SEO Optimizer", icon: Wand2 },
 ];
 
 function AdminHeader() {

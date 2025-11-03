@@ -1,7 +1,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Users, Shield, Wand2 } from "lucide-react";
+import { List, Users, Shield } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -24,12 +24,6 @@ const adminSections = [
         description: "View and manage all offers in the database.",
         icon: List,
     },
-    {
-        href: "/admin/seo",
-        title: "SEO Optimizer",
-        description: "Use AI to optimize meta tags.",
-        icon: Wand2,
-    }
 ]
 
 async function getStats() {
