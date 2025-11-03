@@ -21,28 +21,28 @@ export const metadata: Metadata = {
   description: "View and manage all registered users.",
 };
 
-// This type now matches the JSON structure returned by our new RPC function.
+// This type must exactly match the structure returned by the SQL function.
 type UserProfile = {
-    profile_id: string | null;
+    profile_id: string | null; // Can be null if a user exists without a profile
     user_id: string;
-    points: number | null;
-    email: string | null;
+    points: number | null; // Can be null
+    email: string | null; // Can be null
     created_at: string;
 }
 
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
 
-  // Call the new RPC function that returns JSON.
-  // This approach is more robust against schema/type mismatches.
+  // Call the RPC function 'get_all_users_with_profiles'
+  // The SQL for this function should be run once in the Supabase SQL Editor.
   const { data, error } = await supabase.rpc('get_all_users_with_profiles');
 
   if (error) {
-    console.error("Error fetching users via RPC:", error.message || 'An unknown error occurred');
+    console.error("Error fetching users via RPC:", error.message);
     return [];
   }
 
-  // The data returned is a single JSON object (or null if no users), so we cast it.
+  // The data from rpc() is returned as an array of objects.
   return (data as UserProfile[]) || [];
 }
 
