@@ -7,13 +7,28 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '20', 10);
+  const offerId = searchParams.get('offerId');
+  const offerName = searchParams.get('offerName');
+
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
   try {
-    const { data, error, count } = await supabase
+    let query = supabase
       .from('all_offers')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'exact' });
+
+    if (offerId) {
+      // Use ilike for case-insensitive partial matching on ID
+      query = query.ilike('offer_id', `%${offerId}%`);
+    }
+    
+    if (offerName) {
+      // Use ilike for case-insensitive partial matching on name
+      query = query.ilike('name', `%${offerName}%`);
+    }
+
+    const { data, error, count } = await query
       .order('created_at', { ascending: false })
       .range(from, to);
 

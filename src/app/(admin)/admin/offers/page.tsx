@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback, useTransition } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -20,8 +20,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Search, X } from "lucide-react";
 import { OfferDetailsRow } from "./offer-details-row";
 import { syncOffers } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
@@ -43,6 +44,8 @@ type Offer = {
 };
 
 export default function ManageOffersPage() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [count, setCount] = useState(0);
@@ -50,15 +53,30 @@ export default function ManageOffersPage() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncLog, setSyncLog] = useState<string | null>(null);
   const { toast } = useToast();
+  
+  const [isPending, startTransition] = useTransition();
 
   const currentPage = Number(searchParams.get('page')) || 1;
+  const offerIdFilter = searchParams.get('offerId') || '';
+  const offerNameFilter = searchParams.get('offerName') || '';
+
+  const [idInput, setIdInput] = useState(offerIdFilter);
+  const [nameInput, setNameInput] = useState(offerNameFilter);
+
   const OFFERS_PER_PAGE = 20;
   const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
 
-  const fetchOffers = async (page: number) => {
+  const fetchOffers = useCallback(async () => {
     setIsLoading(true);
+    
+    const params = new URLSearchParams();
+    params.set('page', String(currentPage));
+    params.set('limit', String(OFFERS_PER_PAGE));
+    if (offerIdFilter) params.set('offerId', offerIdFilter);
+    if (offerNameFilter) params.set('offerName', offerNameFilter);
+
     try {
-      const response = await fetch(`/api/get-offers-paginated?page=${page}&limit=${OFFERS_PER_PAGE}`);
+      const response = await fetch(`/api/get-offers-paginated?${params.toString()}`);
       if (!response.ok) {
         throw new Error("Failed to fetch offers");
       }
@@ -75,11 +93,42 @@ export default function ManageOffersPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, offerIdFilter, offerNameFilter, toast]);
 
   useEffect(() => {
-    fetchOffers(currentPage);
-  }, [currentPage]);
+    fetchOffers();
+  }, [fetchOffers]);
+  
+  useEffect(() => {
+    setIdInput(offerIdFilter);
+    setNameInput(offerNameFilter);
+  }, [offerIdFilter, offerNameFilter]);
+
+  const handleFilter = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', '1'); // Reset to first page on new filter
+    if (idInput) {
+        params.set('offerId', idInput);
+    } else {
+        params.delete('offerId');
+    }
+    if (nameInput) {
+        params.set('offerName', nameInput);
+    } else {
+        params.delete('offerName');
+    }
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
+  };
+
+  const handleClearFilters = () => {
+    setIdInput('');
+    setNameInput('');
+    startTransition(() => {
+        router.push(pathname);
+    });
+  };
 
   const handleSyncOffers = async () => {
     setIsSyncing(true);
@@ -91,7 +140,7 @@ export default function ManageOffersPage() {
     
     if (result.success) {
         toast({ title: "Sync complete!", description: "Offers have been updated successfully." });
-        await fetchOffers(currentPage); // Refetch offers
+        await fetchOffers(); // Refetch offers
     } else {
         toast({
             variant: "destructive",
@@ -102,10 +151,16 @@ export default function ManageOffersPage() {
     
     setIsSyncing(false);
   };
+  
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return `${pathname}?${params.toString()}`;
+  };
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <PageHeader
           title="Manage Offers"
           description={`Showing page ${currentPage} of ${totalPages}. Total offers: ${count}.`}
@@ -115,6 +170,34 @@ export default function ManageOffersPage() {
           {isSyncing ? 'Syncing...' : 'Sync Offers'}
         </Button>
       </div>
+      
+       <Card>
+        <CardHeader>
+          <CardTitle>Filter Offers</CardTitle>
+        </CardHeader>
+        <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <Input 
+                placeholder="Filter by Offer ID..."
+                value={idInput}
+                onChange={(e) => setIdInput(e.target.value)}
+            />
+            <Input
+                placeholder="Filter by Offer Name..."
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+            />
+            <div className="flex gap-2">
+                <Button onClick={handleFilter} disabled={isPending}>
+                    <Search className="mr-2 h-4 w-4"/>
+                    {isPending ? 'Filtering...' : 'Filter'}
+                </Button>
+                 <Button onClick={handleClearFilters} variant="outline" disabled={isPending}>
+                    <X className="mr-2 h-4 w-4"/>
+                    Clear
+                </Button>
+            </div>
+        </CardContent>
+       </Card>
 
        {syncLog && (
         <Card>
@@ -156,7 +239,7 @@ export default function ManageOffersPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center h-24">
-                    No offers found.
+                    No offers found for the current filters.
                   </TableCell>
                 </TableRow>
               )}
@@ -166,17 +249,17 @@ export default function ManageOffersPage() {
         <CardFooter>
             <div className="flex w-full justify-between items-center text-sm text-muted-foreground">
                 <div>
-                    Showing {((currentPage - 1) * OFFERS_PER_PAGE) + 1} - {Math.min(currentPage * OFFERS_PER_PAGE, count)} of {count} offers
+                    Showing {offers.length > 0 ? ((currentPage - 1) * OFFERS_PER_PAGE) + 1 : 0} - {Math.min(currentPage * OFFERS_PER_PAGE, count)} of {count} offers
                 </div>
                 <div className="flex items-center gap-2">
                     <Button asChild variant="outline" disabled={currentPage <= 1}>
-                        <Link href={`/admin/offers?page=${currentPage - 1}`}>
+                        <Link href={createPageURL(currentPage - 1)}>
                             <ChevronLeft className="h-4 w-4 mr-2" />
                             Previous
                         </Link>
                     </Button>
                     <Button asChild variant="outline" disabled={currentPage >= totalPages}>
-                         <Link href={`/admin/offers?page=${currentPage + 1}`}>
+                         <Link href={createPageURL(currentPage + 1)}>
                             Next
                             <ChevronRight className="h-4 w-4 ml-2" />
                         </Link>
