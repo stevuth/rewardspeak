@@ -6,13 +6,57 @@ import type { NotikOffer } from "@/lib/notik-api";
 import { SafeImage } from "./safe-image";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Apple, Monitor } from "lucide-react";
 
 type Offer = NotikOffer & {
   points?: number;
   imageHint?: string;
   category?: string;
   clickUrl?: string;
+  platforms?: string[];
 };
+
+const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg fill="currentColor" viewBox="0 0 512 512" height="1em" width="1em" {...props}>
+        <path d="M490.6 233.4c21.8-14.3 25.4-44.3 7.9-62s-44.3-25.4-62-7.9l-32.9 32.9C384 169.2 352.3 160 320 160H192c-32.3 0-64 9.2-83.6 28.4L75.5 221.3c-17.5 17.5-17.5 45.9 0 63.4s45.9 17.5 63.4 0l32.9-32.9c19.6-19.2 51.3-28.4 83.6-28.4H320c15.1 0 29.7 2.3 43.4 6.6l-85.6 85.6c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L405.3 328l-5.1 5.1c-14.3 14.3-17.9 35.8-9.4 54.3s29.6 28.5 50.3 24.6l56.2-10.6c24-4.5 42.4-22.9 46.9-46.9l10.6-56.2c3.9-20.7-5.7-41.8-24.6-50.3s-40-1.5-54.3 9.4l-5.1 5.1L490.6 233.4zM32 208c0-35.3 28.7-64 64-64h16v32H96c-17.7 0-32 14.3-32 32s14.3 32 32 32h16v32H96c-35.3 0-64-28.7-64-64zm421.3 7.5c-4.4-4.4-11.5-4.4-15.9 0L424 228.8l-11.1-11.1c-4.4-4.4-11.5-4.4-15.9 0s-4.4 11.5 0 15.9l11.1 11.1L396.8 258c-4.4 4.4-4.4 11.5 0 15.9s11.5 4.4 15.9 0l11.4-11.4 11.1 11.1c4.4 4.4 11.5 4.4 15.9 0s4.4-11.5 0-15.9L437.8 244l11.1-11.1c4.4-4.4 4.4-11.5-.1-15.4z" />
+    </svg>
+);
+
+const PlatformIcons = ({ platforms }: { platforms: string[] }) => {
+  if (!platforms || platforms.length === 0) return null;
+
+  const getIcon = (platform: string) => {
+    const p = platform.toLowerCase();
+    if (p.includes('android')) return <AndroidIcon key="android" className="w-4 h-4" />;
+    if (p.includes('ios')) return <Apple key="ios" className="w-4 h-4" />;
+    if (p.includes('desktop') || p.includes('web')) return <Monitor key="desktop" className="w-4 h-4" />;
+    return null;
+  };
+  
+  // Create a Set to avoid duplicate icons (e.g., if platforms is ["android", "android_tablet"])
+  const uniqueIcons = new Set(platforms.map(p => {
+    const platform = p.toLowerCase();
+    if(platform.includes('android')) return 'android';
+    if(platform.includes('ios')) return 'ios';
+    if(platform.includes('desktop') || platform.includes('web')) return 'desktop';
+    return null;
+  }).filter(Boolean));
+
+
+  return (
+    <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white rounded-full px-2 py-1">
+      {Array.from(uniqueIcons).map(iconKey => {
+         switch (iconKey) {
+            case 'android': return <AndroidIcon key="android" className="w-4 h-4" />;
+            case 'ios': return <Apple key="ios" className="w-4 h-4" />;
+            case 'desktop': return <Monitor key="desktop" className="w-4 h-4" />;
+            default: return null;
+         }
+      })}
+    </div>
+  );
+};
+
 
 export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferClick: (offer: Offer) => void }) {
   const points = offer.points || Math.round((offer.payout || 0) * 1000);
@@ -32,6 +76,7 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
                   data-ai-hint={offer.imageHint}
                 />
                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                 <PlatformIcons platforms={offer.platforms || []} />
             </div>
             <CardContent className="p-3 flex-grow flex flex-col bg-card/50">
                 <h3 className="font-bold text-sm truncate flex-grow text-foreground">{offer.name}</h3>
@@ -48,3 +93,5 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
     </div>
   );
 }
+
+  
