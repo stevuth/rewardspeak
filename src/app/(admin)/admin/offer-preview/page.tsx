@@ -9,6 +9,15 @@ import { OfferGridCard } from "@/components/offer-grid-card";
 import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { OfferCard } from "@/components/offer-card";
+import { offerWalls, popularOffers } from "@/lib/mock-data";
 
 type Offer = NotikOffer & {
   points: number;
@@ -109,8 +118,10 @@ export default function OfferPreviewPage() {
     if (offers.length > 0) {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {offers.map((offer) => (
-                    <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
+                {offers.map((offer, index) => (
+                    <div key={`${offer.offer_id}-${index}`} className="relative">
+                        <OfferGridCard offer={offer} onOfferClick={handleOfferClick} />
+                    </div>
                 ))}
             </div>
         );
@@ -131,6 +142,63 @@ export default function OfferPreviewPage() {
         title="Offer Preview"
         description={`This is how offers are displayed to users. Total offers available: ${allOffers.length}.`}
       />
+      
+       <section>
+          <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
+              Featured Offers Preview
+          </h2>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: false,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {offerWalls.map((wall) => (
+                <CarouselItem
+                  key={wall.name}
+                  className="basis-1/2 md:basis-1/3 lg:basis-1/4"
+                >
+                  <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full bg-card hover:bg-muted/50 transition-colors">
+                    <Image
+                      src={wall.logo}
+                      alt={`${wall.name} logo`}
+                      width={56}
+                      height={56}
+                      className="rounded-lg mb-2"
+                      data-ai-hint={wall.hint}
+                    />
+                    <span className="text-sm font-medium mt-1">{wall.name}</span>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-4 hidden lg:flex" />
+            <CarouselNext className="-right-4 hidden lg:flex" />
+          </Carousel>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
+          Top Converting Offers Preview
+        </h2>
+        {popularOffers.length > 0 ? (
+            <div className="space-y-4">
+            {popularOffers.slice(0, 3).map((offer) => (
+                <OfferCard key={offer.id} offer={offer} />
+            ))}
+            </div>
+        ) : (
+            <Card className="text-center py-12 col-span-full">
+              <CardContent>
+                <p className="text-muted-foreground">
+                  No top converting offers configured.
+                </p>
+              </CardContent>
+            </Card>
+        )}
+      </section>
 
       <section>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
