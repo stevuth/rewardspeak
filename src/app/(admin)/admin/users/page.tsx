@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 import { Badge } from "@/components/ui/badge";
 import type { Metadata } from "next";
 
@@ -30,7 +30,7 @@ type UserProfile = {
 }
 
 async function getAllUsers(): Promise<UserProfile[]> {
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   // Step 1: Fetch all users from auth.users
   const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers();
