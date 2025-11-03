@@ -24,37 +24,34 @@ export const metadata: Metadata = {
 // We define a type for the joined data for better type safety.
 type UserProfile = {
     id: string;
-    email: string | null;
-    created_at: string;
-    profiles: {
-        id: string;
-        points: number;
+    points: number;
+    users: {
+        email: string | null;
+        created_at: string;
     } | null;
 }
 
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
   
-  // Query from the `users` table in the `auth` schema and join the `profiles` table.
+  // The correct way to join with auth.users is to treat the foreign key column
+  // (user_id on the profiles table) as the relationship itself.
   const { data, error } = await supabase
-    .from('users')
+    .from('profiles')
     .select(`
         id,
-        email,
-        created_at,
-        profiles (
-            id,
-            points
+        points,
+        users:user_id (
+            email,
+            created_at
         )
     `);
 
   if (error) {
-    // The error object might be empty, so we log a more descriptive message.
     console.error("Error fetching users:", error.message || 'An unknown error occurred');
     return [];
   }
 
-  // Ensure data is not null and fits the UserProfile type
   return data as UserProfile[] || [];
 }
 
@@ -83,14 +80,14 @@ export default async function ManageUsersPage() {
                 users.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">
-                      {user.email ?? 'N/A'}
+                      {user.users?.email ?? 'N/A'}
                     </TableCell>
-                    <TableCell>{user.profiles?.points ?? 0}</TableCell>
+                    <TableCell>{user.points ?? 0}</TableCell>
                     <TableCell>
-                      {new Date(user.created_at).toLocaleDateString()}
+                      {user.users ? new Date(user.users.created_at).toLocaleDateString() : 'N/A'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{user.profiles?.id ?? 'N/A'}</Badge>
+                      <Badge variant="outline">{user.id ?? 'N/A'}</Badge>
                     </TableCell>
                   </TableRow>
                 ))
