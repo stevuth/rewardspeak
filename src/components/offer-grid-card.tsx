@@ -23,37 +23,36 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 
-const PlatformIcons = ({ platforms }: { platforms?: string[] }) => {
-  if (!platforms || platforms.length === 0) return null;
+const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?: string[] }) => {
+  if (!devices || devices.length === 0) return null;
 
   const uniqueIcons = new Set<string>();
-  
-  if (platforms.some(p => p.toLowerCase().includes('all'))) {
+  const lowerDevices = devices.map(d => d.toLowerCase());
+  const lowerPlatforms = (platforms || []).map(p => p.toLowerCase());
+
+  if (lowerDevices.includes('all') || lowerPlatforms.includes('all')) {
       uniqueIcons.add('desktop');
       uniqueIcons.add('android');
       uniqueIcons.add('ios');
   } else {
-    platforms.forEach(p => {
-        const platform = p.toLowerCase();
-        if (platform.includes('android')) uniqueIcons.add('android');
-        if (platform.includes('ios')) uniqueIcons.add('ios');
-        if (platform.includes('desktop') || platform.includes('web')) uniqueIcons.add('desktop');
-    });
+    if (lowerDevices.includes('desktop') || lowerDevices.includes('web')) {
+      uniqueIcons.add('desktop');
+    }
+    if (lowerDevices.includes('mobile')) {
+      if (lowerPlatforms.includes('android')) uniqueIcons.add('android');
+      if (lowerPlatforms.includes('ios')) uniqueIcons.add('ios');
+      // If mobile is specified but no OS, we can assume both for broader compatibility or show a generic mobile icon.
+      // For now, let's be specific.
+    }
   }
-
 
   if (uniqueIcons.size === 0) return null;
 
   return (
     <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white rounded-full px-2 py-1">
-      {Array.from(uniqueIcons).map(iconKey => {
-         switch (iconKey) {
-            case 'desktop': return <Monitor key="desktop" className="w-4 h-4" />;
-            case 'android': return <AndroidIcon key="android" className="w-4 h-4" />;
-            case 'ios': return <Apple key="ios" className="w-4 h-4" />;
-            default: return null;
-         }
-      })}
+      {uniqueIcons.has('desktop') && <Monitor key="desktop" className="w-4 h-4" />}
+      {uniqueIcons.has('android') && <AndroidIcon key="android" className="w-4 h-4" />}
+      {uniqueIcons.has('ios') && <Apple key="ios" className="w-4 h-4" />}
     </div>
   );
 };
@@ -77,7 +76,7 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
                   data-ai-hint={offer.imageHint}
                 />
                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <PlatformIcons platforms={offer.platforms} />
+                 <PlatformIcons devices={offer.devices} platforms={offer.platforms} />
             </div>
             <CardContent className="p-3 flex-grow flex flex-col bg-card/50">
                 <h3 className="font-bold text-sm truncate flex-grow text-foreground">{offer.name}</h3>
