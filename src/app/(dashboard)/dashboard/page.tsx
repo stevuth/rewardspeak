@@ -8,7 +8,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { user, type Offer } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -22,6 +21,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { WelcomeBonusModal } from "@/components/welcome-bonus-modal";
 import { useSearchParams } from "next/navigation";
@@ -126,7 +132,7 @@ export default function DashboardPage() {
     setSelectedOffer(null);
   };
   
-  const renderOfferGrid = (offers: DashboardOffer[], sectionTitle: string) => {
+  const renderOfferCarousel = (offers: DashboardOffer[], sectionTitle: string) => {
     if (isLoading) {
       return (
         <div className="flex justify-center items-center py-12">
@@ -136,11 +142,17 @@ export default function DashboardPage() {
     }
     if (offers.length > 0) {
       return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {offers.map(offer => (
-            <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
-          ))}
-        </div>
+        <Carousel opts={{ align: "start" }} className="w-full">
+          <CarouselContent>
+            {offers.map(offer => (
+              <CarouselItem key={offer.offer_id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
+                  <OfferGridCard offer={offer} onOfferClick={handleOfferClick} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute top-1/2 -translate-y-1/2 -left-4 hidden lg:flex" />
+          <CarouselNext className="absolute top-1/2 -translate-y-1/2 -right-4 hidden lg:flex" />
+        </Carousel>
       );
     }
     return (
@@ -152,7 +164,7 @@ export default function DashboardPage() {
     );
   };
 
-  const recentActivity: Offer[] = []; // This needs to be connected to real data
+  const recentActivity: any[] = []; // This needs to be connected to real data
 
   return (
     <div className="space-y-8">
@@ -173,7 +185,7 @@ export default function DashboardPage() {
               <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
                   Featured Offers
               </h2>
-              {renderOfferGrid(featuredOffers, "Featured Offers")}
+              {renderOfferCarousel(featuredOffers, "Featured Offers")}
             </div>
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -186,7 +198,7 @@ export default function DashboardPage() {
                   </Link>
                 </Button>
               </div>
-              {renderOfferGrid(topConvertingOffers, "Top Converting Offers")}
+              {renderOfferCarousel(topConvertingOffers, "Top Converting Offers")}
             </div>
         </div>
 
@@ -209,8 +221,8 @@ export default function DashboardPage() {
                     recentActivity.map((offer) => (
                       <TableRow key={offer.id}>
                         <TableCell>
-                            <div className="font-medium">{offer.title}</div>
-                            <div className="text-xs text-muted-foreground">{offer.partner}</div>
+                            <div className="font-medium">{offer.name}</div>
+                            <div className="text-xs text-muted-foreground">{offer.network}</div>
                         </TableCell>
                         <TableCell
                           className={cn("text-right font-bold", "text-secondary")}

@@ -10,6 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 type Offer = NotikOffer & {
   points: number;
@@ -107,8 +114,34 @@ export default function OfferPreviewPage() {
     setSelectedOffer(null);
   };
   
-  const renderOfferGrid = (offers: Offer[], sectionTitle: string) => {
+  const renderOfferCarousel = (offers: Offer[], sectionTitle: string) => {
     if (offers.length > 0) {
+        return (
+          <Carousel opts={{ align: "start" }} className="w-full">
+            <CarouselContent>
+              {offers.map(offer => (
+                <CarouselItem key={offer.offer_id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
+                  <OfferGridCard offer={offer} onOfferClick={handleOfferClick} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute top-1/2 -translate-y-1/2 -left-4 hidden lg:flex" />
+            <CarouselNext className="absolute top-1/2 -translate-y-1/2 -right-4 hidden lg:flex" />
+          </Carousel>
+        );
+    }
+
+    return (
+        <Card className="text-center py-12">
+            <CardContent>
+                <p className="text-muted-foreground">{sectionTitle} section is empty. Add IDs in "Featured Content".</p>
+            </CardContent>
+        </Card>
+    );
+  };
+
+  const renderOfferGrid = (offers: Offer[]) => {
+     if (offers.length > 0) {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {offers.map((offer, index) => (
@@ -121,11 +154,11 @@ export default function OfferPreviewPage() {
     return (
         <Card className="text-center py-12">
             <CardContent>
-                <p className="text-muted-foreground">{sectionTitle} section is empty. Add IDs in "Featured Content".</p>
+                <p className="text-muted-foreground">No offers to display.</p>
             </CardContent>
         </Card>
     );
-  };
+  }
 
   if (isLoading) {
     return (
@@ -146,21 +179,21 @@ export default function OfferPreviewPage() {
           <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
               Featured Offers Preview
           </h2>
-          {renderOfferGrid(featuredOffers, "Featured Offers")}
+          {renderOfferCarousel(featuredOffers, "Featured Offers")}
       </section>
 
       <section>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
           Top Converting Offers Preview
         </h2>
-        {renderOfferGrid(topConvertingOffers, "Top Converting Offers")}
+        {renderOfferCarousel(topConvertingOffers, "Top Converting Offers")}
       </section>
 
       <section>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
           All Offers Preview
         </h2>
-        {renderOfferGrid(allOffers, "All Offers")}
+        {renderOfferGrid(allOffers)}
       </section>
       
       <OfferPreviewModal 
