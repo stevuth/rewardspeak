@@ -88,7 +88,7 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Off
   }
 }
 
-export default function ClimbAndEarnPage() {
+export default function EarnPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -179,7 +179,7 @@ export default function ClimbAndEarnPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Climb & Earn"
+        title="Earn"
         description="Main earning hub that leads to all available earning opportunities."
       />
       
