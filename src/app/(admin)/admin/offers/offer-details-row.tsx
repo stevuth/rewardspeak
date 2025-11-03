@@ -148,6 +148,17 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
                     ))}
                 </div>
               </div>
+              
+              <div>
+                <h4 className="font-semibold text-sm">Platforms (OS)</h4>
+                <div className="flex flex-wrap gap-1 mt-1">
+                    {(offer.platforms || []).map((platform: string) => (
+                    <Badge variant="outline" key={platform} className="capitalize">
+                        {platform}
+                    </Badge>
+                    ))}
+                </div>
+              </div>
 
               <div className="md:col-span-2">
                 <h4 className="font-semibold text-sm">Description</h4>
