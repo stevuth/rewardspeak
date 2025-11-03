@@ -139,7 +139,7 @@ export default function DashboardPage() {
             <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold tracking-tight font-headline">
-                Popular Quests
+                Top Converting Offers
               </h2>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/earn">
