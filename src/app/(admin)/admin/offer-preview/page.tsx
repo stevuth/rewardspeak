@@ -1,15 +1,15 @@
 
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -17,6 +17,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Offer = NotikOffer & {
   points: number;
@@ -51,6 +53,9 @@ export default function OfferPreviewPage() {
   const [topConvertingOffers, setTopConvertingOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  
+  const [idFilter, setIdFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState('');
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -60,7 +65,6 @@ export default function OfferPreviewPage() {
         const { data: { user } } = await supabase.auth.getUser();
         const userId = user?.id;
 
-        // Fetch all offers for the main grid, excluding disabled ones
         const { data: rawAllOffers, error: allOffersError } = await supabase.from('all_offers').select('*').eq('is_disabled', false);
         if (allOffersError) throw allOffersError;
         if (Array.isArray(rawAllOffers)) {
@@ -68,7 +72,6 @@ export default function OfferPreviewPage() {
             setAllOffers(transformed);
         }
 
-        // Fetch featured content IDs
         const { data: featuredContent, error: featuredContentError } = await supabase.from('featured_content').select('content_type, offer_ids');
         if (featuredContentError) throw featuredContentError;
 
@@ -77,7 +80,6 @@ export default function OfferPreviewPage() {
         const allFeaturedIds = [...new Set([...featuredIds, ...topConvertingIds])];
 
         if (allFeaturedIds.length > 0) {
-            // We fetch even disabled offers here so admins can see them if they've been added to a list
             const { data: featuredOffersData, error: featuredOffersError } = await supabase
                 .from('all_offers')
                 .select('*')
@@ -106,6 +108,15 @@ export default function OfferPreviewPage() {
 
     fetchOffers();
   }, [toast]);
+
+  const filteredAllOffers = useMemo(() => {
+    return allOffers.filter(offer => {
+        const idMatch = idFilter ? offer.offer_id.toLowerCase().includes(idFilter.toLowerCase()) : true;
+        const nameMatch = nameFilter ? offer.name.toLowerCase().includes(nameFilter.toLowerCase()) : true;
+        return idMatch && nameMatch;
+    });
+  }, [allOffers, idFilter, nameFilter]);
+
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -155,7 +166,7 @@ export default function OfferPreviewPage() {
     return (
         <Card className="text-center py-12">
             <CardContent>
-                <p className="text-muted-foreground">No offers to display.</p>
+                <p className="text-muted-foreground">No offers found for the current filters.</p>
             </CardContent>
         </Card>
     );
@@ -191,10 +202,48 @@ export default function OfferPreviewPage() {
       </section>
 
       <section>
-        <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
-          All Enabled Offers Preview
-        </h2>
-        {renderOfferGrid(allOffers)}
+        <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold tracking-tight font-headline">
+            All Enabled Offers Preview
+            </h2>
+            <span className="text-sm text-muted-foreground">
+                Showing {filteredAllOffers.length} of {allOffers.length} offers
+            </span>
+        </div>
+        <Card className="mb-6">
+            <CardHeader>
+                <CardTitle>Filter All Offers</CardTitle>
+            </CardHeader>
+            <CardContent className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="id-filter">Filter by Offer ID</Label>
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            id="id-filter"
+                            placeholder="Search by ID..."
+                            value={idFilter}
+                            onChange={(e) => setIdFilter(e.target.value)}
+                            className="pl-8"
+                        />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="name-filter">Filter by Offer Name</Label>
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            id="name-filter"
+                            placeholder="Search by name..."
+                            value={nameFilter}
+                            onChange={(e) => setNameFilter(e.target.value)}
+                            className="pl-8"
+                        />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+        {renderOfferGrid(filteredAllOffers)}
       </section>
       
       <OfferPreviewModal 
@@ -205,3 +254,5 @@ export default function OfferPreviewPage() {
     </div>
   );
 }
+
+    
