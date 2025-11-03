@@ -41,7 +41,7 @@ async function getAllUsers(): Promise<UserProfile[]> {
         id,
         user_id,
         points,
-        users:users!inner (
+        users:user_id (
             email,
             created_at
         )
