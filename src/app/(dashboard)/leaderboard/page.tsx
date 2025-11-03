@@ -121,15 +121,15 @@ const RankBadge = ({ rank }: { rank: number }) => {
     return <Badge variant="secondary">{rank}th</Badge>;
   };
 
-export default function TopClimbersPage() {
+export default function TopEarnersPage() {
     const topThree = leaderboardData.slice(0, 3);
     const restOfLeaderboard = leaderboardData.slice(3);
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Top Climbers"
-        description="See who's climbing the highest on Rewards Peak."
+        title="Top Earners"
+        description="See who's earning the most on Rewards Peak."
       />
       
       {topThree.length >= 3 && (
