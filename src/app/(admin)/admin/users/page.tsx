@@ -34,10 +34,10 @@ type UserProfile = {
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
   
-  // The correct way to join with auth.users when a foreign key relationship
-  // isn't explicitly defined or detected by Supabase.
-  // This tells Supabase: "For each profile, take the 'user_id' column, and use it
-  // to fetch the specified fields from the 'users' table in the auth schema."
+  // This is the correct syntax for an explicit join to auth.users
+  // when a foreign key relationship isn't automatically detected.
+  // It tells Supabase: "For each profile, use its 'user_id' column
+  // to fetch the related record from the 'users' table."
   const { data, error } = await supabase
     .from('profiles')
     .select(`
