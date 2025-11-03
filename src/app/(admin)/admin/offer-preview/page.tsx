@@ -9,6 +9,7 @@ import { OfferGridCard } from "@/components/offer-grid-card";
 import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
+import { Badge } from "@/components/ui/badge";
 
 type Offer = NotikOffer & {
   points: number;
@@ -109,8 +110,13 @@ export default function OfferPreviewPage() {
     if (offers.length > 0) {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {offers.map((offer) => (
-                    <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
+                {offers.map((offer, index) => (
+                    <div key={offer.offer_id} className="relative">
+                        <Badge className="absolute top-2 left-2 z-10 bg-primary/80 backdrop-blur-sm">
+                            {index + 1}
+                        </Badge>
+                        <OfferGridCard offer={offer} onOfferClick={handleOfferClick} />
+                    </div>
                 ))}
             </div>
         );
