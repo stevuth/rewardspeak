@@ -1,4 +1,3 @@
-
 'use client';
 
 import { PageHeader } from "@/components/page-header";
@@ -84,8 +83,8 @@ export default function InviteAndClimbPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Invite & Climb"
-        description="Share your code to earn rewards when your friends join and climb."
+        title="Invite & Earn"
+        description="Share your code to earn rewards when your friends join and earn."
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
