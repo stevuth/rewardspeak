@@ -82,14 +82,14 @@ export default async function ManageOffersPage({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-16">Image</TableHead>
-                <TableHead className="w-[300px]">Name</TableHead>
-                <TableHead>Network</TableHead>
-                <TableHead>Payout</TableHead>
-                <TableHead>Countries</TableHead>
-                <TableHead>Platforms</TableHead>
-                <TableHead>Categories</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="w-16 font-semibold">Image</TableHead>
+                <TableHead className="w-[300px] font-semibold">Name</TableHead>
+                <TableHead className="font-semibold">Network</TableHead>
+                <TableHead className="font-semibold">Payout</TableHead>
+                <TableHead className="font-semibold">Countries</TableHead>
+                <TableHead className="font-semibold">Platforms</TableHead>
+                <TableHead className="font-semibold">Categories</TableHead>
+                <TableHead className="font-semibold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

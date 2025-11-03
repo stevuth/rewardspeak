@@ -32,32 +32,27 @@ type UserProfile = {
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseAdminClient();
 
-  // Step 1: Fetch all users from auth.users
-  const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers();
+  const { data: authUsers, error: usersError } = await supabase.auth.admin.listUsers();
   if (usersError) {
     console.error("Error fetching users from auth:", usersError.message);
     return [];
   }
   
-  // Step 2: Fetch all profiles from public.profiles
-  const { data: profilesData, error: profilesError } = await supabase.from('profiles').select('id, user_id, points');
+  const { data: profiles, error: profilesError } = await supabase.from('profiles').select('id, user_id, points');
   if (profilesError) {
     console.error("Error fetching profiles:", profilesError.message);
-    // Proceed with users even if profiles fail
   }
 
-  // Step 3: Create a map of profiles for easy lookup
   const profilesMap = new Map<string, { id: string, points: number }>();
-  if (profilesData) {
-    for (const profile of profilesData) {
+  if (profiles) {
+    for (const profile of profiles) {
         if (profile.user_id) {
-            profilesMap.set(profile.user_id, { id: profile.id, points: profile.points });
+            profilesMap.set(profile.user_id, { id: profile.id, points: profile.points ?? 0 });
         }
     }
   }
 
-  // Step 4: Combine the data
-  const combinedData: UserProfile[] = usersData.users.map(user => {
+  const combinedData: UserProfile[] = authUsers.users.map(user => {
     const profile = profilesMap.get(user.id);
     return {
       user_id: user.id,
@@ -66,7 +61,7 @@ async function getAllUsers(): Promise<UserProfile[]> {
       profile_id: profile?.id || null,
       points: profile?.points || 0,
     };
-  });
+  }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return combinedData;
 }
@@ -86,10 +81,10 @@ export default async function ManageUsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Points</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead>Profile ID</TableHead>
+                <TableHead className="font-semibold">Email</TableHead>
+                <TableHead className="font-semibold">Points</TableHead>
+                <TableHead className="font-semibold">Joined</TableHead>
+                <TableHead className="font-semibold">Profile ID</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

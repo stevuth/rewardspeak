@@ -26,15 +26,15 @@ function AdminHeader() {
   const getNavLinkClass = (href: string) => {
     const isActive = (href === "/admin" && pathname === href) || (href !== "/admin" && pathname.startsWith(href));
     return cn(
-      "transition-colors text-sm font-medium",
+      "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       isActive
-        ? "text-foreground"
-        : "text-muted-foreground hover:text-foreground"
+        ? "bg-muted text-foreground"
+        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
     );
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 sm:px-6">
       <Sheet>
         <SheetTrigger asChild>
           <Button size="icon" variant="outline" className="sm:hidden">
@@ -46,10 +46,10 @@ function AdminHeader() {
           <nav className="grid gap-6 text-lg font-medium">
             <Link
               href="/admin"
-              className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+              className="group flex h-10 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold text-primary-foreground md:text-base"
             >
               <Image src="/logo.png?v=9" alt="Logo" width={32} height={32} className="transition-all group-hover:scale-110" />
-              <span className="sr-only">Admin Portal</span>
+              <span className="text-xl font-bold text-foreground">Admin Portal</span>
             </Link>
             {adminNavItems.map(item => (
               <Link
@@ -57,6 +57,7 @@ function AdminHeader() {
                 href={item.href}
                 className={getNavLinkClass(item.href)}
               >
+                <item.icon className="h-5 w-5" />
                 {item.label}
               </Link>
             ))}
@@ -75,13 +76,14 @@ function AdminHeader() {
             <Image src="/logo.png?v=9" alt="Logo" width={32} height={32} />
             <span className="text-xl">Admin Portal</span>
         </Link>
-        <nav className="hidden md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 ml-6">
+        <nav className="hidden md:flex md:flex-row md:items-center md:gap-2 md:text-sm lg:gap-4 ml-6">
             {adminNavItems.map(item => (
                 <Link
                     key={item.href}
                     href={item.href}
                     className={getNavLinkClass(item.href)}
                 >
+                    <item.icon className="h-4 w-4" />
                     {item.label}
                 </Link>
             ))}

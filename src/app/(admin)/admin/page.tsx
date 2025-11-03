@@ -1,7 +1,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Users, Shield } from "lucide-react";
+import { List, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -62,22 +62,26 @@ export default async function AdminPortalPage() {
             </CardContent>
           </Card>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {adminSections.map((section) => (
-            <Link key={section.href} href={section.href} className="block">
-                <Card className="hover:bg-muted/50 hover:border-primary/50 transition-all">
-                    <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                        <div className="p-3 bg-primary/10 rounded-lg text-primary">
-                            <section.icon className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <CardTitle>{section.title}</CardTitle>
-                            <CardDescription>{section.description}</CardDescription>
-                        </div>
-                    </CardHeader>
-                </Card>
-            </Link>
-        ))}
+      
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold tracking-tight">Navigation</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {adminSections.map((section) => (
+              <Link key={section.href} href={section.href} className="block">
+                  <Card className="hover:bg-muted/50 hover:border-primary/50 transition-all h-full">
+                      <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                          <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                              <section.icon className="h-6 w-6" />
+                          </div>
+                          <div>
+                              <CardTitle>{section.title}</CardTitle>
+                              <CardDescription>{section.description}</CardDescription>
+                          </div>
+                      </CardHeader>
+                  </Card>
+              </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
