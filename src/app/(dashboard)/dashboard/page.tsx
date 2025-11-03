@@ -103,7 +103,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-8">
             <div>
             <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
-                Featured Partners
+                Featured Offers
             </h2>
             <Carousel
               opts={{
