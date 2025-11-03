@@ -13,7 +13,6 @@ type Offer = NotikOffer & {
   imageHint?: string;
   category?: string;
   clickUrl?: string;
-  platforms?: string[];
 };
 
 const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -22,26 +21,18 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-const PlatformIcons = ({ platforms }: { platforms: string[] }) => {
+const PlatformIcons = ({ platforms }: { platforms?: string[] }) => {
   if (!platforms || platforms.length === 0) return null;
 
-  const getIcon = (platform: string) => {
-    const p = platform.toLowerCase();
-    if (p.includes('android')) return <AndroidIcon key="android" className="w-4 h-4" />;
-    if (p.includes('ios')) return <Apple key="ios" className="w-4 h-4" />;
-    if (p.includes('desktop') || p.includes('web')) return <Monitor key="desktop" className="w-4 h-4" />;
-    return null;
-  };
-  
-  // Create a Set to avoid duplicate icons (e.g., if platforms is ["android", "android_tablet"])
-  const uniqueIcons = new Set(platforms.map(p => {
+  const uniqueIcons = new Set<string>();
+  platforms.forEach(p => {
     const platform = p.toLowerCase();
-    if(platform.includes('android')) return 'android';
-    if(platform.includes('ios')) return 'ios';
-    if(platform.includes('desktop') || platform.includes('web')) return 'desktop';
-    return null;
-  }).filter(Boolean));
+    if (platform.includes('android')) uniqueIcons.add('android');
+    if (platform.includes('ios')) uniqueIcons.add('ios');
+    if (platform.includes('desktop') || platform.includes('web')) uniqueIcons.add('desktop');
+  });
 
+  if (uniqueIcons.size === 0) return null;
 
   return (
     <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white rounded-full px-2 py-1">
@@ -76,7 +67,7 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
                   data-ai-hint={offer.imageHint}
                 />
                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <PlatformIcons platforms={offer.platforms || []} />
+                 <PlatformIcons platforms={offer.platforms} />
             </div>
             <CardContent className="p-3 flex-grow flex flex-col bg-card/50">
                 <h3 className="font-bold text-sm truncate flex-grow text-foreground">{offer.name}</h3>
@@ -93,5 +84,3 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
     </div>
   );
 }
-
-  
