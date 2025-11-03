@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -41,11 +42,8 @@ type Offer = {
   created_at: string;
 };
 
-export default function ManageOffersPage({
-  searchParams,
-}: {
-  searchParams: { page?: string };
-}) {
+export default function ManageOffersPage() {
+  const searchParams = useSearchParams();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +51,7 @@ export default function ManageOffersPage({
   const [syncLog, setSyncLog] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const currentPage = Number(searchParams.page) || 1;
+  const currentPage = Number(searchParams.get('page')) || 1;
   const OFFERS_PER_PAGE = 20;
   const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
 
@@ -79,9 +77,9 @@ export default function ManageOffersPage({
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     fetchOffers(currentPage);
-  });
+  }, [currentPage]);
 
   const handleSyncOffers = async () => {
     setIsSyncing(true);
