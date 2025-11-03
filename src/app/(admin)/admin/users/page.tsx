@@ -21,30 +21,56 @@ export const metadata: Metadata = {
   description: "View and manage all registered users.",
 };
 
-// This type must exactly match the structure returned by the SQL function.
 type UserProfile = {
-    profile_id: string | null; // Can be null if a user exists without a profile
-    user_id: string;
-    points: number | null; // Can be null
-    email: string | null; // Can be null
-    created_at: string;
+  user_id: string;
+  email: string | null;
+  created_at: string;
+  profile_id: string | null;
+  points: number | null;
 }
 
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
 
-  // Call the RPC function 'get_all_users_with_profiles'
-  // The SQL for this function should be run once in the Supabase SQL Editor.
-  const { data, error } = await supabase.rpc('get_all_users_with_profiles');
-
-  if (error) {
-    console.error("Error fetching users via RPC:", error.message);
+  // Step 1: Fetch all users from auth.users
+  const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers();
+  if (usersError) {
+    console.error("Error fetching users from auth:", usersError.message);
     return [];
   }
+  
+  // Step 2: Fetch all profiles from public.profiles
+  const { data: profilesData, error: profilesError } = await supabase.from('profiles').select('id, user_id, points');
+  if (profilesError) {
+    console.error("Error fetching profiles:", profilesError.message);
+    // Proceed with users even if profiles fail
+  }
 
-  // The data from rpc() is returned as an array of objects.
-  return (data as UserProfile[]) || [];
+  // Step 3: Create a map of profiles for easy lookup
+  const profilesMap = new Map<string, { id: string, points: number }>();
+  if (profilesData) {
+    for (const profile of profilesData) {
+        if (profile.user_id) {
+            profilesMap.set(profile.user_id, { id: profile.id, points: profile.points });
+        }
+    }
+  }
+
+  // Step 4: Combine the data
+  const combinedData: UserProfile[] = usersData.users.map(user => {
+    const profile = profilesMap.get(user.id);
+    return {
+      user_id: user.id,
+      email: user.email || null,
+      created_at: user.created_at,
+      profile_id: profile?.id || null,
+      points: profile?.points || 0,
+    };
+  });
+
+  return combinedData;
 }
+
 
 export default async function ManageUsersPage() {
   const users = await getAllUsers();
