@@ -27,12 +27,20 @@ const PlatformIcons = ({ platforms }: { platforms?: string[] }) => {
   if (!platforms || platforms.length === 0) return null;
 
   const uniqueIcons = new Set<string>();
-  platforms.forEach(p => {
-    const platform = p.toLowerCase();
-    if (platform.includes('android')) uniqueIcons.add('android');
-    if (platform.includes('ios')) uniqueIcons.add('ios');
-    if (platform.includes('desktop') || platform.includes('web')) uniqueIcons.add('desktop');
-  });
+  
+  if (platforms.some(p => p.toLowerCase().includes('all'))) {
+      uniqueIcons.add('desktop');
+      uniqueIcons.add('android');
+      uniqueIcons.add('ios');
+  } else {
+    platforms.forEach(p => {
+        const platform = p.toLowerCase();
+        if (platform.includes('android')) uniqueIcons.add('android');
+        if (platform.includes('ios')) uniqueIcons.add('ios');
+        if (platform.includes('desktop') || platform.includes('web')) uniqueIcons.add('desktop');
+    });
+  }
+
 
   if (uniqueIcons.size === 0) return null;
 
