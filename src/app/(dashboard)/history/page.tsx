@@ -24,7 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Quest Log",
+  title: "Offers Log",
   description: "Review your completed, pending, and rejected offers.",
 };
 
@@ -111,7 +111,7 @@ export default function HistoryPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Quest Log"
+        title="Offers Log"
         description="Review your completed, pending, and rejected offers."
       />
       <Card>

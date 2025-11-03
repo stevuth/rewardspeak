@@ -22,7 +22,7 @@ import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Completed Quests",
+  title: "Completed Offers",
   description: "Review your completed offers.",
 };
 
@@ -46,7 +46,7 @@ export default function CompletedPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Completed Quests"
+        title="Completed Offers"
         description="A log of all quests you have successfully completed."
       />
       <Card>

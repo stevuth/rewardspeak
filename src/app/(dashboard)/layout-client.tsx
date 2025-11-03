@@ -44,16 +44,16 @@ const navItems = [
 ];
 
 const secondaryNavItems = [
-  { href: "/history", label: "Quest Log", icon: Clock },
+  { href: "/history", label: "Offers Log", icon: Clock },
   { href: "/settings", label: "My Peak Profile", icon: Settings },
   { href: "/support", label: "Help Station", icon: CircleHelp },
 ];
 
 const mobileNavItems = [
-    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
+    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
-    { href: "/history", label: "Quest Log", icon: Clock },
+    { href: "/history", label: "Offers Log", icon: Clock },
 ]
 
 const recentEarnings: any[] = [];
@@ -333,8 +333,3 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
         </SidebarProvider>
     )
 }
-
-    
-
-    
-

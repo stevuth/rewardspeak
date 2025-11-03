@@ -22,7 +22,7 @@ import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "In Progress Quests",
+  title: "In Progress Offers",
   description: "Review your pending offers.",
 };
 
@@ -46,7 +46,7 @@ export default function InProgressPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="In Progress Quests"
+        title="In Progress Offers"
         description="A log of all quests that are currently pending."
       />
       <Card>
