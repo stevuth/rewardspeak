@@ -27,27 +27,27 @@ const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?:
   const safePlatforms = platforms?.map(p => p.toLowerCase()) || [];
   const iconsToShow = new Set<string>();
 
-  // Rule 1: Show desktop icon if 'desktop' or 'all' is in devices.
+  // Rule: Show desktop icon if 'desktop' or 'all' is in devices.
   if (safeDevices.includes('desktop') || safeDevices.includes('all')) {
     iconsToShow.add('desktop');
   }
 
-  // Rule 2: Show Android icon if 'android' is in platforms.
+  // Rule: Show Android icon if 'android' is in platforms.
   if (safePlatforms.includes('android')) {
     iconsToShow.add('android');
   }
   
-  // Rule 3: Show Apple icon if 'ios' is in platforms.
+  // Rule: Show Apple icon if 'ios' is in platforms.
   if (safePlatforms.includes('ios')) {
     iconsToShow.add('ios');
   }
-  
-  // Also show mobile icons if devices contains 'all'
-  if (safeDevices.includes('all')) {
-      iconsToShow.add('android');
-      iconsToShow.add('ios');
-  }
 
+  // New Rule: If platforms is 'all', show both mobile icons.
+  if (safePlatforms.includes('all')) {
+    iconsToShow.add('android');
+    iconsToShow.add('ios');
+  }
+  
   if (iconsToShow.size === 0) return null;
 
   return (
@@ -95,3 +95,4 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
     </div>
   );
 }
+
