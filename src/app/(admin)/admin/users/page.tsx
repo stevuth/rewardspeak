@@ -43,7 +43,7 @@ async function getAllUsers(): Promise<UserProfile[]> {
     return [];
   }
 
-  return data as UserProfile[] || [];
+  return (data as UserProfile[]) || [];
 }
 
 export default async function ManageUsersPage() {
