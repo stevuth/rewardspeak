@@ -28,33 +28,33 @@ const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?:
   const lowerPlatforms = platforms?.map(p => p.toLowerCase()) || [];
 
   const isForAll = lowerDevices.includes('all') || lowerPlatforms.includes('all');
-  const isForMobile = lowerDevices.includes('mobile');
-  const isForDesktop = lowerDevices.includes('desktop') || lowerDevices.includes('web');
-  const isForAndroid = lowerPlatforms.includes('android');
-  const isForIos = lowerPlatforms.includes('ios');
-
+  
   if (isForAll) {
     uniqueIcons.add('desktop');
     uniqueIcons.add('android');
     uniqueIcons.add('ios');
   } else {
-    if (isForDesktop) {
+    // Check for desktop
+    if (lowerDevices.includes('desktop') || lowerDevices.includes('web')) {
       uniqueIcons.add('desktop');
     }
+
+    // Check for mobile platforms
+    const isForAndroid = lowerPlatforms.includes('android');
+    const isForIos = lowerPlatforms.includes('ios');
+    const isForMobileDevice = lowerDevices.includes('mobile');
     
-    // If 'mobile' is specified but no specific OS, assume both.
-    if (isForMobile && !isForAndroid && !isForIos) {
-      uniqueIcons.add('android');
-      uniqueIcons.add('ios');
-    } else {
-      if (isForAndroid) uniqueIcons.add('android');
-      if (isForIos) uniqueIcons.add('ios');
+    if (isForAndroid) {
+        uniqueIcons.add('android');
+    }
+    if (isForIos) {
+        uniqueIcons.add('ios');
     }
 
-    // Fallback in case devices array is empty but platforms has data
-    if(lowerDevices.length === 0) {
-        if(isForAndroid) uniqueIcons.add('android');
-        if(isForIos) uniqueIcons.add('ios');
+    // If device is 'mobile' but no specific platform is listed, show both.
+    if (isForMobileDevice && !isForAndroid && !isForIos) {
+        uniqueIcons.add('android');
+        uniqueIcons.add('ios');
     }
   }
 
