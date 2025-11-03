@@ -93,7 +93,8 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   const description = (rawOffer.description1 && rawOffer.description1.trim()) ? rawOffer.description1.trim() : '';
 
-  const devices = Array.isArray(rawOffer.devices) ? rawOffer.devices.map(String) : [];
+  // Safely handle the devices field
+  const devices = Array.isArray(rawOffer.devices) ? rawOffer.devices.map(String).filter(Boolean) : [];
 
   return {
     ...rawOffer,
