@@ -23,48 +23,44 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?: string[] }) => {
-  const uniqueIcons = new Set<string>();
   const lowerDevices = devices?.map(d => d.toLowerCase()) || [];
   const lowerPlatforms = platforms?.map(p => p.toLowerCase()) || [];
+  const iconsToShow = new Set<string>();
 
   const isForAll = lowerDevices.includes('all') || lowerPlatforms.includes('all');
-  
+
   if (isForAll) {
-    uniqueIcons.add('desktop');
-    uniqueIcons.add('android');
-    uniqueIcons.add('ios');
+    iconsToShow.add('desktop');
+    iconsToShow.add('android');
+    iconsToShow.add('ios');
   } else {
     // Check for desktop
-    if (lowerDevices.includes('desktop') || lowerDevices.includes('web')) {
-      uniqueIcons.add('desktop');
+    if (lowerDevices.includes('desktop') || lowerDevices.includes('web') || lowerPlatforms.includes('windows') || lowerPlatforms.includes('macos')) {
+      iconsToShow.add('desktop');
     }
 
-    // Check for mobile platforms
-    const isForAndroid = lowerPlatforms.includes('android');
-    const isForIos = lowerPlatforms.includes('ios');
-    const isForMobileDevice = lowerDevices.includes('mobile');
+    // Check for Android/iOS explicitly
+    if (lowerPlatforms.includes('android')) {
+      iconsToShow.add('android');
+    }
+    if (lowerPlatforms.includes('ios')) {
+      iconsToShow.add('ios');
+    }
     
-    if (isForAndroid) {
-        uniqueIcons.add('android');
-    }
-    if (isForIos) {
-        uniqueIcons.add('ios');
-    }
-
-    // If device is 'mobile' but no specific platform is listed, show both.
-    if (isForMobileDevice && !isForAndroid && !isForIos) {
-        uniqueIcons.add('android');
-        uniqueIcons.add('ios');
+    // If device is 'mobile' but no specific platform is listed, show both mobile icons.
+    if (lowerDevices.includes('mobile') && !iconsToShow.has('android') && !iconsToShow.has('ios')) {
+      iconsToShow.add('android');
+      iconsToShow.add('ios');
     }
   }
 
-  if (uniqueIcons.size === 0) return null;
+  if (iconsToShow.size === 0) return null;
 
   return (
     <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white rounded-full px-2 py-1">
-      {uniqueIcons.has('desktop') && <Monitor key="desktop" className="w-4 h-4" />}
-      {uniqueIcons.has('android') && <AndroidIcon key="android" className="w-4 h-4" />}
-      {uniqueIcons.has('ios') && <Apple key="ios" className="w-4 h-4" />}
+      {iconsToShow.has('desktop') && <Monitor key="desktop" className="w-4 h-4" />}
+      {iconsToShow.has('android') && <AndroidIcon key="android" className="w-4 h-4" />}
+      {iconsToShow.has('ios') && <Apple key="ios" className="w-4 h-4" />}
     </div>
   );
 };
