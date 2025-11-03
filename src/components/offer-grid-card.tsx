@@ -34,16 +34,16 @@ const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?:
     iconsToShow.add('android');
     iconsToShow.add('ios');
   } else {
-    // Check for desktop
-    if (lowerDevices.includes('desktop') || lowerDevices.includes('web') || lowerPlatforms.includes('windows') || lowerPlatforms.includes('macos')) {
+    // Only show desktop if explicitly stated
+    if (lowerDevices.includes('desktop')) {
       iconsToShow.add('desktop');
     }
 
-    // Check for Android/iOS explicitly
-    if (lowerPlatforms.includes('android')) {
+    // Check for Android/iOS explicitly in either platforms or devices
+    if (lowerPlatforms.includes('android') || lowerDevices.includes('android')) {
       iconsToShow.add('android');
     }
-    if (lowerPlatforms.includes('ios')) {
+    if (lowerPlatforms.includes('ios') || lowerDevices.includes('ios')) {
       iconsToShow.add('ios');
     }
     
