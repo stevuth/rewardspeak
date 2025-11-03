@@ -89,7 +89,7 @@ export default function DashboardPage() {
     
   const totalAmountEarned = popularOffers
     .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + o.points, 0) / 100;
+    .reduce((sum, o) => sum + o.points, 0) / 1000;
 
   return (
     <div className="space-y-8">

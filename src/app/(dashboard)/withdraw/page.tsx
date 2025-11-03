@@ -146,7 +146,7 @@ export default function CashOutCabinPage() {
                       <StatusBadge status={withdrawal.status} />
                     </TableCell>
                     <TableCell className="text-right font-bold text-secondary">
-                      ${(withdrawal.amount / 100).toFixed(2)}
+                      ${(withdrawal.amount / 1000).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))

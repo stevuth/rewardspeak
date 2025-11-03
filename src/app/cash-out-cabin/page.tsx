@@ -1,3 +1,4 @@
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -40,7 +41,7 @@ export default function CashOutCabinPage() {
             <CardHeader>
               <CardTitle className="font-headline text-2xl">New Withdrawal</CardTitle>
               <CardDescription>
-                Select your method and enter the amount. 100 points = $1.00.
+                Select your method and enter the amount. 1000 points = $1.00.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -98,7 +99,7 @@ export default function CashOutCabinPage() {
                 <AnimatedCounter value={user.totalPoints} /> Points
               </div>
               <div className="text-muted-foreground mt-1">
-                ≈ $<AnimatedCounter value={user.totalPoints / 100} />
+                ≈ $<AnimatedCounter value={user.totalPoints / 1000} />
               </div>
             </CardContent>
           </Card>

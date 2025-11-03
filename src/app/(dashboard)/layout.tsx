@@ -36,7 +36,7 @@ export default async function DashboardLayout({
   }
   
   const totalPoints = profilePoints + referralEarnings;
-  const totalAmountEarned = totalPoints / 100;
+  const totalAmountEarned = totalPoints / 1000;
 
   return <LayoutClient user={user} totalPoints={totalPoints} totalAmountEarned={totalAmountEarned}>{children}</LayoutClient>;
 }

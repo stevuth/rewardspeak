@@ -242,7 +242,7 @@ function MobileSidebar({ user }: { user: User | null }) {
 
 function Header({ user, totalPoints, totalAmountEarned }: { user: User | null, totalPoints: number, totalAmountEarned: number }) {
     const router = useRouter();
-    const userBalanceInCash = totalPoints / 100;
+    const userBalanceInCash = totalPoints / 1000;
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
