@@ -1,4 +1,5 @@
 
+
 export interface NotikOffer {
   offer_id: string;
   name: string;
@@ -8,17 +9,18 @@ export interface NotikOffer {
   network: string;
   payout: number;
   countries: string[];
-  platforms: ('ios' | 'android' | 'desktop' | 'all')[];
+  platforms: string[];
   devices: string[];
   categories: string[];
   events?: { id: number, name: string, payout: number }[];
 }
 
 // Internal type for handling the raw API response which has inconsistent country and payout types
-interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries' | 'description' | 'devices'> {
+interface RawNotikOffer extends Omit<NotikOffer, 'payout' | 'countries' | 'description' | 'devices' | 'platforms'> {
   payout?: number | string;
   country_code: any; // Can be a string, array, or object.
   devices: any;
+  os: any; // This is the 'platforms' field
   description1?: string;
 }
 
@@ -95,6 +97,10 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
 
   // Safely handle the devices field
   const devices = Array.isArray(rawOffer.devices) ? rawOffer.devices.map(String).filter(Boolean) : [];
+  
+  // Safely handle the os field (as platforms)
+  const platforms = Array.isArray(rawOffer.os) ? rawOffer.os.map(String).filter(Boolean) : [];
+
 
   return {
     ...rawOffer,
@@ -102,6 +108,7 @@ function processOffer(rawOffer: RawNotikOffer): NotikOffer {
     payout: payoutValue,
     countries: finalCountries,
     devices: devices,
+    platforms: platforms,
     events: (rawOffer.events || []).map(e => ({
       ...e, 
       payout: typeof e.payout === 'string' ? parseFloat(e.payout) : (e.payout || 0)
