@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { SafeImage } from "@/components/safe-image";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { randomUUID } from "crypto";
 
 // Define a more specific type for the offer object
 type Offer = {
@@ -31,8 +30,7 @@ type Offer = {
 
 export function OfferDetailsRow({ offer }: { offer: Offer }) {
   const [isOpen, setIsOpen] = useState(false);
-  // Use a more reliable unique ID source if available, but for client-side this is okay.
-  const [uniqueId] = useState(() => `details-${randomUUID()}`);
+  const uniqueId = useId();
 
   return (
     <Collapsible asChild>
@@ -95,9 +93,9 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
             </TableCell>
           </TableRow>
           
-          <CollapsibleContent asChild id={uniqueId}>
-            <TableRow>
-                <TableCell colSpan={8}>
+          <CollapsibleContent asChild>
+            <tr id={uniqueId}>
+                <td colSpan={8}>
                   <div className="p-4 bg-muted/50 rounded-lg space-y-4">
                     <div>
                       <h4 className="font-semibold text-sm">Offer ID</h4>
@@ -137,11 +135,10 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
                       </div>
                     )}
                   </div>
-                </TableCell>
-            </TableRow>
+                </td>
+            </tr>
           </CollapsibleContent>
         </>
     </Collapsible>
   );
 }
-
