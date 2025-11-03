@@ -23,35 +23,29 @@ const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?: string[] }) => {
-  const lowerDevices = devices?.map(d => d.toLowerCase()) || [];
-  const lowerPlatforms = platforms?.map(p => p.toLowerCase()) || [];
+  const safeDevices = devices?.map(d => d.toLowerCase()) || [];
+  const safePlatforms = platforms?.map(p => p.toLowerCase()) || [];
   const iconsToShow = new Set<string>();
 
-  const isForAll = lowerDevices.includes('all') || lowerPlatforms.includes('all');
-
-  if (isForAll) {
+  // Rule 1: Show desktop icon if 'desktop' or 'all' is in devices.
+  if (safeDevices.includes('desktop') || safeDevices.includes('all')) {
     iconsToShow.add('desktop');
-    iconsToShow.add('android');
-    iconsToShow.add('ios');
-  } else {
-    // Only show desktop if explicitly stated
-    if (lowerDevices.includes('desktop')) {
-      iconsToShow.add('desktop');
-    }
+  }
 
-    // Check for Android/iOS explicitly in either platforms or devices
-    if (lowerPlatforms.includes('android') || lowerDevices.includes('android')) {
+  // Rule 2: Show Android icon if 'android' is in platforms.
+  if (safePlatforms.includes('android')) {
+    iconsToShow.add('android');
+  }
+  
+  // Rule 3: Show Apple icon if 'ios' is in platforms.
+  if (safePlatforms.includes('ios')) {
+    iconsToShow.add('ios');
+  }
+  
+  // Also show mobile icons if devices contains 'all'
+  if (safeDevices.includes('all')) {
       iconsToShow.add('android');
-    }
-    if (lowerPlatforms.includes('ios') || lowerDevices.includes('ios')) {
       iconsToShow.add('ios');
-    }
-    
-    // If device is 'mobile' but no specific platform is listed, show both mobile icons.
-    if (lowerDevices.includes('mobile') && !iconsToShow.has('android') && !iconsToShow.has('ios')) {
-      iconsToShow.add('android');
-      iconsToShow.add('ios');
-    }
   }
 
   if (iconsToShow.size === 0) return null;
