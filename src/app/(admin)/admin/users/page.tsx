@@ -22,35 +22,56 @@ export const metadata: Metadata = {
 };
 
 // We define a type for the joined data for better type safety.
+// This now reflects the structure returned by our SQL function.
 type UserProfile = {
-    id: string;
+    profile_id: string;
+    user_id: string;
     points: number;
-    users: {
-        email: string | null;
-        created_at: string;
-    } | null;
+    email: string | null;
+    created_at: string;
 }
 
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
   
-  // This is the correct syntax for an explicit join to auth.users
-  // when a foreign key relationship isn't automatically detected.
-  // It tells Supabase: "For each profile, use its 'user_id' column
-  // to fetch the related record from the 'users' table."
-  const { data, error } = await supabase
-    .from('profiles')
-    .select(`
-        id,
-        points,
-        users:user_id (
-            email,
-            created_at
-        )
-    `);
+  // Create the SQL function first
+  const functionQuery = `
+    CREATE OR REPLACE FUNCTION get_all_users_with_profiles()
+    RETURNS TABLE (
+        profile_id UUID,
+        user_id UUID,
+        points INT,
+        email TEXT,
+        created_at TIMESTAMPTZ
+    ) AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT
+            p.id as profile_id,
+            u.id as user_id,
+            p.points,
+            u.email,
+            u.created_at
+        FROM
+            auth.users AS u
+        LEFT JOIN
+            public.profiles AS p ON u.id = p.user_id;
+    END;
+    $$ LANGUAGE plpgsql SECURITY DEFINER;
+  `;
+  
+  // Ensure the function exists before calling it.
+  const { error: functionError } = await supabase.rpc('sql', { sql: functionQuery });
+   if (functionError) {
+    console.error("Error creating SQL function:", functionError.message);
+    // Don't throw, as the function might already exist.
+  }
+
+  // Now, call the RPC function to get the joined data.
+  const { data, error } = await supabase.rpc('get_all_users_with_profiles');
 
   if (error) {
-    console.error("Error fetching users:", error.message || 'An unknown error occurred');
+    console.error("Error fetching users via RPC:", error.message || 'An unknown error occurred');
     return [];
   }
 
@@ -80,16 +101,16 @@ export default async function ManageUsersPage() {
             <TableBody>
               {users.length > 0 ? (
                 users.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableRow key={user.profile_id || user.user_id}>
                     <TableCell className="font-medium">
-                      {user.users?.email ?? 'N/A'}
+                      {user.email ?? 'N/A'}
                     </TableCell>
                     <TableCell>{user.points ?? 0}</TableCell>
                     <TableCell>
-                      {user.users ? new Date(user.users.created_at).toLocaleDateString() : 'N/A'}
+                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{user.id ?? 'N/A'}</Badge>
+                      <Badge variant="outline">{user.profile_id ?? 'No Profile'}</Badge>
                     </TableCell>
                   </TableRow>
                 ))
