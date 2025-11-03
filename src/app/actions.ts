@@ -41,6 +41,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
                 payout: offer.payout,
                 countries: offer.countries,
                 platforms: offer.platforms,
+                devices: offer.devices,
                 categories: offer.categories,
                 events: offer.events,
                 is_disabled: false, // Default new offers to enabled

@@ -37,6 +37,7 @@ type Offer = {
   payout: number;
   countries: string[];
   platforms: string[];
+  devices: string[];
   categories: string[];
   events: { id: number; name: string; payout: number }[];
   is_disabled: boolean;

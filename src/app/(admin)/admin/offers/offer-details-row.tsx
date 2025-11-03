@@ -19,6 +19,7 @@ type Offer = {
   payout: number;
   countries: string[];
   platforms: string[];
+  devices: string[];
   categories: string[];
   description: string;
   click_url: string;
@@ -129,21 +130,33 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
       {isOpen && (
         <TableRow id={uniqueId} className={cn(offer.is_disabled && "bg-muted/30")}>
           <TableCell colSpan={8}>
-            <div className="p-4 bg-background/50 rounded-lg space-y-4">
+            <div className="p-4 bg-background/50 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
               <div>
                 <h4 className="font-semibold text-sm">Offer ID</h4>
                 <div className="text-xs text-muted-foreground">
                   <Badge variant="secondary">{offer.offer_id}</Badge>
                 </div>
               </div>
+              
               <div>
+                <h4 className="font-semibold text-sm">Devices</h4>
+                <div className="flex flex-wrap gap-1 mt-1">
+                    {(offer.devices || []).map((device: string) => (
+                    <Badge variant="outline" key={device} className="capitalize">
+                        {device}
+                    </Badge>
+                    ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
                 <h4 className="font-semibold text-sm">Description</h4>
                 <div
                   className="text-xs text-muted-foreground prose prose-sm prose-invert max-w-none"
                   dangerouslySetInnerHTML={{ __html: offer.description }}
                 />
               </div>
-              <div>
+              <div className="md:col-span-2">
                 <h4 className="font-semibold text-sm">Click URL</h4>
                 <a
                   href={offer.click_url}
@@ -155,7 +168,7 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
                 </a>
               </div>
               {offer.events && offer.events.length > 0 && (
-                <div>
+                <div className="md:col-span-2">
                   <h4 className="font-semibold text-sm mb-2">Events (Milestones)</h4>
                   <div className="space-y-2">
                     {offer.events.map((event) => (
