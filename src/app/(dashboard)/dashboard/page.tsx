@@ -8,18 +8,10 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { OfferCard } from "@/components/offer-card";
 import { user, type Offer } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -38,6 +30,7 @@ import { showLoginToast } from "@/lib/reward-toast";
 import { NotikOffer } from "@/lib/notik-api";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
+import { OfferGridCard } from "@/components/offer-grid-card";
 
 type DashboardOffer = NotikOffer & {
   points: number;
@@ -132,6 +125,32 @@ export default function DashboardPage() {
   const handleCloseModal = () => {
     setSelectedOffer(null);
   };
+  
+  const renderOfferGrid = (offers: DashboardOffer[], sectionTitle: string) => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
+    if (offers.length > 0) {
+      return (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {offers.map(offer => (
+            <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
+          ))}
+        </div>
+      );
+    }
+    return (
+      <Card className="text-center py-12">
+        <CardContent>
+          <p className="text-muted-foreground">No {sectionTitle.toLowerCase()} right now. Check back soon!</p>
+        </CardContent>
+      </Card>
+    );
+  };
 
   const recentActivity: Offer[] = []; // This needs to be connected to real data
 
@@ -151,77 +170,24 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
             <div>
-            <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
-                Featured Offers
-            </h2>
-            {isLoading ? (
-                <div className="flex justify-center items-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-            ) : featuredOffers.length > 0 ? (
-                <Carousel
-                opts={{
-                    align: "start",
-                    loop: false,
-                }}
-                className="w-full"
-                >
-                <CarouselContent>
-                    {featuredOffers.map((offer) => (
-                    <CarouselItem
-                        key={offer.offer_id}
-                        className="basis-full md:basis-1/2 lg:basis-1/2"
-                    >
-                        <div onClick={() => handleOfferClick(offer)}>
-                           <OfferCard offer={offer} />
-                        </div>
-                    </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious className="-left-4 hidden lg:flex" />
-                <CarouselNext className="-right-4 hidden lg:flex" />
-                </Carousel>
-            ) : (
-                <Card className="text-center py-12">
-                    <CardContent>
-                        <p className="text-muted-foreground">No featured offers right now. Check back soon!</p>
-                    </CardContent>
-                </Card>
-            )}
-          </div>
-            <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold tracking-tight font-headline">
-                Top Converting Offers
+              <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
+                  Featured Offers
               </h2>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/earn">
-                  View all <ChevronRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
+              {renderOfferGrid(featuredOffers, "Featured Offers")}
             </div>
-            {isLoading ? (
-                 <div className="flex justify-center items-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-            ) : topConvertingOffers.length > 0 ? (
-                <div className="space-y-4">
-                {topConvertingOffers.slice(0, 3).map((offer) => (
-                    <div key={offer.offer_id} onClick={() => handleOfferClick(offer)}>
-                        <OfferCard offer={offer} />
-                    </div>
-                ))}
-                </div>
-            ) : (
-                <Card className="text-center py-12 col-span-full">
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      No top offers right now. Check back soon!
-                    </p>
-                  </CardContent>
-                </Card>
-            )}
-          </div>
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold tracking-tight font-headline">
+                  Top Converting Offers
+                </h2>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/earn">
+                    View all <ChevronRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+              {renderOfferGrid(topConvertingOffers, "Top Converting Offers")}
+            </div>
         </div>
 
         <div className="space-y-8">

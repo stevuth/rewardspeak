@@ -14,7 +14,8 @@ type Offer = NotikOffer & {
 };
 
 export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferClick: (offer: Offer) => void }) {
-  const points = offer.points || 0;
+  const points = offer.points || Math.round((offer.payout || 0) * 1000);
+  const usdValue = (points / 1000).toFixed(2);
   
   return (
     <div onClick={() => onOfferClick(offer)} className="cursor-pointer h-full">
@@ -28,15 +29,13 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
                   className="w-full h-auto aspect-square object-cover"
                   data-ai-hint={offer.imageHint}
                 />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <CardContent className="p-2 flex-grow flex flex-col">
-                <h3 className="font-semibold text-sm truncate flex-grow mb-1.5">{offer.name}</h3>
-                <div className="flex justify-between items-center gap-2">
-                    <span className="text-[10px] text-muted-foreground uppercase font-bold">
-                        {offer.network}
-                    </span>
-                    <span className="text-sm font-bold text-secondary text-right">
-                        ${(points / 1000).toFixed(2)}
+            <CardContent className="p-3 flex-grow flex flex-col bg-card/50">
+                <h3 className="font-bold text-sm truncate flex-grow text-foreground">{offer.name}</h3>
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-sm font-bold text-secondary">
+                        ${usdValue}
                     </span>
                 </div>
             </CardContent>

@@ -8,14 +8,6 @@ import { OfferGridCard } from "@/components/offer-grid-card";
 import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { OfferCard } from "@/components/offer-card";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 
@@ -115,14 +107,12 @@ export default function OfferPreviewPage() {
     setSelectedOffer(null);
   };
   
-  const renderOfferGrid = (offers: Offer[]) => {
+  const renderOfferGrid = (offers: Offer[], sectionTitle: string) => {
     if (offers.length > 0) {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {offers.map((offer, index) => (
-                    <div key={`${offer.offer_id}-${index}`} className="relative">
-                        <OfferGridCard offer={offer} onOfferClick={handleOfferClick} />
-                    </div>
+                  <OfferGridCard key={`${offer.offer_id}-${index}`} offer={offer} onOfferClick={handleOfferClick} />
                 ))}
             </div>
         );
@@ -131,7 +121,7 @@ export default function OfferPreviewPage() {
     return (
         <Card className="text-center py-12">
             <CardContent>
-                <p className="text-muted-foreground">No offers to display. Try syncing offers first.</p>
+                <p className="text-muted-foreground">{sectionTitle} section is empty. Add IDs in "Featured Content".</p>
             </CardContent>
         </Card>
     );
@@ -156,65 +146,21 @@ export default function OfferPreviewPage() {
           <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
               Featured Offers Preview
           </h2>
-          {featuredOffers.length > 0 ? (
-            <Carousel
-                opts={{ align: "start", loop: false }}
-                className="w-full"
-            >
-                <CarouselContent>
-                {featuredOffers.map((offer) => (
-                    <CarouselItem
-                        key={offer.offer_id}
-                        className="basis-full md:basis-1/2 lg:basis-1/2"
-                    >
-                    <div onClick={() => handleOfferClick(offer)} className="cursor-pointer">
-                        <OfferCard offer={offer} />
-                    </div>
-                    </CarouselItem>
-                ))}
-                </CarouselContent>
-                <CarouselPrevious className="-left-4 hidden lg:flex" />
-                <CarouselNext className="-right-4 hidden lg:flex" />
-            </Carousel>
-           ) : (
-             <Card className="text-center py-12 col-span-full">
-              <CardContent>
-                <p className="text-muted-foreground">
-                  No featured offers configured. Set them in the "Featured Content" section.
-                </p>
-              </CardContent>
-            </Card>
-           )}
+          {renderOfferGrid(featuredOffers, "Featured Offers")}
       </section>
 
       <section>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
           Top Converting Offers Preview
         </h2>
-        {topConvertingOffers.length > 0 ? (
-            <div className="space-y-4">
-            {topConvertingOffers.slice(0, 3).map((offer) => (
-                <div key={offer.offer_id} onClick={() => handleOfferClick(offer)} className="cursor-pointer">
-                    <OfferCard offer={offer} />
-                </div>
-            ))}
-            </div>
-        ) : (
-            <Card className="text-center py-12 col-span-full">
-              <CardContent>
-                <p className="text-muted-foreground">
-                  No top converting offers configured. Set them in the "Featured Content" section.
-                </p>
-              </CardContent>
-            </Card>
-        )}
+        {renderOfferGrid(topConvertingOffers, "Top Converting Offers")}
       </section>
 
       <section>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
           All Offers Preview
         </h2>
-        {renderOfferGrid(allOffers)}
+        {renderOfferGrid(allOffers, "All Offers")}
       </section>
       
       <OfferPreviewModal 
