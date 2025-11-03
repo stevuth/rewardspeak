@@ -33,7 +33,7 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
                 <h3 className="font-semibold text-sm truncate flex-grow mb-1.5">{offer.name}</h3>
                 <div className="flex justify-between items-center gap-2">
                     <span className="text-[10px] text-muted-foreground uppercase font-bold">
-                        {offer.category}
+                        {offer.network}
                     </span>
                     <span className="text-sm font-bold text-secondary text-right">
                         ${(points / 1000).toFixed(2)}
