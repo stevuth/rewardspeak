@@ -9,9 +9,11 @@ import {
   Users,
   List,
   ArrowLeft,
-  Wand2
+  Wand2,
+  Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const adminNavItems = [
@@ -21,53 +23,82 @@ const adminNavItems = [
     { href: "/admin/seo", label: "SEO Optimizer", icon: Wand2 },
 ];
 
-
-function AdminSidebar() {
+function AdminHeader() {
   const pathname = usePathname();
-
   const getNavLinkClass = (href: string) => {
     const isActive = (href === "/admin" && pathname === href) || (href !== "/admin" && pathname.startsWith(href));
     return cn(
-      "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
+      "transition-colors text-sm font-medium",
       isActive
-        ? "bg-primary text-primary-foreground"
-        : "text-muted-foreground hover:bg-muted"
+        ? "text-foreground"
+        : "text-muted-foreground hover:text-foreground"
     );
   };
 
   return (
-    <div className="hidden border-r bg-card md:block">
-      <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-16 items-center border-b px-6">
-          <Link href="/admin" className="flex items-center gap-2 font-semibold">
-            <Image src="/logo.png?v=9" alt="Logo" width={32} height={32} />
-            <span>Admin Portal</span>
-          </Link>
-        </div>
-        <div className="flex-1 overflow-auto py-2">
-          <nav className="grid items-start px-4 text-sm font-medium">
-            {adminNavItems.map((item) => (
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button size="icon" variant="outline" className="sm:hidden">
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle Menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="sm:max-w-xs bg-card">
+          <nav className="grid gap-6 text-lg font-medium">
+            <Link
+              href="/admin"
+              className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+            >
+              <Image src="/logo.png?v=9" alt="Logo" width={32} height={32} className="transition-all group-hover:scale-110" />
+              <span className="sr-only">Admin Portal</span>
+            </Link>
+            {adminNavItems.map(item => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={getNavLinkClass(item.href)}
               >
-                <item.icon className="h-4 w-4" />
                 {item.label}
               </Link>
             ))}
-          </nav>
-        </div>
-        <div className="mt-auto p-4">
-            <Button asChild variant="outline" className="w-full">
+             <Button asChild variant="outline" className="w-full mt-auto">
                 <Link href="/dashboard">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Site
                 </Link>
             </Button>
-        </div>
+          </nav>
+        </SheetContent>
+      </Sheet>
+      
+      <div className="flex items-center gap-4">
+        <Link href="/admin" className="hidden sm:flex items-center gap-2 font-semibold">
+            <Image src="/logo.png?v=9" alt="Logo" width={32} height={32} />
+            <span className="text-xl">Admin Portal</span>
+        </Link>
+        <nav className="hidden md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 ml-6">
+            {adminNavItems.map(item => (
+                <Link
+                    key={item.href}
+                    href={item.href}
+                    className={getNavLinkClass(item.href)}
+                >
+                    {item.label}
+                </Link>
+            ))}
+        </nav>
       </div>
-    </div>
+      
+      <div className="ml-auto">
+        <Button asChild variant="outline" className="hidden sm:flex">
+          <Link href="/dashboard">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Site
+          </Link>
+        </Button>
+      </div>
+    </header>
   );
 }
 
@@ -77,13 +108,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <AdminSidebar />
-      <div className="flex flex-col">
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-background">
-            {children}
-        </main>
-      </div>
+    <div className="flex min-h-screen w-full flex-col bg-background">
+      <AdminHeader />
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        {children}
+      </main>
     </div>
   );
 }
