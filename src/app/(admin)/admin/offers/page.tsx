@@ -27,7 +27,6 @@ import { OfferDetailsRow } from "./offer-details-row";
 import { syncOffers } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 
-// Explicitly type the Offer object based on the database schema
 type Offer = {
   offer_id: string;
   name: string;
@@ -40,6 +39,7 @@ type Offer = {
   platforms: string[];
   categories: string[];
   events: { id: number; name: string; payout: number }[];
+  is_disabled: boolean;
   created_at: string;
 };
 
@@ -215,14 +215,14 @@ export default function ManageOffersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-16 font-semibold">Image</TableHead>
-                <TableHead className="w-[300px] font-semibold">Name</TableHead>
-                <TableHead className="font-semibold">Network</TableHead>
-                <TableHead className="font-semibold">Payout</TableHead>
-                <TableHead className="font-semibold">Countries</TableHead>
-                <TableHead className="font-semibold">Platforms</TableHead>
-                <TableHead className="font-semibold">Categories</TableHead>
-                <TableHead className="font-semibold">Actions</TableHead>
+                <TableHead className="w-16">Image</TableHead>
+                <TableHead className="w-[300px]">Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Network</TableHead>
+                <TableHead>Payout</TableHead>
+                <TableHead>Countries</TableHead>
+                <TableHead>Platforms</TableHead>
+                <TableHead className="w-[200px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

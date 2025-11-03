@@ -60,8 +60,8 @@ export default function OfferPreviewPage() {
         const { data: { user } } = await supabase.auth.getUser();
         const userId = user?.id;
 
-        // Fetch all offers for the main grid
-        const { data: rawAllOffers, error: allOffersError } = await supabase.from('all_offers').select('*');
+        // Fetch all offers for the main grid, excluding disabled ones
+        const { data: rawAllOffers, error: allOffersError } = await supabase.from('all_offers').select('*').eq('is_disabled', false);
         if (allOffersError) throw allOffersError;
         if (Array.isArray(rawAllOffers)) {
             const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
@@ -77,6 +77,7 @@ export default function OfferPreviewPage() {
         const allFeaturedIds = [...new Set([...featuredIds, ...topConvertingIds])];
 
         if (allFeaturedIds.length > 0) {
+            // We fetch even disabled offers here so admins can see them if they've been added to a list
             const { data: featuredOffersData, error: featuredOffersError } = await supabase
                 .from('all_offers')
                 .select('*')
@@ -172,7 +173,7 @@ export default function OfferPreviewPage() {
     <div className="space-y-8">
       <PageHeader
         title="Offer Preview"
-        description={`This is how offers are displayed to users. Total offers available: ${allOffers.length}.`}
+        description={`This is how offers are displayed to users. Total enabled offers available: ${allOffers.length}.`}
       />
       
        <section>
@@ -191,7 +192,7 @@ export default function OfferPreviewPage() {
 
       <section>
         <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
-          All Offers Preview
+          All Enabled Offers Preview
         </h2>
         {renderOfferGrid(allOffers)}
       </section>

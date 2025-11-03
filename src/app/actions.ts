@@ -43,6 +43,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
                 platforms: offer.platforms,
                 categories: offer.categories,
                 events: offer.events,
+                is_disabled: false, // Default new offers to enabled
             }));
         };
 
@@ -57,7 +58,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
             log += `Upserting chunk ${i + 1}/${allOfferChunks.length} with ${allChunk.length} offers...\n`;
             const { error: allOffersError } = await supabase
                 .from('all_offers')
-                .upsert(allChunk, { onConflict: 'offer_id' });
+                .upsert(allChunk, { onConflict: 'offer_id', ignoreDuplicates: false });
 
             if (allOffersError) {
                 log += `❌ Error upserting chunk ${i + 1}: ${allOffersError.message}\n`;
@@ -71,6 +72,7 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
         revalidatePath('/earn');
         revalidatePath('/dashboard');
         revalidatePath('/admin/offer-preview');
+        revalidatePath('/admin/offers');
         log += "Sync complete!";
         return { success: true, log };
 
@@ -122,4 +124,26 @@ export async function updateFeaturedContent(contentType: 'featured_offers' | 'to
     revalidatePath('/admin/offer-preview');
 
     return { success: true };
+}
+
+export async function setOfferDisabledStatus(offerId: string, isDisabled: boolean): Promise<{ success: boolean; error?: string }> {
+  const supabase = createSupabaseAdminClient();
+
+  const { error } = await supabase
+    .from('all_offers')
+    .update({ is_disabled: isDisabled })
+    .eq('offer_id', offerId);
+
+  if (error) {
+    console.error("Error updating offer status:", error);
+    return { success: false, error: error.message };
+  }
+
+  // Revalidate all paths where offers might be displayed
+  revalidatePath('/admin/offers', 'page');
+  revalidatePath('/admin/offer-preview');
+  revalidatePath('/dashboard');
+  revalidatePath('/earn');
+
+  return { success: true };
 }

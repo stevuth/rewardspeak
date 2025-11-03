@@ -85,7 +85,8 @@ export default function DashboardPage() {
             const { data: offersData, error } = await supabase
                 .from('all_offers')
                 .select('*')
-                .in('offer_id', allIds);
+                .in('offer_id', allIds)
+                .eq('is_disabled', false); // Only fetch enabled offers
 
             if (error) {
                 console.error("Error fetching dashboard offers:", error);

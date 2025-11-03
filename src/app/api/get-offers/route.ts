@@ -8,8 +8,11 @@ export async function GET() {
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Fetch offers from your database table
-    const { data: allOffers, error: allOffersError } = await supabase.from('all_offers').select('*');
+    // Fetch only enabled offers from your database table
+    const { data: allOffers, error: allOffersError } = await supabase
+      .from('all_offers')
+      .select('*')
+      .eq('is_disabled', false);
 
     if (allOffersError) throw allOffersError;
 

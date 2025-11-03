@@ -112,7 +112,9 @@ export default function EarnPage() {
 
       let transformedNotikOffers: Offer[] = [];
       if (Array.isArray(rawAllOffers)) {
-          transformedNotikOffers = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
+          // Filter out disabled offers
+          const enabledOffers = rawAllOffers.filter((o: any) => !o.is_disabled);
+          transformedNotikOffers = enabledOffers.map((o: NotikOffer) => transformOffer(o, userId));
           setAllOffers(transformedNotikOffers);
       } else {
           setAllOffers([]);
