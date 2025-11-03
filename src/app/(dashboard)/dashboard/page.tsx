@@ -37,6 +37,7 @@ import { useState, useEffect } from "react";
 import { showLoginToast } from "@/lib/reward-toast";
 import { NotikOffer } from "@/lib/notik-api";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
+import { OfferPreviewModal } from "@/components/offer-preview-modal";
 
 type DashboardOffer = NotikOffer & {
   points: number;
@@ -66,6 +67,7 @@ export default function DashboardPage() {
   const [featuredOffers, setFeaturedOffers] = useState<DashboardOffer[]>([]);
   const [topConvertingOffers, setTopConvertingOffers] = useState<DashboardOffer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedOffer, setSelectedOffer] = useState<DashboardOffer | null>(null);
 
   useEffect(() => {
     const fetchOffers = async () => {
@@ -123,11 +125,24 @@ export default function DashboardPage() {
 
   }, [searchParams]);
     
+  const handleOfferClick = (offer: DashboardOffer) => {
+    setSelectedOffer(offer);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedOffer(null);
+  };
+
   const recentActivity: Offer[] = []; // This needs to be connected to real data
 
   return (
     <div className="space-y-8">
       <WelcomeBonusModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />
+      <OfferPreviewModal 
+        isOpen={!!selectedOffer}
+        onClose={handleCloseModal}
+        offer={selectedOffer}
+      />
       <PageHeader
         title="Peak Dashboard"
         description="Welcome back! Here's a look at your recent activity."
@@ -157,7 +172,9 @@ export default function DashboardPage() {
                         key={offer.offer_id}
                         className="basis-full md:basis-1/2 lg:basis-1/2"
                     >
-                        <OfferCard offer={offer} />
+                        <div onClick={() => handleOfferClick(offer)}>
+                           <OfferCard offer={offer} />
+                        </div>
                     </CarouselItem>
                     ))}
                 </CarouselContent>
@@ -190,7 +207,9 @@ export default function DashboardPage() {
             ) : topConvertingOffers.length > 0 ? (
                 <div className="space-y-4">
                 {topConvertingOffers.slice(0, 3).map((offer) => (
-                    <OfferCard key={offer.offer_id} offer={offer} />
+                    <div key={offer.offer_id} onClick={() => handleOfferClick(offer)}>
+                        <OfferCard offer={offer} />
+                    </div>
                 ))}
                 </div>
             ) : (

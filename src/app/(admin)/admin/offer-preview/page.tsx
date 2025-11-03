@@ -167,7 +167,9 @@ export default function OfferPreviewPage() {
                         key={offer.offer_id}
                         className="basis-full md:basis-1/2 lg:basis-1/2"
                     >
-                    <OfferCard offer={offer} />
+                    <div onClick={() => handleOfferClick(offer)} className="cursor-pointer">
+                        <OfferCard offer={offer} />
+                    </div>
                     </CarouselItem>
                 ))}
                 </CarouselContent>
@@ -192,7 +194,9 @@ export default function OfferPreviewPage() {
         {topConvertingOffers.length > 0 ? (
             <div className="space-y-4">
             {topConvertingOffers.slice(0, 3).map((offer) => (
-                <OfferCard key={offer.offer_id} offer={offer} />
+                <div key={offer.offer_id} onClick={() => handleOfferClick(offer)} className="cursor-pointer">
+                    <OfferCard offer={offer} />
+                </div>
             ))}
             </div>
         ) : (
