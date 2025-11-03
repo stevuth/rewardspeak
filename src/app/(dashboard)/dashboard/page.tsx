@@ -9,9 +9,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { OfferCard } from "@/components/offer-card";
-import { offerWalls, user, type Offer } from "@/lib/mock-data";
+import { user, type Offer } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { CheckCircle, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -91,8 +90,11 @@ export default function DashboardPage() {
                 console.error("Error fetching dashboard offers:", error);
             } else {
                 const transformed = offersData.map(o => transformOffer(o as NotikOffer, user?.id));
-                setFeaturedOffers(transformed.filter(o => featuredIds.includes(o.offer_id)));
-                setTopConvertingOffers(transformed.filter(o => topConvertingIds.includes(o.offer_id)));
+                
+                // Preserve order from admin panel
+                const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
+                setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+                setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean));
             }
         }
         setIsLoading(false);
@@ -137,36 +139,38 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
                 Featured Offers
             </h2>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: false,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {offerWalls.map((wall) => (
-                  <CarouselItem
-                    key={wall.name}
-                    className="basis-1/2 md:basis-1/3 lg:basis-1/4"
-                  >
-                    <Card className="overflow-hidden text-center flex flex-col items-center justify-center p-4 h-full bg-card hover:bg-muted/50 transition-colors">
-                      <Image
-                        src={wall.logo}
-                        alt={`${wall.name} logo`}
-                        width={56}
-                        height={56}
-                        className="rounded-lg mb-2"
-                        data-ai-hint={wall.hint}
-                      />
-                      <span className="text-sm font-medium mt-1">{wall.name}</span>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="-left-4 hidden lg:flex" />
-              <CarouselNext className="-right-4 hidden lg:flex" />
-            </Carousel>
+            {isLoading ? (
+                <div className="flex justify-center items-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+            ) : featuredOffers.length > 0 ? (
+                <Carousel
+                opts={{
+                    align: "start",
+                    loop: false,
+                }}
+                className="w-full"
+                >
+                <CarouselContent>
+                    {featuredOffers.map((offer) => (
+                    <CarouselItem
+                        key={offer.offer_id}
+                        className="basis-full md:basis-1/2 lg:basis-1/2"
+                    >
+                        <OfferCard offer={offer} />
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-4 hidden lg:flex" />
+                <CarouselNext className="-right-4 hidden lg:flex" />
+                </Carousel>
+            ) : (
+                <Card className="text-center py-12">
+                    <CardContent>
+                        <p className="text-muted-foreground">No featured offers right now. Check back soon!</p>
+                    </CardContent>
+                </Card>
+            )}
           </div>
             <div>
             <div className="flex items-center justify-between mb-4">
