@@ -24,9 +24,9 @@ export const metadata: Metadata = {
 // We define a type for the joined data for better type safety.
 // This now reflects the structure returned by our SQL function.
 type UserProfile = {
-    profile_id: string;
+    profile_id: string | null;
     user_id: string;
-    points: number;
+    points: number | null;
     email: string | null;
     created_at: string;
 }
@@ -69,7 +69,7 @@ export default async function ManageUsersPage() {
             <TableBody>
               {users.length > 0 ? (
                 users.map((user) => (
-                  <TableRow key={user.profile_id || user.user_id}>
+                  <TableRow key={user.user_id}>
                     <TableCell className="font-medium">
                       {user.email ?? 'N/A'}
                     </TableCell>
