@@ -33,7 +33,7 @@ export function OfferDetailsRow({ offer }: { offer: Offer }) {
   const uniqueId = useId();
 
   return (
-    <Collapsible>
+    <Collapsible asChild>
         <>
           <TableRow>
             <TableCell>
