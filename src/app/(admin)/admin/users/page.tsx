@@ -33,41 +33,9 @@ type UserProfile = {
 
 async function getAllUsers(): Promise<UserProfile[]> {
   const supabase = createSupabaseServerClient();
-  
-  // Create the SQL function first
-  const functionQuery = `
-    CREATE OR REPLACE FUNCTION get_all_users_with_profiles()
-    RETURNS TABLE (
-        profile_id UUID,
-        user_id UUID,
-        points INT,
-        email TEXT,
-        created_at TIMESTAMPTZ
-    ) AS $$
-    BEGIN
-        RETURN QUERY
-        SELECT
-            p.id as profile_id,
-            u.id as user_id,
-            p.points,
-            u.email,
-            u.created_at
-        FROM
-            auth.users AS u
-        LEFT JOIN
-            public.profiles AS p ON u.id = p.user_id;
-    END;
-    $$ LANGUAGE plpgsql SECURITY DEFINER;
-  `;
-  
-  // Ensure the function exists before calling it.
-  const { error: functionError } = await supabase.rpc('sql', { sql: functionQuery });
-   if (functionError) {
-    console.error("Error creating SQL function:", functionError.message);
-    // Don't throw, as the function might already exist.
-  }
 
-  // Now, call the RPC function to get the joined data.
+  // Call the RPC function to get the joined data.
+  // This assumes you have already created the `get_all_users_with_profiles` function in your Supabase SQL editor.
   const { data, error } = await supabase.rpc('get_all_users_with_profiles');
 
   if (error) {
