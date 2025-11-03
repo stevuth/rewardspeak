@@ -53,7 +53,7 @@ const mobileNavItems = [
     { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
-    { href: "/settings", label: "My Profile", icon: Settings },
+    { href: "/history", label: "Quest Log", icon: Clock },
 ]
 
 const recentEarnings: any[] = [];
@@ -337,3 +337,4 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
     
 
     
+
