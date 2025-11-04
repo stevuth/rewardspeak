@@ -1,7 +1,6 @@
 
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { createSupabaseServerClient } from '@/utils/supabase/server'
 import { createSupabaseAdminClient } from '@/utils/supabase/admin'
 
@@ -24,7 +23,6 @@ export async function login(prevState: { message: string }, formData: FormData) 
     return { message: error.message };
   }
   
-  revalidatePath('/', 'layout');
   return { success: true, userEmail: data.user?.email || '' };
 }
 
@@ -65,10 +63,12 @@ export async function signup(prevState: { message: string }, formData: FormData)
 
     if (profileError) {
         console.error("Signup Profile Error:", profileError.message);
+        // If profile creation fails, we must delete the auth user to allow them to try again.
         await supabaseAdmin.auth.admin.deleteUser(userId);
         return { message: `Database error creating profile: ${profileError.message}` };
     }
     
+    // After successful signup and profile creation, sign the user in.
     const supabase = createSupabaseServerClient();
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
@@ -76,9 +76,9 @@ export async function signup(prevState: { message: string }, formData: FormData)
     });
 
     if (signInError) {
-      return { message: signInError.message };
+      // This is unlikely but possible. We don't delete the user here as they already exist.
+      return { message: `Signup successful, but login failed: ${signInError.message}` };
     }
 
-    revalidatePath('/', 'layout');
     return { success: true, isNewUser: true };
 }
