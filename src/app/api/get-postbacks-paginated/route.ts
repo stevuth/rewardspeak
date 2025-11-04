@@ -22,6 +22,7 @@ export async function GET(request: Request) {
         points_credited,
         payout_usd,
         user_id,
+        postback_url,
         profiles (
             email
         )

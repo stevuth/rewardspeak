@@ -31,6 +31,7 @@ type Transaction = {
   points_credited: number;
   payout_usd: number;
   user_email: string;
+  postback_url: string;
 };
 
 export default function PostbacksPage() {
@@ -101,12 +102,13 @@ export default function PostbacksPage() {
                 <TableHead>Points</TableHead>
                 <TableHead>Payout (USD)</TableHead>
                 <TableHead>Txn ID</TableHead>
+                <TableHead>Postback URL</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24">
+                  <TableCell colSpan={7} className="text-center h-24">
                     <Loader2 className="mx-auto h-6 w-6 animate-spin"/>
                   </TableCell>
                 </TableRow>
@@ -123,11 +125,14 @@ export default function PostbacksPage() {
                     <TableCell>
                       <Badge variant="outline" className="font-mono">{tx.txn_id}</Badge>
                     </TableCell>
+                    <TableCell className="max-w-sm truncate text-xs text-muted-foreground">
+                        {tx.postback_url}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24">
+                  <TableCell colSpan={7} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>
