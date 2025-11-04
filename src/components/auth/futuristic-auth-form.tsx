@@ -1,18 +1,18 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, LogIn, Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useFormStatus } from "react-dom";
 
 type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  formAction: (payload: FormData) => void;
   state: { message: string };
-  pending: boolean;
 };
 
 const pageVariants = {
@@ -70,12 +70,62 @@ const FloatingLabelInput = ({
   );
 };
 
+const SubmitButton = ({ isLogin }: { isLogin: boolean }) => {
+    const { pending } = useFormStatus();
+
+    return (
+        <button
+            type="submit"
+            disabled={pending}
+            className={cn(
+                "w-full h-[54px] relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
+                pending && "bg-secondary/20 text-secondary"
+            )}
+        >
+        <AnimatePresence>
+          {pending ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="w-full text-center"
+            >
+              <p className="text-xs font-semibold mb-1.5">Loading your rewards vault...</p>
+              <div className="w-full bg-secondary/20 rounded-full h-1.5 overflow-hidden">
+                <motion.div
+                  className="bg-secondary h-1.5 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                ></motion.div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="ready"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center"
+            >
+              {isLogin ? (
+                <LogIn className="mr-2 h-5 w-5" />
+              ) : (
+                <UserPlus className="mr-2 h-5 w-5" />
+              )}
+              {isLogin ? "Sign In Securely" : "Create Account"}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </button>
+    )
+}
+
 export function FuturisticAuthForm({
   type,
   onSwitch,
-  onSubmit,
+  formAction,
   state,
-  pending,
 }: AuthFormProps) {
   const isLogin = type === "login";
 
@@ -116,7 +166,7 @@ export function FuturisticAuthForm({
             transition={pageTransition}
             className="w-full"
           >
-            <form onSubmit={onSubmit} className="space-y-4">
+            <form action={formAction} className="space-y-4">
               <h1 className="text-3xl font-bold text-white mb-2">
                 {isLogin ? "Sign In" : "Create Account"}
               </h1>
@@ -168,50 +218,7 @@ export function FuturisticAuthForm({
                 <p className="text-sm text-red-400">{state.message}</p>
               )}
 
-              <button
-                type="submit"
-                disabled={pending}
-                className={cn(
-                    "w-full h-[54px] relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
-                    pending && "bg-secondary/20 text-secondary"
-                )}
-              >
-                <AnimatePresence>
-                  {pending ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="w-full text-center"
-                    >
-                      <p className="text-xs font-semibold mb-1.5">Loading your rewards vault...</p>
-                      <div className="w-full bg-secondary/20 rounded-full h-1.5 overflow-hidden">
-                        <motion.div
-                          className="bg-secondary h-1.5 rounded-full"
-                          initial={{ width: '0%' }}
-                          animate={{ width: '100%' }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                        ></motion.div>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="ready"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center"
-                    >
-                      {isLogin ? (
-                        <LogIn className="mr-2 h-5 w-5" />
-                      ) : (
-                        <UserPlus className="mr-2 h-5 w-5" />
-                      )}
-                      {isLogin ? "Sign In Securely" : "Create Account"}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </button>
+              <SubmitButton isLogin={isLogin} />
             </form>
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
