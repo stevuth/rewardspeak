@@ -88,7 +88,7 @@ export default function OfferPreviewPage() {
 
         const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
         const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
-        const allFeaturedIds = [...new set([...featuredIds, ...topConvertingIds])];
+        const allFeaturedIds = [...new Set([...featuredIds, ...topConvertingIds])];
 
         if (allFeaturedIds.length > 0) {
             const { data: featuredOffersData, error: featuredOffersError } = await supabase
