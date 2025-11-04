@@ -10,8 +10,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   }
 
-  // Rely on the on_auth_user_created trigger to create the profile.
-  // This is the standard Supabase pattern.
+  // This is the standard, default Supabase signup call.
+  // It relies entirely on the on_auth_user_created trigger in the database
+  // to create the user profile.
   const { data, error } = await supabaseApi.auth.signUp({
     email,
     password,
@@ -19,6 +20,7 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error("Supabase signup auth error:", error.message);
+    // The error you are seeing is originating from Supabase and being returned here.
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
   
