@@ -27,7 +27,7 @@ export async function login(prevState: { message: string }, formData: FormData) 
 }
 
 export async function signup(prevState: { message: string }, formData: FormData) {
-    const supabaseAdmin = createSupabaseAdminClient();
+    const supabase = createSupabaseServerClient();
 
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
@@ -36,49 +36,27 @@ export async function signup(prevState: { message: string }, formData: FormData)
         return { message: 'Email and password are required.' };
     }
 
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+    const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        email_confirm: true,
+        options: {
+            // emailRedirectTo is not needed if email confirmation is disabled in Supabase settings
+        },
     });
 
-    if (authError) {
-        console.error("Signup Auth Error:", authError.message);
-        return { message: authError.message };
+    if (error) {
+        console.error("Signup Auth Error:", error.message);
+        return { message: error.message };
     }
     
-    if (!authData.user) {
+    // The on_auth_user_created trigger in Supabase will handle profile creation.
+    // We just need to check if the user was created.
+    if (!data.user) {
         return { message: 'Could not create user.' };
     }
-
-    const userId = authData.user.id;
-
-    const { error: profileError } = await supabaseAdmin
-        .from('profiles')
-        .insert({ 
-            user_id: userId,
-            email: email,
-            points: 1000 // Welcome bonus
-        });
-
-    if (profileError) {
-        console.error("Signup Profile Error:", profileError.message);
-        // If profile creation fails, we must delete the auth user to allow them to try again.
-        await supabaseAdmin.auth.admin.deleteUser(userId);
-        return { message: `Database error creating profile: ${profileError.message}` };
-    }
     
-    // After successful signup and profile creation, sign the user in.
-    const supabase = createSupabaseServerClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // We assume the trigger will grant the welcome bonus.
+    // If signups complete but points are not granted, the trigger is the issue.
 
-    if (signInError) {
-      // This is unlikely but possible. We don't delete the user here as they already exist.
-      return { message: `Signup successful, but login failed: ${signInError.message}` };
-    }
-
-    return { success: true, isNewUser: true };
+    return { success: true, isNewUser: true, userEmail: data.user.email || '' };
 }
