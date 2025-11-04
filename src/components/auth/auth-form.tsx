@@ -24,11 +24,10 @@ export function AuthForm({
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
     const referralCode = (form.elements.namedItem('referral_code') as HTMLInputElement)?.value;
 
-    const payload = {
-      email,
-      password,
-      referral_code: referralCode,
-    };
+    const payload: Record<string, string> = { email, password };
+    if (referralCode) {
+        payload.referral_code = referralCode;
+    }
     
     const endpoint = type === "login" ? "/api/auth/login" : "/api/auth/signup";
 
