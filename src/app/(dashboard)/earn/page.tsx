@@ -68,19 +68,26 @@ const OfferwallCard = ({ wall }: { wall: typeof offerwalls[0] }) => (
 );
 
 
-function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Offer {
+function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payoutPercentage: number): Offer {
   let clickUrl = notikOffer.click_url;
   if (userId) {
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
 
-  const totalPayout = notikOffer.payout || 0;
+  const percentage = payoutPercentage / 100;
+  const markedUpPayout = (notikOffer.payout || 0) * percentage;
   
-  const points = Math.round(totalPayout * 1000);
+  const points = Math.round(markedUpPayout * 1000);
+
+  const markedUpEvents = notikOffer.events?.map(event => ({
+    ...event,
+    payout: (event.payout || 0) * percentage,
+  }));
 
   return {
     ...notikOffer,
-    payout: totalPayout,
+    payout: markedUpPayout,
+    events: markedUpEvents,
     points: points,
     imageHint: "offer logo",
     category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
@@ -108,14 +115,14 @@ export default function EarnPage() {
       
       if (notikData.error) throw new Error(notikData.error);
 
-      const { allOffers: rawAllOffers, user } = notikData;
+      const { allOffers: rawAllOffers, user, payoutPercentage } = notikData;
       const userId = user?.id;
 
       let transformedNotikOffers: Offer[] = [];
       if (Array.isArray(rawAllOffers)) {
           // Filter out disabled offers
           const enabledOffers = rawAllOffers.filter((o: any) => !o.is_disabled);
-          transformedNotikOffers = enabledOffers.map((o: NotikOffer) => transformOffer(o, userId));
+          transformedNotikOffers = enabledOffers.map((o: NotikOffer) => transformOffer(o, userId, payoutPercentage));
           setAllOffers(transformedNotikOffers);
       } else {
           setAllOffers([]);

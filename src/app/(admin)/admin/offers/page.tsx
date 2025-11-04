@@ -9,7 +9,8 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import {
   Table,
@@ -22,10 +23,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, RefreshCw, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Loader2, Percent } from "lucide-react";
 import { OfferDetailsRow } from "./offer-details-row";
-import { syncOffers } from "@/app/actions";
+import { syncOffers, getOfferPayoutPercentage, updateOfferPayoutPercentage } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 
 type Offer = {
   offer_id: string;
@@ -64,8 +66,19 @@ export default function ManageOffersPage() {
   const [idInput, setIdInput] = useState(offerIdFilter);
   const [nameInput, setNameInput] = useState(offerNameFilter);
 
+  const [payoutPercentage, setPayoutPercentage] = useState<number | string>('');
+  const [isSavingPercentage, setIsSavingPercentage] = useState(false);
+
   const OFFERS_PER_PAGE = 20;
   const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+
+  useEffect(() => {
+    async function fetchPercentage() {
+        const { data } = await getOfferPayoutPercentage();
+        setPayoutPercentage(data);
+    }
+    fetchPercentage();
+  }, []);
 
   const fetchOffers = useCallback(async () => {
     setIsLoading(true);
@@ -153,6 +166,23 @@ export default function ManageOffersPage() {
     setIsSyncing(false);
   };
   
+  const handleSavePercentage = async () => {
+    const value = Number(payoutPercentage);
+    if (isNaN(value) || value < 0 || value > 100) {
+      toast({ variant: 'destructive', title: 'Invalid Percentage', description: 'Please enter a number between 0 and 100.' });
+      return;
+    }
+    
+    setIsSavingPercentage(true);
+    const result = await updateOfferPayoutPercentage(value);
+    if (result.success) {
+      toast({ title: 'Success', description: 'Payout percentage updated successfully.' });
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: result.error || 'Failed to update percentage.' });
+    }
+    setIsSavingPercentage(false);
+  };
+
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', pageNumber.toString());
@@ -171,6 +201,37 @@ export default function ManageOffersPage() {
           {isSyncing ? 'Syncing...' : 'Sync Offers'}
         </Button>
       </div>
+
+       <Card>
+        <CardHeader>
+          <CardTitle>Offer Payout Settings</CardTitle>
+          <CardDescription>Set the percentage of the actual offer payout to be shown to users. E.g., 60 means users see 60% of the reward.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="max-w-xs space-y-2">
+                <Label htmlFor="payout-percentage">User Payout Percentage</Label>
+                <div className="relative">
+                    <Input
+                        id="payout-percentage"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={payoutPercentage}
+                        onChange={(e) => setPayoutPercentage(e.target.value)}
+                        className="pl-8"
+                        placeholder="e.g., 60"
+                    />
+                    <Percent className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                </div>
+            </div>
+        </CardContent>
+        <CardFooter>
+            <Button onClick={handleSavePercentage} disabled={isSavingPercentage}>
+                {isSavingPercentage ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Save Percentage
+            </Button>
+        </CardFooter>
+       </Card>
       
        <Card>
         <CardHeader>

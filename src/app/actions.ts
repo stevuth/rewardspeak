@@ -148,3 +148,49 @@ export async function setOfferDisabledStatus(offerId: string, isDisabled: boolea
 
   return { success: true };
 }
+
+export async function getOfferPayoutPercentage(): Promise<{ data: number; error: string | null; }> {
+    const supabase = createSupabaseAdminClient();
+    const { data, error } = await supabase
+        .from('site_config')
+        .select('value')
+        .eq('key', 'offer_payout_percentage')
+        .single();
+    
+    if (error) {
+        // If the key doesn't exist, return a default of 100%
+        if (error.code === 'PGRST116') { 
+            return { data: 100, error: null };
+        }
+        console.error("Error fetching payout percentage:", error);
+        return { data: 100, error: error.message };
+    }
+    
+    return { data: Number(data.value), error: null };
+}
+
+export async function updateOfferPayoutPercentage(percentage: number): Promise<{ success: boolean; error?: string; }> {
+    const supabase = createSupabaseAdminClient();
+    if (percentage < 0 || percentage > 100) {
+        return { success: false, error: "Percentage must be between 0 and 100." };
+    }
+
+    const { error } = await supabase
+        .from('site_config')
+        .upsert({
+            key: 'offer_payout_percentage',
+            value: String(percentage),
+        }, { onConflict: 'key' });
+    
+    if (error) {
+        console.error("Error updating payout percentage:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/admin/offers', 'page');
+    revalidatePath('/admin/offer-preview', 'page');
+    revalidatePath('/dashboard', 'page');
+    revalidatePath('/earn', 'page');
+
+    return { success: true };
+}

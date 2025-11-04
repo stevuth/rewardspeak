@@ -45,14 +45,26 @@ type DashboardOffer = NotikOffer & {
   clickUrl: string;
 };
 
-function transformOffer(notikOffer: NotikOffer, userId: string | undefined): DashboardOffer {
+function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payoutPercentage: number): DashboardOffer {
   let clickUrl = notikOffer.click_url;
   if (userId) {
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
-  const points = Math.round((notikOffer.payout || 0) * 1000);
+  
+  const percentage = payoutPercentage / 100;
+  const markedUpPayout = (notikOffer.payout || 0) * percentage;
+  
+  const points = Math.round(markedUpPayout * 1000);
+
+  const markedUpEvents = notikOffer.events?.map(event => ({
+    ...event,
+    payout: (event.payout || 0) * percentage,
+  }));
+
   return {
     ...notikOffer,
+    payout: markedUpPayout,
+    events: markedUpEvents,
     points: points,
     imageHint: "offer logo",
     category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
@@ -74,6 +86,10 @@ export default function DashboardPage() {
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
 
+        // Fetch payout percentage
+        const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
+        const payoutPercentage = config ? Number(config.value) : 100;
+
         // Fetch IDs
         const { data: featuredContent } = await supabase.from('featured_content').select('content_type, offer_ids');
         const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
@@ -91,7 +107,7 @@ export default function DashboardPage() {
             if (error) {
                 console.error("Error fetching dashboard offers:", error);
             } else {
-                const transformed = offersData.map(o => transformOffer(o as NotikOffer, user?.id));
+                const transformed = offersData.map(o => transformOffer(o as NotikOffer, user?.id, payoutPercentage));
                 
                 // Preserve order from admin panel
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));

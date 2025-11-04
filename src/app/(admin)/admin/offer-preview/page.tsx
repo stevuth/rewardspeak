@@ -27,18 +27,26 @@ type Offer = NotikOffer & {
   clickUrl: string;
 };
 
-function transformOffer(notikOffer: NotikOffer, userId: string | undefined): Offer {
+function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payoutPercentage: number): Offer {
   let clickUrl = notikOffer.click_url;
   if (userId) {
     clickUrl = clickUrl.replace('[user_id]', userId);
   }
 
-  const totalPayout = notikOffer.payout || 0;
-  const points = Math.round(totalPayout * 1000);
+  const percentage = payoutPercentage / 100;
+  const markedUpPayout = (notikOffer.payout || 0) * percentage;
+  
+  const points = Math.round(markedUpPayout * 1000);
+
+  const markedUpEvents = notikOffer.events?.map(event => ({
+    ...event,
+    payout: (event.payout || 0) * percentage,
+  }));
 
   return {
     ...notikOffer,
-    payout: totalPayout,
+    payout: markedUpPayout,
+    events: markedUpEvents,
     points: points,
     imageHint: "offer logo",
     category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
@@ -65,10 +73,13 @@ export default function OfferPreviewPage() {
         const { data: { user } } = await supabase.auth.getUser();
         const userId = user?.id;
 
+        const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
+        const payoutPercentage = config ? Number(config.value) : 100;
+
         const { data: rawAllOffers, error: allOffersError } = await supabase.from('all_offers').select('*').eq('is_disabled', false);
         if (allOffersError) throw allOffersError;
         if (Array.isArray(rawAllOffers)) {
-            const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId));
+            const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId, payoutPercentage));
             setAllOffers(transformed);
         }
 
@@ -77,7 +88,7 @@ export default function OfferPreviewPage() {
 
         const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
         const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
-        const allFeaturedIds = [...new Set([...featuredIds, ...topConvertingIds])];
+        const allFeaturedIds = [...new set([...featuredIds, ...topConvertingIds])];
 
         if (allFeaturedIds.length > 0) {
             const { data: featuredOffersData, error: featuredOffersError } = await supabase
@@ -87,7 +98,7 @@ export default function OfferPreviewPage() {
 
             if (featuredOffersError) throw featuredOffersError;
             
-            const transformed = featuredOffersData.map((o: NotikOffer) => transformOffer(o, userId));
+            const transformed = featuredOffersData.map((o: NotikOffer) => transformOffer(o, userId, payoutPercentage));
             const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
             
             setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
@@ -254,5 +265,3 @@ export default function OfferPreviewPage() {
     </div>
   );
 }
-
-    
