@@ -3,6 +3,7 @@
 
 import { createSupabaseServerClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache';
 
 export async function login(prevState: { message: string, success?: boolean }, formData: FormData) {
   const supabase = createSupabaseServerClient()
@@ -23,7 +24,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
     return { message: error.message, success: false }
   }
 
-  redirect('/dashboard?event=login');
+  return { message: "Successfully logged in.", success: true };
 }
 
 export async function signup(prevState: { message: string, success?: boolean }, formData: FormData) {
@@ -37,28 +38,32 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     return { message: 'Email and password are required.', success: false }
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      // The trigger will use this data to populate the referral_code in the profiles table.
+      // Pass the referral code in the user metadata.
+      // The database trigger 'on_auth_user_created' will use this
+      // to populate the profiles table.
       data: {
         referral_code: referralCode,
       },
-      // Auto-confirm user for simplicity
       emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
     },
   });
 
   if (error) {
     console.error("Signup Error:", error);
-    // Provide a more user-friendly error message
     const friendlyMessage = error.message.includes('unique constraint')
         ? 'A user with this email already exists.'
         : `Signup failed: ${error.message}`;
     return { message: friendlyMessage, success: false };
   }
   
+  if (!data.user) {
+    return { message: "Signup successful, but no user data returned. Please verify your email.", success: true };
+  }
+
+  // Redirect to the confirmation page
   redirect('/auth/confirm');
 }
-
