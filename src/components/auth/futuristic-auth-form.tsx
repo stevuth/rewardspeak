@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, LogIn, Mail, Lock } from "lucide-react";
@@ -78,16 +77,6 @@ export function FuturisticAuthForm({
   state,
   pending,
 }: AuthFormProps) {
-  const searchParams = useSearchParams();
-  const [referralCode, setReferralCode] = useState("");
-
-  useEffect(() => {
-    const refFromUrl = searchParams.get("ref");
-    if (refFromUrl) {
-      setReferralCode(refFromUrl);
-    }
-  }, [searchParams]);
-
   const isLogin = type === "login";
 
   return (
@@ -170,7 +159,6 @@ export function FuturisticAuthForm({
                   name="referral_code"
                   type="text"
                   label="Referral Code (Optional)"
-                  defaultValue={referralCode}
                   Icon={UserPlus}
                   required={false}
                 />
