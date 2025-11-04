@@ -59,7 +59,6 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     .from('profiles')
     .insert({ 
       user_id: user.id, 
-      email: user.email,
       points: 1000, // Welcome bonus
       referral_code: referralCode,
     });
