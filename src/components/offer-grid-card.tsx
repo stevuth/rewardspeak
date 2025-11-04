@@ -27,21 +27,28 @@ const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?:
   const safePlatforms = platforms?.map(p => p.toLowerCase()) || [];
   const iconsToShow = new Set<string>();
 
-  // Rule 1: Desktop icon visibility
-  if (safeDevices.includes('desktop') || safeDevices.includes('all')) {
+  // Rule: If 'all' is specified anywhere, show all three icons.
+  if (safeDevices.includes('all') || safePlatforms.includes('all')) {
     iconsToShow.add('desktop');
+    iconsToShow.add('android');
+    iconsToShow.add('ios');
+  } else {
+    // Rule: Show desktop icon if devices include 'desktop'.
+    if (safeDevices.includes('desktop')) {
+      iconsToShow.add('desktop');
+    }
+  
+    // Rule: Show Android icon if platforms include 'android'.
+    if (safePlatforms.includes('android')) {
+      iconsToShow.add('android');
+    }
+    
+    // Rule: Show Apple icon if platforms include 'ios'.
+    if (safePlatforms.includes('ios')) {
+      iconsToShow.add('ios');
+    }
   }
 
-  // Rule 2: Android icon visibility
-  if (safePlatforms.includes('android') || safePlatforms.includes('all')) {
-    iconsToShow.add('android');
-  }
-  
-  // Rule 3: Apple icon visibility
-  if (safePlatforms.includes('ios') || safePlatforms.includes('all')) {
-    iconsToShow.add('ios');
-  }
-  
   if (iconsToShow.size === 0) return null;
 
   return (
@@ -89,3 +96,4 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
     </div>
   );
 }
+
