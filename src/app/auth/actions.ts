@@ -3,6 +3,7 @@
 
 import { createSupabaseServerClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 
 export async function login(prevState: { message: string, success?: boolean }, formData: FormData) {
   const supabase = createSupabaseServerClient()
@@ -27,7 +28,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
 }
 
 export async function signup(prevState: { message: string, success?: boolean }, formData: FormData) {
-  const supabase = createSupabaseServerClient()
+  const supabase = createSupabaseServerClient();
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const referralCode = formData.get('referral_code') as string | null;

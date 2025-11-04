@@ -8,7 +8,7 @@ security definer set search_path = public
 as $$
 begin
   -- Insert a new profile record for the new user.
-  -- The 'user_id' is a UUID that comes from auth.users.
+  -- The user_id is a UUID that comes from auth.users.id.
   -- The referral_code from the user's metadata is also stored.
   insert into public.profiles (user_id, referral_code)
   values (new.id, new.raw_user_meta_data->>'referral_code');
