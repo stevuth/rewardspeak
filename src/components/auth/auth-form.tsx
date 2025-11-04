@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { login, signup } from "@/app/auth/actions";
 import { FuturisticAuthForm } from "./futuristic-auth-form";
 
@@ -12,7 +12,7 @@ export function AuthForm({
   type: "login" | "signup";
   onSwitch?: () => void;
 }) {
-  const [state, formAction] = useFormState(type === 'login' ? login : signup, { message: "" });
+  const [state, formAction] = useActionState(type === 'login' ? login : signup, { message: "" });
   
   return (
     <FuturisticAuthForm
