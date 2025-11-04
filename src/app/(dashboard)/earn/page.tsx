@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
@@ -92,6 +92,7 @@ export default function EarnPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
   const fetchOffers = async () => {
@@ -134,7 +135,17 @@ export default function EarnPage() {
 
   useEffect(() => {
     fetchOffers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const filteredOffers = useMemo(() => {
+    if (!searchQuery) {
+      return allOffers;
+    }
+    return allOffers.filter(offer => 
+      offer.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [allOffers, searchQuery]);
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -187,7 +198,12 @@ export default function EarnPage() {
       
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search for offers..." className="pl-9" />
+        <Input 
+          placeholder="Search for offers..." 
+          className="pl-9"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
        <section>
@@ -213,10 +229,15 @@ export default function EarnPage() {
       </section>
 
       <section>
-        <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
-          All Offers
-        </h2>
-        {renderOfferGrid(allOffers, 'offer')}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold tracking-tight font-headline">
+            All Offers
+          </h2>
+          <span className="text-sm text-muted-foreground">
+            Showing {filteredOffers.length} of {allOffers.length} offers
+          </span>
+        </div>
+        {renderOfferGrid(filteredOffers, 'offer')}
       </section>
       
       <OfferPreviewModal 
