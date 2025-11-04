@@ -1,17 +1,9 @@
 
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { login, signup } from "@/app/auth/actions";
 import { FuturisticAuthForm } from "./futuristic-auth-form";
-
-type AuthFormState = {
-    message: string;
-    success?: boolean;
-    userEmail?: string;
-    isNewUser?: boolean;
-}
 
 export function AuthForm({
   type,
@@ -20,19 +12,7 @@ export function AuthForm({
   type: "login" | "signup";
   onSwitch?: () => void;
 }) {
-  const router = useRouter();
-  const [state, formAction] = useActionState<AuthFormState, FormData>(type === 'login' ? login : signup, { message: "" });
-  
-  useEffect(() => {
-    if (state.success) {
-      if (state.isNewUser) {
-        router.push('/dashboard?verified=true');
-      } else {
-        router.push(`/dashboard?event=login&user_email=${encodeURIComponent(state.userEmail || '')}`);
-      }
-      router.refresh(); // Ensure the layout re-renders with the new user state
-    }
-  }, [state, router]);
+  const [state, formAction] = useActionState(type === 'login' ? login : signup, { message: "" });
 
   return (
     <FuturisticAuthForm
