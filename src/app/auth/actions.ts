@@ -2,7 +2,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server'
 import { createSupabaseAdminClient } from '@/utils/supabase/admin'
 
@@ -25,10 +24,8 @@ export async function login(prevState: { message: string }, formData: FormData) 
     return { message: error.message };
   }
   
-  const userEmail = data.user?.email || '';
-
   revalidatePath('/', 'layout');
-  redirect(`/dashboard?event=login&user_email=${encodeURIComponent(userEmail)}`);
+  return { success: true, userEmail: data.user?.email || '' };
 }
 
 export async function signup(prevState: { message: string }, formData: FormData) {
@@ -41,11 +38,10 @@ export async function signup(prevState: { message: string }, formData: FormData)
         return { message: 'Email and password are required.' };
     }
 
-    // Step 1: Create the user in the auth schema using the admin client
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
-        email_confirm: true, // Auto-confirm the email for simplicity
+        email_confirm: true,
     });
 
     if (authError) {
@@ -59,7 +55,6 @@ export async function signup(prevState: { message: string }, formData: FormData)
 
     const userId = authData.user.id;
 
-    // Step 2: Manually insert the profile into the public.profiles table
     const { error: profileError } = await supabaseAdmin
         .from('profiles')
         .insert({ 
@@ -70,13 +65,10 @@ export async function signup(prevState: { message: string }, formData: FormData)
 
     if (profileError) {
         console.error("Signup Profile Error:", profileError.message);
-        // If profile insertion fails, we should probably delete the auth user
-        // to avoid having an orphaned auth user without a profile.
         await supabaseAdmin.auth.admin.deleteUser(userId);
         return { message: `Database error creating profile: ${profileError.message}` };
     }
     
-    // Step 3: Log the user in now that they are fully created
     const supabase = createSupabaseServerClient();
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
@@ -88,5 +80,5 @@ export async function signup(prevState: { message: string }, formData: FormData)
     }
 
     revalidatePath('/', 'layout');
-    redirect('/dashboard?verified=true');
+    return { success: true, isNewUser: true };
 }
