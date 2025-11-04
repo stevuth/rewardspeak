@@ -3,7 +3,6 @@
 
 import { createSupabaseServerClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
 
 export async function login(prevState: { message: string, success?: boolean }, formData: FormData) {
   const supabase = createSupabaseServerClient()
@@ -24,8 +23,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
     return { message: error.message, success: false }
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard?event=login')
+  return { success: true, message: "Login successful!" }
 }
 
 export async function signup(prevState: { message: string, success?: boolean }, formData: FormData) {
@@ -55,6 +53,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     return { message: error.message, success: false }
   }
 
-  revalidatePath('/', 'layout')
+  // On successful signup, Supabase sends a confirmation email.
+  // We redirect the user to a page telling them to check their email.
   redirect('/auth/confirm')
 }

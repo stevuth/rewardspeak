@@ -6,13 +6,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, LogIn, Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useFormStatus } from "react-dom";
 
 type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
   formAction: (payload: FormData) => void;
-  state: { message: string };
+  state: { message: string, success?: boolean };
+  isPending: boolean;
 };
 
 const pageVariants = {
@@ -70,20 +70,18 @@ const FloatingLabelInput = ({
   );
 };
 
-const SubmitButton = ({ isLogin }: { isLogin: boolean }) => {
-    const { pending } = useFormStatus();
-
+const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boolean }) => {
     return (
         <button
             type="submit"
-            disabled={pending}
+            disabled={isPending}
             className={cn(
                 "w-full h-[54px] relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
-                pending && "bg-secondary/20 text-secondary"
+                isPending && "bg-secondary/20 text-secondary"
             )}
         >
         <AnimatePresence>
-          {pending ? (
+          {isPending ? (
             <motion.div
               key="loading"
               initial={{ opacity: 0, y: -10 }}
@@ -126,6 +124,7 @@ export function FuturisticAuthForm({
   onSwitch,
   formAction,
   state,
+  isPending
 }: AuthFormProps) {
   const isLogin = type === "login";
 
@@ -214,11 +213,7 @@ export function FuturisticAuthForm({
                 />
               )}
 
-              {state.message && (
-                <p className="text-sm text-red-400">{state.message}</p>
-              )}
-
-              <SubmitButton isLogin={isLogin} />
+              <SubmitButton isLogin={isLogin} isPending={isPending} />
             </form>
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
