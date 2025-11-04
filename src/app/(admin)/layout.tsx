@@ -11,7 +11,8 @@ import {
   ArrowLeft,
   Menu,
   Eye,
-  Star
+  Star,
+  ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -23,6 +24,7 @@ const adminNavItems = [
     { href: "/admin/offers", label: "Offers", icon: List },
     { href: "/admin/offer-preview", label: "Offer Preview", icon: Eye },
     { href: "/admin/featured-content", label: "Featured Content", icon: Star },
+    { href: "/admin/postbacks", label: "Postbacks", icon: ClipboardList },
 ];
 
 function AdminHeader() {

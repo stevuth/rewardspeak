@@ -1,0 +1,162 @@
+
+'use client';
+
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { PageHeader } from "@/components/page-header";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+
+type Transaction = {
+  id: number;
+  created_at: string;
+  txn_id: string;
+  offer_name: string;
+  points_credited: number;
+  payout_usd: number;
+  user_email: string;
+};
+
+export default function PostbacksPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const ITEMS_PER_PAGE = 20;
+  const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+
+  const fetchTransactions = useCallback(async () => {
+    setIsLoading(true);
+    
+    const params = new URLSearchParams();
+    params.set('page', String(currentPage));
+    params.set('limit', String(ITEMS_PER_PAGE));
+
+    try {
+      const response = await fetch(`/api/get-postbacks-paginated?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch transactions");
+      }
+      const { transactions: fetchedTransactions, count: totalCount } = await response.json();
+      setTransactions(fetchedTransactions);
+      setCount(totalCount);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not fetch postback history.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, toast]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
+
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return `${pathname}?${params.toString()}`;
+  };
+
+  return (
+    <div className="space-y-8">
+        <PageHeader
+          title="Postback History"
+          description={`A log of all successful offer completions. Page ${currentPage} of ${totalPages}.`}
+        />
+
+      <Card>
+        <CardContent className="pt-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>User Email</TableHead>
+                <TableHead>Offer Name</TableHead>
+                <TableHead>Points</TableHead>
+                <TableHead>Payout (USD)</TableHead>
+                <TableHead>Txn ID</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center h-24">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin"/>
+                  </TableCell>
+                </TableRow>
+              ) : transactions.length > 0 ? (
+                transactions.map((tx) => (
+                  <TableRow key={tx.id}>
+                    <TableCell>
+                      {new Date(tx.created_at).toLocaleString()}
+                    </TableCell>
+                    <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
+                    <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
+                    <TableCell className="font-bold text-secondary">{tx.points_credited?.toLocaleString()}</TableCell>
+                    <TableCell>${tx.payout_usd?.toFixed(4)}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-mono">{tx.txn_id}</Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center h-24">
+                    No postbacks recorded yet.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+        <CardFooter>
+            <div className="flex w-full justify-between items-center text-sm text-muted-foreground">
+                <div>
+                    Showing {transactions.length > 0 ? ((currentPage - 1) * ITEMS_PER_PAGE) + 1 : 0} - {Math.min(currentPage * ITEMS_PER_PAGE, count)} of {count} transactions
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button asChild variant="outline" disabled={currentPage <= 1}>
+                        <Link href={createPageURL(currentPage - 1)}>
+                            <ChevronLeft className="h-4 w-4 mr-2" />
+                            Previous
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" disabled={currentPage >= totalPages}>
+                         <Link href={createPageURL(currentPage + 1)}>
+                            Next
+                            <ChevronRight className="h-4 w-4 ml-2" />
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
