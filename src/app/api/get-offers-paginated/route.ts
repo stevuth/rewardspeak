@@ -1,9 +1,9 @@
 
-import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { NextResponse, type NextRequest } from 'next/server';
+import { createSupabaseApiClient } from "@/utils/supabase/api";
 
-export async function GET(request: Request) {
-  const supabase = createSupabaseServerClient();
+export async function GET(request: NextRequest) {
+  const supabase = createSupabaseApiClient(request);
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '20', 10);
@@ -19,12 +19,10 @@ export async function GET(request: Request) {
       .select('*', { count: 'exact' });
 
     if (offerId) {
-      // Use ilike for case-insensitive partial matching on ID
       query = query.ilike('offer_id', `%${offerId}%`);
     }
     
     if (offerName) {
-      // Use ilike for case-insensitive partial matching on name
       query = query.ilike('name', `%${offerName}%`);
     }
 

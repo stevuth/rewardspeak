@@ -1,14 +1,13 @@
 
-import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { NextResponse, type NextRequest } from 'next/server';
+import { createSupabaseApiClient } from "@/utils/supabase/api";
 
-export async function GET() {
-  const supabase = createSupabaseServerClient();
+export async function GET(request: NextRequest) {
+  const supabase = createSupabaseApiClient(request);
   
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Fetch the payout percentage
     const { data: config } = await supabase
       .from('site_config')
       .select('value')
@@ -17,7 +16,6 @@ export async function GET() {
       
     const payoutPercentage = config ? Number(config.value) : 100;
 
-    // Fetch only enabled offers from your database table
     const { data: allOffers, error: allOffersError } = await supabase
       .from('all_offers')
       .select('*')
