@@ -50,7 +50,8 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   })
 
   if (error) {
-    return { message: error.message, success: false }
+    console.error("Signup Error:", error);
+    return { message: error.message || 'Database error saving new user', success: false }
   }
 
   // On successful signup, Supabase sends a confirmation email.
