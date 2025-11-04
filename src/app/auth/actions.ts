@@ -3,7 +3,6 @@
 
 import { createSupabaseServerClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 
 export async function login(prevState: { message: string, success?: boolean }, formData: FormData) {
   const supabase = createSupabaseServerClient()
@@ -24,62 +23,42 @@ export async function login(prevState: { message: string, success?: boolean }, f
     return { message: error.message, success: false }
   }
 
-  return { message: 'Login successful!', success: true };
+  redirect('/dashboard?event=login');
 }
 
 export async function signup(prevState: { message: string, success?: boolean }, formData: FormData) {
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const supabase = createSupabaseServerClient();
+  
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
   const referralCode = formData.get('referral_code') as string | null;
 
   if (!email || !password) {
     return { message: 'Email and password are required.', success: false }
   }
 
-  const supabaseAdmin = createSupabaseAdminClient();
-
-  // 1. Create the user in Supabase Auth
-  const { data: { user }, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
-    email: email,
-    password: password,
-    email_confirm: true, // Auto-confirm user for simplicity
-  });
-
-  if (signUpError) {
-    console.error("Admin Signup Error:", signUpError);
-    return { message: `Error creating user: ${signUpError.message}`, success: false };
-  }
-
-  if (!user) {
-    return { message: 'User was not created, but no error was reported.', success: false };
-  }
-  
-  // 2. Manually create the profile in the public.profiles table
-  const { error: profileError } = await supabaseAdmin
-    .from('profiles')
-    .insert({ 
-      user_id: user.id, 
-      points: 1000, // Welcome bonus
-      referral_code: referralCode,
-    });
-  
-  if (profileError) {
-    console.error("Profile Creation Error:", profileError);
-    // If profile creation fails, we must delete the auth user to avoid orphans
-    await supabaseAdmin.auth.admin.deleteUser(user.id);
-    return { message: `Database error saving new user: ${profileError.message}`, success: false };
-  }
-
-  // 3. Log the user in by creating a session for them
-  const supabase = createSupabaseServerClient();
-  const { error: loginError } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      // The trigger will use this data to populate the referral_code in the profiles table.
+      data: {
+        referral_code: referralCode,
+      },
+      // Auto-confirm user for simplicity
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
+    },
   });
 
-  if (loginError) {
-     return { message: `User created, but login failed: ${loginError.message}`, success: false };
+  if (error) {
+    console.error("Signup Error:", error);
+    // Provide a more user-friendly error message
+    const friendlyMessage = error.message.includes('unique constraint')
+        ? 'A user with this email already exists.'
+        : `Signup failed: ${error.message}`;
+    return { message: friendlyMessage, success: false };
   }
   
-  redirect('/dashboard?verified=true');
+  redirect('/auth/confirm');
 }
+
