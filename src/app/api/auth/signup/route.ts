@@ -4,20 +4,18 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const supabase = createSupabaseApiClient(request);
-  const { email, password, referral_code } = await request.json();
+  const { email, password } = await request.json();
 
   if (!email || !password) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   }
 
+  // The 'options' block is removed entirely to prevent conflicts with the
+  // on_auth_user_created database trigger. The trigger will handle all
+  // profile creation logic on its own.
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: {
-        referral_code: referral_code || null,
-      },
-    },
   });
 
   if (error) {
