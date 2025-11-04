@@ -1,20 +1,13 @@
 
 import { createSupabaseApiClient } from '@/utils/supabase/api';
 import { NextResponse, type NextRequest } from 'next/server';
-import { checkIpWithHub } from '@/lib/ip-detection';
 
 export async function POST(request: NextRequest) {
   const supabase = createSupabaseApiClient(request);
   const formData = await request.json();
-  const { email, password, clientIp } = formData;
+  const { email, password } = formData;
 
   try {
-    const ipCheck = await checkIpWithHub(clientIp);
-
-    if (ipCheck.block) {
-      return NextResponse.json({ error: `Access denied from your location. Reason: ${ipCheck.message}.` }, { status: 403 });
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
