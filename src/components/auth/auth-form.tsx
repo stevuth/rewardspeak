@@ -4,18 +4,6 @@
 import { useState } from "react";
 import { FuturisticAuthForm } from "./futuristic-auth-form";
 
-async function getClientIp() {
-  try {
-    const response = await fetch('/api/check-my-ip');
-    if (!response.ok) return null;
-    const data = await response.json();
-    return data.ip;
-  } catch (error) {
-    console.error("Error fetching client IP:", error);
-    return null;
-  }
-}
-
 export function AuthForm({
   type,
   onSwitch,
@@ -35,14 +23,11 @@ export function AuthForm({
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
     const referralCode = (form.elements.namedItem('referral_code') as HTMLInputElement)?.value;
-    
-    const clientIp = await getClientIp();
 
     const payload = {
       email,
       password,
       referral_code: referralCode,
-      clientIp,
     };
     
     const endpoint = type === "login" ? "/api/auth/login" : "/api/auth/signup";
