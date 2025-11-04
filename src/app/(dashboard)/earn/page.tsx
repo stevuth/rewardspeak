@@ -233,9 +233,6 @@ export default function EarnPage() {
           <h2 className="text-xl font-bold tracking-tight font-headline">
             All Offers
           </h2>
-          <span className="text-sm text-muted-foreground">
-            Showing {filteredOffers.length} of {allOffers.length} offers
-          </span>
         </div>
         {renderOfferGrid(filteredOffers, 'offer')}
       </section>
