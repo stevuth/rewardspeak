@@ -24,7 +24,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
     return { message: error.message, success: false }
   }
 
-  redirect('/dashboard')
+  return { message: 'Login successful!', success: true };
 }
 
 export async function signup(prevState: { message: string, success?: boolean }, formData: FormData) {
@@ -66,7 +66,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   
   if (profileError) {
     console.error("Profile Creation Error:", profileError);
-    // If profile creation fails, we should delete the auth user to avoid orphans
+    // If profile creation fails, we must delete the auth user to avoid orphans
     await supabaseAdmin.auth.admin.deleteUser(user.id);
     return { message: `Database error saving new user: ${profileError.message}`, success: false };
   }
