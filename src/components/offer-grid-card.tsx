@@ -27,25 +27,34 @@ const PlatformIcons = ({ devices, platforms }: { devices?: string[], platforms?:
   const safePlatforms = platforms?.map(p => p.toLowerCase()) || [];
   const iconsToShow = new Set<string>();
 
-  // Rule: If 'all' is specified anywhere, show all three icons.
-  if (safeDevices.includes('all') || safePlatforms.includes('all')) {
-    iconsToShow.add('desktop');
-    iconsToShow.add('android');
-    iconsToShow.add('ios');
-  } else {
-    // Rule: Show desktop icon if devices include 'desktop'.
-    if (safeDevices.includes('desktop')) {
-      iconsToShow.add('desktop');
-    }
-  
-    // Rule: Show Android icon if platforms include 'android'.
-    if (safePlatforms.includes('android')) {
+  // If devices field is empty, rely solely on platforms field
+  if (safeDevices.length === 0) {
+    if (safePlatforms.includes('android')) iconsToShow.add('android');
+    if (safePlatforms.includes('ios')) iconsToShow.add('ios');
+    if (safePlatforms.includes('all')) {
       iconsToShow.add('android');
-    }
-    
-    // Rule: Show Apple icon if platforms include 'ios'.
-    if (safePlatforms.includes('ios')) {
       iconsToShow.add('ios');
+    }
+  } else {
+    // Original logic when devices field is not empty
+    if (safeDevices.includes('all')) {
+      iconsToShow.add('desktop');
+      iconsToShow.add('android');
+      iconsToShow.add('ios');
+    } else {
+      if (safeDevices.includes('desktop')) {
+        iconsToShow.add('desktop');
+      }
+      if (safePlatforms.includes('android')) {
+        iconsToShow.add('android');
+      }
+      if (safePlatforms.includes('ios')) {
+        iconsToShow.add('ios');
+      }
+      if (safePlatforms.includes('all')) {
+          iconsToShow.add('android');
+          iconsToShow.add('ios');
+      }
     }
   }
 
@@ -96,4 +105,3 @@ export function OfferGridCard({ offer, onOfferClick }: { offer: Offer, onOfferCl
     </div>
   );
 }
-
