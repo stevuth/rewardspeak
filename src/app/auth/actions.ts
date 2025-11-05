@@ -1,10 +1,16 @@
 
 'use server'
 
-import { createSupabaseServerClient } from '@/utils/supabase/server'
+import { createSupabaseAdminClient } from '@/utils/supabase/admin'
 import { redirect } from 'next/navigation'
+import { createSupabaseServerClient } from '@/utils/supabase/server';
+import dotenv from 'dotenv';
+
 
 async function checkVpn(ipAddress: string | null): Promise<boolean> {
+  // Explicitly load environment variables at the point of use.
+  dotenv.config();
+
   if (!ipAddress) {
     // Fail open: If we don't get an IP, we can't check it.
     // You might want to change this to fail closed (return true) for higher security.
