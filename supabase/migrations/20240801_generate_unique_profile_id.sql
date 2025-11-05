@@ -1,14 +1,19 @@
 -- Step 1: Create a function to generate a unique 5-character alphanumeric ID.
+-- It is defined with SECURITY DEFINER to allow it to be called by the `handle_new_user` trigger,
+-- which also runs with elevated privileges. This allows it to check for uniqueness in the profiles table.
 CREATE OR REPLACE FUNCTION public.generate_unique_short_id()
-RETURNS TEXT AS $$
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = public
+AS $$
 DECLARE
   short_id TEXT;
   is_unique BOOLEAN := FALSE;
   safe_chars TEXT := 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 BEGIN
-  -- Loop until a unique ID is found.
+  -- Loop until a unique ID is found to prevent collisions.
   WHILE NOT is_unique LOOP
-    -- Generate a 5-character random string.
+    -- Generate a 5-character random string from the safe character set.
     short_id := (
       SELECT string_agg(
         SUBSTRING(safe_chars, (RANDOM() * LENGTH(safe_chars))::integer + 1, 1), ''
@@ -23,7 +28,7 @@ BEGIN
   END LOOP;
   RETURN short_id;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Step 2: Update the user creation trigger to use the new ID generation function.
 -- This function now correctly populates the 'id', 'user_id', 'email', and 'referral_code'.
@@ -33,12 +38,13 @@ LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.profiles (id, user_id, email, referral_code)
+  INSERT INTO public.profiles (id, user_id, email, referral_code, points)
   VALUES (
     public.generate_unique_short_id(),
     new.id,
     new.email,
-    new.raw_user_meta_data->>'referral_code'
+    new.raw_user_meta_data->>'referral_code',
+    1000 -- Welcome bonus of 1000 points
   );
   RETURN new;
 END;
