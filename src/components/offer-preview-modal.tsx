@@ -219,7 +219,7 @@ export function OfferPreviewModal({
                       <Button
                         onClick={handleStartOffer}
                         size="default"
-                        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_theme(colors.accent)] transition-all w-full sm:w-auto shrink-0"
+                        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_hsl(var(--accent))] transition-all w-full sm:w-auto shrink-0"
                       >
                         Start Offer
                       </Button>
