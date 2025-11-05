@@ -51,10 +51,13 @@ export default function InviteAndClimbPage() {
             
         setTotalReferrals(count || 0);
 
-        // TODO: Fetch real referral earnings
-        // This assumes each referral grants a certain number of points.
-        // For now, let's assume each referral is worth 10% of the initial 100 points, so 10 points.
-        setReferralEarnings((count || 0) * 10);
+        // Fetch real referral earnings
+        const { data: earnings, error: earningsError } = await supabase.rpc('get_referral_earnings');
+         if (earningsError) {
+            console.error("Error fetching referral earnings: ", earningsError);
+        } else {
+            setReferralEarnings(earnings ?? 0);
+        }
       }
     };
     fetchProfileAndReferrals();

@@ -44,7 +44,7 @@ export default async function MyPeakProfilePage() {
   const totalPoints = profileData?.points ?? 0;
   const totalAmountEarned = totalPoints / 1000;
   const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
-  const rewardsPeakId = profileData?.id ? `ID-${profileData.id}` : 'ID-GUEST';
+  const rewardsPeakId = profileData?.id ? `${profileData.id}` : 'GUEST';
 
 
   return (
@@ -65,7 +65,7 @@ export default async function MyPeakProfilePage() {
                         <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
                         
                         <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-1">
-                            <span>{rewardsPeakId}</span>
+                            <span className="font-mono">ID-{rewardsPeakId}</span>
                             <Separator orientation="vertical" className="h-4" />
                             <span>Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                         </div>
@@ -105,11 +105,11 @@ export default async function MyPeakProfilePage() {
                         <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" defaultValue={user?.email} />
+                            <Input id="name" defaultValue={user?.email?.split('@')[0]} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" defaultValue={user?.email} />
+                            <Input id="email" type="email" defaultValue={user?.email} readOnly disabled />
                         </div>
                         </CardContent>
                         <CardFooter>
