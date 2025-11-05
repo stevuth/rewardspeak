@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
+import crypto from 'crypto';
 
 export async function login(prevState: { message: string, success?: boolean }, formData: FormData) {
   const supabase = createSupabaseServerClient()
@@ -58,17 +59,22 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     return { message: 'User creation failed unexpectedly. Please try again.', success: false };
   }
   
-  // Step 2: Manually insert the user's profile into the public.profiles table
-  // This is the robust, explicit, and definitive way to create the profile.
+  // Step 2: Manually insert the user's profile into the public.profiles table.
   try {
-    const profileData: { user_id: string; email: string; points: number; referral_code?: string } = {
+    const profileData: {
+      id: string,
+      user_id: string;
+      email: string;
+      points: number;
+      referral_code?: string;
+    } = {
+      id: crypto.randomUUID(), // **THE FIX**: Explicitly generate the primary key.
       user_id: user.id,
       email: user.email!,
       points: 1000, // Award 1000 points ($1) welcome bonus
     };
 
-    // **THE FIX**: Only add the referral_code to the insert object if it actually has a value.
-    // This prevents errors if the column doesn't allow nulls.
+    // Only add the referral_code to the insert object if it actually has a value.
     if (referralCode) {
       profileData.referral_code = referralCode;
     }
