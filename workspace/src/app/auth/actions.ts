@@ -3,6 +3,7 @@
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
+import { env } from 'process';
 
 async function checkVpn(ipAddress: string | null): Promise<boolean> {
   // If no IP is provided from the client, we can't check.
@@ -11,11 +12,10 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
     return false;
   }
   
-  const apiKey = process.env.IPHUB_API_KEY;
+  const apiKey = env.IPHUB_API_KEY;
 
-  // If the API key is not configured on the server, block the request as a security measure.
   if (!apiKey) {
-    console.error("CRITICAL: IPHub API key is not configured on the server. Blocking request.");
+    console.error("CRITICAL: IPHub API key is not configured in the environment. Blocking request as a security measure.");
     return true; // Fail-closed: block if the key is missing.
   }
 
@@ -25,8 +25,8 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
     });
 
     if (!response.ok) {
-        console.error(`IPHub API call failed with status: ${response.status}. Allowing request.`);
-        return false; // Fail-open on API error
+        console.error(`IPHub API call failed with status: ${response.status}. Allowing request as a precaution.`);
+        return false; // Fail-open on API error to avoid blocking legitimate users.
     }
 
     const data = await response.json();
