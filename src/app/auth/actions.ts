@@ -5,19 +5,20 @@ import { createSupabaseAdminClient } from '@/utils/supabase/admin'
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
 
-// This is the corrected function. It now uses 'dotenv' to ensure
-// the API key is loaded in the server-side environment.
+// This is the corrected function. It relies on Next.js's native
+// environment variable handling on the server-side.
 async function checkVpn(ipAddress: string | null): Promise<boolean> {
-  require('dotenv').config();
-
   if (!ipAddress) {
     console.warn("VPN Check: No IP address provided.");
     return false;
   }
 
+  // IPHUB_API_KEY is accessed directly from process.env.
+  // Next.js automatically loads variables from .env into the server environment.
   const apiKey = process.env.IPHUB_API_KEY;
   if (!apiKey) {
     console.error("CRITICAL: IPHub API key is not configured in .env. Skipping VPN check.");
+    // Fail open (allow access) if the key is missing, but log a critical error.
     return false;
   }
 
@@ -28,10 +29,12 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
 
     if (!response.ok) {
         console.error(`IPHub API call failed with status: ${response.status}`);
+        // Fail open if the API service has an error.
         return false;
     }
 
     const data = await response.json();
+    // IPHub returns { "block": 1 } for VPN/proxy, and { "block": 0 } otherwise.
     if (data.block === 1) {
         console.log(`VPN/Proxy detected for IP: ${ipAddress}. Blocking access.`);
         return true;
@@ -41,6 +44,7 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
 
   } catch (error) {
     console.error("Error checking VPN with IPHub:", error);
+    // Fail open in case of a network error during the check.
     return false;
   }
 }
