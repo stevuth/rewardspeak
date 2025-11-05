@@ -39,11 +39,14 @@ export async function signup(prevState: { message: string, success?: boolean }, 
 
   const supabaseAdmin = createSupabaseAdminClient();
 
-  // Step 1: Create the user in the auth.users table
+  // Step 1: Create the user in the auth.users table, passing referral code in metadata
   const { data: { user }, error: signupError } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
-    email_confirm: true, // Set to true to bypass email confirmation for now, can be changed later
+    email_confirm: true, // Set to true to bypass email confirmation
+    user_metadata: {
+        referral_code: referralCode
+    }
   });
 
   if (signupError) {
@@ -64,13 +67,13 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     .insert({
       user_id: user.id,
       email: user.email,
-      referral_code: referralCode,
+      referral_code: referralCode, // Use the referralCode from the form directly
       points: 1000, // Award 1000 points ($1) welcome bonus
     });
 
   if (profileError) {
     console.error('Error creating profile:', profileError);
-    // IMPORTANT: If profile creation fails, we should delete the auth user to prevent orphaned accounts.
+    // IMPORTANT: If profile creation fails, we must delete the auth user to prevent orphaned accounts.
     await supabaseAdmin.auth.admin.deleteUser(user.id);
     return { 
       message: `A database error occurred while creating your profile. Please try again.`, 
