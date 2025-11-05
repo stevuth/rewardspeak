@@ -59,6 +59,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'assets.efusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'api.lootably.com',
         port: '',
         pathname: '/**',
@@ -66,6 +72,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'publisher.notik.me',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'publishers.theoremreach.com',
         port: '',
         pathname: '/**',
       },
@@ -102,6 +114,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '**.playfull.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.timebucks.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'timewall.io',
         port: '',
         pathname: '/**',
       },
