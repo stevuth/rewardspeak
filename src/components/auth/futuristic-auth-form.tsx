@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, LogIn, Mail, Lock } from "lucide-react";
 import Image from "next/image";
@@ -127,6 +127,22 @@ export function FuturisticAuthForm({
   isPending
 }: AuthFormProps) {
   const isLogin = type === "login";
+  const [ipAddress, setIpAddress] = useState('');
+
+  useEffect(() => {
+    // Fetch the client's IP address when the component mounts
+    const fetchIp = async () => {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        setIpAddress(data.ip);
+      } catch (error) {
+        console.error('Failed to fetch IP address:', error);
+        // We can proceed without the IP, the server will handle the missing field
+      }
+    };
+    fetchIp();
+  }, []);
 
   return (
     <div className="futuristic-auth-form w-full max-w-sm md:max-w-4xl min-h-[auto] md:min-h-[550px] bg-gradient-to-br from-[#15002B] to-[#240046] rounded-2xl shadow-[0_0_30px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row">
@@ -212,6 +228,9 @@ export function FuturisticAuthForm({
                   required={false}
                 />
               )}
+              
+              {/* Hidden input for IP address */}
+              <input type="hidden" name="ip_address" value={ipAddress} />
 
               <SubmitButton isLogin={isLogin} isPending={isPending} />
             </form>
