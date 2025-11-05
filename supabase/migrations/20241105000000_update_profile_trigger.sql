@@ -1,34 +1,35 @@
--- Drop the existing trigger and function to replace them
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-DROP FUNCTION IF EXISTS public.create_user_profile();
 
--- Re-create the function to include country_code
-CREATE OR REPLACE FUNCTION public.create_user_profile()
-RETURNS TRIGGER AS $$
-DECLARE
-  random_id TEXT;
-BEGIN
-  -- Generate a random 6-character ID
-  random_id := substr(md5(random()::text), 0, 7);
+-- This function is triggered when a new user signs up.
+-- It creates a corresponding row in the public.profiles table.
+create or replace function public.create_user_profile()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  -- Variable to hold the referral code from auth metadata, if it exists
+  referrer_id_val int;
+  -- Variable to hold the country code from auth metadata
+  country_code_val text;
+begin
+  -- Extract the referral code and country code from the new user's metadata
+  select id into referrer_id_val from public.profiles where id = (new.raw_user_meta_data->>'referral_code')::int;
+  country_code_val := new.raw_user_meta_data->>'country_code';
 
-  -- Insert into public.profiles
-  INSERT INTO public.profiles (user_id, email, referred_by, country_code, id)
-  VALUES (
+  -- Insert a new row into the public.profiles table
+  insert into public.profiles (user_id, email, referred_by, country_code)
+  values (
     new.id,
     new.email,
-    new.raw_user_meta_data->>'referral_code',
-    new.raw_user_meta_data->>'country_code', -- Extract country_code from metadata
-    random_id
+    referrer_id_val,
+    country_code_val
   );
-  
-  RETURN new;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+  return new;
+end;
+$$;
 
--- Re-create the trigger to call the new function
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.create_user_profile();
-
--- Grant usage on the public schema to the service_role
-GRANT USAGE ON SCHEMA public TO service_role;
+-- Configure the trigger to execute the function after a new user is inserted into the auth.users table
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.create_user_profile();
