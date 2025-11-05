@@ -5,19 +5,18 @@ import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
 
 async function checkVpn(ipAddress: string | null): Promise<boolean> {
-  // If no IP is provided from the client, we can't check.
+  // If no IP is provided from the client, we can't check. Block as a precaution.
   if (!ipAddress) {
-    console.warn("VPN Check: No IP address provided from the client.");
-    // Fail open - allow the request if we can't check the IP.
-    return false;
+    console.warn("VPN Check: No IP address provided from the client. Blocking request.");
+    return true;
   }
   
   const apiKey = process.env.IPHUB_API_KEY;
 
-  // If the API key is not configured on the server, log a critical error and fail open.
+  // If the API key is not configured on the server, block the request as a security measure.
   if (!apiKey) {
-    console.error("CRITICAL: IPHub API key is not configured in .env. Skipping VPN check.");
-    return false;
+    console.error("CRITICAL: IPHub API key is not configured in the environment. Blocking request.");
+    return true; // Fail-closed: block if the key is missing.
   }
 
   try {
@@ -26,8 +25,8 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
     });
 
     if (!response.ok) {
-        // If the API call itself fails, log the error and allow the request.
-        console.error(`IPHub API call failed with status: ${response.status}`);
+        // If the IPHub API itself fails, log the error but allow the request to avoid blocking legitimate users.
+        console.error(`IPHub API call failed with status: ${response.status}. Allowing request as a precaution.`);
         return false;
     }
 
@@ -43,7 +42,7 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
 
   } catch (error) {
     console.error("Error checking VPN with IPHub:", error);
-    return false; // Fail open on any exception.
+    return false; // Fail-open on any other exception to avoid blocking legitimate users.
   }
 }
 
