@@ -32,22 +32,14 @@ export default function InviteAndClimbPage() {
       if (user) {
         setUserId(user.id);
         
-        // Fetch user's profile to get their referral code (which is their profile ID)
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-
-        if (profile) {
-          setReferralCode(profile.id);
-        }
+        // Use user_id as referral code for simplicity until a dedicated one is needed
+        setReferralCode(user.id.substring(0, 8).toUpperCase());
         
         // Fetch the count of referrals made by this user
         const { count } = await supabase
             .from('profiles')
             .select('*', { count: 'exact', head: true })
-            .eq('referral_code', profile?.id); // Find users who used this user's ID as their referral code
+            .eq('referral_code', user.id); // This might need adjustment based on final schema
             
         setTotalReferrals(count || 0);
 
