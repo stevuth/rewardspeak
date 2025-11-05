@@ -4,11 +4,16 @@
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
 
-async function checkVpn(ipAddress: string | null): Promise<boolean> {
+type VpnCheckResult = {
+    isVpn: boolean;
+    countryCode: string | null;
+}
+
+async function checkVpn(ipAddress: string | null): Promise<VpnCheckResult> {
   // If no IP is provided from the client, we can't check. Block as a precaution.
   if (!ipAddress) {
     console.warn("VPN Check: No IP address provided from the client. Blocking request.");
-    return true;
+    return { isVpn: true, countryCode: null };
   }
   
   const apiKey = process.env.IPHUB_API_KEY;
@@ -16,33 +21,41 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
   // If the API key is not configured on the server, block the request as a security measure.
   if (!apiKey) {
     console.error("CRITICAL: IPHub API key is not configured in the environment. Blocking request.");
-    return true; // Fail-closed: block if the key is missing.
+    return { isVpn: true, countryCode: null }; // Fail-closed: block if the key is missing.
   }
 
   try {
-    const response = await fetch(`https://v2.iphub.info/ip/${ipAddress}`, {
+    const url = `https://v2.api.iphub.info/ip/${ipAddress}`;
+    console.log(`VPN Check: Calling IPHub for IP ${ipAddress}`);
+    
+    const response = await fetch(url, {
       headers: { 'X-Key': apiKey }
     });
+
+    console.log(`VPN Check: IPHub responded with status ${response.status}`);
 
     if (!response.ok) {
         // If the IPHub API itself fails, log the error but allow the request to avoid blocking legitimate users.
         console.error(`IPHub API call failed with status: ${response.status}. Allowing request as a precaution.`);
-        return false;
+        return { isVpn: false, countryCode: null };
     }
 
     const data = await response.json();
+    console.log(`VPN Check: IPHub data for ${ipAddress}:`, data);
     
     // IPHub returns { block: 1 } for VPN/proxy, and { block: 0 } for residential IPs.
-    if (data.block === 1) {
+    const isVpn = data.block === 1;
+    if (isVpn) {
         console.log(`VPN/Proxy detected for IP: ${ipAddress}. Blocking access.`);
-        return true; // Is a VPN
+    } else {
+        console.log(`VPN Check: IP ${ipAddress} is clean (block=${data.block})`);
     }
     
-    return false; // Is not a VPN
+    return { isVpn, countryCode: data.countryCode || null };
 
   } catch (error) {
-    console.error("Error checking VPN with IPHub:", error);
-    return false; // Fail-open on any other exception to avoid blocking legitimate users.
+    console.error("VPN Check: Exception occurred:", error);
+    return { isVpn: false, countryCode: null }; // Fail-open on any other exception to avoid blocking legitimate users.
   }
 }
 
@@ -50,7 +63,7 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
 export async function login(prevState: { message: string, success?: boolean }, formData: FormData) {
   const ipAddress = formData.get('ip_address') as string | null;
 
-  const isVpn = await checkVpn(ipAddress);
+  const { isVpn } = await checkVpn(ipAddress);
   if (isVpn) {
     return { message: 'Access denied. Please disable any VPN or proxy services to log in.', success: false };
   }
@@ -79,7 +92,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
 export async function signup(prevState: { message: string, success?: boolean }, formData: FormData) {
   const ipAddress = formData.get('ip_address') as string | null;
   
-  const isVpn = await checkVpn(ipAddress);
+  const { isVpn, countryCode } = await checkVpn(ipAddress);
   if (isVpn) {
     return { message: 'Access denied. Please disable any VPN or proxy services to sign up.', success: false };
   }
@@ -100,6 +113,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     options: {
       data: {
         referral_code: referralCode,
+        country_code: countryCode
       },
     },
   });
