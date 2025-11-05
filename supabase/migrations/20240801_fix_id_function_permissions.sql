@@ -1,10 +1,12 @@
--- Step 1: Create a function to generate a unique 5-character alphanumeric ID.
--- This version adds `SECURITY DEFINER` to grant it the necessary permissions
--- to check for uniqueness against the `public.profiles` table.
+-- This function generates a unique 5-character ID for new user profiles.
+-- The critical fix is adding `SECURITY DEFINER`, which gives this function
+-- the necessary permissions to check the `profiles` table for uniqueness
+-- when it's called by the database trigger.
+
 CREATE OR REPLACE FUNCTION public.generate_unique_short_id()
 RETURNS TEXT
 LANGUAGE plpgsql
-SECURITY DEFINER SET search_path = public -- This is the critical fix
+SECURITY DEFINER SET search_path = public -- This is the crucial fix
 AS $$
 DECLARE
   short_id TEXT;
@@ -30,8 +32,10 @@ BEGIN
 END;
 $$;
 
--- Step 2: Update the user creation trigger to use the new ID generation function.
--- This function now correctly populates the 'id', 'user_id', 'email', and 'referral_code'.
+
+-- We also re-apply the handle_new_user and the trigger to ensure the entire
+-- system is using the corrected function.
+
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -49,8 +53,6 @@ BEGIN
 END;
 $$;
 
--- Step 3: Ensure the trigger is active on the auth.users table.
--- This will run the `handle_new_user` function after every new user is created.
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
