@@ -1,5 +1,5 @@
 
-'use server'
+"use server";
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
@@ -65,7 +65,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
 
   const { isVpn } = await checkVpn(ipAddress);
   if (isVpn) {
-    return { message: 'Access denied. Please disable any VPN or proxy services to log in.', success: false };
+    return { message: 'Heads up! For fair rewards and security, VPNs and proxies aren’t allowed. Please reconnect without one.', success: false };
   }
 
   const supabase = createSupabaseServerClient();
@@ -94,7 +94,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   
   const { isVpn, countryCode } = await checkVpn(ipAddress);
   if (isVpn) {
-    return { message: 'Access denied. Please disable any VPN or proxy services to sign up.', success: false };
+    return { message: 'Heads up! For fair rewards and security, VPNs and proxies aren’t allowed. Please reconnect without one.', success: false };
   }
 
   const email = formData.get('email') as string;
