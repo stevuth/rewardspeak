@@ -1,4 +1,5 @@
 
+
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,7 +44,7 @@ export default async function MyPeakProfilePage() {
   const totalPoints = profileData?.points ?? 0;
   const totalAmountEarned = totalPoints / 1000;
   const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
-  const rewardsPeakId = profileData?.id ? `Rewards Peak ID-${profileData.id}` : 'Rewards Peak ID-GUEST';
+  const rewardsPeakId = profileData?.id ? `ID-${profileData.id}` : 'ID-GUEST';
 
 
   return (
@@ -149,5 +150,3 @@ export default async function MyPeakProfilePage() {
     </div>
   );
 }
-
-

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { PageHeader } from "@/components/page-header";
@@ -31,7 +32,7 @@ export default function InviteAndClimbPage() {
       if (user) {
         setUserId(user.id);
         
-        // Fetch user's profile to get their referral code
+        // Fetch user's profile to get their referral code (which is their profile ID)
         const { data: profile } = await supabase
           .from('profiles')
           .select('id')
@@ -44,9 +45,9 @@ export default function InviteAndClimbPage() {
         
         // Fetch the count of referrals made by this user
         const { count } = await supabase
-            .from('referrals')
+            .from('profiles')
             .select('*', { count: 'exact', head: true })
-            .eq('referrer_id', user.id);
+            .eq('referral_code', profile?.id); // Find users who used this user's ID as their referral code
             
         setTotalReferrals(count || 0);
 
