@@ -3,6 +3,7 @@
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
+import { env } from 'process';
 
 type VpnCheckResult = {
     isVpn: boolean;
