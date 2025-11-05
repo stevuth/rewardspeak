@@ -9,7 +9,6 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
   if (!ipAddress) {
     console.warn("VPN Check: No IP address provided from the client.");
     // Fail open - allow the request if we can't check the IP.
-    // Stricter policy could be to 'return true' here.
     return false;
   }
   
