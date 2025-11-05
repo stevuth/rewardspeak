@@ -4,22 +4,21 @@
 import { createSupabaseAdminClient } from '@/utils/supabase/admin'
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
-import dotenv from 'dotenv';
 
-
+// This is the corrected function. It no longer uses the 'dotenv' package.
+// It relies on the standard Next.js process for accessing environment variables.
 async function checkVpn(ipAddress: string | null): Promise<boolean> {
-  // Explicitly load environment variables at the point of use.
-  dotenv.config();
-
   if (!ipAddress) {
     // Fail open: If we don't get an IP, we can't check it.
-    // You might want to change this to fail closed (return true) for higher security.
+    // This could be changed to fail closed (return true) for higher security.
+    console.warn("VPN Check: No IP address provided.");
     return false;
   }
 
   const apiKey = process.env.IPHUB_API_KEY;
   if (!apiKey) {
-    console.warn("IPHub API key is not configured. Skipping VPN check.");
+    console.error("CRITICAL: IPHub API key is not configured in .env. Skipping VPN check.");
+    // Fail open if the API key is missing.
     return false;
   }
 
@@ -27,16 +26,24 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
     const response = await fetch(`https://v2.iphub.info/ip/${ipAddress}`, {
       headers: { 'X-Key': apiKey }
     });
+
     if (!response.ok) {
         console.error(`IPHub API call failed with status: ${response.status}`);
         return false; // Fail open if API call fails
     }
+
     const data = await response.json();
     // block: 0 = residential, 1 = non-residential (VPN/proxy), 2 = both
-    return data.block === 1;
+    if (data.block === 1) {
+        console.log(`VPN/Proxy detected for IP: ${ipAddress}. Blocking access.`);
+        return true;
+    }
+    
+    return false;
+
   } catch (error) {
     console.error("Error checking VPN with IPHub:", error);
-    return false; // Fail open on error
+    return false; // Fail open on any other error
   }
 }
 
