@@ -39,14 +39,11 @@ export async function signup(prevState: { message: string, success?: boolean }, 
 
   const supabaseAdmin = createSupabaseAdminClient();
 
-  // Step 1: Create the user in the auth.users table, passing referral code in metadata
+  // Step 1: Create the user in auth.users
   const { data: { user }, error: signupError } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
-    email_confirm: true, // Set to true to bypass email confirmation
-    user_metadata: {
-        referral_code: referralCode
-    }
+    email_confirm: true, // Auto-confirm user's email
   });
 
   if (signupError) {
@@ -62,31 +59,47 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   }
   
   // Step 2: Manually insert the user's profile into the public.profiles table
-  const { error: profileError } = await supabaseAdmin
-    .from('profiles')
-    .insert({
+  // This is the robust, explicit, and definitive way to create the profile.
+  try {
+    const profileData: { user_id: string; email: string; points: number; referral_code?: string } = {
       user_id: user.id,
-      email: user.email,
-      referral_code: referralCode, // Use the referralCode from the form directly
+      email: user.email!,
       points: 1000, // Award 1000 points ($1) welcome bonus
-    });
-
-  if (profileError) {
-    console.error('Error creating profile:', profileError);
-    // IMPORTANT: If profile creation fails, we must delete the auth user to prevent orphaned accounts.
-    await supabaseAdmin.auth.admin.deleteUser(user.id);
-    return { 
-      message: `A database error occurred while creating your profile. Please try again.`, 
-      success: false 
     };
+
+    // **THE FIX**: Only add the referral_code to the insert object if it actually has a value.
+    // This prevents errors if the column doesn't allow nulls.
+    if (referralCode) {
+      profileData.referral_code = referralCode;
+    }
+
+    const { error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .insert(profileData);
+
+    if (profileError) {
+      // This is a critical database error. We must log it and delete the orphaned auth user.
+      console.error('CRITICAL: Error creating profile:', profileError);
+      await supabaseAdmin.auth.admin.deleteUser(user.id);
+      return { 
+        message: `A database error occurred while creating your profile. Please contact support. (Code: ${profileError.code})`, 
+        success: false 
+      };
+    }
+  } catch (e: any) {
+      console.error('CRITICAL: Unhandled exception during profile creation:', e);
+      await supabaseAdmin.auth.admin.deleteUser(user.id);
+      return { message: `An unexpected server error occurred. Please try again.`, success: false };
   }
 
-  // Since we created the user with email_confirm: true, we can now log them in directly.
+
+  // Step 3: Log the user in with a standard client.
   const supabase = createSupabaseServerClient();
   const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
 
   if (loginError) {
-      return { message: `Account created, but login failed: ${loginError.message}`, success: false };
+      // This is unlikely but possible. The user exists, they just need to log in manually.
+      return { message: `Account created, but automatic login failed. Please try logging in manually.`, success: false };
   }
 
   // Redirect to the dashboard with a welcome event
