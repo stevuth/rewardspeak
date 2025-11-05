@@ -32,16 +32,26 @@ export default function InviteAndClimbPage() {
       if (user) {
         setUserId(user.id);
         
-        // Use user's ID as the referral code
-        setReferralCode(user.id);
+        // Fetch the user's profile to get their short ID referral code
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+
+        if (profile) {
+            setReferralCode(profile.id);
+        }
         
         // Fetch the count of referrals made by this user
-        const { count } = await supabase
-            .from('profiles')
-            .select('*', { count: 'exact', head: true })
-            .eq('referral_code', user.id);
-            
-        setTotalReferrals(count || 0);
+        // Note: we check the 'referred_by' column with the user's short ID
+        if (profile) {
+            const { count } = await supabase
+                .from('profiles')
+                .select('*', { count: 'exact', head: true })
+                .eq('referred_by', profile.id);
+            setTotalReferrals(count || 0);
+        }
 
         // Fetch real referral earnings
         const { data: earnings, error: earningsError } = await supabase.rpc('get_referral_earnings');

@@ -39,7 +39,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   const supabase = createSupabaseServerClient();
 
   // Use the standard signUp method which sends a confirmation email.
-  // The database trigger 'handle_new_user_profile' will handle creating the profile
+  // The database trigger will handle creating the profile
   // once the user is created in auth.users.
   const { error } = await supabase.auth.signUp({
     email: email,
