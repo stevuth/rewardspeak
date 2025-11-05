@@ -3,15 +3,19 @@
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
-import 'dotenv/config';
 
 async function checkVpn(ipAddress: string | null): Promise<boolean> {
+  // If no IP is provided from the client, we can't check.
   if (!ipAddress) {
-    console.warn("VPN Check: No IP address provided.");
+    console.warn("VPN Check: No IP address provided from the client.");
+    // Fail open - allow the request if we can't check the IP.
+    // Stricter policy could be to 'return true' here.
     return false;
   }
   
   const apiKey = process.env.IPHUB_API_KEY;
+
+  // If the API key is not configured on the server, log a critical error and fail open.
   if (!apiKey) {
     console.error("CRITICAL: IPHub API key is not configured in .env. Skipping VPN check.");
     return false;
@@ -23,21 +27,24 @@ async function checkVpn(ipAddress: string | null): Promise<boolean> {
     });
 
     if (!response.ok) {
+        // If the API call itself fails, log the error and allow the request.
         console.error(`IPHub API call failed with status: ${response.status}`);
         return false;
     }
 
     const data = await response.json();
+    
+    // IPHub returns { block: 1 } for VPN/proxy, and { block: 0 } for residential IPs.
     if (data.block === 1) {
         console.log(`VPN/Proxy detected for IP: ${ipAddress}. Blocking access.`);
-        return true;
+        return true; // Is a VPN
     }
     
-    return false;
+    return false; // Is not a VPN
 
   } catch (error) {
     console.error("Error checking VPN with IPHub:", error);
-    return false;
+    return false; // Fail open on any exception.
   }
 }
 
