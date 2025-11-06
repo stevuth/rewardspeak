@@ -73,10 +73,10 @@ const FloatingLabelInput = ({
 
 const VaultLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                     <feMerge>
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
@@ -84,28 +84,28 @@ const VaultLoader = () => (
                 </filter>
             </defs>
             {/* Base circle */}
-            <circle cx="32" cy="32" r="28" stroke="hsl(var(--foreground))" strokeWidth="2" opacity="0.3"/>
+            <circle cx="40" cy="40" r="35" stroke="hsl(var(--foreground))" strokeWidth="2.5" opacity="0.3"/>
             
             {/* Scanner Arc */}
             <motion.path
-                d="M 4 32 A 28 28 0 0 1 60 32"
+                d="M 5 40 A 35 35 0 0 1 75 40"
                 stroke="hsl(var(--secondary))"
-                strokeWidth="2.5"
+                strokeWidth="3"
                 fill="none"
                 strokeLinecap="round"
                 initial={{ rotate: -90 }}
                 animate={{ rotate: 270 }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                style={{ transformOrigin: '32px 32px' }}
+                style={{ transformOrigin: '40px 40px' }}
             />
             
             {/* Keyhole reveal */}
             <motion.g
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
             >
-                <KeyRound x="20" y="20" width="24" height="24" strokeWidth="2.5" className="text-secondary" style={{ filter: "url(#glow)" }}/>
+                <KeyRound x="25" y="25" width="30" height="30" strokeWidth="2.5" className="text-secondary" style={{ filter: "url(#glow)" }}/>
             </motion.g>
         </svg>
         <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
@@ -118,8 +118,8 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
             type="submit"
             disabled={isPending}
             className={cn(
-                "w-full h-[54px] relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
-                isPending && "bg-primary/10 text-primary"
+                "w-full relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
+                isPending ? "h-[90px] bg-primary/10 text-primary" : "h-[54px]"
             )}
         >
         <AnimatePresence>
