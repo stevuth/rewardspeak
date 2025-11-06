@@ -73,7 +73,7 @@ const FloatingLabelInput = ({
 
 const MountainClimbLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
             {/* Mountain Shape */}
             <motion.path
                 d="M4 40 C 10 40, 10 30, 24 30 S 38 40, 44 40"
