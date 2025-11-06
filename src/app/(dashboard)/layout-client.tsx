@@ -66,8 +66,8 @@ function SidebarNavs({ user }: { user: User | null }) {
     return cn(
       "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
       isActive
-        ? "bg-muted text-foreground"
-        : "text-muted-foreground hover:bg-primary hover:text-primary-foreground"
+        ? "bg-secondary text-secondary-foreground"
+        : "text-muted-foreground hover:bg-muted hover:text-foreground"
     );
   };
 
@@ -100,8 +100,8 @@ function SidebarNavs({ user }: { user: User | null }) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
               pathname.startsWith(item.href)
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:bg-primary hover:text-primary-foreground"
+                ? "bg-secondary text-secondary-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <item.icon className="h-4 w-4" />
@@ -333,3 +333,5 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
         </SidebarProvider>
     )
 }
+
+    
