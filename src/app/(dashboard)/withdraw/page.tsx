@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { withdrawalHistory, type Withdrawal } from "@/lib/mock-data";
 import {
   PaypalLogo,
   UsdtLogo,
@@ -39,9 +38,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { processWithdrawalRequest } from "@/app/actions";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
+
+type Withdrawal = {
+  id: string;
+  method: string;
+  amount_usd: number;
+  created_at: string;
+  status: "completed" | "pending" | "rejected";
+};
 
 const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
-  if (status === "Completed") {
+  if (status === "completed") {
     return (
       <Badge className="bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600/30">
         <CheckCircle className="mr-1 h-3 w-3" />
@@ -49,7 +57,7 @@ const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
       </Badge>
     );
   }
-  if (status === "Pending") {
+  if (status === "pending") {
     return (
       <Badge variant="outline" className="text-foreground border-border">
         <Clock className="mr-1 h-3 w-3" />
@@ -57,11 +65,11 @@ const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
       </Badge>
     );
   }
-  if (status === "Failed") {
+  if (status === "rejected") {
     return (
       <Badge variant="destructive">
         <XCircle className="mr-1 h-3 w-3" />
-        Failed
+        Rejected
       </Badge>
     );
   }
@@ -85,6 +93,31 @@ export default function CashOutCabinPage() {
   const [walletAddress, setWalletAddress] = useState("");
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [history, setHistory] = useState<Withdrawal[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setIsLoadingHistory(true);
+      const supabase = createSupabaseBrowserClient();
+      const { data, error } = await supabase
+        .from('withdrawal_requests')
+        .select('id, created_at, method, amount_usd, status')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error loading history",
+          description: "Could not fetch your withdrawal history."
+        });
+      } else {
+        setHistory(data as Withdrawal[]);
+      }
+      setIsLoadingHistory(false);
+    }
+    fetchHistory();
+  }, [toast]);
 
   const handleWithdrawClick = (method: WithdrawalMethod, amount: number) => {
     setSelectedWithdrawal({ method, amount });
@@ -120,6 +153,15 @@ export default function CashOutCabinPage() {
             title: "Withdrawal Submitted!",
             description: `Your request to withdraw $${selectedWithdrawal.amount} has been received.`
         });
+        // Add the new request to the top of the history list for immediate feedback
+        const newRequest: Withdrawal = {
+            id: `temp-${Date.now()}`,
+            created_at: new Date().toISOString(),
+            amount_usd: selectedWithdrawal.amount,
+            method: selectedWithdrawal.method,
+            status: 'pending',
+        };
+        setHistory(prev => [newRequest, ...prev]);
     } else {
         toast({
             variant: "destructive",
@@ -223,16 +265,22 @@ export default function CashOutCabinPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {withdrawalHistory.length > 0 ? (
-                withdrawalHistory.map((withdrawal) => (
+              {isLoadingHistory ? (
+                <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                    </TableCell>
+                </TableRow>
+              ) : history.length > 0 ? (
+                history.map((withdrawal) => (
                   <TableRow key={withdrawal.id}>
-                    <TableCell>{withdrawal.date}</TableCell>
-                    <TableCell className="font-medium">{withdrawal.method}</TableCell>
+                    <TableCell>{new Date(withdrawal.created_at).toLocaleString()}</TableCell>
+                    <TableCell className="font-medium capitalize">{withdrawal.method}</TableCell>
                     <TableCell>
                       <StatusBadge status={withdrawal.status} />
                     </TableCell>
                     <TableCell className="text-right font-bold text-secondary">
-                      ${(withdrawal.amount / 1000).toFixed(2)}
+                      ${withdrawal.amount_usd.toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))
