@@ -134,28 +134,22 @@ export default function EarnPage() {
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
 
-        const from = (pageNum - 1) * OFFERS_PER_PAGE;
-        const to = from + OFFERS_PER_PAGE - 1;
-
-        let query = supabase
-            .from('all_offers')
-            .select('*')
-            .eq('is_disabled', false)
-            .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`)
-            .order('payout', { ascending: false })
-            .range(from, to);
-
-        if (searchQuery) {
-            query = query.ilike('name', `%${searchQuery}%`);
-        }
-
-        const { data: rawAllOffers, error: allOffersError } = await query;
+        const { data: rawAllOffers, error: allOffersError } = await supabase.rpc('get_filtered_offers_paginated', {
+            country_code_param: userCountry,
+            search_query_param: searchQuery,
+            page_num_param: pageNum,
+            page_size_param: OFFERS_PER_PAGE
+        })
 
         if (allOffersError) throw allOffersError;
 
         const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
         
-        setAllOffers(prev => isNewSearch ? transformedOffers : [...prev, ...transformedOffers]);
+        setAllOffers(prev => {
+            const existingIds = new Set(prev.map(o => o.offer_id));
+            const newOffers = transformedOffers.filter(o => !existingIds.has(o.offer_id));
+            return isNewSearch ? transformedOffers : [...prev, ...newOffers];
+        });
         setHasMore(transformedOffers.length === OFFERS_PER_PAGE);
 
     } catch (error) {
@@ -206,7 +200,7 @@ export default function EarnPage() {
     setSelectedOffer(null);
   };
   
-  const renderOfferGrid = (offers: Offer[], type: string) => {
+  const renderOfferGrid = (offers: Offer[]) => {
     if (isLoading && offers.length === 0) {
         return (
             <div className="flex justify-center items-center py-12">
@@ -224,8 +218,8 @@ export default function EarnPage() {
     if (offers.length > 0) {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {offers.map((offer) => (
-                    <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
+                {offers.map((offer, index) => (
+                    <OfferGridCard key={`${offer.offer_id}-${index}`} offer={offer} onOfferClick={handleOfferClick} />
                 ))}
             </div>
         );
