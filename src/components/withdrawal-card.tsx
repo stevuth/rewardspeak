@@ -4,6 +4,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 
 type WithdrawalCardProps = {
   amount: number;
@@ -19,24 +20,35 @@ export function WithdrawalCard({ amount, points, onClick, method }: WithdrawalCa
     <Card 
       onClick={onClick}
       className={cn(
-        "text-center p-4 transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1",
-        isPayPal
-          ? "bg-[#003087] border-[#009cde] text-white hover:bg-[#00296b] hover:shadow-[0_0_15px_rgba(0,156,222,0.5)]"
-          : "hover:bg-primary/10 hover:border-primary"
+        "group relative text-center p-4 transition-all duration-300 ease-in-out cursor-pointer overflow-hidden",
+        "bg-card/50 border-border hover:border-primary/50",
+        "hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1.5"
       )}
     >
-      <CardContent className="p-2">
-        <p className={cn("text-2xl font-bold", isPayPal ? "text-white" : "text-primary")}>
-          ${amount}
+        <div className={cn(
+            "absolute inset-0 transition-all duration-500 opacity-0 group-hover:opacity-100",
+             isPayPal 
+                ? "bg-gradient-to-br from-[#003087]/20 via-transparent to-transparent" 
+                : "bg-gradient-to-br from-primary/20 via-transparent to-transparent"
+        )} />
+
+      <CardContent className="p-2 relative z-10 flex flex-col items-center justify-center h-full">
+        <p className={cn(
+            "text-4xl font-extrabold tracking-tight", 
+            isPayPal ? "text-white" : "text-foreground"
+            )}
+        >
+          <span className="text-2xl text-muted-foreground">$</span>{amount}
         </p>
-        <p className={cn("text-sm", isPayPal ? "text-gray-300" : "text-muted-foreground")}>
+        <p className={cn("text-xs font-bold", isPayPal ? "text-blue-300" : "text-secondary")}>
           {points.toLocaleString()} Points
         </p>
         <Button 
-          variant="link" 
-          className={cn("mt-2 text-xs h-auto p-0", isPayPal ? "text-[#009cde] hover:text-white" : "text-primary")}
+            variant="secondary"
+            size="sm"
+            className="mt-4 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:translate-y-0 translate-y-2"
         >
-          Withdraw
+            Withdraw <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </CardContent>
     </Card>
