@@ -350,7 +350,3 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
         </SidebarProvider>
     )
 }
-
-    
-
-    
