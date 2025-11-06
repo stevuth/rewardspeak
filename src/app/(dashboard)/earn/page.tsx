@@ -116,55 +116,84 @@ export default function EarnPage() {
     }
     
     try {
-      const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
+        const supabase = createSupabaseBrowserClient();
+        console.log('=== STARTING FETCH ===');
+        console.log('Supabase client:', supabase ? 'exists' : 'missing');
+        
+        const { data: { user } } = await supabase.auth.getUser();
 
-      let userCountry = 'ALL';
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('country_code')
-          .eq('user_id', user.id)
-          .single();
-        if (profile && profile.country_code) {
-          userCountry = profile.country_code;
+        let userCountry = 'ALL';
+        if (user) {
+            const { data: profile } = await supabase
+            .from('profiles')
+            .select('country_code')
+            .eq('user_id', user.id)
+            .single();
+            if (profile && profile.country_code) {
+            userCountry = profile.country_code;
+            }
         }
-      }
+        
+        // Check user country
+        console.log('User country:', userCountry);
+        console.log('User country type:', typeof userCountry);
+        
+        if (!userCountry) {
+          console.error('USER COUNTRY IS MISSING!');
+          return;
+        }
 
-      const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
-      const payoutPercentage = config ? Number(config.value) : 100;
+        // Try simple query first (no filter)
+        console.log('Testing basic query...');
+        const { data: testData, error: testError } = await supabase
+          .from('all_offers')
+          .select('*')
+          .limit(1);
+        
+        console.log('Basic query result:', testData);
+        console.log('Basic query error:', testError);
 
-      const from = (pageNum - 1) * OFFERS_PER_PAGE;
-      const to = from + OFFERS_PER_PAGE - 1;
+        // Now try with filter
+        console.log('Testing filtered query...');
+        
+        const from = (pageNum - 1) * OFFERS_PER_PAGE;
+        const to = from + OFFERS_PER_PAGE - 1;
+        
+        const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
+        const payoutPercentage = config ? Number(config.value) : 100;
 
-      let query = supabase
-        .from('all_offers')
-        .select('*')
-        .eq('is_disabled', false)
-        .order('payout', { ascending: false })
-        .range(from, to);
+        let query = supabase
+            .from('all_offers')
+            .select('*')
+            .eq('is_disabled', false)
+            .order('payout', { ascending: false })
+            .range(from, to);
 
-      query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
+        query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
 
-      if (searchQuery) {
-        query = query.ilike('name', `%${searchQuery}%`);
-      }
+        if (searchQuery) {
+            query = query.ilike('name', `%${searchQuery}%`);
+        }
 
-      const { data: rawAllOffers, error: allOffersError } = await query;
-      
-      if (allOffersError) throw allOffersError;
+        const { data: rawAllOffers, error: allOffersError } = await query;
+        
+        console.log('Filtered results:', rawAllOffers?.length || 0);
+        console.log('Filtered error:', allOffersError);
+        console.log('=== END FETCH ===');
 
-      const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
-      
-      setAllOffers(prev => isNewSearch ? transformedOffers : [...prev, ...transformedOffers]);
-      setHasMore(transformedOffers.length === OFFERS_PER_PAGE);
+        if (allOffersError) throw allOffersError;
+
+        const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
+        
+        setAllOffers(prev => isNewSearch ? transformedOffers : [...prev, ...transformedOffers]);
+        setHasMore(transformedOffers.length === OFFERS_PER_PAGE);
 
     } catch (error) {
       console.error("Error fetching offers:", error);
       toast({
           variant: "destructive",
           title: "Error fetching offers",
-          description: error instanceof Error ? error.message : "An unknown error occurred.",
+          description: "An unknown error occurred.",
       });
     } finally {
       setIsLoading(false);
