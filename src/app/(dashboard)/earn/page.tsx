@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
@@ -146,9 +146,12 @@ export default function EarnPage() {
         const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
         
         setAllOffers(prev => {
+            if (isNewSearch) {
+                return transformedOffers;
+            }
             const existingIds = new Set(prev.map(o => o.offer_id));
             const newOffers = transformedOffers.filter(o => !existingIds.has(o.offer_id));
-            return isNewSearch ? transformedOffers : [...prev, ...newOffers];
+            return [...prev, ...newOffers];
         });
         setHasMore(transformedOffers.length === OFFERS_PER_PAGE);
 
@@ -229,7 +232,7 @@ export default function EarnPage() {
         return (
             <Card className="text-center py-12">
                 <CardContent>
-                    <p className="text-muted-foreground">No {type} offers found. Try a different search!</p>
+                    <p className="text-muted-foreground">No offers found. Try a different search!</p>
                 </CardContent>
             </Card>
         );
@@ -283,7 +286,7 @@ export default function EarnPage() {
             All Offers
           </h2>
         </div>
-        {renderOfferGrid(allOffers, 'offer')}
+        {renderOfferGrid(allOffers)}
         {isLoadingMore && (
              <div className="flex justify-center items-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
