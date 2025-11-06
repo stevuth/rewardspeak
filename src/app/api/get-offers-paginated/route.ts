@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '20', 10);
   const offerId = searchParams.get('offerId');
   const offerName = searchParams.get('offerName');
+  const undefinedDescription = searchParams.get('undefinedDescription');
 
   const from = (page - 1) * limit;
   const to = from + limit - 1;
@@ -24,6 +25,14 @@ export async function GET(request: NextRequest) {
     
     if (offerName) {
       query = query.ilike('name', `%${offerName}%`);
+    }
+
+    if (undefinedDescription === 'true') {
+      // Filters for rows where:
+      // 1. description IS NULL
+      // 2. description is an empty string
+      // 3. description is the same as the name column
+      query = query.or('description.is.null,description.eq.,description.eq.name');
     }
 
     const { data, error, count } = await query

@@ -28,6 +28,7 @@ import { OfferDetailsRow } from "./offer-details-row";
 import { syncOffers, getOfferPayoutPercentage, updateOfferPayoutPercentage } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Offer = {
   offer_id: string;
@@ -62,9 +63,11 @@ export default function ManageOffersPage() {
   const currentPage = Number(searchParams.get('page')) || 1;
   const offerIdFilter = searchParams.get('offerId') || '';
   const offerNameFilter = searchParams.get('offerName') || '';
+  const undefinedDescriptionFilter = searchParams.get('undefinedDescription') === 'true';
 
   const [idInput, setIdInput] = useState(offerIdFilter);
   const [nameInput, setNameInput] = useState(offerNameFilter);
+  const [undefinedDescInput, setUndefinedDescInput] = useState(undefinedDescriptionFilter);
 
   const [payoutPercentage, setPayoutPercentage] = useState<number | string>('');
   const [isSavingPercentage, setIsSavingPercentage] = useState(false);
@@ -88,6 +91,7 @@ export default function ManageOffersPage() {
     params.set('limit', String(OFFERS_PER_PAGE));
     if (offerIdFilter) params.set('offerId', offerIdFilter);
     if (offerNameFilter) params.set('offerName', offerNameFilter);
+    if (undefinedDescriptionFilter) params.set('undefinedDescription', 'true');
 
     try {
       const response = await fetch(`/api/get-offers-paginated?${params.toString()}`);
@@ -107,7 +111,7 @@ export default function ManageOffersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, offerIdFilter, offerNameFilter, toast]);
+  }, [currentPage, offerIdFilter, offerNameFilter, undefinedDescriptionFilter, toast]);
 
   useEffect(() => {
     fetchOffers();
@@ -116,7 +120,8 @@ export default function ManageOffersPage() {
   useEffect(() => {
     setIdInput(offerIdFilter);
     setNameInput(offerNameFilter);
-  }, [offerIdFilter, offerNameFilter]);
+    setUndefinedDescInput(undefinedDescriptionFilter);
+  }, [offerIdFilter, offerNameFilter, undefinedDescriptionFilter]);
 
   const handleFilter = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -131,6 +136,11 @@ export default function ManageOffersPage() {
     } else {
         params.delete('offerName');
     }
+    if (undefinedDescInput) {
+        params.set('undefinedDescription', 'true');
+    } else {
+        params.delete('undefinedDescription');
+    }
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });
@@ -139,6 +149,7 @@ export default function ManageOffersPage() {
   const handleClearFilters = () => {
     setIdInput('');
     setNameInput('');
+    setUndefinedDescInput(false);
     startTransition(() => {
         router.push(pathname);
     });
@@ -237,17 +248,29 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle>Filter Offers</CardTitle>
         </CardHeader>
-        <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <Input 
-                placeholder="Filter by Offer ID..."
-                value={idInput}
-                onChange={(e) => setIdInput(e.target.value)}
-            />
-            <Input
-                placeholder="Filter by Offer Name..."
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-            />
+        <CardContent>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                <Input 
+                    placeholder="Filter by Offer ID..."
+                    value={idInput}
+                    onChange={(e) => setIdInput(e.target.value)}
+                />
+                <Input
+                    placeholder="Filter by Offer Name..."
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                />
+                <div className="flex items-center space-x-2">
+                    <Checkbox
+                        id="undefined-description"
+                        checked={undefinedDescInput}
+                        onCheckedChange={(checked) => setUndefinedDescInput(Boolean(checked))}
+                    />
+                    <Label htmlFor="undefined-description" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        No/generic description
+                    </Label>
+                </div>
+            </div>
             <div className="flex gap-2">
                 <Button onClick={handleFilter} disabled={isPending}>
                     <Search className="mr-2 h-4 w-4"/>
