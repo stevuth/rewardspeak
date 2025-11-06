@@ -67,7 +67,7 @@ function SidebarNavs({ user }: { user: User | null }) {
       "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
       isActive
         ? "bg-primary text-primary-foreground"
-        : "text-muted-foreground hover:bg-muted"
+        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
     );
   };
 
@@ -101,7 +101,7 @@ function SidebarNavs({ user }: { user: User | null }) {
               "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
               pathname.startsWith(item.href)
                 ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:bg-muted"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             )}
           >
             <item.icon className="h-4 w-4" />
@@ -110,7 +110,7 @@ function SidebarNavs({ user }: { user: User | null }) {
         ))}
          <Link
             href={`/?event=logout&user_email=${user?.email || ''}`}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted font-bold"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground font-bold"
           >
             <LogOut className="h-4 w-4" />
             Log Out
@@ -173,7 +173,7 @@ function MobileSidebar({ user }: { user: User | null }) {
           "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
           isActive
             ? "bg-primary text-primary-foreground"
-            : "text-muted-foreground hover:bg-muted"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         );
     };
 
@@ -226,7 +226,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                             </div>
                         </div>
-                        <Button variant="ghost" asChild className="w-full justify-start">
+                        <Button variant="ghost" asChild className="w-full justify-start hover:bg-accent hover:text-accent-foreground">
                             <Link href={`/?event=logout&user_email=${user?.email || ''}`}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
