@@ -1,4 +1,7 @@
 
+DROP FUNCTION IF EXISTS get_filtered_offers(text, text[]);
+DROP FUNCTION IF EXISTS get_filtered_offers_paginated(text, text, integer, integer);
+
 create
 or replace function get_filtered_offers (
   country_code_param text,
@@ -34,6 +37,7 @@ begin
     ) and all_offers.is_disabled = false;
 end;
 $$ language plpgsql;
+
 
 create
 or replace function get_filtered_offers_paginated (
