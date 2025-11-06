@@ -68,8 +68,8 @@ const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
 };
 
 const withdrawalOptions = {
-    paypal: [10, 15, 20, 25, 30],
-    usdt: [10, 15, 20, 25, 30],
+    paypal: [10, 15, 20, 25, 30, 50],
+    usdt: [10, 15, 20, 25, 30, 50],
 }
 
 type WithdrawalMethod = 'paypal' | 'usdt';
