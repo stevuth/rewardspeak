@@ -203,11 +203,6 @@ export default function DashboardPage() {
                 <h2 className="text-xl font-bold tracking-tight font-headline">
                     Featured Offers
                 </h2>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/offers">
-                    View all <ChevronRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
               </div>
               {renderOfferCarousel(featuredOffers, "Featured Offers")}
             </div>
@@ -216,11 +211,6 @@ export default function DashboardPage() {
                 <h2 className="text-xl font-bold tracking-tight font-headline">
                   Top Converting Offers
                 </h2>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/offers">
-                    View all <ChevronRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
               </div>
               {renderOfferCarousel(topConvertingOffers, "Top Converting Offers")}
             </div>
