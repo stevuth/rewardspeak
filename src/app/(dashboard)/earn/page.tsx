@@ -106,6 +106,7 @@ export default function EarnPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [totalOfferLimit, setTotalOfferLimit] = useState(1000);
   const { toast } = useToast();
 
   const fetchOffers = useCallback(async (pageNum: number, isNewSearch: boolean = false) => {
@@ -133,13 +134,24 @@ export default function EarnPage() {
         
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
+        
+        const { data: limitConfig } = await supabase.from('site_config').select('value').eq('key', 'offer_display_limit').single();
+        const currentTotalLimit = limitConfig ? Number(limitConfig.value) : 1000;
+        setTotalOfferLimit(currentTotalLimit);
 
         const from = (pageNum - 1) * OFFERS_PER_PAGE;
-        const to = from + OFFERS_PER_PAGE - 1;
+        // Do not fetch more than the total limit
+        if (from >= currentTotalLimit) {
+            setHasMore(false);
+            return;
+        }
+
+        const to = Math.min(from + OFFERS_PER_PAGE - 1, currentTotalLimit - 1);
+
 
         let query = supabase
             .from('all_offers')
-            .select('*')
+            .select('*', { count: 'exact' })
             .eq('is_disabled', false)
             .not('description', 'is', null)
             .neq('description', '')
@@ -152,10 +164,10 @@ export default function EarnPage() {
             query = query.ilike('name', `%${searchQuery}%`);
         }
 
-        const { data: rawAllOffers, error: allOffersError } = await query;
+        const { data: rawAllOffers, error: allOffersError, count } = await query;
 
         if (allOffersError) throw allOffersError;
-
+        
         const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
         
         setAllOffers(prev => {
@@ -166,7 +178,11 @@ export default function EarnPage() {
             const newOffers = transformedOffers.filter(o => !existingIds.has(o.offer_id));
             return [...prev, ...newOffers];
         });
-        setHasMore(transformedOffers.length === OFFERS_PER_PAGE);
+
+        // The count from the query already respects the range, so we need to check if the number of returned offers is less than the page size
+        // or if we've hit the total limit.
+        const totalFetched = isNewSearch ? transformedOffers.length : allOffers.length + transformedOffers.length;
+        setHasMore(transformedOffers.length === OFFERS_PER_PAGE && totalFetched < currentTotalLimit);
 
     } catch (error) {
       console.error("Error fetching offers:", error);
@@ -179,7 +195,7 @@ export default function EarnPage() {
       setIsLoading(false);
       setIsLoadingMore(false);
     }
-  }, [searchQuery, toast]);
+  }, [searchQuery, toast, allOffers.length]);
 
   useEffect(() => {
     setAllOffers([]);
@@ -192,8 +208,12 @@ export default function EarnPage() {
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
         const nextPage = page + 1;
-        setPage(nextPage);
-        fetchOffers(nextPage);
+        if ((allOffers.length + OFFERS_PER_PAGE) > totalOfferLimit) {
+            setHasMore(false);
+        } else {
+            setPage(nextPage);
+            fetchOffers(nextPage);
+        }
     }
   };
 
@@ -206,7 +226,7 @@ export default function EarnPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingMore, hasMore, page]); 
+  }, [isLoadingMore, hasMore, page, allOffers.length, totalOfferLimit]); 
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);

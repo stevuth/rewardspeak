@@ -32,11 +32,13 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
 
         const prepareOffersData = (offers: NotikOffer[]) => {
             // Filter for unique offers based on offer_id to prevent upsert conflicts
-            const uniqueOffers = offers.filter((offer, index, self) =>
-                index === self.findIndex((o) => (
-                    o.offer_id === offer.offer_id
-                ))
-            );
+            const uniqueOffersMap = new Map<string, NotikOffer>();
+            for (const offer of offers) {
+                if (!uniqueOffersMap.has(offer.offer_id)) {
+                    uniqueOffersMap.set(offer.offer_id, offer);
+                }
+            }
+            const uniqueOffers = Array.from(uniqueOffersMap.values());
 
             log += `Found ${uniqueOffers.length} unique offers out of ${offers.length} total.\n`;
 
@@ -199,6 +201,49 @@ export async function updateOfferPayoutPercentage(percentage: number): Promise<{
     revalidatePath('/admin/offers', 'page');
     revalidatePath('/admin/offer-preview', 'page');
     revalidatePath('/dashboard', 'page');
+    revalidatePath('/earn', 'page');
+
+    return { success: true };
+}
+
+export async function getOfferDisplayLimit(): Promise<{ data: number; error: string | null; }> {
+    const supabase = createSupabaseAdminClient();
+    const { data, error } = await supabase
+        .from('site_config')
+        .select('value')
+        .eq('key', 'offer_display_limit')
+        .single();
+    
+    if (error) {
+        // If the key doesn't exist, return a default
+        if (error.code === 'PGRST116') { 
+            return { data: 1000, error: null };
+        }
+        console.error("Error fetching offer display limit:", error);
+        return { data: 1000, error: error.message };
+    }
+    
+    return { data: Number(data.value), error: null };
+}
+
+export async function updateOfferDisplayLimit(limit: number): Promise<{ success: boolean; error?: string; }> {
+    const supabase = createSupabaseAdminClient();
+    if (limit <= 0) {
+        return { success: false, error: "Limit must be a positive number." };
+    }
+
+    const { error } = await supabase
+        .from('site_config')
+        .upsert({
+            key: 'offer_display_limit',
+            value: String(limit),
+        }, { onConflict: 'key' });
+    
+    if (error) {
+        console.error("Error updating offer display limit:", error);
+        return { success: false, error: error.message };
+    }
+
     revalidatePath('/earn', 'page');
 
     return { success: true };
