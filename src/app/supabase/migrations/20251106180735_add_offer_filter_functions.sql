@@ -1,8 +1,7 @@
-
 -- Drop the old function first to allow for redefinition
 drop function if exists get_filtered_offers (text, text[]);
 
--- Recreate the function with explicit column selection and correct types
+-- Recreate the function with explicit column selection and correct type conversion
 create
 or replace function get_filtered_offers (
   country_code_param text,
@@ -34,10 +33,10 @@ begin
     ao.image_url,
     ao.network,
     ao.payout,
-    ao.countries::jsonb,
-    ao.platforms::jsonb,
-    ao.devices::jsonb,
-    ao.categories::jsonb,
+    to_jsonb(ao.countries),
+    to_jsonb(ao.platforms),
+    to_jsonb(ao.devices),
+    to_jsonb(ao.categories),
     ao.is_disabled,
     ao.created_at,
     ao.updated_at,
@@ -47,8 +46,8 @@ begin
   where
     ao.offer_id = any (offer_ids_param)
     and (
-      ao.countries::jsonb ? 'ALL'
-      or ao.countries::jsonb ? country_code_param
+      'ALL' = any(ao.countries)
+      or country_code_param = any(ao.countries)
     ) and ao.is_disabled = false;
 end;
 $$ language plpgsql;
@@ -57,7 +56,7 @@ $$ language plpgsql;
 -- Drop the old function first to allow for redefinition
 drop function if exists get_filtered_offers_paginated (text, text, int, int);
 
--- Recreate the function with explicit column selection and correct types
+-- Recreate the function with explicit column selection and correct type conversion
 create
 or replace function get_filtered_offers_paginated (
   country_code_param text,
@@ -91,10 +90,10 @@ begin
     ao.image_url,
     ao.network,
     ao.payout,
-    ao.countries::jsonb,
-    ao.platforms::jsonb,
-    ao.devices::jsonb,
-    ao.categories::jsonb,
+    to_jsonb(ao.countries),
+    to_jsonb(ao.platforms),
+    to_jsonb(ao.devices),
+    to_jsonb(ao.categories),
     ao.is_disabled,
     ao.created_at,
     ao.updated_at,
@@ -104,8 +103,8 @@ begin
   where
     ao.is_disabled = false
     and (
-      ao.countries::jsonb ? 'ALL'
-      or ao.countries::jsonb ? country_code_param
+      'ALL' = any(ao.countries)
+      or country_code_param = any(ao.countries)
     )
     and (
       search_query_param is null
