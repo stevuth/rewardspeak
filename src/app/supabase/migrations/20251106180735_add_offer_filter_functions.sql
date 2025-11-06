@@ -1,3 +1,4 @@
+
 -- Drop the old function first to allow for redefinition
 drop function if exists get_filtered_offers (text, text[]);
 
