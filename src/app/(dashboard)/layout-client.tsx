@@ -66,8 +66,8 @@ function SidebarNavs({ user }: { user: User | null }) {
     return cn(
       "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
       isActive
-        ? "bg-accent text-accent-foreground"
-        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        ? "bg-primary text-primary-foreground"
+        : "text-muted-foreground hover:bg-muted hover:text-foreground"
     );
   };
 
@@ -100,8 +100,8 @@ function SidebarNavs({ user }: { user: User | null }) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
               pathname.startsWith(item.href)
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <item.icon className="h-4 w-4" />
@@ -110,7 +110,7 @@ function SidebarNavs({ user }: { user: User | null }) {
         ))}
          <Link
             href={`/?event=logout&user_email=${user?.email || ''}`}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground font-bold"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted hover:text-foreground font-bold"
           >
             <LogOut className="h-4 w-4" />
             Log Out
