@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import type { NotikOffer } from "@/lib/notik-api";
 import { Badge } from "@/components/ui/badge";
+import { usePathname } from "next/navigation";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -83,6 +84,9 @@ export function OfferPreviewModal({
   onClose,
   offer,
 }: OfferPreviewModalProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname.startsWith('/admin');
+
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -153,17 +157,19 @@ export function OfferPreviewModal({
                   />
                 </div>
                 
-                <div className="p-4 bg-black/20 rounded-lg border border-border">
-                  <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
-                    Allowed Countries
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {allowedCountries.map((country) => (
-                      <Badge key={country} variant="outline">{country}</Badge>
-                    ))}
+                {isAdmin && (
+                  <div className="p-4 bg-black/20 rounded-lg border border-border">
+                    <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Allowed Countries
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {allowedCountries.map((country) => (
+                        <Badge key={country} variant="outline">{country}</Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <h3 className="font-semibold text-primary pt-2">Milestones</h3>
                 
