@@ -237,7 +237,7 @@ export default function EarnPage() {
   const renderOfferGrid = (offers: Offer[]) => {
     if (isLoading && offers.length === 0) {
         return (
-            <div className="flex flex-col justify-center items-center py-12 gap-4">
+            <div className="flex flex-col justify-center items-center py-12 gap-2">
                 <Image
                     src="/logo.png?v=9"
                     alt="Loading..."
