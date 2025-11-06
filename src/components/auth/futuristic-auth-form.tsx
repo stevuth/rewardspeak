@@ -1,10 +1,10 @@
 
 "use client";
 
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogIn, Lock, Mail, UserPlus } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -71,84 +71,51 @@ const FloatingLabelInput = ({
   );
 };
 
-const DigitalKeyLoader = () => (
+const MountainClimbLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <motion.g
-                initial="hidden"
-                animate="visible"
-                variants={{
-                    visible: {
-                        transition: {
-                            staggerChildren: 0.2,
-                        }
-                    }
-                }}
-            >
-                {/* Key head */}
-                <motion.circle
-                    cx="30"
-                    cy="18"
-                    r="8"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="2.5"
-                    variants={{
-                        hidden: { pathLength: 0, opacity: 0 },
-                        visible: { pathLength: 1, opacity: 1, transition: { duration: 0.8, ease: "easeInOut" }}
-                    }}
-                />
-                {/* Key shaft */}
-                <motion.line
-                    x1="22"
-                    y1="18"
-                    x2="10"
-                    y2="18"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="2.5"
-                     variants={{
-                        hidden: { x2: 22, opacity: 0 },
-                        visible: { x2: 10, opacity: 1, transition: { duration: 0.5, ease: "easeOut", delay: 0.3 }}
-                    }}
-                />
-                 {/* Key teeth */}
-                <motion.path
-                    d="M 10 18 V 22 H 12 V 18"
-                    stroke="hsl(var(--secondary))"
-                    strokeWidth="2"
-                    variants={{
-                        hidden: { y: -10, opacity: 0},
-                        visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "circOut", delay: 0.8}}
-                    }}
-                />
-                 <motion.path
-                    d="M 16 18 V 24 H 18 V 18"
-                    stroke="hsl(var(--secondary))"
-                    strokeWidth="2"
-                    variants={{
-                        hidden: { y: 10, opacity: 0},
-                        visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "circOut", delay: 1.0}}
-                    }}
-                />
-                {/* Final Glow */}
-                 <motion.g
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 1, 0] }}
-                    transition={{ duration: 1, delay: 1.5, repeat: Infinity }}
-                 >
-                    <circle cx="30" cy="18" r="10" fill="hsl(var(--secondary))" filter="url(#glow)" />
-                 </motion.g>
-            </motion.g>
-            <defs>
-                <filter id="glow">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
-                <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                </feMerge>
-                </filter>
-            </defs>
+            {/* Mountain Shape */}
+            <motion.path
+                d="M4 40 C 10 40, 10 30, 24 30 S 38 40, 44 40"
+                stroke="hsl(var(--foreground))"
+                strokeWidth="2"
+                fill="none"
+                opacity="0.3"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
+            />
+            {/* Climbing Path */}
+            <motion.path
+                d="M10 38 L20 20 L28 30 L38 10"
+                stroke="hsl(var(--primary))"
+                strokeWidth="2.5"
+                strokeDasharray="1"
+                strokeDashoffset="1"
+                initial={{ strokeDashoffset: 1 }}
+                animate={{ strokeDashoffset: 0 }}
+                transition={{ duration: 1.5, ease: "easeInOut", delay: 0.5 }}
+            />
+            {/* Flagpole */}
+             <motion.line
+                x1="38" y1="10" x2="38" y2="4"
+                stroke="hsl(var(--foreground))"
+                strokeWidth="2"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.3, delay: 2 }}
+             />
+             {/* Flag */}
+            <motion.path
+                d="M38 4 L 34 6 L 38 8 Z"
+                fill="hsl(var(--secondary))"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.4, delay: 2.3 }}
+                style={{ transformOrigin: "38px 4px" }}
+            />
         </svg>
-        <p className="text-xs font-semibold text-primary mt-1">Securing...</p>
+        <p className="text-xs font-semibold text-primary mt-1">Climbing...</p>
     </div>
 );
 
@@ -172,7 +139,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <DigitalKeyLoader />
+              <MountainClimbLoader />
             </motion.div>
           ) : (
             <motion.div
