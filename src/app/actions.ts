@@ -31,7 +31,16 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
         }
 
         const prepareOffersData = (offers: NotikOffer[]) => {
-            return offers.map(offer => ({
+            // Filter for unique offers based on offer_id to prevent upsert conflicts
+            const uniqueOffers = offers.filter((offer, index, self) =>
+                index === self.findIndex((o) => (
+                    o.offer_id === offer.offer_id
+                ))
+            );
+
+            log += `Found ${uniqueOffers.length} unique offers out of ${offers.length} total.\n`;
+
+            return uniqueOffers.map(offer => ({
                 offer_id: offer.offer_id,
                 name: offer.name,
                 description: offer.description || "",
