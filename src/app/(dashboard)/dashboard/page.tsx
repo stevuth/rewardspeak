@@ -199,9 +199,16 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
             <div>
-              <h2 className="text-xl font-bold tracking-tight mb-4 font-headline">
-                  Featured Offers
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold tracking-tight font-headline">
+                    Featured Offers
+                </h2>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/earn">
+                    View all <ChevronRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
               {renderOfferCarousel(featuredOffers, "Featured Offers")}
             </div>
             <div>
