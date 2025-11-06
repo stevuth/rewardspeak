@@ -86,6 +86,18 @@ export default function DashboardPage() {
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
 
+        let userCountry = 'ALL'; // Default to ALL if user or profile is not found
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('country_code')
+            .eq('user_id', user.id)
+            .single();
+          if (profile && profile.country_code) {
+            userCountry = profile.country_code;
+          }
+        }
+
         // Fetch payout percentage
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
@@ -98,11 +110,16 @@ export default function DashboardPage() {
         
         // Fetch offers based on IDs
         if (allIds.length > 0) {
-            const { data: offersData, error } = await supabase
+            let query = supabase
                 .from('all_offers')
                 .select('*')
                 .in('offer_id', allIds)
-                .eq('is_disabled', false); // Only fetch enabled offers
+                .eq('is_disabled', false);
+            
+            // Apply country filtering
+            query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
+
+            const { data: offersData, error } = await query;
 
             if (error) {
                 console.error("Error fetching dashboard offers:", error);

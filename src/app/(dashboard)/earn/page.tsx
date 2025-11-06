@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 
 type Offer = NotikOffer & {
   points: number;
@@ -95,38 +96,68 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
   }
 }
 
+const OFFERS_PER_PAGE = 30;
+
 export default function EarnPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [allOffers, setAllOffers] = useState<Offer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const { toast } = useToast();
 
-  const fetchOffers = async () => {
-    setIsLoading(true);
+  const fetchOffers = useCallback(async (pageNum: number, isNewSearch: boolean = false) => {
+    if (pageNum === 1) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
+    
     try {
-      const notikResponse = await fetch('/api/get-offers');
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (!notikResponse.ok) {
-        throw new Error('Failed to fetch Notik offers');
+      let userCountry = 'ALL';
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country_code')
+          .eq('user_id', user.id)
+          .single();
+        if (profile && profile.country_code) {
+          userCountry = profile.country_code;
+        }
       }
 
-      const notikData = await notikResponse.json();
+      const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
+      const payoutPercentage = config ? Number(config.value) : 100;
+
+      const from = (pageNum - 1) * OFFERS_PER_PAGE;
+      const to = from + OFFERS_PER_PAGE - 1;
+
+      let query = supabase
+        .from('all_offers')
+        .select('*')
+        .eq('is_disabled', false)
+        .order('payout', { ascending: false })
+        .range(from, to);
+
+      query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
+
+      if (searchQuery) {
+        query = query.ilike('name', `%${searchQuery}%`);
+      }
+
+      const { data: rawAllOffers, error: allOffersError } = await query;
       
-      if (notikData.error) throw new Error(notikData.error);
+      if (allOffersError) throw allOffersError;
 
-      const { allOffers: rawAllOffers, user, payoutPercentage } = notikData;
-      const userId = user?.id;
-
-      let transformedNotikOffers: Offer[] = [];
-      if (Array.isArray(rawAllOffers)) {
-          // Filter out disabled offers
-          const enabledOffers = rawAllOffers.filter((o: any) => !o.is_disabled);
-          transformedNotikOffers = enabledOffers.map((o: NotikOffer) => transformOffer(o, userId, payoutPercentage));
-          setAllOffers(transformedNotikOffers);
-      } else {
-          setAllOffers([]);
-      }
+      const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
+      
+      setAllOffers(prev => isNewSearch ? transformedOffers : [...prev, ...transformedOffers]);
+      setHasMore(transformedOffers.length === OFFERS_PER_PAGE);
 
     } catch (error) {
       console.error("Error fetching offers:", error);
@@ -137,22 +168,35 @@ export default function EarnPage() {
       });
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, [searchQuery, toast]);
+
+  useEffect(() => {
+    setAllOffers([]);
+    setPage(1);
+    setHasMore(true);
+    fetchOffers(1, true);
+  }, [fetchOffers]);
+
+  const handleLoadMore = () => {
+    if (!isLoadingMore && hasMore) {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchOffers(nextPage);
     }
   };
 
   useEffect(() => {
-    fetchOffers();
+    const handleScroll = () => {
+        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 500) {
+            handleLoadMore();
+        }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const filteredOffers = useMemo(() => {
-    if (!searchQuery) {
-      return allOffers;
-    }
-    return allOffers.filter(offer => 
-      offer.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [allOffers, searchQuery]);
+  }, [isLoadingMore, hasMore]);
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -163,7 +207,7 @@ export default function EarnPage() {
   };
   
   const renderOfferGrid = (offers: Offer[], type: string) => {
-    if (isLoading) {
+    if (isLoading && offers.length === 0) {
         return (
             <div className="flex justify-center items-center py-12">
                 <Image
@@ -187,13 +231,17 @@ export default function EarnPage() {
         );
     }
 
-    return (
-        <Card className="text-center py-12">
-            <CardContent>
-                <p className="text-muted-foreground">No {type} offers right now. Check back soon!</p>
-            </CardContent>
-        </Card>
-    );
+    if (!isLoading && offers.length === 0) {
+        return (
+            <Card className="text-center py-12">
+                <CardContent>
+                    <p className="text-muted-foreground">No {type} offers found. Try a different search!</p>
+                </CardContent>
+            </Card>
+        );
+    }
+    
+    return null;
   };
 
   return (
@@ -241,7 +289,12 @@ export default function EarnPage() {
             All Offers
           </h2>
         </div>
-        {renderOfferGrid(filteredOffers, 'offer')}
+        {renderOfferGrid(allOffers, 'offer')}
+        {isLoadingMore && (
+             <div className="flex justify-center items-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+             </div>
+        )}
       </section>
       
       <OfferPreviewModal 

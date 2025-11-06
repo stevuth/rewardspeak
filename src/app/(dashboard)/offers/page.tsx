@@ -58,7 +58,18 @@ export default function SpecialOffersPage() {
       try {
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
-        const userId = user?.id;
+        
+        let userCountry = 'ALL';
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('country_code')
+            .eq('user_id', user.id)
+            .single();
+          if (profile && profile.country_code) {
+            userCountry = profile.country_code;
+          }
+        }
 
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
@@ -71,14 +82,18 @@ export default function SpecialOffersPage() {
         const allFeaturedIds = [...new Set([...featuredIds, ...topConvertingIds])];
 
         if (allFeaturedIds.length > 0) {
-            const { data: offersData, error: offersError } = await supabase
+            let query = supabase
                 .from('all_offers')
                 .select('*')
                 .in('offer_id', allFeaturedIds);
+            
+            query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
+
+            const { data: offersData, error: offersError } = await query;
 
             if (offersError) throw offersError;
             
-            const transformed = offersData.map((o: NotikOffer) => transformOffer(o, userId, payoutPercentage));
+            const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
             const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
             
             setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
@@ -165,4 +180,3 @@ export default function SpecialOffersPage() {
     </div>
   );
 }
-
