@@ -71,40 +71,50 @@ const FloatingLabelInput = ({
   );
 };
 
-const MountainClimbLoader = () => (
+const VaultLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
-        <svg width="80" height="32" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Mountain Shape */}
-            <motion.path
-                d="M 20 28 L 40 8 L 60 28 Z"
-                fill="hsl(var(--primary) / 0.1)"
-                stroke="hsl(var(--primary) / 0.5)"
-                strokeWidth="1.5"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Vault Dial */}
+            <motion.circle
+                cx="24"
+                cy="24"
+                r="18"
+                stroke="hsl(var(--primary) / 0.3)"
+                strokeWidth="2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
             />
-            {/* Climbing Path */}
+            {/* Scanning Arc */}
             <motion.path
-                d="M25,24 C 30,18 35,18 40,14 C 45,10 50,10 55,16"
+                d="M 42 24 A 18 18 0 0 1 24 42 A 18 18 0 0 1 6 24 A 18 18 0 0 1 24 6 A 18 18 0 0 1 42 24 z"
                 stroke="hsl(var(--secondary))"
                 strokeWidth="2"
-                strokeDasharray="1"
-                strokeDashoffset="1"
-                initial={{ strokeDashoffset: 1 }}
-                animate={{ strokeDashoffset: 0 }}
-                transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 0.5 }}
+                strokeLinecap="round"
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 0.2 }}
             />
-            {/* Flag at the Peak */}
-            <motion.path
-                d="M40,8 L40,4 L44,6 L40,8"
-                fill="hsl(var(--secondary))"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.5, ease: "easeOut" }}
-            />
+            {/* Keyhole */}
+             <motion.g
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8, duration: 0.5, ease: "backOut" }}
+            >
+                <circle cx="24" cy="22" r="4" fill="hsl(var(--secondary) / 0.2)" />
+                <path d="M 24 26 L 24 34 L 20 38 H 28 L 24 34 Z" fill="hsl(var(--secondary) / 0.2)" />
+                 <motion.circle
+                    cx="24"
+                    cy="22"
+                    r="1.5"
+                    fill="hsl(var(--secondary))"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                />
+            </motion.g>
         </svg>
-         <p className="text-xs font-semibold text-secondary -mt-1">Reaching the peak...</p>
+        <p className="text-xs font-semibold text-secondary mt-1">Unlocking...</p>
     </div>
 );
 
@@ -128,7 +138,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <MountainClimbLoader />
+              <VaultLoader />
             </motion.div>
           ) : (
             <motion.div
@@ -296,5 +306,3 @@ export function FuturisticAuthForm({
     </div>
   );
 }
-
-    
