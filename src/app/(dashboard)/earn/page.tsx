@@ -143,6 +143,8 @@ export default function EarnPage() {
         // Do not fetch more than the total limit
         if (from >= currentTotalLimit) {
             setHasMore(false);
+            setIsLoading(false);
+            setIsLoadingMore(false);
             return;
         }
 
@@ -164,7 +166,7 @@ export default function EarnPage() {
             query = query.ilike('name', `%${searchQuery}%`);
         }
 
-        const { data: rawAllOffers, error: allOffersError, count } = await query;
+        const { data: rawAllOffers, error: allOffersError } = await query;
 
         if (allOffersError) throw allOffersError;
         
@@ -178,11 +180,11 @@ export default function EarnPage() {
             const newOffers = transformedOffers.filter(o => !existingIds.has(o.offer_id));
             return [...prev, ...newOffers];
         });
-
-        // The count from the query already respects the range, so we need to check if the number of returned offers is less than the page size
-        // or if we've hit the total limit.
+        
         const totalFetched = isNewSearch ? transformedOffers.length : allOffers.length + transformedOffers.length;
-        setHasMore(transformedOffers.length === OFFERS_PER_PAGE && totalFetched < currentTotalLimit);
+        if (transformedOffers.length < OFFERS_PER_PAGE || totalFetched >= currentTotalLimit) {
+            setHasMore(false);
+        }
 
     } catch (error) {
       console.error("Error fetching offers:", error);
@@ -208,14 +210,8 @@ export default function EarnPage() {
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
         const nextPage = page + 1;
-        const potentialTotal = allOffers.length + OFFERS_PER_PAGE;
-        if (potentialTotal > totalOfferLimit) {
-            // We still want to fetch the last partial page if needed
-            fetchOffers(nextPage);
-        } else {
-            setPage(nextPage);
-            fetchOffers(nextPage);
-        }
+        setPage(nextPage);
+        fetchOffers(nextPage);
     }
   };
 
@@ -228,7 +224,7 @@ export default function EarnPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingMore, hasMore, page, allOffers.length, totalOfferLimit]); 
+  }, [isLoadingMore, hasMore, page]); 
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
