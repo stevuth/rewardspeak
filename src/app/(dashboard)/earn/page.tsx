@@ -144,7 +144,7 @@ export default function EarnPage() {
             .order('payout', { ascending: false })
             .range(from, to);
 
-        query = query.or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+        query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
 
         if (searchQuery) {
             query = query.ilike('name', `%${searchQuery}%`);

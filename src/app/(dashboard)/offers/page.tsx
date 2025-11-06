@@ -87,7 +87,7 @@ export default function SpecialOffersPage() {
                 .select('*')
                 .in('offer_id', allFeaturedIds);
             
-            query = query.or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+            query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
 
             const { data: offersData, error: offersError } = await query;
 

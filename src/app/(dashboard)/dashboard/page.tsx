@@ -117,7 +117,7 @@ export default function DashboardPage() {
                 .eq('is_disabled', false);
             
             // Apply country filtering
-            query = query.or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+            query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
 
             const { data: offersData, error } = await query;
 
