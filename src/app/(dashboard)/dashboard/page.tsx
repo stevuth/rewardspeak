@@ -111,6 +111,9 @@ export default function DashboardPage() {
                 .select('*')
                 .in('offer_id', featuredIds)
                 .eq('is_disabled', false)
+                .not('description', 'is', null)
+                .neq('description', '')
+                .neq('description', 'name')
                 .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
             if (error) {
@@ -128,6 +131,9 @@ export default function DashboardPage() {
                 .select('*')
                 .in('offer_id', topConvertingIds)
                 .eq('is_disabled', false)
+                .not('description', 'is', null)
+                .neq('description', '')
+                .neq('description', 'name')
                 .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
             if (error) {
