@@ -71,51 +71,84 @@ const FloatingLabelInput = ({
   );
 };
 
-const EnergyOrbLoader = () => (
+const DigitalKeyLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Central Orb */}
-            <motion.circle
-                cx="24"
-                cy="24"
-                r="8"
-                fill="hsl(var(--primary))"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            {/* Pulsing Glow */}
-            <motion.circle
-                cx="24"
-                cy="24"
-                r="8"
-                fill="hsl(var(--primary))"
-                animate={{ scale: [1.2, 1.8, 1.2], opacity: [0.5, 0, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            {/* Flowing Particles */}
-            {[...Array(5)].map((_, i) => (
+            <motion.g
+                initial="hidden"
+                animate="visible"
+                variants={{
+                    visible: {
+                        transition: {
+                            staggerChildren: 0.2,
+                        }
+                    }
+                }}
+            >
+                {/* Key head */}
                 <motion.circle
-                    key={i}
-                    cx="24"
-                    cy="24"
-                    r="2"
-                    fill="hsl(var(--secondary))"
-                    animate={{
-                        cx: [24, 24 + 18 * Math.cos(i * 2 * Math.PI / 5 + Math.PI), 24],
-                        cy: [24, 24 + 18 * Math.sin(i * 2 * Math.PI / 5 + Math.PI), 24],
-                        scale: [1, 0],
-                        opacity: [1, 0]
-                    }}
-                    transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        delay: i * 0.2,
-                        ease: "linear"
+                    cx="30"
+                    cy="18"
+                    r="8"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth="2.5"
+                    variants={{
+                        hidden: { pathLength: 0, opacity: 0 },
+                        visible: { pathLength: 1, opacity: 1, transition: { duration: 0.8, ease: "easeInOut" }}
                     }}
                 />
-            ))}
+                {/* Key shaft */}
+                <motion.line
+                    x1="22"
+                    y1="18"
+                    x2="10"
+                    y2="18"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth="2.5"
+                     variants={{
+                        hidden: { x2: 22, opacity: 0 },
+                        visible: { x2: 10, opacity: 1, transition: { duration: 0.5, ease: "easeOut", delay: 0.3 }}
+                    }}
+                />
+                 {/* Key teeth */}
+                <motion.path
+                    d="M 10 18 V 22 H 12 V 18"
+                    stroke="hsl(var(--secondary))"
+                    strokeWidth="2"
+                    variants={{
+                        hidden: { y: -10, opacity: 0},
+                        visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "circOut", delay: 0.8}}
+                    }}
+                />
+                 <motion.path
+                    d="M 16 18 V 24 H 18 V 18"
+                    stroke="hsl(var(--secondary))"
+                    strokeWidth="2"
+                    variants={{
+                        hidden: { y: 10, opacity: 0},
+                        visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "circOut", delay: 1.0}}
+                    }}
+                />
+                {/* Final Glow */}
+                 <motion.g
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: 1, delay: 1.5, repeat: Infinity }}
+                 >
+                    <circle cx="30" cy="18" r="10" fill="hsl(var(--secondary))" filter="url(#glow)" />
+                 </motion.g>
+            </motion.g>
+            <defs>
+                <filter id="glow">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+                <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+                </filter>
+            </defs>
         </svg>
-        <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
+        <p className="text-xs font-semibold text-primary mt-1">Securing...</p>
     </div>
 );
 
@@ -139,7 +172,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <EnergyOrbLoader />
+              <DigitalKeyLoader />
             </motion.div>
           ) : (
             <motion.div
@@ -307,5 +340,3 @@ export function FuturisticAuthForm({
     </div>
   );
 }
-
-    
