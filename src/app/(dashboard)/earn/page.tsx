@@ -237,7 +237,7 @@ export default function EarnPage() {
   const renderOfferGrid = (offers: Offer[]) => {
     if (isLoading && offers.length === 0) {
         return (
-            <div className="flex justify-center items-center py-12">
+            <div className="flex flex-col justify-center items-center py-12 gap-4">
                 <Image
                     src="/logo.png?v=9"
                     alt="Loading..."
@@ -245,6 +245,7 @@ export default function EarnPage() {
                     height={80}
                     className="animate-pulse"
                 />
+                <span className="text-muted-foreground font-semibold">Rewards Peak</span>
             </div>
         );
     }
