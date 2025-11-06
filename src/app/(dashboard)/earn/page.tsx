@@ -327,6 +327,11 @@ export default function EarnPage() {
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
              </div>
         )}
+        {!hasMore && allOffers.length > 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+                <p>You've reached the end of the offers!</p>
+            </div>
+        )}
       </section>
       
       <OfferPreviewModal 
