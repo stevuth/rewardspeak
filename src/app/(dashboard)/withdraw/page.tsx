@@ -25,7 +25,6 @@ import {
   PaypalLogo,
   UsdtLogo,
 } from "@/components/illustrations/crypto-logos";
-import type { Metadata } from "next";
 import { CheckCircle, Clock, XCircle } from "lucide-react";
 import { WithdrawalCard } from "@/components/withdrawal-card";
 import {
@@ -159,6 +158,7 @@ export default function CashOutCabinPage() {
                 amount={amount}
                 points={amount * 1000}
                 onClick={() => handleWithdrawClick('paypal', amount)}
+                method="paypal"
               />
           ))}
         </div>
@@ -176,6 +176,7 @@ export default function CashOutCabinPage() {
                 amount={amount}
                 points={amount * 1000}
                 onClick={() => handleWithdrawClick('usdt', amount)}
+                method="usdt"
               />
           ))}
         </div>
