@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogIn, Lock, Mail, UserPlus } from "lucide-react";
+import { LogIn, Lock, Mail, UserPlus, KeyRound } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -71,54 +71,46 @@ const FloatingLabelInput = ({
   );
 };
 
-const MountainClimbLoader = () => (
+const VaultLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
-        <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Mountain Shape */}
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            {/* Base circle */}
+            <circle cx="32" cy="32" r="28" stroke="hsl(var(--foreground))" strokeWidth="2" opacity="0.3"/>
+            
+            {/* Scanner Arc */}
             <motion.path
-                d="M4 40 C 10 40, 10 30, 24 30 S 38 40, 44 40"
-                stroke="hsl(var(--foreground))"
-                strokeWidth="2"
-                fill="none"
-                opacity="0.3"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-            />
-            {/* Climbing Path */}
-            <motion.path
-                d="M10 38 L20 20 L28 30 L38 10"
-                stroke="hsl(var(--primary))"
+                d="M 4 32 A 28 28 0 0 1 60 32"
+                stroke="hsl(var(--secondary))"
                 strokeWidth="2.5"
-                strokeDasharray="1"
-                strokeDashoffset="1"
-                initial={{ strokeDashoffset: 1 }}
-                animate={{ strokeDashoffset: 0 }}
-                transition={{ duration: 1.5, ease: "easeInOut", delay: 0.5 }}
+                fill="none"
+                strokeLinecap="round"
+                initial={{ rotate: -90 }}
+                animate={{ rotate: 270 }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                style={{ transformOrigin: '32px 32px' }}
             />
-            {/* Flagpole */}
-             <motion.line
-                x1="38" y1="10" x2="38" y2="4"
-                stroke="hsl(var(--foreground))"
-                strokeWidth="2"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.3, delay: 2 }}
-             />
-             {/* Flag */}
-            <motion.path
-                d="M38 4 L 34 6 L 38 8 Z"
-                fill="hsl(var(--secondary))"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.4, delay: 2.3 }}
-                style={{ transformOrigin: "38px 4px" }}
-            />
+            
+            {/* Keyhole reveal */}
+            <motion.g
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1, duration: 0.5 }}
+            >
+                <KeyRound x="20" y="20" width="24" height="24" strokeWidth="2.5" className="text-secondary" style={{ filter: "url(#glow)" }}/>
+            </motion.g>
         </svg>
-        <p className="text-xs font-semibold text-primary mt-1">Climbing...</p>
+        <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
     </div>
 );
-
 
 const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boolean }) => {
     return (
@@ -139,7 +131,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <MountainClimbLoader />
+              <VaultLoader />
             </motion.div>
           ) : (
             <motion.div
