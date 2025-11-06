@@ -141,7 +141,7 @@ export default function EarnPage() {
             .from('all_offers')
             .select('*')
             .eq('is_disabled', false)
-            .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`)
+            .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`)
             .order('payout', { ascending: false })
             .range(from, to);
 

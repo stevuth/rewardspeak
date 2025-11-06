@@ -111,7 +111,7 @@ export default function DashboardPage() {
                 .select('*')
                 .in('offer_id', featuredIds)
                 .eq('is_disabled', false)
-                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+                .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
             if (error) {
                 console.error("Error fetching featured dashboard offers:", error);
@@ -128,7 +128,7 @@ export default function DashboardPage() {
                 .select('*')
                 .in('offer_id', topConvertingIds)
                 .eq('is_disabled', false)
-                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+                .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
             if (error) {
                 console.error("Error fetching top converting dashboard offers:", error);

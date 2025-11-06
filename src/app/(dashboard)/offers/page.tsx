@@ -86,7 +86,7 @@ export default function SpecialOffersPage() {
                 .select('*')
                 .in('offer_id', featuredIds)
                 .eq('is_disabled', false)
-                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+                .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
             if (error) {
                 console.error("Error fetching featured offers:", error);
@@ -103,7 +103,7 @@ export default function SpecialOffersPage() {
                 .select('*')
                 .in('offer_id', topConvertingIds)
                 .eq('is_disabled', false)
-                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+                .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
             if (error) {
                 console.error("Error fetching top converting offers:", error);
