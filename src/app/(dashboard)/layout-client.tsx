@@ -34,6 +34,8 @@ import { cn } from "@/lib/utils";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import type { User } from "@supabase/supabase-js";
 import { AnimatedCounter } from "@/components/animated-counter";
+import React, { useState, useEffect } from "react";
+
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
@@ -60,14 +62,19 @@ const recentEarnings: any[] = [];
 
 function SidebarNavs({ user }: { user: User | null }) {
   const pathname = usePathname();
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   const getNavLinkClass = (href: string) => {
-    const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
+    const isActive = isClient && pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
     return cn(
       "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
       isActive
         ? "bg-secondary text-secondary-foreground"
-        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        : "text-muted-foreground hover:bg-muted"
     );
   };
 
@@ -99,9 +106,9 @@ function SidebarNavs({ user }: { user: User | null }) {
             href={item.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
-              pathname.startsWith(item.href)
+              isClient && pathname.startsWith(item.href)
                 ? "bg-secondary text-secondary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                : "text-muted-foreground hover:bg-muted"
             )}
           >
             <item.icon className="h-4 w-4" />
@@ -167,8 +174,13 @@ function SidebarContent({ user, totalPoints, totalAmountEarned, children }: { us
 
 function MobileSidebar({ user }: { user: User | null }) {
     const pathname = usePathname();
+    const [isClient, setIsClient] = useState(false);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     const getNavLinkClass = (href: string) => {
-        const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
+        const isActive = isClient && pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
         return cn(
           "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
           isActive
@@ -291,11 +303,16 @@ function Header({ user, totalPoints, totalAmountEarned }: { user: User | null, t
 
 function MobileBottomNav() {
     const pathname = usePathname();
+    const [isClient, setIsClient] = useState(false);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     return (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
             <div className="grid grid-cols-4 gap-1">
                 {mobileNavItems.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = isClient && pathname === item.href;
                     return (
                         <Link
                             key={item.href}
@@ -333,5 +350,7 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
         </SidebarProvider>
     )
 }
+
+    
 
     
