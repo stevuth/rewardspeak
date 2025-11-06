@@ -325,6 +325,9 @@ export async function updateWithdrawalRequestStatus(id: string, status: 'complet
     }
 
     revalidatePath('/admin/withdrawals');
+    revalidatePath('/withdraw');
 
     return { success: true };
 }
+
+    
