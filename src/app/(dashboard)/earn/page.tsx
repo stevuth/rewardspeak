@@ -117,9 +117,6 @@ export default function EarnPage() {
     
     try {
         const supabase = createSupabaseBrowserClient();
-        console.log('=== STARTING FETCH ===');
-        console.log('Supabase client:', supabase ? 'exists' : 'missing');
-        
         const { data: { user } } = await supabase.auth.getUser();
 
         let userCountry = 'ALL';
@@ -130,31 +127,9 @@ export default function EarnPage() {
             .eq('user_id', user.id)
             .single();
             if (profile && profile.country_code) {
-            userCountry = profile.country_code;
+              userCountry = profile.country_code;
             }
         }
-        
-        // Check user country
-        console.log('User country:', userCountry);
-        console.log('User country type:', typeof userCountry);
-        
-        if (!userCountry) {
-          console.error('USER COUNTRY IS MISSING!');
-          return;
-        }
-
-        // Try simple query first (no filter)
-        console.log('Testing basic query...');
-        const { data: testData, error: testError } = await supabase
-          .from('all_offers')
-          .select('*')
-          .limit(1);
-        
-        console.log('Basic query result:', testData);
-        console.log('Basic query error:', testError);
-
-        // Now try with filter
-        console.log('Testing filtered query...');
         
         const from = (pageNum - 1) * OFFERS_PER_PAGE;
         const to = from + OFFERS_PER_PAGE - 1;
@@ -169,17 +144,13 @@ export default function EarnPage() {
             .order('payout', { ascending: false })
             .range(from, to);
 
-        query = query.or(`countries.cs.{"ALL"},countries.cs.{${userCountry}}`);
+        query = query.or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
 
         if (searchQuery) {
             query = query.ilike('name', `%${searchQuery}%`);
         }
 
         const { data: rawAllOffers, error: allOffersError } = await query;
-        
-        console.log('Filtered results:', rawAllOffers?.length || 0);
-        console.log('Filtered error:', allOffersError);
-        console.log('=== END FETCH ===');
 
         if (allOffersError) throw allOffersError;
 
@@ -206,7 +177,8 @@ export default function EarnPage() {
     setPage(1);
     setHasMore(true);
     fetchOffers(1, true);
-  }, [fetchOffers]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]); // fetchOffers is memoized, only re-run when searchQuery changes.
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
@@ -225,7 +197,7 @@ export default function EarnPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingMore, hasMore]);
+  }, [isLoadingMore, hasMore, page]); // R-add page to dependency array
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
