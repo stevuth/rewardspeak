@@ -11,10 +11,10 @@ or replace function get_filtered_offers (
   image_url text,
   network text,
   payout real,
-  countries text[],
-  platforms text[],
-  devices text[],
-  categories text[],
+  countries jsonb,
+  platforms jsonb,
+  devices jsonb,
+  categories jsonb,
   events jsonb,
   is_disabled boolean,
   created_at timestamptz,
@@ -29,12 +29,11 @@ begin
   where
     all_offers.offer_id = any (offer_ids_param)
     and (
-      all_offers.countries @> '{"ALL"}'
-      or all_offers.countries @> array[country_code_param]
+      all_offers.countries ? 'ALL'
+      or all_offers.countries ? country_code_param
     ) and all_offers.is_disabled = false;
 end;
 $$ language plpgsql;
-
 
 create
 or replace function get_filtered_offers_paginated (
@@ -50,10 +49,10 @@ or replace function get_filtered_offers_paginated (
   image_url text,
   network text,
   payout real,
-  countries text[],
-  platforms text[],
-  devices text[],
-  categories text[],
+  countries jsonb,
+  platforms jsonb,
+  devices jsonb,
+  categories jsonb,
   events jsonb,
   is_disabled boolean,
   created_at timestamptz,
@@ -68,8 +67,8 @@ begin
   where
     all_offers.is_disabled = false
     and (
-      all_offers.countries @> '{"ALL"}'
-      or all_offers.countries @> array[country_code_param]
+      all_offers.countries ? 'ALL'
+      or all_offers.countries ? country_code_param
     )
     and (
       search_query_param is null
