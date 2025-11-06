@@ -1,17 +1,18 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, LogIn, Mail, Lock } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { LogIn, Lock, Mail, UserPlus } from "lucide-react";
 import Image from "next/image";
+import React, { useEffect, useState } from "react";
+
 import { cn } from "@/lib/utils";
 
 type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
   formAction: (payload: FormData) => void;
-  state: { message: string, success?: boolean };
+  state: { message: string; success?: boolean };
   isPending: boolean;
 };
 
@@ -70,6 +71,44 @@ const FloatingLabelInput = ({
   );
 };
 
+const MountainClimbLoader = () => (
+    <div className="w-full h-full flex flex-col items-center justify-center">
+        <svg width="80" height="32" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Mountain Shape */}
+            <motion.path
+                d="M 20 28 L 40 8 L 60 28 Z"
+                fill="hsl(var(--primary) / 0.1)"
+                stroke="hsl(var(--primary) / 0.5)"
+                strokeWidth="1.5"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
+            />
+            {/* Climbing Path */}
+            <motion.path
+                d="M25,24 C 30,18 35,18 40,14 C 45,10 50,10 55,16"
+                stroke="hsl(var(--secondary))"
+                strokeWidth="2"
+                strokeDasharray="1"
+                strokeDashoffset="1"
+                initial={{ strokeDashoffset: 1 }}
+                animate={{ strokeDashoffset: 0 }}
+                transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 0.5 }}
+            />
+            {/* Flag at the Peak */}
+            <motion.path
+                d="M40,8 L40,4 L44,6 L40,8"
+                fill="hsl(var(--secondary))"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.5, ease: "easeOut" }}
+            />
+        </svg>
+         <p className="text-xs font-semibold text-secondary -mt-1">Reaching the peak...</p>
+    </div>
+);
+
+
 const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boolean }) => {
     return (
         <button
@@ -77,27 +116,19 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
             disabled={isPending}
             className={cn(
                 "w-full h-[54px] relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
-                isPending && "bg-secondary/20 text-secondary"
+                isPending && "bg-primary/10 text-primary"
             )}
         >
         <AnimatePresence>
           {isPending ? (
             <motion.div
               key="loading"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="w-full text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full h-full"
             >
-              <p className="text-xs font-semibold mb-1.5">Loading your rewards vault...</p>
-              <div className="w-full bg-secondary/20 rounded-full h-1.5 overflow-hidden">
-                <motion.div
-                  className="bg-secondary h-1.5 rounded-full"
-                  initial={{ width: '0%' }}
-                  animate={{ width: '100%' }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                ></motion.div>
-              </div>
+              <MountainClimbLoader />
             </motion.div>
           ) : (
             <motion.div
@@ -265,3 +296,5 @@ export function FuturisticAuthForm({
     </div>
   );
 }
+
+    
