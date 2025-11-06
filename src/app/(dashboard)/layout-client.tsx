@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -291,8 +292,8 @@ function Header({ user, totalPoints, totalAmountEarned }: { user: User | null, t
 function MobileBottomNav() {
     const pathname = usePathname();
     return (
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
-            <div className="grid grid-cols-4 gap-2">
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
+            <div className="grid grid-cols-4 gap-1">
                 {mobileNavItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -300,11 +301,11 @@ function MobileBottomNav() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-bold",
-                                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                                "group flex flex-col items-center gap-1 p-2 text-xs font-bold text-muted-foreground",
+                                isActive ? "text-accent border-b-2 border-accent" : "hover:text-foreground"
                             )}
                         >
-                            <item.icon className="h-5 w-5" />
+                            <item.icon className={cn("h-5 w-5 transition-colors duration-200", isActive ? "text-accent" : "group-hover:text-accent")} />
                             <span className="truncate">{item.label}</span>
                         </Link>
                     )
