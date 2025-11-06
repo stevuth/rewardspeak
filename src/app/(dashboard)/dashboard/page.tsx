@@ -52,13 +52,13 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
   }
   
   const percentage = payoutPercentage / 100;
-  const markedUpPayout = (notikOffer.payout || 0) * percentage;
+  const markedUpPayout = Number(notikOffer.payout || 0) * percentage;
   
   const points = Math.round(markedUpPayout * 1000);
 
   const markedUpEvents = notikOffer.events?.map(event => ({
     ...event,
-    payout: (event.payout || 0) * percentage,
+    payout: Number(event.payout || 0) * percentage,
   }));
 
   return {
@@ -67,7 +67,7 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
     events: markedUpEvents,
     points: points,
     imageHint: "offer logo",
-    category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
+    category: notikOffer.categories?.includes("SURVEY") ? "Survey" : "Game",
     clickUrl: clickUrl,
   }
 }
@@ -86,7 +86,7 @@ export default function DashboardPage() {
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
 
-        let userCountry = 'ALL'; // Default to ALL if user or profile is not found
+        let userCountry = 'US'; // Default to US if not found
         if (user) {
           const { data: profile } = await supabase
             .from('profiles')
@@ -98,45 +98,44 @@ export default function DashboardPage() {
           }
         }
 
-        // Fetch payout percentage
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
 
-        // Fetch IDs for featured and top converting
         const { data: featuredContent } = await supabase.from('featured_content').select('content_type, offer_ids');
         const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
         const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
         
-        // Fetch offers for both sections using the RPC
         if (featuredIds.length > 0) {
             const { data: offersData, error } = await supabase
-                .rpc('get_filtered_offers', {
-                    country_code_param: userCountry,
-                    offer_ids_param: featuredIds
-                });
+                .from('all_offers')
+                .select('*')
+                .in('offer_id', featuredIds)
+                .eq('is_disabled', false)
+                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
 
             if (error) {
                 console.error("Error fetching featured dashboard offers:", error);
             } else {
                 const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
-                setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+                setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean) as DashboardOffer[]);
             }
         }
 
         if (topConvertingIds.length > 0) {
             const { data: offersData, error } = await supabase
-                .rpc('get_filtered_offers', {
-                    country_code_param: userCountry,
-                    offer_ids_param: topConvertingIds
-                });
-            
+                .from('all_offers')
+                .select('*')
+                .in('offer_id', topConvertingIds)
+                .eq('is_disabled', false)
+                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+
             if (error) {
                 console.error("Error fetching top converting dashboard offers:", error);
             } else {
                 const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
-                setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+                setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean) as DashboardOffer[]);
             }
         }
 

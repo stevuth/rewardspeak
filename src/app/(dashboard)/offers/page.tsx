@@ -25,13 +25,13 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
   }
 
   const percentage = payoutPercentage / 100;
-  const markedUpPayout = (notikOffer.payout || 0) * percentage;
+  const markedUpPayout = Number(notikOffer.payout || 0) * percentage;
   
   const points = Math.round(markedUpPayout * 1000);
 
   const markedUpEvents = notikOffer.events?.map(event => ({
     ...event,
-    payout: (event.payout || 0) * percentage,
+    payout: Number(event.payout || 0) * percentage,
   }));
 
   return {
@@ -40,7 +40,7 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
     events: markedUpEvents,
     points: points,
     imageHint: "offer logo",
-    category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
+    category: notikOffer.categories?.includes("SURVEY") ? "Survey" : "Game",
     clickUrl: clickUrl,
   }
 }
@@ -59,7 +59,7 @@ export default function SpecialOffersPage() {
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
         
-        let userCountry = 'ALL';
+        let userCountry = 'US'; // Default to US if not found
         if (user) {
           const { data: profile } = await supabase
             .from('profiles')
@@ -82,33 +82,35 @@ export default function SpecialOffersPage() {
         
         if (featuredIds.length > 0) {
             const { data: offersData, error } = await supabase
-                .rpc('get_filtered_offers', {
-                    country_code_param: userCountry,
-                    offer_ids_param: featuredIds
-                });
-            
+                .from('all_offers')
+                .select('*')
+                .in('offer_id', featuredIds)
+                .eq('is_disabled', false)
+                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+
             if (error) {
                 console.error("Error fetching featured offers:", error);
             } else {
                 const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
-                setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+                setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean) as Offer[]);
             }
         }
         
         if (topConvertingIds.length > 0) {
             const { data: offersData, error } = await supabase
-                .rpc('get_filtered_offers', {
-                    country_code_param: userCountry,
-                    offer_ids_param: topConvertingIds
-                });
-            
+                .from('all_offers')
+                .select('*')
+                .in('offer_id', topConvertingIds)
+                .eq('is_disabled', false)
+                .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`);
+
             if (error) {
                 console.error("Error fetching top converting offers:", error);
             } else {
                 const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
-                setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+                setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean) as Offer[]);
             }
         }
 

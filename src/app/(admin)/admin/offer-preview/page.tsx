@@ -34,13 +34,13 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
   }
 
   const percentage = payoutPercentage / 100;
-  const markedUpPayout = (notikOffer.payout || 0) * percentage;
+  const markedUpPayout = Number(notikOffer.payout || 0) * percentage;
   
   const points = Math.round(markedUpPayout * 1000);
 
   const markedUpEvents = notikOffer.events?.map(event => ({
     ...event,
-    payout: (event.payout || 0) * percentage,
+    payout: Number(event.payout || 0) * percentage,
   }));
 
   return {
@@ -49,7 +49,7 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
     events: markedUpEvents,
     points: points,
     imageHint: "offer logo",
-    category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
+    category: notikOffer.categories?.includes("SURVEY") ? "Survey" : "Game",
     clickUrl: clickUrl,
   }
 }

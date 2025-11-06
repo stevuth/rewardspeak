@@ -76,13 +76,13 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
   }
 
   const percentage = payoutPercentage / 100;
-  const markedUpPayout = (notikOffer.payout || 0) * percentage;
+  const markedUpPayout = Number(notikOffer.payout || 0) * percentage;
   
   const points = Math.round(markedUpPayout * 1000);
 
   const markedUpEvents = notikOffer.events?.map(event => ({
     ...event,
-    payout: (event.payout || 0) * percentage,
+    payout: Number(event.payout || 0) * percentage,
   }));
 
   return {
@@ -91,7 +91,7 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
     events: markedUpEvents,
     points: points,
     imageHint: "offer logo",
-    category: notikOffer.categories.includes("SURVEY") ? "Survey" : "Game",
+    category: notikOffer.categories?.includes("SURVEY") ? "Survey" : "Game",
     clickUrl: clickUrl,
   }
 }
@@ -119,7 +119,7 @@ export default function EarnPage() {
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
 
-        let userCountry = 'ALL';
+        let userCountry = 'US'; // Default to US if not found
         if (user) {
             const { data: profile } = await supabase
             .from('profiles')
@@ -134,13 +134,20 @@ export default function EarnPage() {
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
 
+        const from = (pageNum - 1) * OFFERS_PER_PAGE;
+        const to = from + OFFERS_PER_PAGE - 1;
+
         let query = supabase
-            .rpc('get_filtered_offers_paginated', {
-                country_code_param: userCountry,
-                search_query_param: searchQuery || '',
-                page_num_param: pageNum,
-                page_size_param: OFFERS_PER_PAGE
-            });
+            .from('all_offers')
+            .select('*')
+            .eq('is_disabled', false)
+            .or(`countries.cs.{"ALL"},countries.cs.{"${userCountry}"}`)
+            .order('payout', { ascending: false })
+            .range(from, to);
+
+        if (searchQuery) {
+            query = query.ilike('name', `%${searchQuery}%`);
+        }
 
         const { data: rawAllOffers, error: allOffersError } = await query;
 
