@@ -101,8 +101,8 @@ export default function OfferPreviewPage() {
             const transformed = featuredOffersData.map((o: NotikOffer) => transformOffer(o, userId, payoutPercentage));
             const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
             
-            setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
-            setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+            setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean) as Offer[]);
+            setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean) as Offer[]);
         }
 
       } catch (error) {

@@ -79,26 +79,39 @@ export default function SpecialOffersPage() {
 
         const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
         const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
-        const allFeaturedIds = [...new Set([...featuredIds, ...topConvertingIds])];
-
-        if (allFeaturedIds.length > 0) {
-            let query = supabase
-                .from('all_offers')
-                .select('*')
-                .in('offer_id', allFeaturedIds);
+        
+        if (featuredIds.length > 0) {
+            const { data: offersData, error } = await supabase
+                .rpc('get_filtered_offers', {
+                    country_code_param: userCountry,
+                    offer_ids_param: featuredIds
+                });
             
-            query = query.or(`countries.cs.{${userCountry}},countries.cs.{ALL}`);
-
-            const { data: offersData, error: offersError } = await query;
-
-            if (offersError) throw offersError;
-            
-            const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
-            const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
-            
-            setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
-            setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+            if (error) {
+                console.error("Error fetching featured offers:", error);
+            } else {
+                const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
+                const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
+                setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+            }
         }
+        
+        if (topConvertingIds.length > 0) {
+            const { data: offersData, error } = await supabase
+                .rpc('get_filtered_offers', {
+                    country_code_param: userCountry,
+                    offer_ids_param: topConvertingIds
+                });
+            
+            if (error) {
+                console.error("Error fetching top converting offers:", error);
+            } else {
+                const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
+                const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
+                setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+            }
+        }
+
 
       } catch (error) {
         console.error("Error fetching special offers:", error);

@@ -131,24 +131,16 @@ export default function EarnPage() {
             }
         }
         
-        const from = (pageNum - 1) * OFFERS_PER_PAGE;
-        const to = from + OFFERS_PER_PAGE - 1;
-        
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
 
         let query = supabase
-            .from('all_offers')
-            .select('*')
-            .eq('is_disabled', false)
-            .order('payout', { ascending: false })
-            .range(from, to);
-
-        query = query.or(`countries.cs.{${userCountry}},countries.cs.{ALL}`);
-
-        if (searchQuery) {
-            query = query.ilike('name', `%${searchQuery}%`);
-        }
+            .rpc('get_filtered_offers_paginated', {
+                country_code_param: userCountry,
+                search_query_param: searchQuery || '',
+                page_num_param: pageNum,
+                page_size_param: OFFERS_PER_PAGE
+            });
 
         const { data: rawAllOffers, error: allOffersError } = await query;
 

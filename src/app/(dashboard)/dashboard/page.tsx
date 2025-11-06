@@ -102,36 +102,44 @@ export default function DashboardPage() {
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
 
-        // Fetch IDs
+        // Fetch IDs for featured and top converting
         const { data: featuredContent } = await supabase.from('featured_content').select('content_type, offer_ids');
         const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
         const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
-        const allIds = [...new Set([...featuredIds, ...topConvertingIds])];
         
-        // Fetch offers based on IDs
-        if (allIds.length > 0) {
-            let query = supabase
-                .from('all_offers')
-                .select('*')
-                .in('offer_id', allIds)
-                .eq('is_disabled', false);
-            
-            // Apply country filtering
-            query = query.or(`countries.cs.{${userCountry}},countries.cs.{ALL}`);
-
-            const { data: offersData, error } = await query;
+        // Fetch offers for both sections using the RPC
+        if (featuredIds.length > 0) {
+            const { data: offersData, error } = await supabase
+                .rpc('get_filtered_offers', {
+                    country_code_param: userCountry,
+                    offer_ids_param: featuredIds
+                });
 
             if (error) {
-                console.error("Error fetching dashboard offers:", error);
+                console.error("Error fetching featured dashboard offers:", error);
             } else {
-                const transformed = offersData.map(o => transformOffer(o as NotikOffer, user?.id, payoutPercentage));
-                
-                // Preserve order from admin panel
+                const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
                 setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean));
+            }
+        }
+
+        if (topConvertingIds.length > 0) {
+            const { data: offersData, error } = await supabase
+                .rpc('get_filtered_offers', {
+                    country_code_param: userCountry,
+                    offer_ids_param: topConvertingIds
+                });
+            
+            if (error) {
+                console.error("Error fetching top converting dashboard offers:", error);
+            } else {
+                const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
+                const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
                 setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean));
             }
         }
+
         setIsLoading(false);
     };
 
