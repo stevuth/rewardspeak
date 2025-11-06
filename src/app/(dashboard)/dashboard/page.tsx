@@ -204,7 +204,7 @@ export default function DashboardPage() {
                     Featured Offers
                 </h2>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href="/earn">
+                  <Link href="/offers">
                     View all <ChevronRight className="ml-1 h-4 w-4" />
                   </Link>
                 </Button>
@@ -217,7 +217,7 @@ export default function DashboardPage() {
                   Top Converting Offers
                 </h2>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href="/earn">
+                  <Link href="/offers">
                     View all <ChevronRight className="ml-1 h-4 w-4" />
                   </Link>
                 </Button>

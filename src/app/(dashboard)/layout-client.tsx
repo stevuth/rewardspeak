@@ -40,7 +40,7 @@ import React, { useState, useEffect } from "react";
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
     { href: "/earn", label: "Earn", icon: LayoutGrid },
-    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
+    { href: "/offers", label: "Special Offers", icon: Trophy },
     { href: "/referrals", label: "Invite & Earn", icon: Users },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
 ];
@@ -54,7 +54,7 @@ const secondaryNavItems = [
 const mobileNavItems = [
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/earn", label: "Earn", icon: Mountain },
-    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
+    { href: "/offers", label: "Offers", icon: Trophy },
     { href: "/history", label: "Offers Log", icon: Clock },
 ]
 
