@@ -71,50 +71,51 @@ const FloatingLabelInput = ({
   );
 };
 
-const VaultLoader = () => (
+const EnergyOrbLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Vault Dial */}
+            {/* Central Orb */}
             <motion.circle
                 cx="24"
                 cy="24"
-                r="18"
-                stroke="hsl(var(--primary) / 0.3)"
-                strokeWidth="2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+                r="8"
+                fill="hsl(var(--primary))"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             />
-            {/* Scanning Arc */}
-            <motion.path
-                d="M 42 24 A 18 18 0 0 1 24 42 A 18 18 0 0 1 6 24 A 18 18 0 0 1 24 6 A 18 18 0 0 1 42 24 z"
-                stroke="hsl(var(--secondary))"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 0.2 }}
+            {/* Pulsing Glow */}
+            <motion.circle
+                cx="24"
+                cy="24"
+                r="8"
+                fill="hsl(var(--primary))"
+                animate={{ scale: [1.2, 1.8, 1.2], opacity: [0.5, 0, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             />
-            {/* Keyhole */}
-             <motion.g
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8, duration: 0.5, ease: "backOut" }}
-            >
-                <circle cx="24" cy="22" r="4" fill="hsl(var(--secondary) / 0.2)" />
-                <path d="M 24 26 L 24 34 L 20 38 H 28 L 24 34 Z" fill="hsl(var(--secondary) / 0.2)" />
-                 <motion.circle
+            {/* Flowing Particles */}
+            {[...Array(5)].map((_, i) => (
+                <motion.circle
+                    key={i}
                     cx="24"
-                    cy="22"
-                    r="1.5"
+                    cy="24"
+                    r="2"
                     fill="hsl(var(--secondary))"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                    animate={{
+                        cx: [24, 24 + 18 * Math.cos(i * 2 * Math.PI / 5 + Math.PI), 24],
+                        cy: [24, 24 + 18 * Math.sin(i * 2 * Math.PI / 5 + Math.PI), 24],
+                        scale: [1, 0],
+                        opacity: [1, 0]
+                    }}
+                    transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                        ease: "linear"
+                    }}
                 />
-            </motion.g>
+            ))}
         </svg>
-        <p className="text-xs font-semibold text-secondary mt-1">Unlocking...</p>
+        <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
     </div>
 );
 
@@ -138,7 +139,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <VaultLoader />
+              <EnergyOrbLoader />
             </motion.div>
           ) : (
             <motion.div
@@ -306,3 +307,5 @@ export function FuturisticAuthForm({
     </div>
   );
 }
+
+    
