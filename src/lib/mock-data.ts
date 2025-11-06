@@ -1,4 +1,5 @@
 
+
 import { PlaceHolderImages } from "./placeholder-images";
 import {
   Gem,
@@ -100,5 +101,6 @@ export const offerWalls = [
       hint: getPlaceholder("timewall-logo").hint,
     },
   ];
+
 
 

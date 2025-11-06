@@ -1,4 +1,5 @@
 
+
 export const PaypalLogo = (props: React.SVGProps<SVGSVGElement>) => (
     <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path d="M72.03 24.516c-1.392-1.92-3.888-2.616-6.192-1.632l-32.04 13.92c-2.304 1.008-3.888 3.24-3.888 5.76v.336c0 2.52 1.584 4.752 3.888 5.76l32.04 13.92c.648.288 1.344.408 2.016.408 1.632 0 3.24-.768 4.2-2.16L93.426 31.86c1.128-1.68.816-3.96-.648-5.424l-20.748-1.92z" fill="#009cde"/>
@@ -43,5 +44,12 @@ export const EthereumLogo = (props: React.SVGProps<SVGSVGElement>) => (
         <path d="M60 84.1V51.8L80.5 63.6 60 84.1z" fill="#fff" opacity=".6"/>
         <path d="M39.5 36.1L60 47.9V0L39.5 36.1z" fill="#fff" opacity=".2"/>
         <path d="M80.5 36.1L60 47.9V0L80.5 36.1z" fill="#fff" opacity=".6"/>
+    </svg>
+)
+
+export const UsdtLogo = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <circle cx="60" cy="60" r="60" fill="#26A17B"/>
+        <path d="M60 30h25v10H70v45H60V40H45V30h15z" fill="white" />
     </svg>
 )
