@@ -208,8 +208,10 @@ export default function EarnPage() {
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
         const nextPage = page + 1;
-        if ((allOffers.length + OFFERS_PER_PAGE) > totalOfferLimit) {
-            setHasMore(false);
+        const potentialTotal = allOffers.length + OFFERS_PER_PAGE;
+        if (potentialTotal > totalOfferLimit) {
+            // We still want to fetch the last partial page if needed
+            fetchOffers(nextPage);
         } else {
             setPage(nextPage);
             fetchOffers(nextPage);

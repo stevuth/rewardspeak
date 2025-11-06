@@ -244,6 +244,7 @@ export async function updateOfferDisplayLimit(limit: number): Promise<{ success:
         return { success: false, error: error.message };
     }
 
+    revalidatePath('/admin/offers', 'page');
     revalidatePath('/earn', 'page');
 
     return { success: true };
