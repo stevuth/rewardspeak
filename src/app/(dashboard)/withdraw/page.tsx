@@ -25,7 +25,7 @@ import {
   PaypalLogo,
   UsdtLogo,
 } from "@/components/illustrations/crypto-logos";
-import { CheckCircle, Clock, XCircle } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Loader2 } from "lucide-react";
 import { WithdrawalCard } from "@/components/withdrawal-card";
 import {
   Dialog,
@@ -38,6 +38,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { processWithdrawalRequest } from "@/app/actions";
 
 const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
   if (status === "Completed") {
@@ -83,17 +84,19 @@ export default function CashOutCabinPage() {
   const [selectedWithdrawal, setSelectedWithdrawal] = useState<SelectedWithdrawal | null>(null);
   const [walletAddress, setWalletAddress] = useState("");
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleWithdrawClick = (method: WithdrawalMethod, amount: number) => {
     setSelectedWithdrawal({ method, amount });
   };
   
   const handleCloseModal = () => {
+    if (isSubmitting) return;
     setSelectedWithdrawal(null);
     setWalletAddress("");
   };
 
-  const handleSubmitWithdrawal = () => {
+  const handleSubmitWithdrawal = async () => {
     if (!walletAddress) {
         toast({
             variant: "destructive",
@@ -102,12 +105,30 @@ export default function CashOutCabinPage() {
         });
         return;
     }
-    // Handle submission logic here
-    console.log(`Withdrawing ${selectedWithdrawal?.amount} via ${selectedWithdrawal?.method} to ${walletAddress}`);
-    toast({
-        title: "Withdrawal Submitted",
-        description: `Your request to withdraw $${selectedWithdrawal?.amount} has been received.`
-    })
+    if (!selectedWithdrawal) return;
+
+    setIsSubmitting(true);
+    
+    const result = await processWithdrawalRequest({
+        amount: selectedWithdrawal.amount,
+        method: selectedWithdrawal.method,
+        walletAddress: walletAddress,
+    });
+
+    if (result.success) {
+        toast({
+            title: "Withdrawal Submitted!",
+            description: `Your request to withdraw $${selectedWithdrawal.amount} has been received.`
+        });
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Withdrawal Failed",
+            description: result.error || "An unknown error occurred."
+        });
+    }
+    
+    setIsSubmitting(false);
     handleCloseModal();
   }
 
@@ -136,12 +157,16 @@ export default function CashOutCabinPage() {
                         value={walletAddress}
                         onChange={(e) => setWalletAddress(e.target.value)}
                         placeholder={selectedWithdrawal?.method === 'paypal' ? 'your-email@example.com' : 'T...'}
+                        disabled={isSubmitting}
                     />
                 </div>
             </div>
             <DialogFooter>
-                <Button variant="outline" onClick={handleCloseModal}>Cancel</Button>
-                <Button onClick={handleSubmitWithdrawal}>Submit</Button>
+                <Button variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>Cancel</Button>
+                <Button onClick={handleSubmitWithdrawal} disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                </Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>

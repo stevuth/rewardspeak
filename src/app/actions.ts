@@ -2,6 +2,7 @@
 "use server";
 
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { getAllOffers, type NotikOffer } from "@/lib/notik-api";
 import { revalidatePath } from "next/cache";
 
@@ -250,4 +251,80 @@ export async function updateOfferDisplayLimit(limit: number): Promise<{ success:
     return { success: true };
 }
 
+type WithdrawalPayload = {
+    amount: number;
+    method: 'paypal' | 'usdt';
+    walletAddress: string;
+};
+
+export async function processWithdrawalRequest(payload: WithdrawalPayload): Promise<{ success: boolean, error?: string }> {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "You must be logged in to make a withdrawal." };
+    }
+
+    const adminSupabase = createSupabaseAdminClient();
+
+    const { error: rpcError } = await adminSupabase.rpc('process_withdrawal', {
+        p_user_id: user.id,
+        p_email: user.email!,
+        p_amount_usd: payload.amount,
+        p_method: payload.method,
+        p_wallet_address: payload.walletAddress,
+    });
     
+    if (rpcError) {
+        console.error("Error in process_withdrawal RPC:", rpcError);
+        const errorMessage = rpcError.message.includes("Not enough points") 
+            ? "Insufficient balance for this withdrawal." 
+            : "An unexpected error occurred. Please try again later.";
+        return { success: false, error: errorMessage };
+    }
+
+    revalidatePath('/withdraw'); // Revalidate the withdrawal page to update history (if displayed)
+    revalidatePath('/layout'); // Revalidate layout to update user points
+
+    return { success: true };
+}
+
+export async function getWithdrawalRequests(page: number, limit: number): Promise<{requests: any[] | null, count: number | null}> {
+    const supabase = createSupabaseAdminClient();
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    const { data, error, count } = await supabase
+        .from('withdrawal_requests')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+    if (error) {
+        console.error("Error fetching withdrawal requests:", error);
+        return { requests: null, count: 0 };
+    }
+
+    return { requests: data, count };
+}
+
+export async function updateWithdrawalRequestStatus(id: string, status: 'completed' | 'rejected'): Promise<{success: boolean, error?: string}> {
+    const supabase = createSupabaseAdminClient();
+
+    // In a real app, you might refund points on rejection.
+    // For now, we'll just update the status.
+
+    const { error } = await supabase
+        .from('withdrawal_requests')
+        .update({ status: status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+
+    if (error) {
+        console.error("Error updating withdrawal status:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/admin/withdrawals');
+
+    return { success: true };
+}

@@ -1,7 +1,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Users, Star } from "lucide-react";
+import { List, Users, Star, Gift } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -30,17 +30,24 @@ const adminSections = [
         description: "Set featured and top converting offers.",
         icon: Star,
     },
+    {
+        href: "/admin/withdrawals",
+        title: "Withdrawal Requests",
+        description: "Approve or reject user withdrawal requests.",
+        icon: Gift,
+    }
 ]
 
 async function getStats() {
     const supabase = createSupabaseServerClient();
     const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
     const { count: offerCount } = await supabase.from('all_offers').select('*', { count: 'exact', head: true });
-    return { userCount, offerCount };
+    const { count: pendingWithdrawals } = await supabase.from('withdrawal_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+    return { userCount, offerCount, pendingWithdrawals };
 }
 
 export default async function AdminPortalPage() {
-  const { userCount, offerCount } = await getStats();
+  const { userCount, offerCount, pendingWithdrawals } = await getStats();
 
   return (
     <div className="space-y-8">
@@ -65,6 +72,16 @@ export default async function AdminPortalPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{offerCount}</div>
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Withdrawals</CardTitle>
+              <Gift className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{pendingWithdrawals}</div>
+               <p className="text-xs text-muted-foreground">requests need review</p>
             </CardContent>
           </Card>
       </div>
