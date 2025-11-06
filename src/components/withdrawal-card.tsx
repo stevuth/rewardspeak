@@ -46,7 +46,7 @@ export function WithdrawalCard({ amount, points, onClick, method }: WithdrawalCa
         <Button 
             variant="secondary"
             size="sm"
-            className="mt-4 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:translate-y-0 translate-y-2"
+            className="mt-4 w-full"
         >
             Withdraw <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
