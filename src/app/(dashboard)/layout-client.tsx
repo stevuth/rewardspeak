@@ -51,9 +51,10 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
-    { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/earn", label: "Earn", icon: Mountain },
+    { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/history", label: "Offers Log", icon: Clock },
+    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
 
 const recentEarnings: any[] = [];
@@ -348,3 +349,5 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
         </SidebarProvider>
     )
 }
+
+    
