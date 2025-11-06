@@ -51,8 +51,8 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
-    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
+    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/history", label: "Offers Log", icon: Clock },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
@@ -349,5 +349,3 @@ export function LayoutClient({ user, children, totalPoints, totalAmountEarned }:
         </SidebarProvider>
     )
 }
-
-    
