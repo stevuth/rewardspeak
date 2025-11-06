@@ -152,8 +152,8 @@ function SidebarContent({ user, totalPoints, totalAmountEarned, children }: { us
             data-ai-hint={"person portrait"}
           />
         </div>
-        <div className="flex-1">
-          <p className="font-semibold">{user?.email}</p>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold truncate">{user?.email}</p>
           <div className="flex items-center gap-4">
             <div className="text-xs">
               <p className="text-muted-foreground">Balance</p>
