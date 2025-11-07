@@ -16,26 +16,23 @@ export const WavingMascotLoader = ({ text, messages, duration = 2500 }: { text?:
             return () => clearInterval(interval);
         }
     }, [messages, duration]);
-
-    const waveVariants = {
-        wave: {
-            rotate: [0, 20, -15, 20, -15, 0],
-            transition: {
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
+    
+    const armVariants = {
+        dance: {
+            rotate: [15, -15, 15],
+            transition: { duration: 0.5, repeat: Infinity, ease: "easeInOut" }
         }
     };
-
+    const legVariants = {
+        dance: (i: number) => ({
+            y: ["0%", i % 2 === 0 ? "-10%" : "10%", "0%"],
+            transition: { duration: 0.5, repeat: Infinity, ease: "easeInOut" }
+        })
+    };
     const bodyVariants = {
         bounce: {
-            y: ["0%", "5%", "0%"],
-            transition: {
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
+            y: ["0%", "-5%", "0%"],
+            transition: { duration: 1, repeat: Infinity, ease: "easeInOut" }
         }
     };
 
@@ -43,12 +40,12 @@ export const WavingMascotLoader = ({ text, messages, duration = 2500 }: { text?:
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden">
-            <motion.div
-                className="relative w-20 h-20"
-                variants={bodyVariants}
-                animate="bounce"
-            >
+            <motion.div className="relative w-20 h-24" variants={bodyVariants} animate="bounce">
                 <svg viewBox="0 0 100 100" className="w-full h-full">
+                    {/* Legs */}
+                    <motion.rect x="35" y="80" width="10" height="15" rx="5" fill="hsl(var(--primary))" variants={legVariants} custom={0} animate="dance" />
+                    <motion.rect x="55" y="80" width="10" height="15" rx="5" fill="hsl(var(--primary))" variants={legVariants} custom={1} animate="dance" />
+                    
                     {/* Body */}
                     <circle cx="50" cy="60" r="30" fill="hsl(var(--primary))" />
                     
@@ -57,25 +54,20 @@ export const WavingMascotLoader = ({ text, messages, duration = 2500 }: { text?:
                     <circle cx="58" cy="55" r="4" fill="white" />
                     <circle cx="43" cy="56" r="2" fill="black" />
                     <circle cx="59" cy="56" r="2" fill="black" />
-                     
+                    
                     {/* Smile */}
                     <path d="M 45 70 Q 50 78, 55 70" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" />
                     
-                    {/* Waving Arm */}
-                    <motion.g
-                        style={{ originX: '70px', originY: '60px' }}
-                        variants={waveVariants}
-                        animate="wave"
-                    >
-                         <path d="M 70,60 C 80,50 90,65 80,75" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round" />
-                    </motion.g>
+                    {/* Arms */}
+                    <motion.rect x="15" y="55" width="10" height="25" rx="5" fill="hsl(var(--primary))" style={{ originX: '20px', originY: '60px' }} variants={armVariants} animate="dance" />
+                    <motion.rect x="75" y="55" width="10" height="25" rx="5" fill="hsl(var(--primary))" style={{ originX: '80px', originY: '60px' }} variants={armVariants} animate="dance" />
                 </svg>
             </motion.div>
             
             <div className="relative h-6 w-full text-center mt-1">
                 <AnimatePresence mode="wait">
                     <motion.p
-                        key={index}
+                        key={displayText || index}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
