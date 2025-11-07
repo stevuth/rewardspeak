@@ -1,7 +1,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { createSupabaseAdminClient } from '@/utils/supabase/admin';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   // We need a new response object to manage cookies correctly.
@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // 1. Get Authenticated User using a temporary server client.
-  // This is a more robust way to handle auth in API routes.
+  // 1. Get Authenticated User using a temporary server client to read cookies.
+  // This is the most reliable way to handle auth in API routes.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         },
         remove(name: string, options) {
           request.cookies.set({ name, value: '', ...options });
-          response.cookies.set({ name, value: '', ...options });
+          response.cookies.set({ name, value, ...options });
         },
       },
     }
@@ -41,15 +41,24 @@ export async function POST(request: NextRequest) {
   }
 
   // 2. Get the file from the form data.
-  // This MUST be done after getting the user, as it consumes the request body.
   const formData = await request.formData();
   const file = formData.get('avatar') as File;
   if (!file) {
     return NextResponse.json({ success: false, error: 'No file provided.' }, { status: 400 });
   }
 
-  // 3. Use the Admin Client for all storage and database writes.
-  const adminSupabase = createSupabaseAdminClient();
+  // 3. Use a direct Admin Client for all storage and database writes.
+  // This is a more robust method for server-side-only operations.
+  const adminSupabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
+      }
+  );
   
   const fileExtension = file.name.split('.').pop();
   const fileName = `${Date.now()}.${fileExtension}`;
@@ -93,6 +102,5 @@ export async function POST(request: NextRequest) {
   }
 
   // 7. Success!
-  // Revalidation is handled by the client-side router.refresh().
   return NextResponse.json({ success: true, url: publicUrl }, { status: 200 });
 }
