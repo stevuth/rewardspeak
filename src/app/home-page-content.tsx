@@ -41,7 +41,6 @@ import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, Et
 import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
 import { createSupabaseBrowserClient } from '@/utils/supabase/client';
-import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 import { motion } from 'framer-motion';
 import { LogoutSuccessModal } from '@/components/logout-success-modal';
 import { TypewriterEffect } from '@/components/typewriter-effect';
@@ -135,39 +134,12 @@ export function HomePageContent() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
-  const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
   const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
 
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-
-    async function fetchOffersForIllustration() {
-      try {
-        const { data, error } = await supabase
-            .from('all_offers')
-            .select('offer_id, name, image_url, payout, categories')
-            .eq('is_disabled', false)
-            .not('image_url', 'is', null)
-            .neq('image_url', '')
-            .order('created_at', { ascending: false })
-            .limit(100);
-
-        if (error) throw error;
-        
-        const gameOffers = (data || []).filter(offer => 
-            Array.isArray(offer.categories) && 
-            offer.categories.some(cat => typeof cat === 'string' && cat.toLowerCase() === 'game')
-        ).slice(0, 4);
-
-        setPhoneCardOffers(gameOffers);
-
-      } catch (error: any) {
-        console.error("Error fetching offers for illustration:", error.message || error);
-        setPhoneCardOffers([]); // Set to empty on error
-      }
-    }
 
     async function fetchFeaturedOffers() {
       const offerNames = ["upside", "bingo vacation", "crypto miner", "slot mate"];
@@ -198,7 +170,6 @@ export function HomePageContent() {
       }
     }
     
-    fetchOffersForIllustration();
     fetchFeaturedOffers();
   }, []);
 
@@ -353,10 +324,28 @@ export function HomePageContent() {
         </section>
 
         <section className="py-16 md:py-24 grid md:grid-cols-2 gap-8 lg:gap-16 items-center container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-center">
-                <EarnByGamingIllustration offers={phoneCardOffers} />
-            </div>
-            <div className="text-center md:text-left">
+            <motion.div 
+                className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border-2 border-primary/20"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.6 }}
+            >
+                <Image 
+                    src="https://picsum.photos/seed/gaming/1280/720"
+                    alt="Person playing games on a computer"
+                    layout="fill"
+                    objectFit="cover"
+                    data-ai-hint="gaming computer"
+                />
+            </motion.div>
+            <motion.div 
+                className="text-center md:text-left"
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.6 }}
+            >
                 <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
                     Earn by playing <span className="text-primary">your favorite games</span>
                 </h2>
@@ -364,7 +353,7 @@ export function HomePageContent() {
                 <Button size="lg" onClick={() => setIsSignupOpen(true)}>
                     Browse Game Offers <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-            </div>
+            </motion.div>
         </section>
 
         <section className="bg-background py-16 md:py-24">
