@@ -115,22 +115,19 @@ export default async function MyPeakProfilePage() {
                         <CardHeader>
                         <CardTitle>Account Information</CardTitle>
                         <CardDescription>
-                            This is how others will see you on the site.
+                            Your account details are displayed below.
                         </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" defaultValue={user?.email?.split('@')[0]} />
+                            <Input id="name" defaultValue={user?.email?.split('@')[0]} readOnly disabled />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input id="email" type="email" defaultValue={user?.email} readOnly disabled />
                         </div>
                         </CardContent>
-                        <CardFooter>
-                        <Button>Save Profile</Button>
-                        </CardFooter>
                     </Card>
                     </TabsContent>
                     <TabsContent value="password">
