@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Metadata } from "next";
-import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint, UserPlus } from "lucide-react";
+import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint, UserPlus, Globe } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatItem } from "@/components/stat-item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,6 +27,16 @@ export const metadata: Metadata = {
   description: "Account info, preferences, and personal stats.",
 };
 
+// Helper to get flag emoji from country code
+function getFlagEmoji(countryCode: string) {
+  if (!countryCode) return '';
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
 export default async function MyPeakProfilePage() {
   const supabase = createSupabaseServerClient(true);
   const { data: { user } } = await supabase.auth.getUser();
@@ -35,7 +45,7 @@ export default async function MyPeakProfilePage() {
   if (user) {
     const { data } = await supabase
       .from('profiles')
-      .select('id, points, avatar_url')
+      .select('id, points, avatar_url, country_code')
       .eq('user_id', user.id)
       .single();
     profileData = data;
@@ -47,6 +57,8 @@ export default async function MyPeakProfilePage() {
   const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
   const rewardsPeakId = profileData?.id ?? 'GUEST';
   const avatarUrl = profileData?.avatar_url;
+  const countryCode = profileData?.country_code ?? 'N/A';
+  const countryFlag = countryCode !== 'N/A' ? getFlagEmoji(countryCode) : '';
 
 
   return (
@@ -64,10 +76,18 @@ export default async function MyPeakProfilePage() {
                         <div>
                           <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
                           
-                          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-1">
-                              <span className="font-mono">ID-{rewardsPeakId}</span>
+                          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-muted-foreground mt-2">
+                              <span className="font-mono flex items-center gap-1"><Fingerprint className="h-3 w-3" /> ID-{rewardsPeakId}</span>
                               <Separator orientation="vertical" className="h-4" />
-                              <span>Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                              <span className="flex items-center gap-1"><CalendarDays className="h-3 w-3" /> Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                              {countryCode !== 'N/A' && (
+                                <>
+                                  <Separator orientation="vertical" className="h-4" />
+                                  <span className="flex items-center gap-1">
+                                    {countryFlag} {countryCode}
+                                  </span>
+                                </>
+                              )}
                           </div>
                         </div>
 
