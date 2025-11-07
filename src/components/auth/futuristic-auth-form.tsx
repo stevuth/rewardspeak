@@ -86,7 +86,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
             disabled={isPending}
             className={cn(
                 "w-full relative overflow-hidden flex justify-center items-center bg-secondary text-secondary-foreground font-bold py-3 px-4 rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary/50 focus:ring-offset-[#15002B] transition-all duration-300 ease-in-out transform hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed",
-                isPending ? "h-[110px] bg-primary/10 text-primary" : "h-[54px]"
+                isPending ? "h-[80px] bg-primary/10 text-primary" : "h-[54px]"
             )}
         >
         <AnimatePresence>
