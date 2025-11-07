@@ -129,31 +129,34 @@ function AdminHeader() {
             </div>
           </div>
           
-          <nav className="flex flex-row items-center gap-2 text-sm">
-              <p className="text-xs font-semibold text-muted-foreground mr-2">Manage:</p>
-              {primaryAdminNavItems.map(item => (
-                  <Link
-                      key={item.href}
-                      href={item.href}
-                      className={getNavLinkClass(item.href)}
-                  >
-                      <item.icon className="h-4 w-4" />
-                      {item.label}
-                  </Link>
-              ))}
-              <div className="border-l h-6 border-border/50 mx-2"></div>
-              <p className="text-xs font-semibold text-muted-foreground mr-2">View:</p>
-               {secondaryAdminNavItems.map(item => (
-                  <Link
-                      key={item.href}
-                      href={item.href}
-                      className={getNavLinkClass(item.href)}
-                  >
-                      <item.icon className="h-4 w-4" />
-                      {item.label}
-                  </Link>
-              ))}
-          </nav>
+          <div className="flex flex-col gap-2">
+            <nav className="flex flex-row items-center gap-2 text-sm">
+                <p className="text-xs font-semibold text-muted-foreground mr-2">Manage:</p>
+                {primaryAdminNavItems.map(item => (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={getNavLinkClass(item.href)}
+                    >
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                    </Link>
+                ))}
+            </nav>
+             <nav className="flex flex-row items-center gap-2 text-sm">
+                <p className="text-xs font-semibold text-muted-foreground mr-2">View:</p>
+                 {secondaryAdminNavItems.map(item => (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={getNavLinkClass(item.href)}
+                    >
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                    </Link>
+                ))}
+            </nav>
+          </div>
       </div>
     </header>
   );
