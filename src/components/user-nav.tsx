@@ -21,9 +21,9 @@ export function UserNav({ user, avatarUrl }: { user: SupabaseUser | null, avatar
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+        <Button variant="ghost" className="relative h-12 w-12 rounded-full">
           <SafeImage
-            src={avatarUrl || `https://picsum.photos/seed/${user?.id || 'avatar'}/40/40`}
+            src={avatarUrl || `https://picsum.photos/seed/${user?.id || 'avatar'}/48/48`}
             alt="User avatar"
             fill
             className="rounded-full object-cover"
