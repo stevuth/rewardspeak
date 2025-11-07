@@ -178,7 +178,7 @@ function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, childre
 }
 
 
-function MobileSidebar({ user }: { user: User | null }) {
+function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
     const pathname = usePathname();
     const [isClient, setIsClient] = useState(false);
     useEffect(() => {
@@ -238,7 +238,7 @@ function MobileSidebar({ user }: { user: User | null }) {
                         </nav>
                         <div className="space-y-4">
                         <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
-                            <UserNav user={user} />
+                            <UserNav user={user} avatarUrl={avatarUrl} />
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold truncate">{user?.email}</p>
                                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
@@ -307,7 +307,7 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
                     </div>
                 </div>
                 <UserNav user={user} avatarUrl={avatarUrl} />
-                <MobileSidebar user={user} />
+                <MobileSidebar user={user} avatarUrl={avatarUrl} />
             </div>
         </header>
     )
