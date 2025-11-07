@@ -13,9 +13,10 @@ export default async function DashboardLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   let profilePoints = 0;
-  let referralEarnings = 0;
+  let totalWithdrawnUsd = 0;
 
   if (user) {
+    // Fetch current points balance from profile
     const { data: profileData } = await supabase
       .from('profiles')
       .select('points')
@@ -26,17 +27,21 @@ export default async function DashboardLayout({
         profilePoints = profileData.points ?? 0;
     }
 
-    // Fetch referral earnings
-    const { data: earnings, error: earningsError } = await supabase.rpc('get_referral_earnings');
-    if (earningsError) {
-        console.error("Error fetching referral earnings: ", earningsError);
-    } else {
-        referralEarnings = earnings ?? 0;
+    // Fetch sum of all completed withdrawals
+    const { data: withdrawalData, error: withdrawalError } = await supabase
+      .from('withdrawal_requests')
+      .select('amount_usd')
+      .eq('user_id', user.id)
+      .eq('status', 'completed');
+    
+    if (withdrawalError) {
+      console.error("Error fetching withdrawal history:", withdrawalError);
+    } else if (withdrawalData) {
+      totalWithdrawnUsd = withdrawalData.reduce((sum, req) => sum + (req.amount_usd || 0), 0);
     }
   }
   
-  const totalPoints = profilePoints + referralEarnings;
-  const totalAmountEarned = totalPoints / 1000;
+  const allTimeEarningsInPoints = profilePoints + (totalWithdrawnUsd * 1000);
 
-  return <LayoutClient user={user} totalPoints={totalPoints} totalAmountEarned={totalAmountEarned}>{children}</LayoutClient>;
+  return <LayoutClient user={user} totalPoints={profilePoints} allTimeEarningsInPoints={allTimeEarningsInPoints}>{children}</LayoutClient>;
 }
