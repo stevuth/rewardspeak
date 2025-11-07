@@ -415,7 +415,7 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
 }
 
 // This server action is no longer used for avatar uploads.
-// The logic has been moved to the /api/avatar/upload route.
+// The logic has been moved to the /api/avatar/upload route handler.
 export async function uploadAvatar(formData: FormData): Promise<{ success: boolean, error?: string, url?: string }> {
     console.error("uploadAvatar server action is deprecated. Use /api/avatar/upload instead.");
     return { success: false, error: 'This function is deprecated.' };
