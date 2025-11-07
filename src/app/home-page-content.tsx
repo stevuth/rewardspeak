@@ -45,6 +45,7 @@ import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 import { motion } from 'framer-motion';
 import { LogoutSuccessModal } from '@/components/logout-success-modal';
+import { TypewriterEffect } from '@/components/typewriter-effect';
 
 const recentCashouts: any[] = [];
 
@@ -116,6 +117,19 @@ const howItWorksSteps = [
       description: "Redeem your earnings for cash, crypto, or gift cards. Fast and secure payouts."
     }
 ];
+
+const heroSentences = [
+    { text: "Join thousands earning real rewards every day.", colorClass: "text-foreground" },
+    { text: "Cash rewards for every task you complete.", colorClass: "text-primary" },
+    { text: "Your next dollar is just a task away.", colorClass: "text-secondary" },
+    { text: "Start earning while others are scrolling.", colorClass: "text-foreground" },
+    { text: "From clicks to cash, join now!", colorClass: "text-primary" },
+    { text: "Sign up today and start earning instantly.", colorClass: "text-secondary" },
+    { text: "The smarter way to make money online.", colorClass: "text-foreground" },
+    { text: "Join. Earn. Withdraw. Repeat.", colorClass: "text-primary" },
+    { text: "Your side income starts here.", colorClass: "text-secondary" },
+];
+
 
 export function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
@@ -281,15 +295,15 @@ export function HomePageContent() {
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="text-lg md:text-xl text-muted-foreground mb-8"
                 >
-                    Join thousands of users who are getting paid for playing games, completing surveys, and finishing simple tasks.
+                    Join thousands of users getting paid for playing games, completing surveys, and finishing simple tasks.
                     Get a <span className="font-bold text-secondary">$1 bonus</span> just for signing up.
                 </motion.p>
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="flex justify-center gap-4"
                 >
+                    <TypewriterEffect sentences={heroSentences} />
                     <Button size="lg" onClick={() => setIsSignupOpen(true)} className="font-bold">
                         Start Earning Now
                         <DollarSign className="ml-2 h-4 w-4" />
