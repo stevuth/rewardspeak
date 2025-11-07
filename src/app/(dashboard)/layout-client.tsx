@@ -128,7 +128,6 @@ function SidebarNavs({ user }: { user: User | null }) {
 }
 
 function SidebarContent({ user, totalPoints, allTimeEarningsInPoints, children }: { user: User | null, totalPoints: number, allTimeEarningsInPoints: number, children?: React.ReactNode }) {
-  const allTimeAmountEarned = allTimeEarningsInPoints / 1000;
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -161,8 +160,8 @@ function SidebarContent({ user, totalPoints, allTimeEarningsInPoints, children }
               <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
             </div>
             <div className="text-xs">
-              <p className="text-muted-foreground">All-Time Earned</p>
-              <p className="font-bold">$<AnimatedCounter value={allTimeAmountEarned} /></p>
+              <p className="text-muted-foreground">Total Earned</p>
+              <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
             </div>
           </div>
         </div>
@@ -255,7 +254,6 @@ function MobileSidebar({ user }: { user: User | null }) {
 
 function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | null, totalPoints: number, allTimeEarningsInPoints: number }) {
     const router = useRouter();
-    const allTimeAmountEarned = allTimeEarningsInPoints / 1000;
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
@@ -286,8 +284,8 @@ function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | n
                         <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
                     </div>
                     <div className="text-xs text-right">
-                        <p className="text-muted-foreground">All-Time Earned</p>
-                        <p className="font-bold">$<AnimatedCounter value={allTimeAmountEarned} /></p>
+                        <p className="text-muted-foreground">Total Earned</p>
+                        <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
                     </div>
                 </div>
                 <div className="flex sm:hidden items-center gap-2 text-xs">
@@ -296,8 +294,8 @@ function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | n
                         <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
                     </div>
                      <div className="text-xs text-right">
-                        <p className="text-muted-foreground">All-Time</p>
-                        <p className="font-bold">$<AnimatedCounter value={allTimeAmountEarned} /></p>
+                        <p className="text-muted-foreground">Total</p>
+                        <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
                     </div>
                 </div>
                 <UserNav user={user} />
@@ -356,3 +354,5 @@ export function LayoutClient({ user, children, totalPoints, allTimeEarningsInPoi
         </SidebarProvider>
     )
 }
+
+    
