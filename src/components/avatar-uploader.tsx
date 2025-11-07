@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useState, useRef, useTransition } from 'react';
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Upload, Loader2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { uploadAvatar } from "@/app/actions";
 
 const MAX_FILE_SIZE_MB = 2;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -14,9 +14,10 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null }) {
     const [preview, setPreview] = useState<string | null>(currentAvatar);
     const [fileToUpload, setFileToUpload] = useState<File | null>(null);
-    const [isPending, startTransition] = useTransition();
+    const [isPending, setIsPending] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
+    const router = useRouter();
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -39,14 +40,20 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
         setFileToUpload(file);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!fileToUpload) return;
 
-        startTransition(async () => {
-            const formData = new FormData();
-            formData.append('avatar', fileToUpload);
+        setIsPending(true);
+        const formData = new FormData();
+        formData.append('avatar', fileToUpload);
 
-            const result = await uploadAvatar(formData);
+        try {
+            const response = await fetch('/api/avatar/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
 
             if (result.success) {
                 toast({
@@ -54,17 +61,23 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
                     description: 'Your new profile picture has been saved.',
                 });
                 setFileToUpload(null); // Clear the file after successful upload
+                // Refresh the page to show the new avatar everywhere
+                router.refresh();
             } else {
-                toast({
-                    variant: 'destructive',
-                    title: 'Upload Failed',
-                    description: result.error || 'An unknown error occurred.',
-                });
-                // Revert preview if upload fails
-                setPreview(currentAvatar);
-                setFileToUpload(null);
+                throw new Error(result.error || 'An unknown error occurred.');
             }
-        });
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Upload Failed',
+                description: error instanceof Error ? error.message : String(error),
+            });
+            // Revert preview if upload fails
+            setPreview(currentAvatar);
+            setFileToUpload(null);
+        } finally {
+            setIsPending(false);
+        }
     };
 
     const handleButtonClick = () => {
@@ -92,7 +105,7 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
                     onClick={handleButtonClick}
                     variant="secondary"
                     size="icon"
-                    className="absolute bottom-0 right-0 rounded-full h-8 w-8 transition-opacity"
+                    className="absolute bottom-0 right-0 rounded-full h-8 w-8"
                     disabled={isPending}
                     aria-label="Choose new profile picture"
                 >

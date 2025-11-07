@@ -414,67 +414,9 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
     return { success: true, processed, failed };
 }
 
+// This server action is no longer used for avatar uploads.
+// The logic has been moved to the /api/avatar/upload route.
 export async function uploadAvatar(formData: FormData): Promise<{ success: boolean, error?: string, url?: string }> {
-    // 1. Get the authenticated user with the standard server client
-    const supabase = createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-        return { success: false, error: 'User not authenticated.' };
-    }
-
-    const file = formData.get('avatar') as File;
-    if (!file) {
-        return { success: false, error: 'No file provided.' };
-    }
-
-    // 2. Use the Admin Client for storage and database operations
-    const adminSupabase = createSupabaseAdminClient();
-    
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExtension}`;
-    const filePath = `${user.id}/${fileName}`;
-
-    // 3. Upload the file to storage
-    const { error: uploadError } = await adminSupabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-    if (uploadError) {
-        console.error('Avatar upload error:', uploadError);
-        return { success: false, error: `Storage upload failed: ${uploadError.message}` };
-    }
-
-    // 4. Get the public URL of the uploaded file
-    const { data: urlData } = adminSupabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-    if (!urlData.publicUrl) {
-        // Clean up orphaned file if URL retrieval fails
-        await adminSupabase.storage.from('avatars').remove([filePath]);
-        console.error('Could not get public URL for uploaded file:', filePath);
-        return { success: false, error: 'Could not retrieve public URL for the uploaded file.' };
-    }
-    
-    const publicUrl = urlData.publicUrl;
-
-    // 5. Update the user's profile with the new avatar URL
-    const { error: dbError } = await adminSupabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('user_id', user.id);
-
-    if (dbError) {
-        // Clean up orphaned file if database update fails
-        await adminSupabase.storage.from('avatars').remove([filePath]);
-        console.error('Database update error:', dbError);
-        return { success: false, error: `Failed to save avatar URL to profile: ${dbError.message}` };
-    }
-
-    // 6. Revalidate paths to show the new avatar
-    revalidatePath('/settings');
-    revalidatePath('/dashboard', 'layout');
-
-    return { success: true, url: publicUrl };
+    console.error("uploadAvatar server action is deprecated. Use /api/avatar/upload instead.");
+    return { success: false, error: 'This function is deprecated.' };
 }
