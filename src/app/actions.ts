@@ -428,11 +428,11 @@ export async function uploadAvatar(formData: FormData): Promise<{ success: boole
     }
 
     const fileExtension = file.name.split('.').pop();
-    const fileName = `${user.id}-${Date.now()}.${fileExtension}`;
-    const filePath = `${fileName}`;
+    const fileName = `${Date.now()}.${fileExtension}`;
+    const filePath = `${user.id}/${fileName}`;
 
-    const adminSupabase = createSupabaseAdminClient();
-    const { error: uploadError } = await adminSupabase.storage
+    // Use the authenticated client to upload, which respects RLS
+    const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
@@ -441,6 +441,7 @@ export async function uploadAvatar(formData: FormData): Promise<{ success: boole
         return { success: false, error: `Upload failed: ${uploadError.message}` };
     }
 
+    const adminSupabase = createSupabaseAdminClient();
     const { data: { publicUrl } } = adminSupabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -456,6 +457,8 @@ export async function uploadAvatar(formData: FormData): Promise<{ success: boole
 
     if (dbError) {
         console.error('Database update error:', dbError);
+        // Attempt to delete the orphaned file from storage
+        await supabase.storage.from('avatars').remove([filePath]);
         return { success: false, error: `Database update failed: ${dbError.message}` };
     }
 
