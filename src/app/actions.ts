@@ -283,8 +283,8 @@ export async function processWithdrawalRequest(payload: WithdrawalPayload): Prom
         return { success: false, error: errorMessage };
     }
 
-    revalidatePath('/withdraw'); // Revalidate the withdrawal page to update history (if displayed)
-    revalidatePath('/layout'); // Revalidate layout to update user points
+    revalidatePath('/withdraw'); // Revalidate the withdrawal page to update history
+    revalidatePath('/dashboard', 'layout'); // Revalidate layout to update user points
 
     return { success: true };
 }
@@ -343,6 +343,7 @@ export async function updateWithdrawalRequestStatus(id: string, status: 'complet
 
     revalidatePath('/admin/withdrawals');
     revalidatePath('/withdraw');
+    revalidatePath('/dashboard', 'layout');
 
     return { success: true };
 }
@@ -353,27 +354,27 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
     let processed = 0;
     let failed = 0;
 
-    const results = await Promise.all(
-        ids.map(id => 
-            supabase.rpc('update_withdrawal_status', {
-                request_id: id,
-                new_status: status
-            })
-        )
-    );
+    for (const id of ids) {
+        const { error } = await supabase.rpc('update_withdrawal_status', {
+            request_id: id,
+            new_status: status
+        });
 
-    for (const result of results) {
-        if (result.error) {
+        if (error) {
             failed++;
-            console.error("Error in bulk update for one request:", result.error);
+            console.error(`Error in bulk update for request ID ${id}:`, error);
         } else {
             processed++;
         }
     }
 
-    if (failed > 0) {
+    if (processed > 0) {
         revalidatePath('/admin/withdrawals');
         revalidatePath('/withdraw');
+        revalidatePath('/dashboard', 'layout');
+    }
+
+    if (failed > 0) {
         return {
             success: false,
             processed,
@@ -381,9 +382,6 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
             error: `Failed to update ${failed} out of ${ids.length} requests.`
         };
     }
-
-    revalidatePath('/admin/withdrawals');
-    revalidatePath('/withdraw');
 
     return { success: true, processed, failed };
 }
