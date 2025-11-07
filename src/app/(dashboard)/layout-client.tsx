@@ -41,7 +41,7 @@ import { SafeImage } from "@/components/safe-image";
 
 const navItems = [
     { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
-    { href: "/earn", label: "Earn", icon: LayoutGrid },
+    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/referrals", label: "Invite & Earn", icon: Users },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
