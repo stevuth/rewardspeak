@@ -71,61 +71,62 @@ const FloatingLabelInput = ({
   );
 };
 
-const FlyingCoinsLoader = () => {
-    const numCoins = 7;
-    const coins = Array.from({ length: numCoins });
+const WavingMascotLoader = () => {
+    const waveVariants = {
+        wave: {
+            rotate: [0, 20, -15, 20, -15, 0],
+            transition: {
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+            }
+        }
+    };
 
-    const coinVariants = {
-        initial: (i: number) => ({
-            y: 50,
-            x: Math.random() * 40 - 20,
-            opacity: 0,
-            rotateY: 0,
-            scale: 0.5 + Math.random() * 0.5
-        }),
-        animate: (i: number) => {
-            const duration = 1.5 + Math.random() * 1.5;
-            return {
-                y: -80,
-                opacity: [0, 1, 1, 0],
-                rotateY: 360 * (Math.random() > 0.5 ? 1 : -1),
-                transition: {
-                    duration: duration,
-                    repeat: Infinity,
-                    delay: i * 0.2,
-                    ease: "circOut",
-                    opacity: { times: [0, 0.2, 0.8, 1], duration: duration }
-                }
+    const bodyVariants = {
+        bounce: {
+            y: ["0%", "3%", "0%"],
+            transition: {
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
             }
         }
     };
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden">
-             <div className="relative w-20 h-20">
-                {coins.map((_, i) => (
-                    <motion.div
-                        key={i}
-                        custom={i}
-                        variants={coinVariants}
-                        initial="initial"
-                        animate="animate"
-                        className="absolute w-6 h-6 rounded-full"
-                        style={{
-                            background: 'radial-gradient(circle, hsl(var(--secondary)) 50%, hsl(var(--primary)) 100%)',
-                            left: '50%',
-                            bottom: 0,
-                            transformOrigin: 'center center',
-                            boxShadow: '0 0 10px hsl(var(--secondary))'
-                        }}
+            <motion.div
+                className="relative w-20 h-20"
+                variants={bodyVariants}
+                animate="bounce"
+            >
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    {/* Mountain Body */}
+                    <path d="M 50,10 L 90,90 L 10,90 Z" fill="hsl(var(--primary))" />
+                    {/* Snow Cap */}
+                    <path d="M 50,10 Q 55,20 60,15 T 70,20 T 50,10" fill="white" />
+                    <path d="M 50,10 Q 45,20 40,15 T 30,20 T 50,10" fill="white" />
+                     {/* Eyes */}
+                    <circle cx="40" cy="55" r="4" fill="white" />
+                    <circle cx="60" cy="55" r="4" fill="white" />
+                    <circle cx="41" cy="56" r="2" fill="black" />
+                    <circle cx="61" cy="56" r="2" fill="black" />
+                     {/* Smile */}
+                    <path d="M 45 70 Q 50 80, 55 70" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    {/* Waving Arm */}
+                    <motion.g
+                        style={{ originX: '15px', originY: '70px' }}
+                        variants={waveVariants}
+                        animate="wave"
                     >
-                    <div className="absolute inset-[3px] rounded-full" style={{ background: 'radial-gradient(circle, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)' }} />
-                    </motion.div>
-                ))}
-            </div>
+                         <path d="M 15,70 C 5,60 -5,75 5,85" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" strokeWidth="6" strokeLinecap="round" />
+                    </motion.g>
+                </svg>
+            </motion.div>
             <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
         </div>
-    )
+    );
 };
 
 
@@ -148,7 +149,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <FlyingCoinsLoader />
+              <WavingMascotLoader />
             </motion.div>
           ) : (
             <motion.div
