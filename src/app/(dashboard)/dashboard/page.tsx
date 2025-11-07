@@ -38,6 +38,7 @@ import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { LoginSuccessModal } from "@/components/login-success-modal";
+import type { User } from "@supabase/supabase-js";
 
 type DashboardOffer = NotikOffer & {
   points: number;
@@ -81,12 +82,14 @@ export default function DashboardPage() {
   const [topConvertingOffers, setTopConvertingOffers] = useState<DashboardOffer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOffer, setSelectedOffer] = useState<DashboardOffer | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchOffers = async () => {
         setIsLoading(true);
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
 
         let userCountry = 'US'; // Default to US if not found
         if (user) {
@@ -213,6 +216,8 @@ export default function DashboardPage() {
   };
 
   const recentActivity: any[] = []; // This needs to be connected to real data
+  const userName = user?.email?.split('@')[0];
+  const welcomeMessage = userName ? `Welcome back, ${userName}!` : 'Welcome back!';
 
   return (
     <div className="space-y-8">
@@ -225,7 +230,7 @@ export default function DashboardPage() {
       />
       <PageHeader
         title="Peak Dashboard"
-        description="Welcome back! Here's a look at your recent activity."
+        description={welcomeMessage}
       />
       
       <div className="space-y-8">
