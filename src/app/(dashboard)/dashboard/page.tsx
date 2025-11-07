@@ -229,7 +229,7 @@ export default function DashboardPage() {
         offer={selectedOffer}
       />
       <PageHeader
-        title="Peak Dashboard"
+        title="Dashboard"
         description={welcomeMessage}
       />
       
