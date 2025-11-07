@@ -129,7 +129,7 @@ function SidebarNavs({ user }: { user: User | null }) {
   );
 }
 
-function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, children }: { user: User | null, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null, children?: React.ReactNode }) {
+function SidebarContent({ user, children }: { user: User | null, children?: React.ReactNode }) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -142,7 +142,6 @@ function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, childre
         </Link>
         {children}
       </div>
-
       <SidebarNavs user={user} />
     </div>
   );
@@ -234,9 +233,6 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
-            <div className="hidden md:flex">
-                <SidebarTrigger />
-            </div>
             <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
                 <ArrowLeft className="h-5 w-5" />
                 <span className="sr-only">Go back</span>
@@ -320,7 +316,7 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         <SidebarProvider>
           <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
             <Sidebar collapsible="icon" className="bg-card border-r">
-              <SidebarContent user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
+              <SidebarContent user={user} />
             </Sidebar>
             <div className="flex flex-col overflow-hidden">
               <Header user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
