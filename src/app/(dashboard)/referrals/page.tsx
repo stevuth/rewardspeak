@@ -32,33 +32,25 @@ export default function InviteAndClimbPage() {
       if (user) {
         setUserId(user.id);
         
-        // Fetch the user's profile to get their short ID referral code
+        // Fetch the user's profile to get their short ID referral code and earnings
         const { data: profile } = await supabase
             .from('profiles')
-            .select('id')
+            .select('id, referral_earnings')
             .eq('user_id', user.id)
             .single();
 
         if (profile) {
             setReferralCode(profile.id);
+            setReferralEarnings(profile.referral_earnings || 0);
         }
         
         // Fetch the count of referrals made by this user
-        // Note: we check the 'referred_by' column with the user's short ID
         if (profile) {
             const { count } = await supabase
                 .from('profiles')
                 .select('*', { count: 'exact', head: true })
                 .eq('referred_by', profile.id);
             setTotalReferrals(count || 0);
-        }
-
-        // Fetch real referral earnings
-        const { data: earnings, error: earningsError } = await supabase.rpc('get_referral_earnings');
-         if (earningsError) {
-            console.error("Error fetching referral earnings: ", earningsError);
-        } else {
-            setReferralEarnings(earnings ?? 0);
         }
       }
     };
@@ -102,7 +94,7 @@ export default function InviteAndClimbPage() {
         />
         <StatCard
           title="Referral Earnings"
-          value={`${referralEarnings} Pts`}
+          value={`${referralEarnings.toLocaleString()} Pts`}
           icon={Gift}
           description="Total points earned from your referrals' activity."
         />
