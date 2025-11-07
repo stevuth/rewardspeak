@@ -73,7 +73,7 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
 
     return (
         <div className="flex flex-col items-center gap-4">
-            <div className="relative w-24 h-24 mx-auto group">
+            <div className="relative w-24 h-24 mx-auto">
                 <Avatar className="h-24 w-24 border-2 border-primary">
                     <AvatarImage src={preview || ''} alt="User avatar" />
                     <AvatarFallback className="text-3xl">
@@ -92,7 +92,7 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
                     onClick={handleButtonClick}
                     variant="secondary"
                     size="icon"
-                    className="absolute bottom-0 right-0 rounded-full h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute bottom-0 right-0 rounded-full h-8 w-8 transition-opacity"
                     disabled={isPending}
                     aria-label="Choose new profile picture"
                 >
