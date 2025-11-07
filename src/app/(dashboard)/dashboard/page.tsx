@@ -228,28 +228,26 @@ export default function DashboardPage() {
         description="Welcome back! Here's a look at your recent activity."
       />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold tracking-tight font-headline">
-                    Featured Offers
-                </h2>
-              </div>
-              {renderOfferCarousel(featuredOffers, "Featured Offers")}
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold tracking-tight font-headline">
-                  Top Converting Offers
-                </h2>
-              </div>
-              {renderOfferCarousel(topConvertingOffers, "Top Converting Offers")}
-            </div>
+      <div className="space-y-8">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold tracking-tight font-headline">
+                Featured Offers
+            </h2>
+          </div>
+          {renderOfferCarousel(featuredOffers, "Featured Offers")}
         </div>
-
-        <div className="space-y-8">
-            <Card>
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold tracking-tight font-headline">
+              Top Converting Offers
+            </h2>
+          </div>
+          {renderOfferCarousel(topConvertingOffers, "Top Converting Offers")}
+        </div>
+        
+        <div>
+          <Card>
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
               <CardDescription>Your latest completed quests.</CardDescription>
@@ -259,6 +257,8 @@ export default function DashboardPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Quest</TableHead>
+                    <TableHead className="hidden sm:table-cell">Partner</TableHead>
+                    <TableHead className="hidden md:table-cell">Date</TableHead>
                     <TableHead className="text-right">Points</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -268,8 +268,10 @@ export default function DashboardPage() {
                       <TableRow key={offer.id}>
                         <TableCell>
                             <div className="font-medium">{offer.name}</div>
-                            <div className="text-xs text-muted-foreground">{offer.network}</div>
+                            <div className="text-xs text-muted-foreground sm:hidden">{offer.network}</div>
                         </TableCell>
+                         <TableCell className="hidden sm:table-cell">{offer.network}</TableCell>
+                         <TableCell className="hidden md:table-cell">{new Date().toLocaleDateString()}</TableCell>
                         <TableCell
                           className={cn("text-right font-bold", "text-secondary")}
                         >
@@ -280,7 +282,7 @@ export default function DashboardPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={2} className="text-center h-24">
+                      <TableCell colSpan={4} className="text-center h-24">
                         No recent activity.
                       </TableCell>
                     </TableRow>
