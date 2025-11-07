@@ -289,14 +289,34 @@ export async function processWithdrawalRequest(payload: WithdrawalPayload): Prom
     return { success: true };
 }
 
-export async function getWithdrawalRequests(page: number, limit: number): Promise<{requests: any[] | null, count: number | null}> {
+type GetWithdrawalRequestsParams = {
+    page: number;
+    limit: number;
+    email?: string;
+    method?: string;
+    status?: string;
+}
+
+export async function getWithdrawalRequests({ page, limit, email, method, status }: GetWithdrawalRequestsParams): Promise<{requests: any[] | null, count: number | null}> {
     const supabase = createSupabaseAdminClient();
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    const { data, error, count } = await supabase
+    let query = supabase
         .from('withdrawal_requests')
-        .select('*', { count: 'exact' })
+        .select('*', { count: 'exact' });
+
+    if (email) {
+        query = query.ilike('email', `%${email}%`);
+    }
+    if (method && method !== 'all') {
+        query = query.eq('method', method);
+    }
+    if (status && status !== 'all') {
+        query = query.eq('status', status);
+    }
+
+    const { data, error, count } = await query
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -352,6 +372,8 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
     }
 
     if (failed > 0) {
+        revalidatePath('/admin/withdrawals');
+        revalidatePath('/withdraw');
         return {
             success: false,
             processed,

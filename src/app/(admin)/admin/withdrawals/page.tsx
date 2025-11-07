@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback, useTransition } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,11 +15,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, Check, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Check, X, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { getWithdrawalRequests, updateWithdrawalRequestStatus, updateBulkWithdrawalRequestStatus } from "@/app/actions";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+
 
 export type WithdrawalRequest = {
   id: string;
@@ -44,13 +48,27 @@ export default function WithdrawalRequestsPage() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const currentPage = Number(searchParams.get('page')) || 1;
+  const emailFilter = searchParams.get('email') || '';
+  const methodFilter = searchParams.get('method') || '';
+  const statusFilter = searchParams.get('status') || '';
+  
+  const [emailInput, setEmailInput] = useState(emailFilter);
+  const [methodInput, setMethodInput] = useState(methodFilter);
+  const [statusInput, setStatusInput] = useState(statusFilter);
+
   const ITEMS_PER_PAGE = 20;
   const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
 
   const fetchRequests = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { requests: fetchedRequests, count: totalCount } = await getWithdrawalRequests(currentPage, ITEMS_PER_PAGE);
+      const { requests: fetchedRequests, count: totalCount } = await getWithdrawalRequests({
+        page: currentPage, 
+        limit: ITEMS_PER_PAGE,
+        email: emailFilter,
+        method: methodFilter,
+        status: statusFilter,
+      });
       setRequests(fetchedRequests || []);
       setCount(totalCount || 0);
       setSelectedRows([]); // Clear selection on new data load
@@ -63,11 +81,31 @@ export default function WithdrawalRequestsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, toast]);
+  }, [currentPage, emailFilter, methodFilter, statusFilter, toast]);
 
   useEffect(() => {
     fetchRequests();
   }, [fetchRequests]);
+
+  const handleFilter = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', '1');
+    if (emailInput) params.set('email', emailInput); else params.delete('email');
+    if (methodInput) params.set('method', methodInput); else params.delete('method');
+    if (statusInput) params.set('status', statusInput); else params.delete('status');
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
+  }
+
+  const handleClearFilters = () => {
+    setEmailInput('');
+    setMethodInput('');
+    setStatusInput('');
+    startTransition(() => {
+        router.push(pathname);
+    });
+  };
 
   const handleStatusUpdate = (id: string, status: 'completed' | 'rejected') => {
     startTransition(async () => {
@@ -146,6 +184,62 @@ export default function WithdrawalRequestsPage() {
         title="Withdrawal Requests"
         description={`Manage and approve user withdrawal requests. Page ${currentPage} of ${totalPages}.`}
       />
+
+       <Card>
+        <CardHeader>
+            <CardTitle>Filter Requests</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="email-filter">Filter by Email</Label>
+                    <Input 
+                        id="email-filter"
+                        placeholder="user@example.com"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="method-filter">Payment Method</Label>
+                    <Select value={methodInput} onValueChange={setMethodInput}>
+                        <SelectTrigger id="method-filter">
+                            <SelectValue placeholder="All Methods" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Methods</SelectItem>
+                            <SelectItem value="paypal">PayPal</SelectItem>
+                            <SelectItem value="usdt">USDT</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="status-filter">Payment Status</Label>
+                    <Select value={statusInput} onValueChange={setStatusInput}>
+                        <SelectTrigger id="status-filter">
+                            <SelectValue placeholder="All Statuses" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+             <div className="flex gap-2">
+                <Button onClick={handleFilter} disabled={isPending}>
+                    <Search className="mr-2 h-4 w-4"/>
+                    {isPending ? 'Filtering...' : 'Filter'}
+                </Button>
+                 <Button onClick={handleClearFilters} variant="outline" disabled={isPending}>
+                    <X className="mr-2 h-4 w-4"/>
+                    Clear
+                </Button>
+            </div>
+        </CardContent>
+       </Card>
 
        {selectedRows.length > 0 && (
          <Card>
@@ -238,7 +332,7 @@ export default function WithdrawalRequestsPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center h-24">
-                    No withdrawal requests found.
+                    No withdrawal requests found for the current filters.
                   </TableCell>
                 </TableRow>
               )}
