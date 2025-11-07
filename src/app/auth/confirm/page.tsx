@@ -1,9 +1,9 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MailCheck, X } from 'lucide-react';
+import { MailCheck } from 'lucide-react';
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function AuthConfirmPage() {
@@ -16,10 +16,9 @@ export default function AuthConfirmPage() {
                 </Link>
             </div>
             <Card className="max-w-lg text-center animated-border-card mx-auto relative">
-                <Link href="/" aria-label="Close">
-                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
-                        <X className="h-5 w-5" />
-                    </Button>
+                <Link href="/" aria-label="Close" className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10">
+                    <span className="text-xs uppercase tracking-wider">Close</span>
+                    <span className="sr-only">Close</span>
                 </Link>
                 <CardHeader>
                     <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit">
