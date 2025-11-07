@@ -35,10 +35,11 @@ type LeaderboardUser = {
 
 async function getLeaderboardData(): Promise<LeaderboardUser[]> {
     const supabase = createSupabaseServerClient();
+    // Rank users by their current points balance
     const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('id, all_time_earnings, email')
-        .order('all_time_earnings', { ascending: false })
+        .select('id, points, email')
+        .order('points', { ascending: false })
         .limit(100);
 
     if (error) {
@@ -49,7 +50,7 @@ async function getLeaderboardData(): Promise<LeaderboardUser[]> {
     return profiles.map((profile, index) => {
         const rank = index + 1;
         const name = profile.email?.split('@')[0] || `User-${profile.id}`;
-        const points = profile.all_time_earnings || 0;
+        const points = profile.points || 0;
         // Calculate prize based on points: 1000 points = $1
         const prize = rank <= 3 ? points / 1000 : undefined;
         return {
@@ -116,8 +117,8 @@ export default async function TopEarnersPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="All-Time Top Earners"
-        description="See who's at the peak of the earnings leaderboard."
+        title="Top Earners Leaderboard"
+        description="See who's at the peak of the earnings leaderboard based on current points."
       />
       
       {topThree.length >= 3 ? (
@@ -143,7 +144,7 @@ export default async function TopEarnersPage() {
       <Card>
         <CardHeader>
           <CardTitle>Leaderboard</CardTitle>
-          <CardDescription>A list of the top 100 all-time earners on Rewards Peak.</CardDescription>
+          <CardDescription>A list of the top 100 earners on Rewards Peak.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>

@@ -13,21 +13,21 @@ export default async function DashboardLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   let profilePoints = 0;
-  let allTimeEarningsInPoints = 0;
+  let withdrawnPoints = 0;
 
   if (user) {
-    // Fetch current points and all-time earnings from profile
+    // Fetch current points and withdrawn amount from profile
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('points, all_time_earnings')
+      .select('points, withdrawn')
       .eq('user_id', user.id)
       .single();
     
     if (profileData) {
         profilePoints = profileData.points ?? 0;
-        allTimeEarningsInPoints = profileData.all_time_earnings ?? 0;
+        withdrawnPoints = profileData.withdrawn ?? 0;
     }
   }
   
-  return <LayoutClient user={user} totalPoints={profilePoints} allTimeEarningsInPoints={allTimeEarningsInPoints}>{children}</LayoutClient>;
+  return <LayoutClient user={user} totalPoints={profilePoints} withdrawnPoints={withdrawnPoints}>{children}</LayoutClient>;
 }

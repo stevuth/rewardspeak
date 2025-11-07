@@ -128,7 +128,7 @@ function SidebarNavs({ user }: { user: User | null }) {
   );
 }
 
-function SidebarContent({ user, totalPoints, allTimeEarningsInPoints, children }: { user: User | null, totalPoints: number, allTimeEarningsInPoints: number, children?: React.ReactNode }) {
+function SidebarContent({ user, totalPoints, withdrawnPoints, children }: { user: User | null, totalPoints: number, withdrawnPoints: number, children?: React.ReactNode }) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -166,8 +166,8 @@ function SidebarContent({ user, totalPoints, allTimeEarningsInPoints, children }
             </div>
             <Separator orientation="vertical" className="h-8" />
             <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Total Earned</p>
-                <p className="font-bold text-lg"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
+                <p className="text-xs text-muted-foreground">Withdrawn</p>
+                <p className="font-bold text-lg"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
             </div>
         </div>
       </div>
@@ -257,7 +257,7 @@ function MobileSidebar({ user }: { user: User | null }) {
     );
 }
 
-function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | null, totalPoints: number, allTimeEarningsInPoints: number }) {
+function Header({ user, totalPoints, withdrawnPoints }: { user: User | null, totalPoints: number, withdrawnPoints: number }) {
     const router = useRouter();
 
     return (
@@ -290,8 +290,8 @@ function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | n
                     </div>
                     <Separator orientation="vertical" className="h-6" />
                     <div className="text-right">
-                        <p className="text-xs text-muted-foreground">Total Earned</p>
-                        <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
+                        <p className="text-xs text-muted-foreground">Withdrawn</p>
+                        <p className="font-bold"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
                     </div>
                 </div>
                  <div className="flex sm:hidden items-center gap-2 text-xs">
@@ -301,8 +301,8 @@ function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | n
                     </div>
                      <Separator orientation="vertical" className="h-6" />
                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">Total</p>
-                        <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
+                        <p className="text-xs text-muted-foreground">W/drawn</p>
+                        <p className="font-bold"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
                     </div>
                 </div>
                 <UserNav user={user} />
@@ -343,15 +343,15 @@ function MobileBottomNav() {
     )
 }
 
-export function LayoutClient({ user, children, totalPoints, allTimeEarningsInPoints }: { user: User | null, children: React.ReactNode, totalPoints: number, allTimeEarningsInPoints: number }) {
+export function LayoutClient({ user, children, totalPoints, withdrawnPoints }: { user: User | null, children: React.ReactNode, totalPoints: number, withdrawnPoints: number }) {
     return (
         <SidebarProvider>
           <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
             <Sidebar collapsible="icon" className="bg-card border-r">
-              <SidebarContent user={user} totalPoints={totalPoints} allTimeEarningsInPoints={allTimeEarningsInPoints} />
+              <SidebarContent user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} />
             </Sidebar>
             <div className="flex flex-col overflow-hidden">
-              <Header user={user} totalPoints={totalPoints} allTimeEarningsInPoints={allTimeEarningsInPoints} />
+              <Header user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} />
               <SidebarInset>
                 <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
               </SidebarInset>
