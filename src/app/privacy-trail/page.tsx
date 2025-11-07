@@ -20,12 +20,12 @@ export default function PrivacyTrailPage() {
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Go back</span>
         </Button>
-        <div className="space-y-8">
+        <div className="space-y-8 text-center">
         <PageHeader
             title="Privacy Trail"
             description="Our commitment to your privacy."
         />
-        <Card>
+        <Card className="text-left">
             <CardHeader>
             <CardTitle>Coming Soon</CardTitle>
             </CardHeader>

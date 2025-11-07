@@ -20,12 +20,12 @@ export default function TermsOfThePeakPage() {
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Go back</span>
         </Button>
-        <div className="space-y-8">
+        <div className="space-y-8 text-center">
         <PageHeader
             title="Terms of the Peak"
             description="The rules and guidelines for using Rewards Peak."
         />
-        <Card>
+        <Card className="text-left">
             <CardHeader>
             <CardTitle>Coming Soon</CardTitle>
             </CardHeader>

@@ -19,6 +19,7 @@ export default function RafflePage() {
       <PageHeader
         title="Raffle"
         description="Enter raffles to win big prizes. More features coming soon!"
+        className="text-center"
       />
       <Card>
         <CardHeader>

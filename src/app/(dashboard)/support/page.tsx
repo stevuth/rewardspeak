@@ -1,3 +1,4 @@
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -45,6 +46,7 @@ export default function HelpStationPage() {
       <PageHeader
         title="Help Station"
         description="Need help? We're here for you."
+        className="text-center"
       />
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2">
