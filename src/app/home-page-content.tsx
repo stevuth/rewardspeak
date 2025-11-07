@@ -151,7 +151,7 @@ export function HomePageContent() {
             .eq('is_disabled', false)
             .not('image_url', 'is', null)
             .neq('image_url', '')
-            .or('categories.cs.{"GAME"},categories.cs.{"Game"}') // Use .or to check for either category case
+            .or('categories.cs.{"GAME"},categories.cs.{"Game"}')
             .limit(4);
 
         if (error) throw error;
