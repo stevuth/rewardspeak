@@ -201,19 +201,13 @@ export function HomePageContent() {
           .not('image_url', 'is', null)
           .neq('image_url', '')
           .order('payout', { ascending: false })
-          .limit(10); // Fetch a few more to ensure we find games
+          .limit(4);
 
         if (error) {
           throw error;
         }
         
-        // Filter for games on the client side
-        const gameOffers = (data || []).filter(offer => 
-            Array.isArray(offer.categories) && 
-            offer.categories.some(cat => typeof cat === 'string' && cat.toLowerCase() === 'game')
-        ).slice(0, 4); // Take the top 4 games
-
-        setPhoneCardOffers(gameOffers);
+        setPhoneCardOffers(data || []);
 
       } catch (error: any) {
         console.error("Error fetching offers for illustration:", error.message || error);
@@ -549,3 +543,5 @@ export function HomePageContent() {
     </div>
   );
 }
+
+    
