@@ -328,6 +328,34 @@ export async function getWithdrawalRequests({ page, limit, email, method, status
     return { requests: data, count };
 }
 
+export async function getAllWithdrawalRequestsForCSV({ email, method, status }: Omit<GetWithdrawalRequestsParams, 'page' | 'limit'>): Promise<{requests: any[] | null, error?: string}> {
+    const supabase = createSupabaseAdminClient();
+
+    let query = supabase
+        .from('withdrawal_requests')
+        .select('*');
+
+    if (email) {
+        query = query.ilike('email', `%${email}%`);
+    }
+    if (method && method !== 'all') {
+        query = query.eq('method', method);
+    }
+    if (status && status !== 'all') {
+        query = query.eq('status', status);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+    
+    if (error) {
+        console.error("Error fetching all withdrawal requests for CSV:", error);
+        return { requests: null, error: error.message };
+    }
+    
+    return { requests: data };
+}
+
+
 export async function updateWithdrawalRequestStatus(id: string, status: 'completed' | 'rejected'): Promise<{success: boolean, error?: string}> {
     const supabase = createSupabaseAdminClient();
 

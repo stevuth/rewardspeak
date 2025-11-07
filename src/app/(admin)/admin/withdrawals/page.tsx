@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, Check, X, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Check, X, Search, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { getWithdrawalRequests, updateWithdrawalRequestStatus, updateBulkWithdrawalRequestStatus } from "@/app/actions";
+import { getWithdrawalRequests, updateWithdrawalRequestStatus, updateBulkWithdrawalRequestStatus, getAllWithdrawalRequestsForCSV } from "@/app/actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -46,6 +46,7 @@ export default function WithdrawalRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+  const [isDownloading, setIsDownloading] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const currentPage = Number(searchParams.get('page')) || 1;
@@ -146,6 +147,54 @@ export default function WithdrawalRequestsPage() {
     });
   };
 
+  const handleDownloadCSV = async () => {
+    setIsDownloading(true);
+    toast({ title: "Preparing Download...", description: "Fetching all matching requests." });
+
+    const { requests: allRequests, error } = await getAllWithdrawalRequestsForCSV({
+      email: emailFilter,
+      method: methodFilter,
+      status: statusFilter,
+    });
+
+    if (error || !allRequests) {
+        toast({ variant: "destructive", title: "Download Failed", description: error || "Could not fetch data for CSV." });
+        setIsDownloading(false);
+        return;
+    }
+
+    // Convert JSON to CSV
+    const headers = ["ID", "Date", "User Email", "Amount (USD)", "Method", "Wallet Address", "Status"];
+    const csvRows = [
+        headers.join(','),
+        ...allRequests.map(req => [
+            `"${req.id}"`,
+            `"${new Date(req.created_at).toLocaleString()}"`,
+            `"${req.email}"`,
+            req.amount_usd,
+            `"${req.method}"`,
+            `"${req.wallet_address}"`,
+            `"${req.status}"`,
+        ].join(','))
+    ];
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    const date = new Date().toISOString().split('T')[0];
+    link.setAttribute('download', `withdrawal-requests-${date}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({ title: "Download Started", description: "Your CSV file is being downloaded." });
+    setIsDownloading(false);
+  };
+
+
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', pageNumber.toString());
@@ -188,7 +237,7 @@ export default function WithdrawalRequestsPage() {
 
        <Card>
         <CardHeader>
-            <CardTitle>Filter Requests</CardTitle>
+            <CardTitle>Filter & Export</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -208,7 +257,7 @@ export default function WithdrawalRequestsPage() {
                             <SelectValue placeholder="All Methods" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Methods</SelectItem>
+                            <SelectItem value="">All Methods</SelectItem>
                             <SelectItem value="paypal">PayPal</SelectItem>
                             <SelectItem value="usdt">USDT</SelectItem>
                         </SelectContent>
@@ -221,7 +270,7 @@ export default function WithdrawalRequestsPage() {
                             <SelectValue placeholder="All Statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="">All Statuses</SelectItem>
                             <SelectItem value="pending">Pending</SelectItem>
                             <SelectItem value="completed">Completed</SelectItem>
                             <SelectItem value="rejected">Rejected</SelectItem>
@@ -237,6 +286,10 @@ export default function WithdrawalRequestsPage() {
                  <Button onClick={handleClearFilters} variant="outline" disabled={isPending}>
                     <X className="mr-2 h-4 w-4"/>
                     Clear
+                </Button>
+                <Button onClick={handleDownloadCSV} variant="outline" disabled={isDownloading}>
+                    {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4"/>}
+                    Download CSV
                 </Button>
             </div>
         </CardContent>
