@@ -16,7 +16,7 @@ const GameOffer = ({ offer, index }: GameOfferProps) => {
   }
   
   const payout = offer.payout || 0;
-  const usdValue = payout.toFixed(2);
+  const usdValue = (payout * 1000) / 1000;
 
   return (
     <motion.div
@@ -33,9 +33,9 @@ const GameOffer = ({ offer, index }: GameOfferProps) => {
         className="rounded-xl w-16 h-16 object-cover flex-shrink-0"
       />
       <div className="flex-1 min-w-0">
-        <p className="font-bold truncate">{offer.name}</p>
+        <p className="font-bold truncate text-white">{offer.name}</p>
         <p className="text-sm text-muted-foreground">{offer.categories?.find((c: string) => c.toLowerCase() === 'game') || 'Game'}</p>
-        <p className="text-secondary font-bold text-lg mt-1">${usdValue} USD</p>
+        <p className="text-secondary font-bold text-lg mt-1">${usdValue.toFixed(2)} USD</p>
       </div>
     </motion.div>
   );
@@ -52,16 +52,16 @@ export const EarnByGamingIllustration = ({ offers, isLoading }: EarnByGamingIllu
     <div className="relative w-full h-full flex items-center justify-center p-4">
       {/* Realistic Vertical Phone */}
       <motion.div
-        className="relative z-10 w-80 h-[36rem] bg-gray-900 rounded-[3rem] border-4 border-gray-700 p-2 shadow-2xl shadow-black/50"
+        className="relative z-10 w-80 h-[36rem] bg-card rounded-[3rem] border-4 border-border/50 p-2 shadow-2xl shadow-primary/10"
         initial={{ y: 50, opacity: 0 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
         transition={{ type: 'spring', stiffness: 100 }}
       >
         {/* Phone screen */}
-        <div className="w-full h-full bg-black rounded-[2.5rem] overflow-hidden relative flex flex-col">
+        <div className="w-full h-full bg-background rounded-[2.5rem] overflow-hidden relative flex flex-col">
             {/* Notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-gray-900 rounded-b-xl z-20"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-card rounded-b-xl z-20"></div>
 
             {/* Screen Content */}
             <div className="flex-shrink-0 px-4 pt-4">
@@ -94,7 +94,7 @@ export const EarnByGamingIllustration = ({ offers, isLoading }: EarnByGamingIllu
                 )}
             </div>
             {/* Home indicator */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-500 rounded-full"></div>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-muted-foreground/50 rounded-full"></div>
         </div>
       </motion.div>
     </div>
