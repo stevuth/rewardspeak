@@ -151,12 +151,17 @@ export function HomePageContent() {
             .eq('is_disabled', false)
             .not('image_url', 'is', null)
             .neq('image_url', '')
-            .or('categories.cs.{"GAME"},categories.cs.{"Game"}')
-            .limit(4);
+            .order('created_at', { ascending: false })
+            .limit(50);
 
         if (error) throw error;
         
-        setPhoneCardOffers(data || []);
+        const gameOffers = (data || []).filter(offer => 
+            Array.isArray(offer.categories) && 
+            offer.categories.some(cat => typeof cat === 'string' && cat.toLowerCase() === 'game')
+        ).slice(0, 4);
+
+        setPhoneCardOffers(gameOffers);
 
       } catch (error: any) {
         console.error("Error fetching offers for illustration:", error.message || error);
