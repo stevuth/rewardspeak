@@ -60,38 +60,42 @@ export const EarnByGamingIllustration = ({ offers, isLoading }: EarnByGamingIllu
         <div className="absolute inset-0 bg-gradient-to-br from-primary/50 to-background"></div>
        </div>
 
+      {/* Realistic Vertical Phone */}
       <motion.div
-        className="relative z-10 w-48 h-[20.5rem] bg-gray-900/80 backdrop-blur-lg rounded-3xl border-4 border-gray-700 p-2.5"
+        className="relative z-10 w-64 h-[32rem] bg-gray-900 rounded-[2.5rem] border-4 border-gray-700 p-4 shadow-2xl shadow-black/50"
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 100 }}
       >
-        <div className="w-full h-full bg-black rounded-xl overflow-hidden">
-          <div className="h-full w-full p-2 space-y-2 overflow-y-auto">
-             <div className="flex items-center gap-2 text-primary font-bold p-1">
-                <Gamepad2 className="w-5 h-5"/>
-                <h3 className="text-sm">Top Game Offers</h3>
+        {/* Phone screen */}
+        <div className="w-full h-full bg-black rounded-[2rem] overflow-hidden relative">
+            {/* Notch */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-gray-900 rounded-b-xl z-20"></div>
+
+            {/* Screen Content */}
+            <div className="h-full w-full p-3 pt-6 space-y-2 overflow-y-auto">
+                <div className="flex items-center gap-2 text-primary font-bold p-1">
+                    <Gamepad2 className="w-5 h-5"/>
+                    <h3 className="text-sm">Top Game Offers</h3>
+                </div>
+                {isLoading ? (
+                <div className="flex flex-col items-center justify-center h-full gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    <p className="text-xs text-muted-foreground">Loading Offers...</p>
+                </div>
+                ) : offers && offers.length > 0 ? (
+                offers.map((offer, index) => (
+                    <GameOffer key={offer.offer_id || index} offer={offer} index={index} />
+                ))
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
+                        <Gamepad2 className="w-6 h-6 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">No offers available right now.</p>
+                </div>
+                )}
             </div>
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-full gap-2">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                <p className="text-xs text-muted-foreground">Loading Offers...</p>
-              </div>
-            ) : offers && offers.length > 0 ? (
-              offers.map((offer, index) => (
-                <GameOffer key={offer.offer_id || index} offer={offer} index={index} />
-              ))
-            ) : (
-                <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
-                    <Gamepad2 className="w-6 h-6 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">No offers available right now.</p>
-              </div>
-            )}
-          </div>
         </div>
       </motion.div>
     </div>
   );
 };
-
-    
