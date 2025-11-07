@@ -85,7 +85,7 @@ const WavingMascotLoader = () => {
 
     const bodyVariants = {
         bounce: {
-            y: ["0%", "3%", "0%"],
+            y: ["0%", "5%", "0%"],
             transition: {
                 duration: 2,
                 repeat: Infinity,
@@ -102,25 +102,25 @@ const WavingMascotLoader = () => {
                 animate="bounce"
             >
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    {/* Mountain Body */}
-                    <path d="M 50,10 L 90,90 L 10,90 Z" fill="hsl(var(--primary))" />
-                    {/* Snow Cap */}
-                    <path d="M 50,10 Q 55,20 60,15 T 70,20 T 50,10" fill="white" />
-                    <path d="M 50,10 Q 45,20 40,15 T 30,20 T 50,10" fill="white" />
-                     {/* Eyes */}
-                    <circle cx="40" cy="55" r="4" fill="white" />
-                    <circle cx="60" cy="55" r="4" fill="white" />
-                    <circle cx="41" cy="56" r="2" fill="black" />
-                    <circle cx="61" cy="56" r="2" fill="black" />
-                     {/* Smile */}
-                    <path d="M 45 70 Q 50 80, 55 70" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    {/* Body */}
+                    <circle cx="50" cy="60" r="30" fill="hsl(var(--primary))" />
+                    
+                    {/* Eyes */}
+                    <circle cx="42" cy="55" r="4" fill="white" />
+                    <circle cx="58" cy="55" r="4" fill="white" />
+                    <circle cx="43" cy="56" r="2" fill="black" />
+                    <circle cx="59" cy="56" r="2" fill="black" />
+                     
+                    {/* Smile */}
+                    <path d="M 45 70 Q 50 78, 55 70" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    
                     {/* Waving Arm */}
                     <motion.g
-                        style={{ originX: '15px', originY: '70px' }}
+                        style={{ originX: '70px', originY: '60px' }}
                         variants={waveVariants}
                         animate="wave"
                     >
-                         <path d="M 15,70 C 5,60 -5,75 5,85" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" strokeWidth="6" strokeLinecap="round" />
+                         <path d="M 70,60 C 80,50 90,65 80,75" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round" />
                     </motion.g>
                 </svg>
             </motion.div>
@@ -317,3 +317,5 @@ export function FuturisticAuthForm({
     </div>
   );
 }
+
+    
