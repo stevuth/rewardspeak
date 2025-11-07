@@ -35,6 +35,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/compon
 import type { User } from "@supabase/supabase-js";
 import { AnimatedCounter } from "@/components/animated-counter";
 import React, { useState, useEffect } from "react";
+import { Separator } from "@/components/ui/separator";
 
 
 const navItems = [
@@ -141,29 +142,33 @@ function SidebarContent({ user, totalPoints, allTimeEarningsInPoints, children }
         {children}
       </div>
 
-      <div className="p-4 flex items-center gap-4 bg-muted/50 border-b">
-        <div className="relative h-12 w-12 shrink-0">
-          <Image
-            src={"https://picsum.photos/seed/avatar1/40/40"}
-            alt="user avatar"
-            width={48}
-            height={48}
-            className="rounded-full border-2 border-primary/50"
-            data-ai-hint={"person portrait"}
-          />
+      <div className="p-4 space-y-4 bg-muted/50 border-b">
+        <div className="flex items-center gap-4">
+            <div className="relative h-12 w-12 shrink-0">
+            <Image
+                src={"https://picsum.photos/seed/avatar1/40/40"}
+                alt="user avatar"
+                width={48}
+                height={48}
+                className="rounded-full border-2 border-primary/50"
+                data-ai-hint={"person portrait"}
+            />
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="font-semibold truncate">{user?.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold truncate">{user?.email}</p>
-          <div className="flex items-center gap-4">
-            <div className="text-xs">
-              <p className="text-muted-foreground">Balance</p>
-              <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
+        <div className="flex items-center justify-around text-center">
+            <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Balance</p>
+                <p className="font-bold text-lg text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
             </div>
-            <div className="text-xs">
-              <p className="text-muted-foreground">Total Earned</p>
-              <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
+            <Separator orientation="vertical" className="h-8" />
+            <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Total Earned</p>
+                <p className="font-bold text-lg"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
             </div>
-          </div>
         </div>
       </div>
       <SidebarNavs user={user} />
@@ -272,29 +277,31 @@ function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | n
                         <span className="font-bold text-secondary">{earning.name}</span>
                         <span className="text-muted-foreground">{earning.user}</span>
                     </div>
-                    <Badge variant="secondary">{earning.amount}</Badge>
+                    {/* <Badge variant="secondary">{earning.amount}</Badge> */}
                     </div>
                 ))}
                 </div>
             </div>
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-4 ml-auto">
                 <div className="hidden sm:flex items-center gap-4">
-                    <div className="text-xs text-right">
-                        <p className="text-muted-foreground">Balance</p>
+                    <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Balance</p>
                         <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
                     </div>
-                    <div className="text-xs text-right">
-                        <p className="text-muted-foreground">Total Earned</p>
+                    <Separator orientation="vertical" className="h-6" />
+                    <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Total Earned</p>
                         <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
                     </div>
                 </div>
-                <div className="flex sm:hidden items-center gap-2 text-xs">
-                    <div className="text-xs text-right">
-                        <p className="text-muted-foreground">Balance</p>
+                 <div className="flex sm:hidden items-center gap-2 text-xs">
+                    <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Balance</p>
                         <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
                     </div>
-                     <div className="text-xs text-right">
-                        <p className="text-muted-foreground">Total</p>
+                     <Separator orientation="vertical" className="h-6" />
+                     <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Total</p>
                         <p className="font-bold"><AnimatedCounter value={allTimeEarningsInPoints} /> Pts</p>
                     </div>
                 </div>
@@ -354,5 +361,3 @@ export function LayoutClient({ user, children, totalPoints, allTimeEarningsInPoi
         </SidebarProvider>
     )
 }
-
-    
