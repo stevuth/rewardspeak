@@ -255,7 +255,6 @@ function MobileSidebar({ user }: { user: User | null }) {
 
 function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | null, totalPoints: number, allTimeEarningsInPoints: number }) {
     const router = useRouter();
-    const userBalanceInCash = totalPoints / 1000;
     const allTimeAmountEarned = allTimeEarningsInPoints / 1000;
 
     return (
@@ -292,9 +291,14 @@ function Header({ user, totalPoints, allTimeEarningsInPoints }: { user: User | n
                     </div>
                 </div>
                 <div className="flex sm:hidden items-center gap-2 text-xs">
-                <span className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</span>
-                <span className="font-bold text-muted-foreground">/</span>
-                <span className="font-bold">$<AnimatedCounter value={userBalanceInCash} /></span>
+                    <div className="text-xs text-right">
+                        <p className="text-muted-foreground">Balance</p>
+                        <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
+                    </div>
+                     <div className="text-xs text-right">
+                        <p className="text-muted-foreground">All-Time</p>
+                        <p className="font-bold">$<AnimatedCounter value={allTimeAmountEarned} /></p>
+                    </div>
                 </div>
                 <UserNav user={user} />
                 <MobileSidebar user={user} />

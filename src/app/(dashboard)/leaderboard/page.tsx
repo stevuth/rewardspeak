@@ -37,8 +37,8 @@ async function getLeaderboardData(): Promise<LeaderboardUser[]> {
     const supabase = createSupabaseServerClient();
     const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('id, points, email')
-        .order('points', { ascending: false })
+        .select('id, all_time_earnings, email')
+        .order('all_time_earnings', { ascending: false })
         .limit(100);
 
     if (error) {
@@ -49,12 +49,13 @@ async function getLeaderboardData(): Promise<LeaderboardUser[]> {
     return profiles.map((profile, index) => {
         const rank = index + 1;
         const name = profile.email?.split('@')[0] || `User-${profile.id}`;
+        const points = profile.all_time_earnings || 0;
         // Calculate prize based on points: 1000 points = $1
-        const prize = rank <= 3 ? (profile.points || 0) / 1000 : undefined;
+        const prize = rank <= 3 ? points / 1000 : undefined;
         return {
             rank: rank,
             name: name,
-            points: profile.points || 0,
+            points: points,
             avatarUrl: `https://picsum.photos/seed/user${rank}/96/96`,
             avatarHint: "person portrait",
             prize: prize,
@@ -200,5 +201,3 @@ export default async function TopEarnersPage() {
     </div>
   );
 }
-
-

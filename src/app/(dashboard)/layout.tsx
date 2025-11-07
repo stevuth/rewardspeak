@@ -13,35 +13,21 @@ export default async function DashboardLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   let profilePoints = 0;
-  let totalWithdrawnUsd = 0;
+  let allTimeEarningsInPoints = 0;
 
   if (user) {
-    // Fetch current points balance from profile
+    // Fetch current points and all-time earnings from profile
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('points')
+      .select('points, all_time_earnings')
       .eq('user_id', user.id)
       .single();
     
     if (profileData) {
         profilePoints = profileData.points ?? 0;
-    }
-
-    // Fetch sum of all completed withdrawals
-    const { data: withdrawalData, error: withdrawalError } = await supabase
-      .from('withdrawal_requests')
-      .select('amount_usd')
-      .eq('user_id', user.id)
-      .eq('status', 'completed');
-    
-    if (withdrawalError) {
-      console.error("Error fetching withdrawal history:", withdrawalError);
-    } else if (withdrawalData) {
-      totalWithdrawnUsd = withdrawalData.reduce((sum, req) => sum + (req.amount_usd || 0), 0);
+        allTimeEarningsInPoints = profileData.all_time_earnings ?? 0;
     }
   }
   
-  const allTimeEarningsInPoints = profilePoints + (totalWithdrawnUsd * 1000);
-
   return <LayoutClient user={user} totalPoints={profilePoints} allTimeEarningsInPoints={allTimeEarningsInPoints}>{children}</LayoutClient>;
 }
