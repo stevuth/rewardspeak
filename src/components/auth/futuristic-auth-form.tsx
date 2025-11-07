@@ -71,89 +71,59 @@ const FloatingLabelInput = ({
   );
 };
 
-const MountainLoader = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center">
-         <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                    <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                </filter>
-                <linearGradient id="peakGradient" x1="0.5" y1="0" x2="0.5" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="0.8"/>
-                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.5"/>
-                </linearGradient>
-            </defs>
-            
-            {/* Pulsating Base Glow */}
-            <motion.circle 
-                cx="50" 
-                cy="60" 
-                r="40" 
-                fill="hsl(var(--primary))" 
-                style={{ filter: "url(#glow)" }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 0.1, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            />
+const FlyingCoinsLoader = () => {
+    const numCoins = 7;
+    const coins = Array.from({ length: numCoins });
 
-            {/* Mountain Peaks */}
-            <motion.path
-                d="M 20 80 L 50 30 L 80 80 Z"
-                stroke="hsl(var(--primary))"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-                fill="url(#peakGradient)"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
-            />
-            <motion.path
-                d="M 35 80 L 60 50 L 85 80 Z"
-                stroke="hsl(var(--secondary))"
-                strokeWidth="1"
-                strokeLinejoin="round"
-                fill="hsl(var(--primary))"
-                fillOpacity="0.1"
-                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 1.5, delay: 0.2, ease: "easeInOut" }}
-            />
+    const coinVariants = {
+        initial: (i: number) => ({
+            y: 50,
+            x: Math.random() * 40 - 20,
+            opacity: 0,
+            rotateY: 0,
+            scale: 0.5 + Math.random() * 0.5
+        }),
+        animate: (i: number) => ({
+            y: -80,
+            opacity: [0, 1, 1, 0],
+            rotateY: 360 * (Math.random() > 0.5 ? 1 : -1),
+            transition: {
+                duration: 1.5 + Math.random() * 1.5,
+                repeat: Infinity,
+                delay: i * 0.2,
+                ease: "circOut",
+                opacity: { times: [0, 0.2, 0.8, 1], duration: 1.5 + Math.random() * 1.5 }
+            }
+        })
+    };
 
-            {/* Peak Beacon */}
-            <motion.circle
-                cx="50"
-                cy="30"
-                r="3"
-                fill="hsl(var(--secondary))"
-                style={{ filter: "url(#glow)" }}
-                animate={{ scale: [1, 1.8, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
-            
-            {/* Shimmering Stars */}
-            {[
-                { cx: 30, cy: 20, scale: 0.8, delay: 0.5 },
-                { cx: 75, cy: 40, scale: 1.2, delay: 1 },
-                { cx: 15, cy: 50, scale: 0.6, delay: 1.5 },
-            ].map(star => (
-                 <motion.path
-                    key={star.cx}
-                    d="M 0 -5 L 2.5 0 L 0 5 L -2.5 0 Z"
-                    fill="hsl(var(--foreground))"
-                    style={{ x: star.cx, y: star.cy }}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: [0, star.scale, 0], opacity: [0, 1, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: star.delay }}
-                />
-            ))}
-        </svg>
-        <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
-    </div>
-);
+    return (
+        <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden">
+             <div className="relative w-20 h-20">
+                {coins.map((_, i) => (
+                    <motion.div
+                        key={i}
+                        custom={i}
+                        variants={coinVariants}
+                        initial="initial"
+                        animate="animate"
+                        className="absolute w-6 h-6 rounded-full"
+                        style={{
+                            background: 'radial-gradient(circle, hsl(var(--secondary)) 50%, hsl(var(--primary)) 100%)',
+                            left: '50%',
+                            bottom: 0,
+                            transformOrigin: 'center center',
+                            boxShadow: '0 0 10px hsl(var(--secondary))'
+                        }}
+                    >
+                    <div className="absolute inset-[3px] rounded-full" style={{ background: 'radial-gradient(circle, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)' }} />
+                    </motion.div>
+                ))}
+            </div>
+            <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
+        </div>
+    )
+};
 
 
 const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boolean }) => {
@@ -175,7 +145,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <MountainLoader />
+              <FlyingCoinsLoader />
             </motion.div>
           ) : (
             <motion.div
