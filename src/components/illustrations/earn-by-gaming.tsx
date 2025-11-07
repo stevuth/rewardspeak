@@ -75,7 +75,7 @@ export const EarnByGamingIllustration = ({ offers, isLoading }: EarnByGamingIllu
             {isLoading ? (
               <div className="flex flex-col items-center justify-center h-full gap-2">
                 <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                <p className="text-xs text-muted-foreground">Loading Games...</p>
+                <p className="text-xs text-muted-foreground">Loading Offers...</p>
               </div>
             ) : offers && offers.length > 0 ? (
               offers.map((offer, index) => (
@@ -84,7 +84,7 @@ export const EarnByGamingIllustration = ({ offers, isLoading }: EarnByGamingIllu
             ) : (
                 <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
                     <Gamepad2 className="w-6 h-6 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">No game offers available right now.</p>
+                    <p className="text-xs text-muted-foreground">No offers available right now.</p>
               </div>
             )}
           </div>
@@ -93,3 +93,5 @@ export const EarnByGamingIllustration = ({ offers, isLoading }: EarnByGamingIllu
     </div>
   );
 };
+
+    

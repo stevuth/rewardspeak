@@ -201,18 +201,13 @@ export function HomePageContent() {
           .not('image_url', 'is', null)
           .neq('image_url', '')
           .order('payout', { ascending: false })
-          .limit(50);
+          .limit(4);
 
         if (error) {
           throw error;
         }
         
-        const gameOffers = data.filter(offer => 
-          Array.isArray(offer.categories) && 
-          offer.categories.some(cat => typeof cat === 'string' && cat.toLowerCase() === 'game')
-        ).slice(0, 4);
-
-        setPhoneCardOffers(gameOffers);
+        setPhoneCardOffers(data || []);
 
       } catch (error: any) {
         console.error("Error fetching offers for illustration:", error.message || error);
@@ -548,3 +543,5 @@ export function HomePageContent() {
     </div>
   );
 }
+
+    
