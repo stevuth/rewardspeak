@@ -1,9 +1,22 @@
 
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
-export const WavingMascotLoader = ({ text }: { text?: string }) => {
+export const WavingMascotLoader = ({ text, messages, duration = 2500 }: { text?: string, messages?: string[], duration?: number }) => {
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        if (messages && messages.length > 1) {
+            const interval = setInterval(() => {
+                setIndex((prevIndex) => (prevIndex + 1) % messages.length);
+            }, duration);
+
+            return () => clearInterval(interval);
+        }
+    }, [messages, duration]);
+
     const waveVariants = {
         wave: {
             rotate: [0, 20, -15, 20, -15, 0],
@@ -25,6 +38,8 @@ export const WavingMascotLoader = ({ text }: { text?: string }) => {
             }
         }
     };
+
+    const displayText = messages && messages.length > 0 ? messages[index] : text;
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden">
@@ -56,7 +71,21 @@ export const WavingMascotLoader = ({ text }: { text?: string }) => {
                     </motion.g>
                 </svg>
             </motion.div>
-            {text && <p className="text-sm font-semibold text-primary mt-1">{text}</p>}
+            
+            <div className="relative h-6 w-full text-center mt-1">
+                <AnimatePresence mode="wait">
+                    <motion.p
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                        className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-primary"
+                    >
+                      {displayText}
+                    </motion.p>
+                </AnimatePresence>
+            </div>
         </div>
     );
 };

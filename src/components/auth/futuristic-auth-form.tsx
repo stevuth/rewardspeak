@@ -72,6 +72,14 @@ const FloatingLabelInput = ({
   );
 };
 
+const loadingMessages = [
+    "Authenticating...",
+    "Securing connection...",
+    "Checking credentials...",
+    "Almost there...",
+];
+
+
 const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boolean }) => {
     return (
         <button
@@ -91,7 +99,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <WavingMascotLoader text="Authenticating..." />
+              <WavingMascotLoader messages={loadingMessages} />
             </motion.div>
           ) : (
             <motion.div
@@ -259,5 +267,3 @@ export function FuturisticAuthForm({
     </div>
   );
 }
-
-    
