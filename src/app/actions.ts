@@ -327,4 +327,41 @@ export async function updateWithdrawalRequestStatus(id: string, status: 'complet
     return { success: true };
 }
 
-    
+
+export async function updateBulkWithdrawalRequestStatus(ids: string[], status: 'completed' | 'rejected'): Promise<{ success: boolean; processed: number; failed: number; error?: string }> {
+    const supabase = createSupabaseAdminClient();
+    let processed = 0;
+    let failed = 0;
+
+    const results = await Promise.all(
+        ids.map(id => 
+            supabase.rpc('update_withdrawal_status', {
+                request_id: id,
+                new_status: status
+            })
+        )
+    );
+
+    for (const result of results) {
+        if (result.error) {
+            failed++;
+            console.error("Error in bulk update for one request:", result.error);
+        } else {
+            processed++;
+        }
+    }
+
+    if (failed > 0) {
+        return {
+            success: false,
+            processed,
+            failed,
+            error: `Failed to update ${failed} out of ${ids.length} requests.`
+        };
+    }
+
+    revalidatePath('/admin/withdrawals');
+    revalidatePath('/withdraw');
+
+    return { success: true, processed, failed };
+}

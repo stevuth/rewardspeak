@@ -18,8 +18,8 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Loader2, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { getWithdrawalRequests, updateWithdrawalRequestStatus } from "@/app/actions";
-import { cn } from "@/lib/utils";
+import { getWithdrawalRequests, updateWithdrawalRequestStatus, updateBulkWithdrawalRequestStatus } from "@/app/actions";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type WithdrawalRequest = {
   id: string;
@@ -41,6 +41,7 @@ export default function WithdrawalRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const currentPage = Number(searchParams.get('page')) || 1;
   const ITEMS_PER_PAGE = 20;
@@ -52,6 +53,7 @@ export default function WithdrawalRequestsPage() {
       const { requests: fetchedRequests, count: totalCount } = await getWithdrawalRequests(currentPage, ITEMS_PER_PAGE);
       setRequests(fetchedRequests || []);
       setCount(totalCount || 0);
+      setSelectedRows([]); // Clear selection on new data load
     } catch (error) {
       toast({
         variant: "destructive",
@@ -86,6 +88,25 @@ export default function WithdrawalRequestsPage() {
     });
   };
 
+  const handleBulkUpdate = (status: 'completed' | 'rejected') => {
+    startTransition(async () => {
+        const result = await updateBulkWithdrawalRequestStatus(selectedRows, status);
+        if (result.success) {
+            toast({
+                title: "Bulk Update Successful",
+                description: `${result.processed} requests have been marked as ${status}.`
+            });
+            fetchRequests(); // Refresh the data
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Bulk Update Failed",
+                description: result.error || `Failed to update ${result.failed} requests.`
+            });
+        }
+    });
+  };
+
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', pageNumber.toString());
@@ -103,6 +124,22 @@ export default function WithdrawalRequestsPage() {
     }
   }
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedRows(requests.map(req => req.id));
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const handleSelectRow = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedRows(prev => [...prev, id]);
+    } else {
+      setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+    }
+  };
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -110,11 +147,34 @@ export default function WithdrawalRequestsPage() {
         description={`Manage and approve user withdrawal requests. Page ${currentPage} of ${totalPages}.`}
       />
 
+       {selectedRows.length > 0 && (
+         <Card>
+            <CardContent className="pt-6 flex items-center gap-4">
+                <p className="text-sm font-medium text-muted-foreground">{selectedRows.length} selected</p>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleBulkUpdate('completed')} disabled={isPending}>
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Check className="mr-2 h-4 w-4" />}
+                    Approve Selected
+                </Button>
+                <Button size="sm" variant="destructive" onClick={() => handleBulkUpdate('rejected')} disabled={isPending}>
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <X className="mr-2 h-4 w-4" />}
+                    Reject Selected
+                </Button>
+            </CardContent>
+         </Card>
+      )}
+
       <Card>
         <CardContent className="pt-6">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[50px]">
+                  <Checkbox
+                    checked={selectedRows.length === requests.length && requests.length > 0}
+                    onCheckedChange={(checked) => handleSelectAll(Boolean(checked))}
+                    aria-label="Select all rows on this page"
+                  />
+                </TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>User Email</TableHead>
                 <TableHead>Amount (USD)</TableHead>
@@ -127,13 +187,20 @@ export default function WithdrawalRequestsPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
                     <Loader2 className="mx-auto h-6 w-6 animate-spin"/>
                   </TableCell>
                 </TableRow>
               ) : requests.length > 0 ? (
                 requests.map((req) => (
-                  <TableRow key={req.id}>
+                  <TableRow key={req.id} data-state={selectedRows.includes(req.id) && "selected"}>
+                    <TableCell>
+                       <Checkbox
+                        checked={selectedRows.includes(req.id)}
+                        onCheckedChange={(checked) => handleSelectRow(req.id, Boolean(checked))}
+                        aria-label={`Select row ${req.id}`}
+                      />
+                    </TableCell>
                     <TableCell>
                       {new Date(req.created_at).toLocaleString()}
                     </TableCell>
@@ -170,7 +237,7 @@ export default function WithdrawalRequestsPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
                     No withdrawal requests found.
                   </TableCell>
                 </TableRow>
