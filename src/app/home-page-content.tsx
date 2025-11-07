@@ -282,6 +282,14 @@ export function HomePageContent() {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
             <div className="max-w-4xl mx-auto">
                 <TypewriterEffect sentences={heroSentences} />
+                <motion.p
+                  className="mt-4 mb-8 text-lg text-muted-foreground"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                  Ready to earn? Create your free account and get your first reward today.
+                </motion.p>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
