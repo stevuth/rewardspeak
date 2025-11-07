@@ -415,7 +415,6 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
 }
 
 export async function uploadAvatar(formData: FormData): Promise<{ success: boolean, error?: string, url?: string }> {
-    // 1. Create a server client to get the user
     const supabase = createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -423,42 +422,41 @@ export async function uploadAvatar(formData: FormData): Promise<{ success: boole
         return { success: false, error: 'User not authenticated.' };
     }
 
-    // 2. Get the file from the form data
     const file = formData.get('avatar') as File;
     if (!file) {
         return { success: false, error: 'No file provided.' };
     }
 
-    // 3. Define file path and name
     const fileExtension = file.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExtension}`;
+    const fileName = `${user.id}-${Date.now()}.${fileExtension}`;
     const filePath = `${user.id}/${fileName}`;
-
-    // 4. Upload the file using the user's permissions (RLS-enabled client)
+    
+    // Use the user-scoped client for the upload to enforce RLS
     const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
     if (uploadError) {
         console.error('Avatar upload error:', uploadError);
-        return { success: false, error: `Upload failed: ${uploadError.message}` };
+        return { success: false, error: `Storage upload failed: ${uploadError.message}` };
     }
-
-    // 5. Create an admin client to bypass RLS for URL retrieval and DB update
-    const adminSupabase = createSupabaseAdminClient();
     
-    // 6. Get the public URL of the file
-    const { data: { publicUrl } } = adminSupabase.storage
+    // After a successful upload, use the admin client to get the public URL and update the database
+    const adminSupabase = createSupabaseAdminClient();
+
+    const { data: urlData } = adminSupabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-    if (!publicUrl) {
-        // Attempt to clean up orphaned file if URL retrieval fails
+    if (!urlData.publicUrl) {
+        // This is a critical failure, try to clean up the orphaned file
         await supabase.storage.from('avatars').remove([filePath]);
-        return { success: false, error: 'Could not get public URL for the uploaded file.' };
+        console.error('Could not get public URL for uploaded file:', filePath);
+        return { success: false, error: 'Could not retrieve public URL for the uploaded file.' };
     }
+    
+    const publicUrl = urlData.publicUrl;
 
-    // 7. Update the user's profile with the new avatar URL
     const { error: dbError } = await adminSupabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -466,15 +464,14 @@ export async function uploadAvatar(formData: FormData): Promise<{ success: boole
 
     if (dbError) {
         console.error('Database update error:', dbError);
-        // Attempt to delete the orphaned file from storage
+        // If DB update fails, remove the orphaned file from storage
         await supabase.storage.from('avatars').remove([filePath]);
-        return { success: false, error: `Database update failed: ${dbError.message}` };
+        return { success: false, error: `Failed to save avatar URL to profile: ${dbError.message}` };
     }
 
-    // 8. Revalidate paths to show the new avatar immediately
+    // Revalidate paths to show the new avatar immediately
     revalidatePath('/settings');
     revalidatePath('/dashboard', 'layout');
 
-    // 9. Return success
     return { success: true, url: publicUrl };
 }
