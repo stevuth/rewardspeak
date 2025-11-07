@@ -160,17 +160,6 @@ function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, childre
                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
             </div>
         </div>
-        <div className="flex items-center justify-around text-center">
-            <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Balance</p>
-                <p className="font-bold text-lg text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
-            </div>
-            <Separator orientation="vertical" className="h-8" />
-            <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Withdrawn</p>
-                <p className="font-bold text-lg"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
-            </div>
-        </div>
       </div>
       <SidebarNavs user={user} />
     </div>
