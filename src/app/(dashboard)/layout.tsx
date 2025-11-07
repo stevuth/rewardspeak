@@ -25,7 +25,7 @@ export default async function DashboardLayout({
     
     if (profileData) {
         profilePoints = profileData.points ?? 0;
-        withdrawnPoints = profileData.withdrawn ?? 0;
+        withdrawnPoints = profileData.withdrawn ?? 0; // Ensure withdrawnPoints is always a number
     }
   }
   
