@@ -40,7 +40,6 @@ import { useSearchParams } from 'next/navigation';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
-import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/exclusive-opportunities';
 import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 import { motion } from 'framer-motion';
@@ -63,7 +62,7 @@ const features = [
       icon: Users,
       title: "Community of Earners",
       description: "Join thousands of members worldwide who are cashing out real money on a daily basis. With a vibrant community, you're part of a global network of ambitious earners.",
-      illustration: <ExclusiveOpportunitiesIllustration />,
+      illustration: <Users className="w-24 h-24 text-primary" />,
     },
     {
       icon: Gift,
@@ -350,6 +349,20 @@ export function HomePageContent() {
             </div>
         </section>
 
+        <section className="py-16 md:py-24 grid md:grid-cols-2 gap-8 lg:gap-16 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center">
+                <EarnByGamingIllustration offers={phoneCardOffers} />
+            </div>
+            <div className="text-center md:text-left">
+                <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
+                    Earn by playing <span className="text-primary">your favorite games</span>
+                </h2>
+                <p className="text-lg text-muted-foreground mb-8">Turn your gaming skills into cash. Discover new games, complete objectives, and get paid for your progress. It's that simple.</p>
+                <Button size="lg" onClick={() => setIsSignupOpen(true)}>
+                    Browse Game Offers <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
+        </section>
 
         <section className="bg-background py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
