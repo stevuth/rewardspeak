@@ -301,57 +301,52 @@ export function HomePageContent() {
             </div>
         </section>
         
-        <section className="py-16 md:py-24">
+        <section className="py-16 md:py-24 bg-card/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-card rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center overflow-hidden">
-                    <motion.div 
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, amount: 0.5 }}
-                        transition={{ duration: 0.5 }}
-                        className="space-y-6"
-                    >
-                        <h2 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
-                            Get Paid in 3 Easy Steps
-                        </h2>
-                        <div className="space-y-6">
-                            {howItWorksSteps.map((step, i) => (
-                                <motion.div 
-                                    key={step.title}
-                                    initial={{ opacity: 0, x: -30 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: i * 0.2 }}
-                                    className="flex items-start gap-4"
-                                >
-                                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary border-2 border-primary/20 shrink-0 mt-1">
-                                        <step.icon className="w-5 h-5" />
+                <div className="text-center max-w-3xl mx-auto mb-16">
+                    <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
+                        How It Works
+                    </h2>
+                    <p className="text-lg text-muted-foreground">Earning cash has never been this simple. Follow three easy steps to start your journey.</p>
+                </div>
+
+                <div className="relative">
+                    {/* Connecting Dashed Line for Desktop */}
+                    <div className="hidden md:block absolute top-1/2 left-0 w-full h-px -translate-y-1/2">
+                        <svg width="100%" height="2" className="overflow-visible">
+                            <line x1="0" y1="1" x2="100%" y2="1" stroke="hsl(var(--border))" strokeWidth="2" strokeDasharray="8 8" />
+                        </svg>
+                    </div>
+
+                    <div className="relative grid md:grid-cols-3 gap-12">
+                        {howItWorksSteps.map((step, i) => (
+                            <motion.div 
+                                key={step.title}
+                                initial={{ opacity: 0, y: 50 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: i * 0.2 }}
+                                className="text-center flex flex-col items-center"
+                            >
+                                <div className="relative mb-6">
+                                    <div className="flex items-center justify-center w-24 h-24 rounded-full bg-card border-2 border-primary/20 text-primary shadow-lg shadow-primary/10">
+                                        <step.icon className="w-10 h-10" />
                                     </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold font-headline">{step.title}</h3>
-                                        <p className="text-muted-foreground text-sm">{step.description}</p>
+                                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground font-bold text-sm">
+                                        {i + 1}
                                     </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                        <Button variant="link" className="p-0 text-foreground font-bold" onClick={() => setIsSignupOpen(true)}>
-                            Sign up to start earning <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                    </motion.div>
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true, amount: 0.5 }}
-                        transition={{ duration: 0.5 }}
-                        className="flex items-center justify-center md:mb-0"
-                    >
-                         <EarnByGamingIllustration offers={phoneCardOffers} />
-                    </motion.div>
+                                </div>
+                                <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
+                                <p className="text-muted-foreground max-w-xs">{step.description}</p>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section className="bg-card/20 py-16 md:py-24">
+
+        <section className="bg-background py-16 md:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
