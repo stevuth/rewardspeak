@@ -119,15 +119,15 @@ const howItWorksSteps = [
 ];
 
 const heroSentences = [
-    { text: "Join thousands earning real rewards every day.", colorClass: "text-foreground" },
-    { text: "Cash rewards for every task you complete.", colorClass: "text-primary" },
-    { text: "Your next dollar is just a task away.", colorClass: "text-secondary" },
-    { text: "Start earning while others are scrolling.", colorClass: "text-foreground" },
-    { text: "From clicks to cash, join now!", colorClass: "text-primary" },
-    { text: "Sign up today and start earning instantly.", colorClass: "text-secondary" },
-    { text: "The smarter way to make money online.", colorClass: "text-foreground" },
-    { text: "Join. Earn. Withdraw. Repeat.", colorClass: "text-primary" },
-    { text: "Your side income starts here.", colorClass: "text-secondary" },
+    { words: [ { text: "Join", colorClass: "text-primary" }, { text: "thousands", colorClass: "text-secondary" }, { text: "earning", colorClass: "text-foreground" }, { text: "real", colorClass: "text-primary" }, { text: "rewards", colorClass: "text-secondary" }, { text: "every", colorClass: "text-foreground" }, { text: "day.", colorClass: "text-primary" }, ] },
+    { words: [ { text: "Cash", colorClass: "text-secondary" }, { text: "rewards", colorClass: "text-foreground" }, { text: "for", colorClass: "text-primary" }, { text: "every", colorClass: "text-secondary" }, { text: "task", colorClass: "text-foreground" }, { text: "you", colorClass: "text-primary" }, { text: "complete.", colorClass: "text-secondary" }, ] },
+    { words: [ { text: "Your", colorClass: "text-foreground" }, { text: "next", colorClass: "text-primary" }, { text: "dollar", colorClass: "text-secondary" }, { text: "is", colorClass: "text-foreground" }, { text: "just", colorClass: "text-primary" }, { text: "a", colorClass: "text-secondary" }, { text: "task", colorClass: "text-foreground" }, { text: "away.", colorClass: "text-primary" }, ] },
+    { words: [ { text: "Start", colorClass: "text-secondary" }, { text: "earning", colorClass: "text-foreground" }, { text: "while", colorClass: "text-primary" }, { text: "others", colorClass: "text-secondary" }, { text: "are", colorClass: "text-foreground" }, { text: "scrolling.", colorClass: "text-primary" }, ] },
+    { words: [ { text: "From", colorClass: "text-foreground" }, { text: "clicks", colorClass: "text-primary" }, { text: "to", colorClass: "text-secondary" }, { text: "cash,", colorClass: "text-foreground" }, { text: "join", colorClass: "text-primary" }, { text: "now!", colorClass: "text-secondary" }, ] },
+    { words: [ { text: "Sign", colorClass: "text-secondary" }, { text: "up", colorClass: "text-foreground" }, { text: "today", colorClass: "text-primary" }, { text: "and", colorClass: "text-secondary" }, { text: "start", colorClass: "text-foreground" }, { text: "earning", colorClass: "text-primary" }, { text: "instantly.", colorClass: "text-secondary" }, ] },
+    { words: [ { text: "The", colorClass: "text-foreground" }, { text: "smarter", colorClass: "text-primary" }, { text: "way", colorClass: "text-secondary" }, { text: "to", colorClass: "text-foreground" }, { text: "make", colorClass: "text-primary" }, { text: "money", colorClass: "text-secondary" }, { text: "online.", colorClass: "text-foreground" }, ] },
+    { words: [ { text: "Join.", colorClass: "text-primary" }, { text: "Earn.", colorClass: "text-secondary" }, { text: "Withdraw.", colorClass: "text-primary" }, { text: "Repeat.", colorClass: "text-secondary" }, ] },
+    { words: [ { text: "Your", colorClass: "text-foreground" }, { text: "side", colorClass: "text-primary" }, { text: "income", colorClass: "text-secondary" }, { text: "starts", colorClass: "text-foreground" }, { text: "here.", colorClass: "text-primary" }, ] },
 ];
 
 
