@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Separator } from "@/components/ui/separator";
+import { AvatarUploader } from "@/components/avatar-uploader";
 
 export const metadata: Metadata = {
   title: "My Peak Profile",
@@ -34,7 +35,7 @@ export default async function MyPeakProfilePage() {
   if (user) {
     const { data } = await supabase
       .from('profiles')
-      .select('id, points')
+      .select('id, points, avatar_url')
       .eq('user_id', user.id)
       .single();
     profileData = data;
@@ -45,6 +46,7 @@ export default async function MyPeakProfilePage() {
   const totalAmountEarned = totalPoints / 1000;
   const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
   const rewardsPeakId = profileData?.id ?? 'GUEST';
+  const avatarUrl = profileData?.avatar_url;
 
 
   return (
@@ -58,11 +60,8 @@ export default async function MyPeakProfilePage() {
             <div className="md:col-span-1">
                 <Card className="text-center">
                     <CardContent className="p-6">
-                        <Avatar className="h-24 w-24 mb-4 mx-auto border-2 border-primary">
-                            <AvatarImage src={"https://picsum.photos/seed/avatar1/96/96"} alt={user?.email || "user"} />
-                            <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
-                        </Avatar>
-                        <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
+                        <AvatarUploader currentAvatar={avatarUrl} />
+                        <h3 className="text-xl font-semibold mt-4">{user?.email?.split('@')[0]}</h3>
                         
                         <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-1">
                             <span className="font-mono">ID-{rewardsPeakId}</span>
@@ -80,11 +79,6 @@ export default async function MyPeakProfilePage() {
                                 <p className="text-xs text-muted-foreground">Total Earned</p>
                             </div>
                         </div>
-
-                        <Button className="w-full">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload Picture
-                        </Button>
                     </CardContent>
                 </Card>
             </div>

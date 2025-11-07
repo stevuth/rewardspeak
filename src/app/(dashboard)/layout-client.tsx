@@ -36,6 +36,7 @@ import type { User } from "@supabase/supabase-js";
 import { AnimatedCounter } from "@/components/animated-counter";
 import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
+import { SafeImage } from "@/components/safe-image";
 
 
 const navItems = [
@@ -128,7 +129,7 @@ function SidebarNavs({ user }: { user: User | null }) {
   );
 }
 
-function SidebarContent({ user, totalPoints, withdrawnPoints, children }: { user: User | null, totalPoints: number, withdrawnPoints: number, children?: React.ReactNode }) {
+function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, children }: { user: User | null, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null, children?: React.ReactNode }) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -145,8 +146,8 @@ function SidebarContent({ user, totalPoints, withdrawnPoints, children }: { user
       <div className="p-4 space-y-4 bg-muted/50 border-b">
         <div className="flex items-center gap-4">
             <div className="relative h-12 w-12 shrink-0">
-            <Image
-                src={"https://picsum.photos/seed/avatar1/40/40"}
+            <SafeImage
+                src={avatarUrl || `https://picsum.photos/seed/${user?.id || 'avatar'}/48/48`}
                 alt="user avatar"
                 width={48}
                 height={48}
@@ -257,7 +258,7 @@ function MobileSidebar({ user }: { user: User | null }) {
     );
 }
 
-function Header({ user, totalPoints, withdrawnPoints }: { user: User | null, totalPoints: number, withdrawnPoints: number }) {
+function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User | null, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null }) {
     const router = useRouter();
 
     return (
@@ -305,7 +306,7 @@ function Header({ user, totalPoints, withdrawnPoints }: { user: User | null, tot
                         <p className="font-bold"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
                     </div>
                 </div>
-                <UserNav user={user} />
+                <UserNav user={user} avatarUrl={avatarUrl} />
                 <MobileSidebar user={user} />
             </div>
         </header>
@@ -343,15 +344,15 @@ function MobileBottomNav() {
     )
 }
 
-export function LayoutClient({ user, children, totalPoints, withdrawnPoints }: { user: User | null, children: React.ReactNode, totalPoints: number, withdrawnPoints: number }) {
+export function LayoutClient({ user, children, totalPoints, withdrawnPoints, avatarUrl }: { user: User | null, children: React.ReactNode, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null }) {
     return (
         <SidebarProvider>
           <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
             <Sidebar collapsible="icon" className="bg-card border-r">
-              <SidebarContent user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} />
+              <SidebarContent user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
             </Sidebar>
             <div className="flex flex-col overflow-hidden">
-              <Header user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} />
+              <Header user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
               <SidebarInset>
                 <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
               </SidebarInset>

@@ -309,10 +309,10 @@ export async function getWithdrawalRequests({ page, limit, email, method, status
     if (email) {
         query = query.ilike('email', `%${email}%`);
     }
-    if (method) {
+    if (method && method !== 'all') {
         query = query.eq('method', method);
     }
-    if (status) {
+    if (status && status !== 'all') {
         query = query.eq('status', status);
     }
 
@@ -338,10 +338,10 @@ export async function getAllWithdrawalRequestsForCSV({ email, method, status }: 
     if (email) {
         query = query.ilike('email', `%${email}%`);
     }
-    if (method) {
+    if (method && method !== 'all') {
         query = query.eq('method', method);
     }
-    if (status) {
+    if (status && status !== 'all') {
         query = query.eq('status', status);
     }
 
@@ -412,4 +412,55 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
     }
 
     return { success: true, processed, failed };
+}
+
+export async function uploadAvatar(formData: FormData): Promise<{ success: boolean, error?: string, url?: string }> {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: 'User not authenticated.' };
+    }
+
+    const file = formData.get('avatar') as File;
+    if (!file) {
+        return { success: false, error: 'No file provided.' };
+    }
+
+    const fileExtension = file.name.split('.').pop();
+    const fileName = `${user.id}-${Date.now()}.${fileExtension}`;
+    const filePath = `${fileName}`;
+
+    const adminSupabase = createSupabaseAdminClient();
+    const { error: uploadError } = await adminSupabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+    if (uploadError) {
+        console.error('Avatar upload error:', uploadError);
+        return { success: false, error: `Upload failed: ${uploadError.message}` };
+    }
+
+    const { data: { publicUrl } } = adminSupabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+    if (!publicUrl) {
+        return { success: false, error: 'Could not get public URL for the uploaded file.' };
+    }
+
+    const { error: dbError } = await adminSupabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('user_id', user.id);
+
+    if (dbError) {
+        console.error('Database update error:', dbError);
+        return { success: false, error: `Database update failed: ${dbError.message}` };
+    }
+
+    revalidatePath('/settings');
+    revalidatePath('/dashboard', 'layout');
+
+    return { success: true, url: publicUrl };
 }

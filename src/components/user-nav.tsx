@@ -15,17 +15,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { CreditCard, LogOut, Settings, User } from "lucide-react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { SafeImage } from "./safe-image";
 
-export function UserNav({ user }: { user: SupabaseUser | null }) {
+export function UserNav({ user, avatarUrl }: { user: SupabaseUser | null, avatarUrl: string | null }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Image
-            src={"https://picsum.photos/seed/avatar1/40/40"}
+          <SafeImage
+            src={avatarUrl || `https://picsum.photos/seed/${user?.id || 'avatar'}/40/40`}
             alt="User avatar"
             fill
-            className="rounded-full"
+            className="rounded-full object-cover"
             data-ai-hint={"person portrait"}
           />
         </Button>
