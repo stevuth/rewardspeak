@@ -44,6 +44,7 @@ import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { motion } from 'framer-motion';
 import { LogoutSuccessModal } from '@/components/logout-success-modal';
 import { TypewriterEffect } from '@/components/typewriter-effect';
+import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 
 const recentCashouts: any[] = [];
 
@@ -135,6 +136,9 @@ export function HomePageContent() {
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
   const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
+  const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
+  const [isPhoneCardOffersLoading, setIsPhoneCardOffersLoading] = React.useState(true);
+
 
   const searchParams = useSearchParams();
 
@@ -183,6 +187,42 @@ export function HomePageContent() {
 
   React.useEffect(() => {
     setIsClient(true);
+  }, []);
+  
+  React.useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    
+    async function fetchOffersForIllustration() {
+      setIsPhoneCardOffersLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('all_offers')
+          .select('name, image_url, categories, payout')
+          .not('image_url', 'is', null)
+          .neq('image_url', '')
+          .order('payout', { ascending: false })
+          .limit(50);
+
+        if (error) {
+          throw error;
+        }
+        
+        const gameOffers = data.filter(offer => 
+          Array.isArray(offer.categories) && 
+          offer.categories.some(cat => typeof cat === 'string' && cat.toLowerCase() === 'game')
+        ).slice(0, 4);
+
+        setPhoneCardOffers(gameOffers);
+
+      } catch (error: any) {
+        console.error("Error fetching offers for illustration:", error.message || error);
+        setPhoneCardOffers([]); // Set to empty on error
+      } finally {
+        setIsPhoneCardOffersLoading(false);
+      }
+    }
+
+    fetchOffersForIllustration();
   }, []);
 
   const onSwitchForms = () => {
@@ -331,13 +371,7 @@ export function HomePageContent() {
                 viewport={{ once: true, amount: 0.5 }}
                 transition={{ duration: 0.6 }}
             >
-                <Image 
-                    src="https://picsum.photos/seed/gaming/1280/720"
-                    alt="Person playing games on a computer"
-                    layout="fill"
-                    objectFit="cover"
-                    data-ai-hint="gaming computer"
-                />
+                <EarnByGamingIllustration offers={phoneCardOffers} isLoading={isPhoneCardOffersLoading} />
             </motion.div>
             <motion.div 
                 className="text-center md:text-left"
