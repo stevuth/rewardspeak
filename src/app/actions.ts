@@ -441,6 +441,7 @@ export async function uploadAvatar(formData: FormData): Promise<{ success: boole
         return { success: false, error: `Upload failed: ${uploadError.message}` };
     }
 
+    // Now use the Admin client to get the public URL and update the profiles table
     const adminSupabase = createSupabaseAdminClient();
     const { data: { publicUrl } } = adminSupabase.storage
         .from('avatars')
