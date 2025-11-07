@@ -83,18 +83,21 @@ const FlyingCoinsLoader = () => {
             rotateY: 0,
             scale: 0.5 + Math.random() * 0.5
         }),
-        animate: (i: number) => ({
-            y: -80,
-            opacity: [0, 1, 1, 0],
-            rotateY: 360 * (Math.random() > 0.5 ? 1 : -1),
-            transition: {
-                duration: 1.5 + Math.random() * 1.5,
-                repeat: Infinity,
-                delay: i * 0.2,
-                ease: "circOut",
-                opacity: { times: [0, 0.2, 0.8, 1], duration: 1.5 + Math.random() * 1.5 }
+        animate: (i: number) => {
+            const duration = 1.5 + Math.random() * 1.5;
+            return {
+                y: -80,
+                opacity: [0, 1, 1, 0],
+                rotateY: 360 * (Math.random() > 0.5 ? 1 : -1),
+                transition: {
+                    duration: duration,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                    ease: "circOut",
+                    opacity: { times: [0, 0.2, 0.8, 1], duration: duration }
+                }
             }
-        })
+        }
     };
 
     return (
