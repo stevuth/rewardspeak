@@ -1,7 +1,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Users, Star, Gift, Trophy, UserPlus } from "lucide-react";
+import { List, Users, Star, Gift, Trophy, UserPlus, Eye, ClipboardList } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Manage users, offers, and site settings.",
 };
 
-const adminSections = [
+const managementSections = [
     {
         href: "/admin/users",
         title: "Manage Users",
@@ -21,20 +21,29 @@ const adminSections = [
     {
         href: "/admin/offers",
         title: "Manage Offers",
-        description: "View and manage all offers in the database.",
+        description: "Sync, filter, and enable/disable offers.",
         icon: List,
-    },
-    {
-        href: "/admin/featured-content",
-        title: "Featured Content",
-        description: "Set featured and top converting offers.",
-        icon: Star,
     },
     {
         href: "/admin/withdrawals",
         title: "Withdrawal Requests",
         description: "Approve or reject user withdrawal requests.",
         icon: Gift,
+    },
+    {
+        href: "/admin/postbacks",
+        title: "Postback History",
+        description: "View a log of all offer completions.",
+        icon: ClipboardList,
+    }
+]
+
+const contentViewSections = [
+     {
+        href: "/admin/featured-content",
+        title: "Featured Content",
+        description: "Set featured and top converting offers.",
+        icon: Star,
     },
     {
         href: "/admin/leaderboard",
@@ -47,6 +56,12 @@ const adminSections = [
         title: "Top Referrals",
         description: "View the top referrers by earnings.",
         icon: UserPlus,
+    },
+    {
+        href: "/admin/offer-preview",
+        title: "Offer Preview",
+        description: "See how offers are displayed to users.",
+        icon: Eye,
     }
 ]
 
@@ -98,24 +113,46 @@ export default async function AdminPortalPage() {
           </Card>
       </div>
       
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold tracking-tight">Navigation</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {adminSections.map((section) => (
-              <Link key={section.href} href={section.href} className="block">
-                  <Card className="hover:bg-muted/50 hover:border-primary/50 transition-all h-full">
-                      <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                          <div className="p-3 bg-primary/10 rounded-lg text-primary">
-                              <section.icon className="h-6 w-6" />
-                          </div>
-                          <div>
-                              <CardTitle>{section.title}</CardTitle>
-                              <CardDescription>{section.description}</CardDescription>
-                          </div>
-                      </CardHeader>
-                  </Card>
-              </Link>
-          ))}
+      <div className="space-y-8">
+        <div>
+            <h2 className="text-xl font-semibold tracking-tight mb-4">Management</h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {managementSections.map((section) => (
+                <Link key={section.href} href={section.href} className="block">
+                    <Card className="hover:bg-muted/50 hover:border-primary/50 transition-all h-full">
+                        <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                            <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                                <section.icon className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <CardTitle>{section.title}</CardTitle>
+                                <CardDescription>{section.description}</CardDescription>
+                            </div>
+                        </CardHeader>
+                    </Card>
+                </Link>
+            ))}
+            </div>
+        </div>
+        <div>
+            <h2 className="text-xl font-semibold tracking-tight mb-4">Content & Views</h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {contentViewSections.map((section) => (
+                <Link key={section.href} href={section.href} className="block">
+                    <Card className="hover:bg-muted/50 hover:border-primary/50 transition-all h-full">
+                        <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                            <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                                <section.icon className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <CardTitle>{section.title}</CardTitle>
+                                <CardDescription>{section.description}</CardDescription>
+                            </div>
+                        </CardHeader>
+                    </Card>
+                </Link>
+            ))}
+            </div>
         </div>
       </div>
     </div>
