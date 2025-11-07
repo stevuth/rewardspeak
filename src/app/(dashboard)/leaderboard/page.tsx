@@ -37,7 +37,7 @@ async function getLeaderboardData(): Promise<LeaderboardUser[]> {
     // Rank users by their current points balance
     const { data: profiles, error } = await supabase
         .from('profiles')
-        .select('id, points, email')
+        .select('id, points, email, avatar_url')
         .order('points', { ascending: false })
         .limit(100);
 
@@ -56,7 +56,7 @@ async function getLeaderboardData(): Promise<LeaderboardUser[]> {
             rank: rank,
             name: name,
             points: points,
-            avatarUrl: `https://picsum.photos/seed/user${rank}/96/96`,
+            avatarUrl: profile.avatar_url || `https://picsum.photos/seed/user${rank}/96/96`,
             avatarHint: "person portrait",
             prize: prize,
         }
