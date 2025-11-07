@@ -96,7 +96,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="w-full h-full"
+              className="w-full h-full flex flex-col justify-center items-center"
             >
               <WavingMascotLoader messages={loadingMessages} />
             </motion.div>
