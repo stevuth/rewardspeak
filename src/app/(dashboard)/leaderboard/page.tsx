@@ -1,4 +1,5 @@
 
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -45,18 +46,18 @@ async function getLeaderboardData(): Promise<LeaderboardUser[]> {
         return [];
     }
 
-    const prizes = [100, 50, 25];
-
     return profiles.map((profile, index) => {
         const rank = index + 1;
         const name = profile.email?.split('@')[0] || `User-${profile.id}`;
+        // Calculate prize based on points: 1000 points = $1
+        const prize = rank <= 3 ? (profile.points || 0) / 1000 : undefined;
         return {
             rank: rank,
             name: name,
             points: profile.points || 0,
             avatarUrl: `https://picsum.photos/seed/user${rank}/96/96`,
             avatarHint: "person portrait",
-            prize: rank <= 3 ? prizes[rank - 1] : undefined,
+            prize: prize,
         }
     });
 }
@@ -85,9 +86,9 @@ const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => 
         </Avatar>
         <p className="font-bold text-lg text-secondary">{user.name}</p>
         <p className="text-sm text-muted-foreground">{user.points.toLocaleString()} Points</p>
-        {user.prize && (
+        {user.prize !== undefined && (
             <div className="mt-4 flex items-center gap-2 bg-secondary/20 text-secondary font-bold px-4 py-1.5 rounded-full">
-                <span>${user.prize?.toLocaleString()}</span>
+                <span>${user.prize?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
         )}
         <Badge className="mt-4">{`#${user.rank}`}</Badge>
@@ -193,3 +194,4 @@ export default async function TopEarnersPage() {
     </div>
   );
 }
+
