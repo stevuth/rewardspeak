@@ -39,6 +39,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { processWithdrawalRequest } from "@/app/actions";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
+import { WithdrawalSuccessModal } from "@/components/withdrawal-success-modal";
 
 type Withdrawal = {
   id: string;
@@ -95,6 +96,7 @@ export default function CashOutCabinPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [history, setHistory] = useState<Withdrawal[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -149,10 +151,7 @@ export default function CashOutCabinPage() {
     });
 
     if (result.success) {
-        toast({
-            title: "Withdrawal Submitted!",
-            description: `Your request to withdraw $${selectedWithdrawal.amount} has been received.`
-        });
+        setShowSuccessModal(true);
         // Add the new request to the top of the history list for immediate feedback
         const newRequest: Withdrawal = {
             id: `temp-${Date.now()}`,
@@ -179,6 +178,13 @@ export default function CashOutCabinPage() {
       <PageHeader
         title="Cash-Out Cabin"
         description="Withdraw your earnings. 1,000 Points = $1.00 USD."
+      />
+
+      <WithdrawalSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        amount={selectedWithdrawal?.amount || 0}
+        method={selectedWithdrawal?.method || ''}
       />
 
       <Dialog open={!!selectedWithdrawal} onOpenChange={handleCloseModal}>
