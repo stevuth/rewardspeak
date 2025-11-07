@@ -32,10 +32,10 @@ const GameOffer = ({
 );
 
 const defaultOffers = [
-    { image_url: "https://picsum.photos/seed/game1/48/48", name: "Alice's Mergeland", payout: 9.00 },
-    { image_url: "https://picsum.photos/seed/game2/48/48", name: "Age of Coins: Master Of Spins", payout: 12.40 },
-    { image_url: "https://picsum.photos/seed/game3/48/48", name: "Coin Master", payout: 8.90 },
-    { image_url: "https://picsum.photos/seed/game4/48/48", name: "Lords Mobile: Kingdom Wars", payout: 15.50 },
+    { offer_id: '1', image_url: "https://picsum.photos/seed/game1/48/48", name: "Alice's Mergeland", payout: 9.00 },
+    { offer_id: '2', image_url: "https://picsum.photos/seed/game2/48/48", name: "Age of Coins: Master Of Spins", payout: 12.40 },
+    { offer_id: '3', image_url: "https://picsum.photos/seed/game3/48/48", name: "Coin Master", payout: 8.90 },
+    { offer_id: '4', image_url: "https://picsum.photos/seed/game4/48/48", name: "Lords Mobile: Kingdom Wars", payout: 15.50 },
 ];
 
 export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
@@ -55,9 +55,9 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
             </div>
             <h2 className="text-foreground text-2xl font-bold px-2 mb-2">Games</h2>
             <div className="space-y-2">
-                 {displayOffers.map((offer, index) => (
+                 {displayOffers.map((offer) => (
                     <GameOffer 
-                        key={offer.offer_id || index}
+                        key={offer.offer_id}
                         image_url={offer.image_url} 
                         imageHint="game logo" 
                         title={offer.name} 

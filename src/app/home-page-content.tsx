@@ -141,34 +141,37 @@ export function HomePageContent() {
   const searchParams = useSearchParams();
 
   React.useEffect(() => {
-    async function fetchPhoneOffers() {
-      const supabase = createSupabaseBrowserClient();
+    const supabase = createSupabaseBrowserClient();
+
+    async function fetchOffersForIllustration() {
       try {
+        // Fetch a broader set of offers first
         const { data, error } = await supabase
             .from('all_offers')
-            .select('*')
-            .limit(50); 
+            .select('offer_id, name, image_url, payout, categories')
+            .eq('is_disabled', false)
+            .not('image_url', 'is', null)
+            .neq('image_url', '')
+            .limit(100);
 
         if (error) throw error;
         
         if (data) {
+            // Filter for game offers client-side
             const gameOffers = data.filter(offer => 
-                Array.isArray(offer.categories) && offer.categories.includes('GAME')
-            ).slice(0, 4);
+                Array.isArray(offer.categories) && 
+                (offer.categories.includes('GAME') || offer.categories.includes('Game'))
+            ).slice(0, 4); // Take the first 4 game offers
             setPhoneCardOffers(gameOffers);
         }
 
       } catch (error: any) {
-        console.error("Error fetching phone offers:", error.message || error);
-        setPhoneCardOffers([]);
+        console.error("Error fetching offers for illustration:", error.message || error);
+        setPhoneCardOffers([]); // Set to empty on error
       }
     }
-    fetchPhoneOffers();
-  }, []);
 
-  React.useEffect(() => {
     async function fetchFeaturedOffers() {
-      const supabase = createSupabaseBrowserClient();
       const offerNames = ["upside", "bingo vacation", "crypto miner", "slot mate"];
       const orFilter = offerNames.map(name => `name.ilike.%${name}%`).join(',');
 
@@ -196,6 +199,8 @@ export function HomePageContent() {
         setFeaturedOffers([]);
       }
     }
+    
+    fetchOffersForIllustration();
     fetchFeaturedOffers();
   }, []);
 
