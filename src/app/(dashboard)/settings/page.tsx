@@ -38,7 +38,7 @@ function getFlagEmoji(countryCode: string) {
 }
 
 export default async function MyPeakProfilePage() {
-  const supabase = createSupabaseServerClient(true);
+  const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   let profileData = null;
@@ -84,7 +84,7 @@ export default async function MyPeakProfilePage() {
                                 <>
                                   <Separator orientation="vertical" className="h-4" />
                                   <span className="flex items-center gap-1">
-                                    {countryFlag} {countryCode}
+                                    <Globe className="h-3 w-3" /> {countryFlag} {countryCode}
                                   </span>
                                 </>
                               )}
