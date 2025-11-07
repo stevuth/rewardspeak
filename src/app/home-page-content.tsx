@@ -37,7 +37,6 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { AuthForm } from '@/components/auth/auth-form';
 import { useSearchParams } from 'next/navigation';
-import { showLogoutToast } from '@/lib/reward-toast';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
@@ -45,6 +44,7 @@ import { ExclusiveOpportunitiesIllustration } from '@/components/illustrations/e
 import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
 import { motion } from 'framer-motion';
+import { LogoutSuccessModal } from '@/components/logout-success-modal';
 
 const recentCashouts: any[] = [];
 
@@ -121,6 +121,7 @@ export function HomePageContent() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
   const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
   const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
 
@@ -187,10 +188,8 @@ export function HomePageContent() {
 
   React.useEffect(() => {
     const event = searchParams.get('event');
-    const userEmail = searchParams.get('user_email');
-    
     if (event === 'logout') {
-      showLogoutToast(userEmail);
+      setIsLogoutOpen(true);
       window.history.replaceState({}, '', '/');
     }
   }, [searchParams]);
@@ -247,6 +246,8 @@ export function HomePageContent() {
             <AuthForm type="signup" onSwitch={onSwitchForms} />
         </DialogContent>
       </Dialog>
+      <LogoutSuccessModal isOpen={isLogoutOpen} onClose={() => setIsLogoutOpen(false)} />
+
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={60} height={60} />

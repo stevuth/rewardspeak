@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, Info, Rocket, Gift } from 'lucide-react';
-import { showLoginToast } from '@/lib/reward-toast';
 
 const toastStyles = {
   success: {

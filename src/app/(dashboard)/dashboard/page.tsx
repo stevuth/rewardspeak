@@ -32,12 +32,12 @@ import { cn } from "@/lib/utils";
 import { WelcomeBonusModal } from "@/components/welcome-bonus-modal";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { showLoginToast } from "@/lib/reward-toast";
 import { NotikOffer } from "@/lib/notik-api";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
+import { LoginSuccessModal } from "@/components/login-success-modal";
 
 type DashboardOffer = NotikOffer & {
   points: number;
@@ -76,6 +76,7 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [featuredOffers, setFeaturedOffers] = useState<DashboardOffer[]>([]);
   const [topConvertingOffers, setTopConvertingOffers] = useState<DashboardOffer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -154,15 +155,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const event = searchParams.get('event');
-    const userEmail = searchParams.get('user_email');
     
     if (searchParams.get('verified') === 'true') {
       setShowWelcomeModal(true);
     } else if (event === 'login') {
-        showLoginToast(userEmail);
+        setShowLoginModal(true);
     }
     
-    const paramsExist = event || searchParams.has('verified') || searchParams.has('user_email');
+    const paramsExist = event || searchParams.has('verified');
     if (paramsExist) {
         setTimeout(() => {
             const newUrl = window.location.pathname;
@@ -217,6 +217,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <WelcomeBonusModal isOpen={showWelcomeModal} onClose={() => setShowWelcomeModal(false)} />
+      <LoginSuccessModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
       <OfferPreviewModal 
         isOpen={!!selectedOffer}
         onClose={handleCloseModal}
