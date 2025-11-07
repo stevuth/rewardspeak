@@ -289,15 +289,6 @@ export function HomePageContent() {
                 >
                     Earn <span className="text-primary">Real Money</span> For Simple Online Tasks
                 </motion.h1>
-                <motion.p 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className="text-lg md:text-xl text-muted-foreground mb-8"
-                >
-                    Join thousands of users getting paid for playing games, completing surveys, and finishing simple tasks.
-                    Get a <span className="font-bold text-secondary">$1 bonus</span> just for signing up.
-                </motion.p>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
