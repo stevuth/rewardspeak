@@ -39,8 +39,8 @@ export const WavingMascotLoader = ({ text, messages, duration = 2500 }: { text?:
     const displayText = messages && messages.length > 0 ? messages[index] : text;
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden">
-            <motion.div className="relative w-20 h-24" variants={bodyVariants} animate="bounce">
+        <div className="w-full h-full flex flex-col items-center justify-center pt-2">
+            <motion.div className="relative w-16 h-20" variants={bodyVariants} animate="bounce">
                 <svg viewBox="0 0 100 100" className="w-full h-full">
                     {/* Legs */}
                     <motion.rect x="35" y="80" width="10" height="15" rx="5" fill="hsl(var(--primary))" variants={legVariants} custom={0} animate="dance" />
@@ -64,7 +64,7 @@ export const WavingMascotLoader = ({ text, messages, duration = 2500 }: { text?:
                 </svg>
             </motion.div>
             
-            <div className="relative h-6 w-full text-center mt-1">
+            <div className="relative h-6 w-full text-center mt-2">
                 <AnimatePresence mode="wait">
                     <motion.p
                         key={displayText || index}
