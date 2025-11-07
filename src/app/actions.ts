@@ -311,16 +311,13 @@ export async function getWithdrawalRequests(page: number, limit: number): Promis
 export async function updateWithdrawalRequestStatus(id: string, status: 'completed' | 'rejected'): Promise<{success: boolean, error?: string}> {
     const supabase = createSupabaseAdminClient();
 
-    // In a real app, you might refund points on rejection.
-    // For now, we'll just update the status.
-
-    const { error } = await supabase
-        .from('withdrawal_requests')
-        .update({ status: status, updated_at: new Date().toISOString() })
-        .eq('id', id);
+    const { error } = await supabase.rpc('update_withdrawal_status', {
+        request_id: id,
+        new_status: status
+    });
 
     if (error) {
-        console.error("Error updating withdrawal status:", error);
+        console.error("Error calling update_withdrawal_status RPC:", error);
         return { success: false, error: error.message };
     }
 
