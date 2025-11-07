@@ -48,25 +48,26 @@ export function TypewriterEffect({
   }, [handleTyping, isDeleting, deletingSpeed, typingSpeed]);
 
   return (
-    <div className="relative h-12 md:h-14 text-lg md:text-xl font-semibold mb-8 text-center">
+    <div className="relative h-40 md:h-32 text-4xl md:text-6xl font-extrabold tracking-tighter mb-8 text-center">
       <AnimatePresence mode="wait">
-        <motion.span
+        <motion.h1
           key={sentenceIndex}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className={cn(currentSentence.colorClass, "whitespace-nowrap")}
+          className={cn(currentSentence.colorClass, "whitespace-pre-wrap font-headline")}
         >
           {displayedText}
-        </motion.span>
+          {/* Blinking cursor */}
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+            className={cn("inline-block w-1 h-10 md:h-14 bg-current ml-1")}
+          />
+        </motion.h1>
       </AnimatePresence>
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ duration: 0.8, repeat: Infinity }}
-        className={cn("inline-block w-0.5 h-6 md:h-7 bg-current ml-1", currentSentence.colorClass)}
-      />
     </div>
   );
 }
