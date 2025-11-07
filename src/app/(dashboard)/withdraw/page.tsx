@@ -97,6 +97,7 @@ export default function CashOutCabinPage() {
   const [history, setHistory] = useState<Withdrawal[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successfulWithdrawal, setSuccessfulWithdrawal] = useState<SelectedWithdrawal | null>(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -131,6 +132,11 @@ export default function CashOutCabinPage() {
     setWalletAddress("");
   };
 
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    setSuccessfulWithdrawal(null);
+  }
+
   const handleSubmitWithdrawal = async () => {
     if (!walletAddress) {
         toast({
@@ -151,6 +157,7 @@ export default function CashOutCabinPage() {
     });
 
     if (result.success) {
+        setSuccessfulWithdrawal(selectedWithdrawal);
         setShowSuccessModal(true);
         // Add the new request to the top of the history list for immediate feedback
         const newRequest: Withdrawal = {
@@ -161,6 +168,7 @@ export default function CashOutCabinPage() {
             status: 'pending',
         };
         setHistory(prev => [newRequest, ...prev]);
+        handleCloseModal();
     } else {
         toast({
             variant: "destructive",
@@ -170,7 +178,6 @@ export default function CashOutCabinPage() {
     }
     
     setIsSubmitting(false);
-    handleCloseModal();
   }
 
   return (
@@ -182,12 +189,12 @@ export default function CashOutCabinPage() {
 
       <WithdrawalSuccessModal
         isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        amount={selectedWithdrawal?.amount || 0}
-        method={selectedWithdrawal?.method || ''}
+        onClose={handleCloseSuccessModal}
+        amount={successfulWithdrawal?.amount || 0}
+        method={successfulWithdrawal?.method || ''}
       />
 
-      <Dialog open={!!selectedWithdrawal} onOpenChange={handleCloseModal}>
+      <Dialog open={!!selectedWithdrawal} onOpenChange={(isOpen) => !isOpen && handleCloseModal()}>
         <DialogContent>
             <DialogHeader>
             <DialogTitle>Confirm Withdrawal</DialogTitle>
