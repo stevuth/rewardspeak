@@ -145,25 +145,18 @@ export function HomePageContent() {
 
     async function fetchOffersForIllustration() {
       try {
-        // Fetch a broader set of offers first
         const { data, error } = await supabase
             .from('all_offers')
             .select('offer_id, name, image_url, payout, categories')
             .eq('is_disabled', false)
             .not('image_url', 'is', null)
             .neq('image_url', '')
-            .limit(100);
+            .or('categories.cs.{"GAME"},categories.cs.{"Game"}') // Use .or to check for either category case
+            .limit(4);
 
         if (error) throw error;
         
-        if (data) {
-            // Filter for game offers client-side
-            const gameOffers = data.filter(offer => 
-                Array.isArray(offer.categories) && 
-                (offer.categories.includes('GAME') || offer.categories.includes('Game'))
-            ).slice(0, 4); // Take the first 4 game offers
-            setPhoneCardOffers(gameOffers);
-        }
+        setPhoneCardOffers(data || []);
 
       } catch (error: any) {
         console.error("Error fetching offers for illustration:", error.message || error);

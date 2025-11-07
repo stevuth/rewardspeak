@@ -33,7 +33,6 @@ const GameOffer = ({
 );
 
 export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
-  const displayOffers = offers || [];
   
   return (
     <div className="relative w-72 h-[450px] flex items-center justify-center">
@@ -49,8 +48,8 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
             </div>
             <h2 className="text-foreground text-2xl font-bold px-2 mb-2">Games</h2>
             <div className="space-y-2">
-                 {displayOffers.length > 0 ? (
-                    displayOffers.map((offer) => (
+                 {offers && offers.length > 0 ? (
+                    offers.map((offer) => (
                         <GameOffer 
                             key={offer.offer_id}
                             image_url={offer.image_url} 
