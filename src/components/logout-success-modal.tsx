@@ -32,8 +32,8 @@ export function LogoutSuccessModal({ isOpen, onClose }: LogoutSuccessModalProps)
             You have successfully logged out. Your rewards are waiting for your next visit!
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="sm:justify-center">
-          <Button type="button" onClick={onClose} size="lg">
+        <DialogFooter className="sm:justify-center pt-4">
+          <Button type="button" onClick={onClose} size="lg" variant="outline">
             Close
           </Button>
         </DialogFooter>
