@@ -1,12 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { MailCheck } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { MailCheck, X } from 'lucide-react';
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-
 
 export default function AuthConfirmPage() {
     return (
@@ -17,7 +15,12 @@ export default function AuthConfirmPage() {
                     <span className="text-2xl font-bold font-headline">Rewards Peak</span>
                 </Link>
             </div>
-            <Card className="max-w-lg text-center animated-border-card mx-auto">
+            <Card className="max-w-lg text-center animated-border-card mx-auto relative">
+                <Link href="/" aria-label="Close">
+                    <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+                        <X className="h-5 w-5" />
+                    </Button>
+                </Link>
                 <CardHeader>
                     <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit">
                         <MailCheck className="h-12 w-12" />
@@ -32,14 +35,6 @@ export default function AuthConfirmPage() {
                         Once you've verified your email, you'll be ready to start earning.
                     </p>
                 </CardContent>
-                <CardFooter className="justify-center">
-                    <Link href="/">
-                        <Button>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Home
-                        </Button>
-                    </Link>
-                </CardFooter>
             </Card>
         </div>
     );
