@@ -51,8 +51,8 @@ export default function WithdrawalRequestsPage() {
 
   const currentPage = Number(searchParams.get('page')) || 1;
   const emailFilter = searchParams.get('email') || '';
-  const methodFilter = searchParams.get('method') || '';
-  const statusFilter = searchParams.get('status') || '';
+  const methodFilter = searchParams.get('method') || 'all';
+  const statusFilter = searchParams.get('status') || 'all';
   
   const [emailInput, setEmailInput] = useState(emailFilter);
   const [methodInput, setMethodInput] = useState(methodFilter);
@@ -68,8 +68,8 @@ export default function WithdrawalRequestsPage() {
         page: currentPage, 
         limit: ITEMS_PER_PAGE,
         email: emailFilter,
-        method: methodFilter,
-        status: statusFilter,
+        method: methodFilter === 'all' ? undefined : methodFilter,
+        status: statusFilter === 'all' ? undefined : statusFilter,
       });
       setRequests(fetchedRequests || []);
       setCount(totalCount || 0);
@@ -93,8 +93,8 @@ export default function WithdrawalRequestsPage() {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', '1');
     if (emailInput) params.set('email', emailInput); else params.delete('email');
-    if (methodInput) params.set('method', methodInput); else params.delete('method');
-    if (statusInput) params.set('status', statusInput); else params.delete('status');
+    if (methodInput && methodInput !== 'all') params.set('method', methodInput); else params.delete('method');
+    if (statusInput && statusInput !== 'all') params.set('status', statusInput); else params.delete('status');
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });
@@ -102,8 +102,8 @@ export default function WithdrawalRequestsPage() {
 
   const handleClearFilters = () => {
     setEmailInput('');
-    setMethodInput('');
-    setStatusInput('');
+    setMethodInput('all');
+    setStatusInput('all');
     startTransition(() => {
         router.push(pathname);
     });
@@ -153,8 +153,8 @@ export default function WithdrawalRequestsPage() {
 
     const { requests: allRequests, error } = await getAllWithdrawalRequestsForCSV({
       email: emailFilter,
-      method: methodFilter,
-      status: statusFilter,
+      method: methodFilter === 'all' ? undefined : methodFilter,
+      status: statusFilter === 'all' ? undefined : statusFilter,
     });
 
     if (error || !allRequests) {
@@ -257,7 +257,7 @@ export default function WithdrawalRequestsPage() {
                             <SelectValue placeholder="All Methods" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All Methods</SelectItem>
+                            <SelectItem value="all">All Methods</SelectItem>
                             <SelectItem value="paypal">PayPal</SelectItem>
                             <SelectItem value="usdt">USDT</SelectItem>
                         </SelectContent>
@@ -270,7 +270,7 @@ export default function WithdrawalRequestsPage() {
                             <SelectValue placeholder="All Statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All Statuses</SelectItem>
+                            <SelectItem value="all">All Statuses</SelectItem>
                             <SelectItem value="pending">Pending</SelectItem>
                             <SelectItem value="completed">Completed</SelectItem>
                             <SelectItem value="rejected">Rejected</SelectItem>

@@ -309,10 +309,10 @@ export async function getWithdrawalRequests({ page, limit, email, method, status
     if (email) {
         query = query.ilike('email', `%${email}%`);
     }
-    if (method && method !== 'all') {
+    if (method) {
         query = query.eq('method', method);
     }
-    if (status && status !== 'all') {
+    if (status) {
         query = query.eq('status', status);
     }
 
@@ -338,10 +338,10 @@ export async function getAllWithdrawalRequestsForCSV({ email, method, status }: 
     if (email) {
         query = query.ilike('email', `%${email}%`);
     }
-    if (method && method !== 'all') {
+    if (method) {
         query = query.eq('method', method);
     }
-    if (status && status !== 'all') {
+    if (status) {
         query = query.eq('status', status);
     }
 
