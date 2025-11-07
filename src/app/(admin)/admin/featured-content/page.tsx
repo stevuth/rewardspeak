@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { updateFeaturedContent, getFeaturedContent } from "@/app/actions";
 import { Loader2 } from "lucide-react";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 export default function FeaturedContentPage() {
   const [featuredOfferIds, setFeaturedOfferIds] = useState('');
@@ -84,7 +85,7 @@ export default function FeaturedContentPage() {
   if (isLoading) {
     return (
         <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <WavingMascotLoader text="Loading Content..." />
         </div>
     )
   }

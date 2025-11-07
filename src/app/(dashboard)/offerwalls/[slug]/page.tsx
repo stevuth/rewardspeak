@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 
 interface Offerwall {
     name: string;
@@ -87,8 +88,7 @@ export default function OfferwallIframePage() {
         <CardContent className="p-0 h-full">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              <p className="ml-4">Loading Offerwall...</p>
+              <WavingMascotLoader text="Loading Offerwall..." />
             </div>
           ) : iframeSrc ? (
             <iframe

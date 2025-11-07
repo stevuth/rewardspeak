@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/carousel";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 type Offer = NotikOffer & {
   points: number;
@@ -185,8 +186,8 @@ export default function OfferPreviewPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="flex justify-center items-center py-12 h-96">
+        <WavingMascotLoader text="Loading Previews..." />
       </div>
     );
   }

@@ -29,6 +29,7 @@ import { syncOffers, getOfferPayoutPercentage, updateOfferPayoutPercentage, getO
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 type Offer = {
   offer_id: string;
@@ -369,7 +370,9 @@ export default function ManageOffersPage() {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center h-24">
-                    Loading offers...
+                    <div className="flex justify-center items-center py-12 h-64">
+                       <WavingMascotLoader text="Loading offers..." />
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : offers.length > 0 ? (

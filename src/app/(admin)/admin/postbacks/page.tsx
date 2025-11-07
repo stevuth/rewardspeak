@@ -22,6 +22,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 type Transaction = {
   id: number;
@@ -108,8 +109,8 @@ export default function PostbacksPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24">
-                    <Loader2 className="mx-auto h-6 w-6 animate-spin"/>
+                  <TableCell colSpan={7} className="text-center h-64">
+                    <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
               ) : transactions.length > 0 ? (

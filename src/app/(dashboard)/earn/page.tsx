@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 type Offer = NotikOffer & {
   points: number;
@@ -237,15 +238,8 @@ export default function EarnPage() {
   const renderOfferGrid = (offers: Offer[]) => {
     if (isLoading && offers.length === 0) {
         return (
-            <div className="flex flex-col justify-center items-center py-12 gap-2">
-                <Image
-                    src="/logo.png?v=9"
-                    alt="Loading..."
-                    width={80}
-                    height={80}
-                    className="animate-pulse"
-                />
-                <span className="text-muted-foreground font-semibold">Rewards Peak</span>
+            <div className="flex flex-col justify-center items-center py-12 gap-2 h-96">
+                <WavingMascotLoader text="Finding the best offers..." />
             </div>
         );
     }
@@ -321,7 +315,7 @@ export default function EarnPage() {
         {renderOfferGrid(allOffers)}
         {isLoadingMore && (
              <div className="flex justify-center items-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <WavingMascotLoader text="Loading more..." />
              </div>
         )}
         {!hasMore && allOffers.length > 0 && (

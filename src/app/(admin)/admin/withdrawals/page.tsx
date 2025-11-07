@@ -23,6 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 
 export type WithdrawalRequest = {
@@ -281,8 +282,8 @@ export default function WithdrawalRequestsPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24">
-                    <Loader2 className="mx-auto h-6 w-6 animate-spin"/>
+                  <TableCell colSpan={8} className="text-center h-64">
+                    <WavingMascotLoader text="Loading Requests..." />
                   </TableCell>
                 </TableRow>
               ) : requests.length > 0 ? (

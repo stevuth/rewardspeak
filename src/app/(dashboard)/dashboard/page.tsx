@@ -37,6 +37,7 @@ import { NotikOffer } from "@/lib/notik-api";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import { OfferGridCard } from "@/components/offer-grid-card";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 type DashboardOffer = NotikOffer & {
   points: number;
@@ -182,8 +183,8 @@ export default function DashboardPage() {
   const renderOfferCarousel = (offers: DashboardOffer[], sectionTitle: string) => {
     if (isLoading) {
       return (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="flex justify-center items-center py-12 h-64">
+          <WavingMascotLoader text="Finding Offers..." />
         </div>
       );
     }
