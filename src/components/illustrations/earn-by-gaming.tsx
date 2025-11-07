@@ -34,6 +34,8 @@ const GameOffer = ({
 
 export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
   
+  const hasOffers = offers && offers.length > 0;
+
   return (
     <div className="relative w-72 h-[450px] flex items-center justify-center">
       {/* Phone Body */}
@@ -48,7 +50,7 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
             </div>
             <h2 className="text-foreground text-2xl font-bold px-2 mb-2">Games</h2>
             <div className="space-y-2">
-                 {offers && offers.length > 0 ? (
+                 {hasOffers ? (
                     offers.map((offer) => (
                         <GameOffer 
                             key={offer.offer_id}
@@ -60,7 +62,8 @@ export function EarnByGamingIllustration({ offers }: { offers?: any[] }) {
                     ))
                  ) : (
                     <div className="h-48 flex flex-col items-center justify-center text-center">
-                        <WavingMascotLoader text="Loading Games..." />
+                        <WavingMascotLoader text="Finding Games..." />
+                        <p className="text-xs text-muted-foreground mt-2">No game offers available right now.</p>
                     </div>
                  )}
             </div>

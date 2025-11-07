@@ -152,7 +152,7 @@ export function HomePageContent() {
             .not('image_url', 'is', null)
             .neq('image_url', '')
             .order('created_at', { ascending: false })
-            .limit(50);
+            .limit(100);
 
         if (error) throw error;
         
