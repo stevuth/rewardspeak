@@ -1,5 +1,4 @@
 
-'use client';
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -17,13 +16,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { leaderboardData, type LeaderboardUser } from "@/lib/mock-data";
-import Image from "next/image";
-import { Award, Crown, Medal } from "lucide-react";
-import type { Metadata } from "next";
+import { Crown, Medal } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { createSupabaseServerClient } from "@/utils/supabase/server";
+
+export const revalidate = 3600; // Revalidate every hour
+
+type LeaderboardUser = {
+  rank: number;
+  name: string;
+  points: number;
+  avatarUrl: string;
+  avatarHint: string;
+  prize?: number;
+};
+
+async function getLeaderboardData(): Promise<LeaderboardUser[]> {
+    const supabase = createSupabaseServerClient();
+    const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('id, points, email')
+        .order('points', { ascending: false })
+        .limit(100);
+
+    if (error) {
+        console.error("Error fetching leaderboard data:", error);
+        return [];
+    }
+
+    const prizes = [100, 50, 25];
+
+    return profiles.map((profile, index) => {
+        const rank = index + 1;
+        const name = profile.email?.split('@')[0] || `User-${profile.id}`;
+        return {
+            rank: rank,
+            name: name,
+            points: profile.points || 0,
+            avatarUrl: `https://picsum.photos/seed/user${rank}/96/96`,
+            avatarHint: "person portrait",
+            prize: rank <= 3 ? prizes[rank - 1] : undefined,
+        }
+    });
+}
 
 
 const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => {
@@ -49,90 +85,34 @@ const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => 
         </Avatar>
         <p className="font-bold text-lg text-secondary">{user.name}</p>
         <p className="text-sm text-muted-foreground">{user.points.toLocaleString()} Points</p>
-        <div className="mt-4 flex items-center gap-2 bg-secondary/20 text-secondary font-bold px-4 py-1.5 rounded-full">
-            <span>${user.prize?.toLocaleString()}</span>
-        </div>
+        {user.prize && (
+            <div className="mt-4 flex items-center gap-2 bg-secondary/20 text-secondary font-bold px-4 py-1.5 rounded-full">
+                <span>${user.prize?.toLocaleString()}</span>
+            </div>
+        )}
         <Badge className="mt-4">{`#${user.rank}`}</Badge>
       </Card>
     );
   };
-
-const CountdownTimer = () => {
-    const calculateTimeLeft = () => {
-        const difference = +new Date("2024-12-31") - +new Date();
-        let timeLeft: { [key: string]: number } = {};
-
-        if (difference > 0) {
-            timeLeft = {
-                days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                minutes: Math.floor((difference / 1000 / 60) % 60),
-                seconds: Math.floor((difference / 1000) % 60)
-            };
-        }
-        return timeLeft;
-    }
-
-    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setTimeLeft(calculateTimeLeft());
-        }, 1000);
-        return () => clearTimeout(timer);
-    });
-
-    const formatTime = (value: number) => value.toString().padStart(2, '0');
-
-    return (
-        <div className="text-center my-8">
-            <h3 className="text-sm uppercase tracking-widest text-muted-foreground mb-2">Leaderboard ends in</h3>
-            <div className="flex justify-center items-center gap-2">
-                {timeLeft.days !== undefined ? (
-                    <>
-                        <div className="flex flex-col items-center">
-                            <span className="text-3xl font-bold p-2 bg-muted rounded-lg">{formatTime(timeLeft.days)}</span>
-                            <span className="text-xs text-muted-foreground mt-1">Days</span>
-                        </div>
-                        <span className="text-3xl font-bold">:</span>
-                    </>
-                ) : null}
-                 <div className="flex flex-col items-center">
-                    <span className="text-3xl font-bold p-2 bg-muted rounded-lg">{formatTime(timeLeft.hours || 0)}</span>
-                    <span className="text-xs text-muted-foreground mt-1">Hours</span>
-                </div>
-                <span className="text-3xl font-bold">:</span>
-                 <div className="flex flex-col items-center">
-                    <span className="text-3xl font-bold p-2 bg-muted rounded-lg">{formatTime(timeLeft.minutes || 0)}</span>
-                    <span className="text-xs text-muted-foreground mt-1">Minutes</span>
-                </div>
-                <span className="text-3xl font-bold">:</span>
-                <div className="flex flex-col items-center">
-                    <span className="text-3xl font-bold p-2 bg-muted rounded-lg">{formatTime(timeLeft.seconds || 0)}</span>
-                    <span className="text-xs text-muted-foreground mt-1">Seconds</span>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 const RankBadge = ({ rank }: { rank: number }) => {
     if (rank <= 3) return null;
     return <Badge variant="secondary">{rank}th</Badge>;
   };
 
-export default function TopEarnersPage() {
+export default async function TopEarnersPage() {
+    const leaderboardData = await getLeaderboardData();
     const topThree = leaderboardData.slice(0, 3);
     const restOfLeaderboard = leaderboardData.slice(3);
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Top Earners"
-        description="See who's earning the most on Rewards Peak."
+        title="All-Time Top Earners"
+        description="See who's at the peak of the earnings leaderboard."
       />
       
-      {topThree.length >= 3 && (
+      {topThree.length >= 3 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end mt-12">
             <div className="order-2 md:order-1">
                 <PodiumCard user={topThree[1]} rank={2} />
@@ -144,14 +124,18 @@ export default function TopEarnersPage() {
                 <PodiumCard user={topThree[2]} rank={3} />
             </div>
       </div>
+      ) : (
+        <Card className="text-center py-12">
+            <CardContent>
+                <p className="text-muted-foreground">The podium is waiting for its champions. Start earning to claim a spot!</p>
+            </CardContent>
+        </Card>
       )}
-
-      <CountdownTimer />
 
       <Card>
         <CardHeader>
-          <CardTitle>Top Earners</CardTitle>
-          <CardDescription>This is a list of the top 100 earners this month.</CardDescription>
+          <CardTitle>Leaderboard</CardTitle>
+          <CardDescription>A list of the top 100 all-time earners on Rewards Peak.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -188,11 +172,19 @@ export default function TopEarnersPage() {
                   </TableRow>
                 ))
               ) : (
-                <TableRow>
-                    <TableCell colSpan={3} className="text-center h-24">
-                        The leaderboard is empty. Start earning to get on the board!
-                    </TableCell>
-                </TableRow>
+                leaderboardData.length <= 3 && leaderboardData.length > 0 ? (
+                    <TableRow>
+                        <TableCell colSpan={3} className="text-center h-24">
+                           More earners are climbing the ranks!
+                        </TableCell>
+                    </TableRow>
+                ) : (
+                    <TableRow>
+                        <TableCell colSpan={3} className="text-center h-24">
+                            The leaderboard is empty. Start earning to get on the board!
+                        </TableCell>
+                    </TableRow>
+                )
               )}
             </TableBody>
           </Table>
