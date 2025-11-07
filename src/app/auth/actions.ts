@@ -127,3 +127,18 @@ export async function signup(prevState: { message: string, success?: boolean }, 
 
   redirect('/auth/confirm');
 }
+
+
+export async function signOut() {
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error('Error signing out:', error.message);
+    // Even if there's an error, we should still try to redirect.
+    // The middleware will handle unauthenticated access.
+  }
+  
+  // The redirect now includes query params to trigger the success modal on the homepage.
+  return redirect('/?event=logout');
+}

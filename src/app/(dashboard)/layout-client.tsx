@@ -37,10 +37,11 @@ import { AnimatedCounter } from "@/components/animated-counter";
 import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { SafeImage } from "@/components/safe-image";
+import { signOut } from "@/app/auth/actions";
 
 
 const navItems = [
-    { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/referrals", label: "Invite & Earn", icon: Users },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
@@ -117,13 +118,15 @@ function SidebarNavs({ user }: { user: User | null }) {
             {item.label}
           </Link>
         ))}
-         <Link
-            href={`/?event=logout&user_email=${user?.email || ''}`}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-primary hover:text-primary-foreground font-bold"
-          >
-            <LogOut className="h-4 w-4" />
-            Log Out
-          </Link>
+         <form action={signOut}>
+            <button
+                type="submit"
+                className="w-full flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-primary hover:text-primary-foreground font-bold"
+            >
+                <LogOut className="h-4 w-4" />
+                Log Out
+            </button>
+        </form>
       </div>
     </>
   );
@@ -214,12 +217,12 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                             </div>
                         </div>
-                        <Button variant="ghost" asChild className="w-full justify-start hover:bg-accent hover:text-accent-foreground">
-                            <Link href={`/?event=logout&user_email=${user?.email || ''}`}>
+                        <form action={signOut}>
+                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-accent hover:text-accent-foreground">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
-                            </Link>
-                        </Button>
+                            </Button>
+                        </form>
                         </div>
                     </div>
                  </div>
