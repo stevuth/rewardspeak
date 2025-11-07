@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Gift, Users, DollarSign, Check } from "lucide-react";
+import { Copy, Gift, Users, DollarSign, Check, Percent } from "lucide-react";
 import { GiftIllustration } from "@/components/illustrations/gift";
 import { StatCard } from "@/components/stat-card";
 import { useEffect, useState } from "react";
@@ -90,7 +90,7 @@ export default function InviteAndClimbPage() {
     <div className="space-y-8">
       <PageHeader
         title="Invite & Earn"
-        description="Share your code to earn rewards when your friends join and earn."
+        description="Share your code to earn a percentage of what your friends make, for life."
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -104,14 +104,19 @@ export default function InviteAndClimbPage() {
           title="Referral Earnings"
           value={`${referralEarnings} Pts`}
           icon={Gift}
-          description="Total points earned from your referrals."
+          description="Total points earned from your referrals' activity."
         />
       </div>
 
       <div className="container mx-auto flex flex-col items-center justify-center text-center py-10 md:py-16 bg-card rounded-lg">
         <h2 className="text-3xl md:text-4xl font-bold font-headline">
-          Refer and Earn
+          The Ultimate Referral Program
         </h2>
+        
+        <div className="flex items-center gap-2 my-4 bg-primary/10 text-primary px-4 py-2 rounded-full font-bold text-lg">
+            <Percent className="h-5 w-5" />
+            <span>Earn 10% of your friends' earnings, for life!</span>
+        </div>
 
         <div className="my-8">
           <GiftIllustration />
