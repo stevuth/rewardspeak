@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogIn, Lock, Mail, UserPlus, KeyRound } from "lucide-react";
+import { LogIn, Lock, Mail, UserPlus, KeyRound, Mountain } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -71,46 +71,57 @@ const FloatingLabelInput = ({
   );
 };
 
-const VaultLoader = () => (
+const MountainLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
         <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                     <feMerge>
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
                     </feMerge>
                 </filter>
             </defs>
-            {/* Base circle */}
-            <circle cx="40" cy="40" r="35" stroke="hsl(var(--foreground))" strokeWidth="2.5" opacity="0.3"/>
-            
-            {/* Scanner Arc */}
+            {/* Mountain shape */}
             <motion.path
-                d="M 5 40 A 35 35 0 0 1 75 40"
-                stroke="hsl(var(--secondary))"
-                strokeWidth="3"
+                d="M 20 65 L 40 30 L 60 65 Z"
+                stroke="hsl(var(--foreground))"
+                strokeWidth="2"
+                strokeLinejoin="round"
+                fill="hsl(var(--background))"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            />
+
+            {/* Climbing Path */}
+            <motion.path
+                d="M 20 65 Q 30 50, 40 30"
+                stroke="hsl(var(--primary))"
+                strokeWidth="2"
                 fill="none"
-                strokeLinecap="round"
-                initial={{ rotate: -90 }}
-                animate={{ rotate: 270 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                style={{ transformOrigin: '40px 40px' }}
+                strokeDasharray="100"
+                strokeDashoffset="100"
+                animate={{ strokeDashoffset: 0 }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            {/* Keyhole reveal */}
-            <motion.g
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-            >
-                <KeyRound x="25" y="25" width="30" height="30" strokeWidth="2.5" className="text-secondary" style={{ filter: "url(#glow)" }}/>
-            </motion.g>
+            {/* Peak Beacon */}
+            <motion.circle
+                cx="40"
+                cy="30"
+                r="3"
+                fill="hsl(var(--secondary))"
+                style={{ filter: "url(#glow)" }}
+                animate={{ scale: [1, 1.5, 1] }}
+                transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+            />
         </svg>
         <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
     </div>
 );
+
 
 const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boolean }) => {
     return (
@@ -131,7 +142,7 @@ const SubmitButton = ({ isLogin, isPending }: { isLogin: boolean, isPending: boo
               exit={{ opacity: 0 }}
               className="w-full h-full"
             >
-              <VaultLoader />
+              <MountainLoader />
             </motion.div>
           ) : (
             <motion.div
