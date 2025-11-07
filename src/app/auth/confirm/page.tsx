@@ -36,12 +36,12 @@ export default function AuthConfirmPage() {
                         </p>
                     </CardContent>
                     <CardFooter className="justify-center">
-                        <Button asChild variant="ghost">
-                            <Link href="/">
+                        <Link href="/">
+                            <Button variant="ghost">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
                                 Back to Home
-                            </Link>
-                        </Button>
+                            </Button>
+                        </Link>
                     </CardFooter>
                 </Card>
             </div>
