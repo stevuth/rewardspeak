@@ -23,6 +23,30 @@ export async function updateSession(request: NextRequest) {
       },
     }
   );
-  await supabase.auth.getUser();
+
+  // refreshing the auth token
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Redirect to home if user is not authenticated and trying to access protected routes
+  const protectedRoutes = ['/dashboard', '/earn', '/referrals', '/leaderboard', '/withdraw', '/settings', '/history', '/support'];
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+
+  if (!user && (protectedRoutes.some(path => request.nextUrl.pathname.startsWith(path)) || isAdminRoute)) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // Redirect to admin dashboard if user is an admin
+  if (user && user.email?.endsWith('@rewardspeak.com') && !isAdminRoute && request.nextUrl.pathname.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/admin', request.url));
+  }
+  
+  // If user is authenticated and tries to access the home page, redirect to dashboard
+  if (user && request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+
   return response;
 }

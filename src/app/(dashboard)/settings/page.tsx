@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MyPeakProfilePage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServerClient(true);
   const { data: { user } } = await supabase.auth.getUser();
 
   let profileData = null;

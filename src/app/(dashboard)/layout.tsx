@@ -9,7 +9,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServerClient(true);
   const { data: { user } } = await supabase.auth.getUser();
 
   let profilePoints = 0;

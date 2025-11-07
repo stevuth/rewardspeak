@@ -68,7 +68,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
     return { message: 'Heads up! For fair rewards and security, VPNs and proxies aren’t allowed. Please reconnect without one.', success: false };
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServerClient(true);
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -105,7 +105,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     return { message: 'Email and password are required.', success: false };
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServerClient(true);
 
   const { error } = await supabase.auth.signUp({
     email: email,
