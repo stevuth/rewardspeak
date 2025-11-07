@@ -4,7 +4,7 @@
 import { useState, useRef, useTransition } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Upload, Loader2 } from "lucide-react";
+import { Upload, Loader2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadAvatar } from "@/app/actions";
 
@@ -13,6 +13,7 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null }) {
     const [preview, setPreview] = useState<string | null>(currentAvatar);
+    const [fileToUpload, setFileToUpload] = useState<File | null>(null);
     const [isPending, startTransition] = useTransition();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
@@ -33,30 +34,37 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
         const reader = new FileReader();
         reader.onloadend = () => {
             setPreview(reader.result as string);
-            
-            startTransition(async () => {
-                const formData = new FormData();
-                formData.append('avatar', file);
-
-                const result = await uploadAvatar(formData);
-
-                if (result.success) {
-                    toast({
-                        title: 'Avatar Updated!',
-                        description: 'Your new profile picture has been saved.',
-                    });
-                } else {
-                    toast({
-                        variant: 'destructive',
-                        title: 'Upload Failed',
-                        description: result.error || 'An unknown error occurred.',
-                    });
-                    // Revert preview if upload fails
-                    setPreview(currentAvatar);
-                }
-            });
         };
         reader.readAsDataURL(file);
+        setFileToUpload(file);
+    };
+
+    const handleSave = () => {
+        if (!fileToUpload) return;
+
+        startTransition(async () => {
+            const formData = new FormData();
+            formData.append('avatar', fileToUpload);
+
+            const result = await uploadAvatar(formData);
+
+            if (result.success) {
+                toast({
+                    title: 'Avatar Updated!',
+                    description: 'Your new profile picture has been saved.',
+                });
+                setFileToUpload(null); // Clear the file after successful upload
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Upload Failed',
+                    description: result.error || 'An unknown error occurred.',
+                });
+                // Revert preview if upload fails
+                setPreview(currentAvatar);
+                setFileToUpload(null);
+            }
+        });
     };
 
     const handleButtonClick = () => {
@@ -64,30 +72,48 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
     };
 
     return (
-        <div className="relative w-24 h-24 mx-auto group">
-            <Avatar className="h-24 w-24 border-2 border-primary">
-                <AvatarImage src={preview || ''} alt="User avatar" />
-                <AvatarFallback className="text-3xl">
-                    {isPending ? <Loader2 className="animate-spin" /> : 'U'}
-                </AvatarFallback>
-            </Avatar>
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/png, image/jpeg, image/gif"
-                disabled={isPending}
-            />
-            <Button
-                onClick={handleButtonClick}
-                variant="secondary"
-                size="icon"
-                className="absolute bottom-0 right-0 rounded-full h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                disabled={isPending}
-            >
-                {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-            </Button>
+        <div className="flex flex-col items-center gap-4">
+            <div className="relative w-24 h-24 mx-auto group">
+                <Avatar className="h-24 w-24 border-2 border-primary">
+                    <AvatarImage src={preview || ''} alt="User avatar" />
+                    <AvatarFallback className="text-3xl">
+                        {isPending ? <Loader2 className="animate-spin" /> : 'U'}
+                    </AvatarFallback>
+                </Avatar>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/png, image/jpeg, image/gif"
+                    disabled={isPending}
+                />
+                <Button
+                    onClick={handleButtonClick}
+                    variant="secondary"
+                    size="icon"
+                    className="absolute bottom-0 right-0 rounded-full h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    disabled={isPending}
+                    aria-label="Choose new profile picture"
+                >
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                </Button>
+            </div>
+            {fileToUpload && (
+                <Button onClick={handleSave} disabled={isPending}>
+                    {isPending ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Picture
+                        </>
+                    )}
+                </Button>
+            )}
         </div>
     );
 }

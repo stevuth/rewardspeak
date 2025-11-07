@@ -59,17 +59,19 @@ export default async function MyPeakProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1">
                 <Card className="text-center">
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 space-y-6">
                         <AvatarUploader currentAvatar={avatarUrl} />
-                        <h3 className="text-xl font-semibold mt-4">{user?.email?.split('@')[0]}</h3>
-                        
-                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-1">
-                            <span className="font-mono">ID-{rewardsPeakId}</span>
-                            <Separator orientation="vertical" className="h-4" />
-                            <span>Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                        <div>
+                          <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
+                          
+                          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-1">
+                              <span className="font-mono">ID-{rewardsPeakId}</span>
+                              <Separator orientation="vertical" className="h-4" />
+                              <span>Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                          </div>
                         </div>
 
-                        <div className="flex justify-around my-6 text-center">
+                        <div className="flex justify-around text-center pt-4 border-t border-border">
                             <div>
                                 <p className="text-2xl font-bold"><AnimatedCounter value={completedOffersCount} /></p>
                                 <p className="text-xs text-muted-foreground">Offers Done</p>
