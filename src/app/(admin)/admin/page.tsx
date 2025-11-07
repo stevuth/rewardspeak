@@ -1,7 +1,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Users, Star, Gift, Trophy } from "lucide-react";
+import { List, Users, Star, Gift, Trophy, UserPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -41,6 +41,12 @@ const adminSections = [
         title: "Top Earners",
         description: "View the site's leaderboard.",
         icon: Trophy,
+    },
+    {
+        href: "/admin/top-referrals",
+        title: "Top Referrals",
+        description: "View the top referrers by earnings.",
+        icon: UserPlus,
     }
 ]
 

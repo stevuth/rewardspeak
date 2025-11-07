@@ -14,7 +14,8 @@ import {
   Star,
   ClipboardList,
   Gift,
-  Trophy
+  Trophy,
+  UserPlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -29,6 +30,7 @@ const adminNavItems = [
     { href: "/admin/postbacks", label: "Postbacks", icon: ClipboardList },
     { href: "/admin/withdrawals", label: "Withdrawals", icon: Gift },
     { href: "/admin/leaderboard", label: "Top Earners", icon: Trophy },
+    { href: "/admin/top-referrals", label: "Top Referrals", icon: UserPlus },
 ];
 
 function AdminHeader() {
