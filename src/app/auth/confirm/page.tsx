@@ -34,7 +34,7 @@ export default function AuthConfirmPage() {
                 </CardContent>
                 <CardFooter className="justify-center">
                     <Link href="/">
-                        <Button variant="outline">
+                        <Button>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Home
                         </Button>
