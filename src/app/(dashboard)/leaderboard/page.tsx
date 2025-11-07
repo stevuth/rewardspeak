@@ -62,6 +62,12 @@ async function getLeaderboardData(): Promise<LeaderboardUser[]> {
     });
 }
 
+function getOrdinal(n: number) {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 
 const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => {
     const isFirst = rank === 1;
@@ -91,14 +97,14 @@ const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => 
                 <span>${user.prize?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
         )}
-        <Badge className="mt-4">{`#${user.rank}`}</Badge>
+        <Badge className="mt-4">{getOrdinal(user.rank)}</Badge>
       </Card>
     );
   };
 
 const RankBadge = ({ rank }: { rank: number }) => {
     if (rank <= 3) return null;
-    return <Badge variant="secondary">{rank}th</Badge>;
+    return <Badge variant="secondary">{getOrdinal(rank)}</Badge>;
   };
 
 export default async function TopEarnersPage() {
@@ -194,4 +200,5 @@ export default async function TopEarnersPage() {
     </div>
   );
 }
+
 
