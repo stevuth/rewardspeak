@@ -197,17 +197,23 @@ export function HomePageContent() {
       try {
         const { data, error } = await supabase
           .from('all_offers')
-          .select('name, image_url, categories, payout')
+          .select('name, image_url, categories, payout, offer_id')
           .not('image_url', 'is', null)
           .neq('image_url', '')
           .order('payout', { ascending: false })
-          .limit(4);
+          .limit(10); // Fetch a few more to ensure we find games
 
         if (error) {
           throw error;
         }
         
-        setPhoneCardOffers(data || []);
+        // Filter for games on the client side
+        const gameOffers = (data || []).filter(offer => 
+            Array.isArray(offer.categories) && 
+            offer.categories.some(cat => typeof cat === 'string' && cat.toLowerCase() === 'game')
+        ).slice(0, 4); // Take the top 4 games
+
+        setPhoneCardOffers(gameOffers);
 
       } catch (error: any) {
         console.error("Error fetching offers for illustration:", error.message || error);
@@ -360,7 +366,7 @@ export function HomePageContent() {
 
         <section className="py-16 md:py-24 grid md:grid-cols-2 gap-8 lg:gap-16 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
-                className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border-2 border-primary/20"
+                className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border-2 border-primary/20 min-h-[500px]"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.5 }}
@@ -543,5 +549,3 @@ export function HomePageContent() {
     </div>
   );
 }
-
-    
