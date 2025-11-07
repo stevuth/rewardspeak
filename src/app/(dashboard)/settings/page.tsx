@@ -1,43 +1,14 @@
 
-
-import { PageHeader } from "@/components/page-header";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { Metadata } from "next";
-import { DollarSign, CheckCircle, CalendarDays, Upload, Fingerprint, UserPlus, Globe } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { StatItem } from "@/components/stat-item";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
-import { AnimatedCounter } from "@/components/animated-counter";
-import { Separator } from "@/components/ui/separator";
-import { AvatarUploader } from "@/components/avatar-uploader";
+import { SettingsPageClient } from "./settings-page-client";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "My Peak Profile",
   description: "Account info, preferences, and personal stats.",
 };
 
-// Helper to get flag emoji from country code
-function getFlagEmoji(countryCode: string) {
-  if (!countryCode) return '';
-  const codePoints = countryCode
-    .toUpperCase()
-    .split('')
-    .map(char => 127397 + char.charCodeAt(0));
-  return String.fromCodePoint(...codePoints);
-}
-
-export default async function MyPeakProfilePage() {
+export default async function SettingsPage() {
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -50,116 +21,6 @@ export default async function MyPeakProfilePage() {
       .single();
     profileData = data;
   }
-
-  const completedOffersCount = 0; // This can be fetched later
-  const totalPoints = profileData?.points ?? 0;
-  const totalAmountEarned = totalPoints / 1000;
-  const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
-  const rewardsPeakId = profileData?.id ?? 'GUEST';
-  const avatarUrl = profileData?.avatar_url;
-  const countryCode = profileData?.country_code ?? 'N/A';
-  const countryFlag = countryCode !== 'N/A' ? getFlagEmoji(countryCode) : '';
-
-
-  return (
-    <div className="space-y-8">
-      <PageHeader
-        title="My Peak Profile"
-        description="Manage your account and notification settings."
-      />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-1">
-                <Card className="text-center">
-                    <CardContent className="p-6 space-y-6">
-                        <AvatarUploader currentAvatar={avatarUrl} />
-                        <div>
-                          <h3 className="text-xl font-semibold">{user?.email?.split('@')[0]}</h3>
-                          
-                          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-muted-foreground mt-2">
-                              <span className="font-mono flex items-center gap-1"><Fingerprint className="h-3 w-3" /> ID-{rewardsPeakId}</span>
-                              <Separator orientation="vertical" className="h-4" />
-                              <span className="flex items-center gap-1"><CalendarDays className="h-3 w-3" /> Joined {dateJoined.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
-                              {countryCode !== 'N/A' && (
-                                <>
-                                  <Separator orientation="vertical" className="h-4" />
-                                  <span className="flex items-center gap-1">
-                                    <Globe className="h-3 w-3" /> {countryFlag} {countryCode}
-                                  </span>
-                                </>
-                              )}
-                          </div>
-                        </div>
-
-                        <div className="flex justify-around text-center pt-4 border-t border-border">
-                            <div>
-                                <p className="text-2xl font-bold"><AnimatedCounter value={completedOffersCount} /></p>
-                                <p className="text-xs text-muted-foreground">Offers Done</p>
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold">${totalAmountEarned.toFixed(2)}</p>
-                                <p className="text-xs text-muted-foreground">Total Earned</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="md:col-span-2">
-                 <Tabs defaultValue="profile" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="profile">Profile</TabsTrigger>
-                    <TabsTrigger value="password">Password</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="profile">
-                    <Card>
-                        <CardHeader>
-                        <CardTitle>Account Information</CardTitle>
-                        <CardDescription>
-                            Your account details are displayed below.
-                        </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" defaultValue={user?.email?.split('@')[0]} readOnly disabled />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" defaultValue={user?.email} readOnly disabled />
-                        </div>
-                        </CardContent>
-                    </Card>
-                    </TabsContent>
-                    <TabsContent value="password">
-                    <Card>
-                        <CardHeader>
-                        <CardTitle>Password</CardTitle>
-                        <CardDescription>
-                            Update your password here. For security, we'll ask you to confirm your current password.
-                        </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="current_password">Current Password</Label>
-                            <Input id="current_password" type="password" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="new_password">New Password</Label>
-                            <Input id="new_password" type="password" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="confirm_password">Confirm New Password</Label>
-                            <Input id="confirm_password" type="password" />
-                        </div>
-                        </CardContent>
-                        <CardFooter>
-                        <Button>Update Password</Button>
-                        </CardFooter>
-                    </Card>
-                    </TabsContent>
-                </Tabs>
-            </div>
-        </div>
-    </div>
-  );
+  
+  return <SettingsPageClient user={user} profileData={profileData} />
 }

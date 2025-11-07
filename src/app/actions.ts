@@ -414,6 +414,18 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
     return { success: true, processed, failed };
 }
 
+export async function updatePassword(newPassword: string): Promise<{ success: boolean; error?: string }> {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (error) {
+        console.error("Error updating password:", error);
+        return { success: false, error: error.message };
+    }
+
+    return { success: true };
+}
+
 // This server action is no longer used for avatar uploads.
 // The logic has been moved to the /api/avatar/upload route handler.
 export async function uploadAvatar(formData: FormData): Promise<{ success: boolean, error?: string, url?: string }> {
