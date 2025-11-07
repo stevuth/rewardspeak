@@ -73,50 +73,83 @@ const FloatingLabelInput = ({
 
 const MountainLoader = () => (
     <div className="w-full h-full flex flex-col items-center justify-center">
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                     <feMerge>
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
                     </feMerge>
                 </filter>
+                <linearGradient id="peakGradient" x1="0.5" y1="0" x2="0.5" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="0.8"/>
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.5"/>
+                </linearGradient>
             </defs>
-            {/* Mountain shape */}
-            <motion.path
-                d="M 20 65 L 40 30 L 60 65 Z"
-                stroke="hsl(var(--foreground))"
-                strokeWidth="2"
-                strokeLinejoin="round"
-                fill="hsl(var(--background))"
+            
+            {/* Pulsating Base Glow */}
+            <motion.circle 
+                cx="50" 
+                cy="60" 
+                r="40" 
+                fill="hsl(var(--primary))" 
+                style={{ filter: "url(#glow)" }}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+                animate={{ opacity: [0, 0.1, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Climbing Path */}
+            {/* Mountain Peaks */}
             <motion.path
-                d="M 20 65 Q 30 50, 40 30"
+                d="M 20 80 L 50 30 L 80 80 Z"
                 stroke="hsl(var(--primary))"
-                strokeWidth="2"
-                fill="none"
-                strokeDasharray="100"
-                strokeDashoffset="100"
-                animate={{ strokeDashoffset: 0 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+                fill="url(#peakGradient)"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
             />
-            
+            <motion.path
+                d="M 35 80 L 60 50 L 85 80 Z"
+                stroke="hsl(var(--secondary))"
+                strokeWidth="1"
+                strokeLinejoin="round"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.1"
+                 initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.5, delay: 0.2, ease: "easeInOut" }}
+            />
+
             {/* Peak Beacon */}
             <motion.circle
-                cx="40"
+                cx="50"
                 cy="30"
                 r="3"
                 fill="hsl(var(--secondary))"
                 style={{ filter: "url(#glow)" }}
-                animate={{ scale: [1, 1.5, 1] }}
-                transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                animate={{ scale: [1, 1.8, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
+            
+            {/* Shimmering Stars */}
+            {[
+                { cx: 30, cy: 20, scale: 0.8, delay: 0.5 },
+                { cx: 75, cy: 40, scale: 1.2, delay: 1 },
+                { cx: 15, cy: 50, scale: 0.6, delay: 1.5 },
+            ].map(star => (
+                 <motion.path
+                    key={star.cx}
+                    d="M 0 -5 L 2.5 0 L 0 5 L -2.5 0 Z"
+                    fill="hsl(var(--foreground))"
+                    style={{ x: star.cx, y: star.cy }}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: [0, star.scale, 0], opacity: [0, 1, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: star.delay }}
+                />
+            ))}
         </svg>
         <p className="text-xs font-semibold text-primary mt-1">Authenticating...</p>
     </div>
