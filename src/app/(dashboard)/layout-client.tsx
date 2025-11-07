@@ -143,24 +143,6 @@ function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, childre
         {children}
       </div>
 
-      <div className="p-4 space-y-4 bg-muted/50 border-b">
-        <div className="flex items-center gap-4">
-            <div className="relative h-12 w-12 shrink-0">
-            <SafeImage
-                src={avatarUrl || `https://picsum.photos/seed/${user?.id || 'avatar'}/48/48`}
-                alt="user avatar"
-                width={48}
-                height={48}
-                className="rounded-full border-2 border-primary/50"
-                data-ai-hint={"person portrait"}
-            />
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">{user?.email}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-            </div>
-        </div>
-      </div>
       <SidebarNavs user={user} />
     </div>
   );
