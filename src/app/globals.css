@@ -114,7 +114,7 @@
     z-index: 1;
   }
 
-  .futuristic-auth-form .floating-label-input:focus + .animated-border-wrap::before {
+  .futuristic-auth-form .floating-label-input:focus ~ .animated-border-wrap::before {
     transform: translateX(0%);
   }
 
