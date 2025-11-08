@@ -103,7 +103,7 @@ const howItWorksSteps = [
     {
       icon: Hand,
       title: "Choose an Offer",
-      description: "Sign up for free and browse through hundreds of new offers and surveys daily."
+      description: "Sign up for free and browse through hundreds of new offers daily."
     },
     {
       icon: FileSignature,
@@ -113,7 +113,7 @@ const howItWorksSteps = [
     {
       icon: DollarSign,
       title: "Get Paid",
-      description: "Redeem your earnings for cash, crypto, or gift cards. Fast and secure payouts."
+      description: "Redeem your earnings for PayPal cash or crypto. Fast and secure payouts."
     }
 ];
 
