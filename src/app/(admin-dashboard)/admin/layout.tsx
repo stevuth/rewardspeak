@@ -15,11 +15,14 @@ import {
   ClipboardList,
   Gift,
   Trophy,
-  UserPlus
+  UserPlus,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/app/auth/actions";
+
 
 const primaryAdminNavItems = [
     { href: "/admin/users", label: "Users", icon: Users },
@@ -36,7 +39,7 @@ const secondaryAdminNavItems = [
 ];
 
 const allAdminNavItems = [
-    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     ...primaryAdminNavItems,
     ...secondaryAdminNavItems
 ]
@@ -45,13 +48,20 @@ const allAdminNavItems = [
 function AdminHeader() {
   const pathname = usePathname();
   const getNavLinkClass = (href: string) => {
-    const isActive = (href === "/admin" && pathname === href) || (href !== "/admin" && pathname.startsWith(href));
+    // Make matching more specific for admin routes
+    const fullHref = href;
+    const isActive = (fullHref === "/admin/dashboard" && pathname === fullHref) || (fullHref !== "/admin/dashboard" && pathname.startsWith(fullHref));
     return cn(
       "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       isActive
         ? "bg-muted text-foreground"
         : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
     );
+  };
+  
+  const handleLogout = async () => {
+    await signOut();
+    // After sign-out, the middleware will redirect to the correct login page.
   };
 
   return (
@@ -90,42 +100,61 @@ function AdminHeader() {
                         Back to Site
                     </Link>
                 </Button>
+                <form action={handleLogout} className="w-full">
+                    <Button variant="destructive" className="w-full">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log Out
+                    </Button>
+                </form>
               </nav>
             </SheetContent>
           </Sheet>
-           <Button asChild variant="outline">
+           <div className="flex items-center gap-2">
+            <Button asChild variant="outline">
               <Link href="/dashboard">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Site
               </Link>
             </Button>
+             <form action={handleLogout}>
+                <Button variant="destructive" size="icon">
+                    <LogOut className="h-4 w-4" />
+                </Button>
+            </form>
+           </div>
       </div>
 
       {/* Desktop Header */}
       <div className="hidden md:flex flex-col w-full gap-2">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-4">
-              <Link href="/admin" className="flex items-center gap-2 font-semibold">
+              <Link href="/admin/dashboard" className="flex items-center gap-2 font-semibold">
                   <Image src="/logo.png?v=9" alt="Logo" width={32} height={32} />
                   <span className="text-xl">Admin Portal</span>
               </Link>
               <div className="border-l h-6 border-border/50 ml-2"></div>
                <Link
-                    href="/admin"
-                    className={getNavLinkClass("/admin")}
+                    href="/admin/dashboard"
+                    className={getNavLinkClass("/admin/dashboard")}
                 >
                     <LayoutDashboard className="h-4 w-4" />
                     Dashboard
                 </Link>
             </div>
             
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-2">
               <Button asChild variant="outline">
                 <Link href="/dashboard">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Site
                 </Link>
               </Button>
+              <form action={handleLogout}>
+                <Button variant="destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log Out
+                </Button>
+              </form>
             </div>
           </div>
           
@@ -162,7 +191,7 @@ function AdminHeader() {
   );
 }
 
-export default function AdminLayout({
+export default function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;

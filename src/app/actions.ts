@@ -5,6 +5,7 @@ import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { getAllOffers, type NotikOffer } from "@/lib/notik-api";
 import { revalidatePath } from "next/cache";
+import { redirect } from 'next/navigation';
 
 // Helper to split an array into chunks
 function chunk<T>(array: T[], size: number): T[][] {
@@ -13,6 +14,31 @@ function chunk<T>(array: T[], size: number): T[][] {
     chunks.push(array.slice(i, i + size));
   }
   return chunks;
+}
+
+export async function adminLogin(prevState: { message: string, success?: boolean }, formData: FormData) {
+    const supabase = createSupabaseServerClient(true);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!email || !password) {
+        return { message: 'Email and password are required.', success: false };
+    }
+    
+    if (!email.endsWith('@rewardspeak.com')) {
+        return { message: 'Access denied. This portal is for administrators only.', success: false };
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error) {
+        return { message: `Authentication failed: ${error.message}`, success: false };
+    }
+
+    redirect('/admin');
 }
 
 export async function syncOffers(): Promise<{ success: boolean; error?: string, log?: string }> {

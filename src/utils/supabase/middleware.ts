@@ -24,40 +24,44 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // refreshing the auth token
   const { data: { user } } = await supabase.auth.getUser();
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
   const isAuthRoute = request.nextUrl.pathname.startsWith('/auth') || request.nextUrl.pathname === '/';
+  const isAdminLoginRoute = request.nextUrl.pathname === '/admin/login';
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
 
-  // If a user is not logged in:
+  // --- Unauthenticated User ---
   if (!user) {
-    // And is trying to access a protected route (not auth or homepage), redirect to homepage
-    if (!isAuthRoute) {
-        return NextResponse.redirect(new URL('/', request.url));
+    // Allow access to admin login page
+    if (isAdminLoginRoute) {
+      return response;
     }
-    // Otherwise, allow access to public/auth pages
+    // If trying to access any other admin route, redirect to admin login
+    if (isAdminRoute) {
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+    // Allow access to all other public/auth routes
     return response;
   }
 
-  // If a user is logged in:
+  // --- Authenticated User ---
   const isAdminUser = user.email?.endsWith('@rewardspeak.com');
 
-  // And tries to access an admin route but is not an admin, redirect to dashboard
+  // If a non-admin tries to access ANY admin route (including login), redirect to user dashboard
   if (isAdminRoute && !isAdminUser) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // And is an admin and accessing an admin route, allow it
-  if (isAdminRoute && isAdminUser) {
-    return response;
+  // If an admin is logged in and tries to access the admin login page, redirect them to the admin dashboard
+  if (isAdminUser && isAdminLoginRoute) {
+    return NextResponse.redirect(new URL('/admin', request.url));
   }
 
-  // And tries to access a public/auth route, redirect to dashboard
-  if (isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // If a regular user tries to access a public/auth route, redirect them to the user dashboard
+  if (!isAdminUser && isAuthRoute) {
+     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-  
-  // For all other cases of logged-in users, allow access
+
+  // Allow admins to access admin routes and regular users to access non-admin/non-auth routes
   return response;
 }
