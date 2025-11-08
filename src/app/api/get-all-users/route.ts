@@ -20,48 +20,43 @@ export async function GET() {
   try {
     const supabase = createSupabaseAdminClient();
 
-    // Fetch all users from both auth and profiles table, joining them.
-    const { data: users, error } = await supabase
-        .from('profiles')
-        .select(`
-            user_id,
-            id,
-            points,
-            withdrawn,
-            referral_earnings,
-            country_code,
-            avatar_url,
-            users:auth_users (
-                email,
-                created_at,
-                last_sign_in_at
-            )
-        `)
-        .order('created_at', { foreignTable: 'auth_users', ascending: false });
+    // 1. Fetch all profiles
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('*');
 
+    if (profilesError) {
+      console.error("Error fetching profiles:", profilesError.message);
+      throw profilesError;
+    }
 
-    if (error) {
-      console.error("Error fetching users and profiles:", error.message);
-      throw error;
+    // 2. Fetch all users from auth schema
+    const { data: authUsersResponse, error: authUsersError } = await supabase.auth.admin.listUsers();
+
+    if (authUsersError) {
+        console.error("Error fetching auth users:", authUsersError.message);
+        throw authUsersError;
     }
     
-    // Transform the data into the desired UserProfile shape
-    const combinedData: UserProfile[] = users.map(p => {
-        // The foreign table relationship might return null if there's no matching user in auth.users
-        const userAuthData = p.users;
-        return {
-            user_id: p.user_id,
-            email: userAuthData?.email || null,
-            created_at: userAuthData?.created_at || new Date().toISOString(),
-            last_sign_in_at: userAuthData?.last_sign_in_at || null,
-            profile_id: p.id,
-            points: p.points,
-            withdrawn: p.withdrawn,
-            referral_earnings: p.referral_earnings,
-            country_code: p.country_code,
-            avatar_url: p.avatar_url,
-        }
-    });
+    // Create a map of auth users by their ID for efficient lookup
+    const authUsersMap = new Map(authUsersResponse.users.map(user => [user.id, user]));
+
+    // 3. Combine the data
+    const combinedData: UserProfile[] = profiles.map(profile => {
+      const authUser = authUsersMap.get(profile.user_id);
+      return {
+        user_id: profile.user_id,
+        email: authUser?.email || null,
+        created_at: authUser?.created_at || profile.created_at, // Fallback to profile creation time
+        last_sign_in_at: authUser?.last_sign_in_at || null,
+        profile_id: profile.id,
+        points: profile.points,
+        withdrawn: profile.withdrawn,
+        referral_earnings: profile.referral_earnings,
+        country_code: profile.country_code,
+        avatar_url: profile.avatar_url,
+      };
+    }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); // Sort by creation date descending
     
     return NextResponse.json({ users: combinedData });
   } catch (error) {
