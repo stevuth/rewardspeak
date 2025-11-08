@@ -40,14 +40,16 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
   const { toast } = useToast();
   const router = useRouter();
 
-  const isBanned = user.banned_until && new Date(user.banned_until) > new Date();
+  const isBannedProp = user.banned_until && new Date(user.banned_until) > new Date();
+  const [isBanned, setIsBanned] = useState(isBannedProp);
+
 
   const handleBan = () => {
     startTransition(async () => {
         const result = await banUser(user.user_id);
         if (result.success) {
             toast({ title: "User Banned", description: `${user.email} has been banned.` });
-            router.refresh();
+            setIsBanned(true);
         } else {
             toast({ variant: "destructive", title: "Failed to Ban User", description: result.error });
         }
@@ -59,7 +61,7 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
         const result = await unbanUser(user.user_id);
         if (result.success) {
             toast({ title: "User Unbanned", description: `${user.email} has been unbanned.` });
-            router.refresh();
+            setIsBanned(false);
         } else {
             toast({ variant: "destructive", title: "Failed to Unban User", description: result.error });
         }
