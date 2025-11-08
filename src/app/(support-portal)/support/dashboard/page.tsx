@@ -13,21 +13,59 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
-import { useState } from "react";
-import { Inbox, FileText, Archive, Send, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Inbox, Send, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { getSupportTickets } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
 
-// Mock data for demonstration
-const mockTickets = [
-  { id: 'TKT-001', subject: 'Issue with PayPal withdrawal', user: 'user1@example.com', status: 'Open', date: '2024-07-30T10:00:00Z', priority: 'High', messages: [{from: 'user', text: 'I tried to withdraw $10 to my PayPal but it failed. Can you help?'}, {from: 'admin', text: 'Certainly, looking into it now.'}] },
-  { id: 'TKT-002', subject: 'Offer not crediting points', user: 'user2@example.com', status: 'Open', date: '2024-07-29T14:30:00Z', priority: 'Medium', messages: [{from: 'user', text: 'I completed the "State of Survival" offer but did not receive my 5000 points.'}] },
-  { id: 'TKT-003', subject: 'Question about referral earnings', user: 'user3@example.com', status: 'Closed', date: '2024-07-28T09:00:00Z', priority: 'Low', messages: [{from: 'user', text: 'How is the 10% referral commission calculated?'}] },
-];
+type TicketMessage = {
+  id: string;
+  created_at: string;
+  ticket_id: string;
+  user_id: string; // ID of the user who sent the message
+  message: string;
+  is_from_support: boolean;
+};
 
-type Ticket = typeof mockTickets[0];
+type Ticket = {
+  id: string;
+  created_at: string;
+  user_id: string;
+  user_email: string;
+  subject: string;
+  status: "open" | "closed";
+  priority: "low" | "medium" | "high";
+  messages: TicketMessage[];
+};
 
 export default function SupportDashboardPage() {
-  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(mockTickets[0]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      setIsLoading(true);
+      const result = await getSupportTickets();
+      if (result.success && result.data) {
+        setTickets(result.data);
+        if (result.data.length > 0) {
+            setSelectedTicket(result.data[0]);
+        }
+      } else {
+        toast({
+            variant: "destructive",
+            title: "Failed to load tickets",
+            description: result.error,
+        });
+      }
+      setIsLoading(false);
+    }
+    fetchTickets();
+  }, [toast]);
+
 
   const getPriorityBadge = (priority: string) => {
     switch (priority.toLowerCase()) {
@@ -38,7 +76,15 @@ export default function SupportDashboardPage() {
   }
 
   const getStatusBadge = (status: string) => {
-    return status === 'Open' ? <Badge className="bg-green-500">Open</Badge> : <Badge variant="secondary">Closed</Badge>;
+    return status === 'open' ? <Badge className="bg-green-500">Open</Badge> : <Badge variant="secondary">Closed</Badge>;
+  }
+
+  if (isLoading) {
+    return (
+        <div className="flex justify-center items-center h-[calc(100vh-220px)]">
+            <WavingMascotLoader text="Loading Tickets..." />
+        </div>
+    )
   }
 
   return (
@@ -54,27 +100,33 @@ export default function SupportDashboardPage() {
           <Card className="flex-grow flex flex-col">
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2"><Inbox className="h-5 w-5"/> Inbox</CardTitle>
-              <Badge variant="secondary">{mockTickets.filter(t => t.status === 'Open').length} Open</Badge>
+              <Badge variant="secondary">{tickets.filter(t => t.status === 'open').length} Open</Badge>
             </CardHeader>
             <CardContent className="flex-grow overflow-y-auto p-2">
               <div className="space-y-2">
-                {mockTickets.map(ticket => (
-                  <button key={ticket.id} onClick={() => setSelectedTicket(ticket)} className={`w-full text-left p-3 rounded-lg transition-colors ${selectedTicket?.id === ticket.id ? 'bg-muted' : 'hover:bg-muted/50'}`}>
-                    <div className="flex justify-between items-start">
-                        <p className="font-semibold text-sm truncate pr-2">{ticket.subject}</p>
-                        {getStatusBadge(ticket.status)}
+                {tickets.length > 0 ? (
+                    tickets.map(ticket => (
+                    <button key={ticket.id} onClick={() => setSelectedTicket(ticket)} className={`w-full text-left p-3 rounded-lg transition-colors ${selectedTicket?.id === ticket.id ? 'bg-muted' : 'hover:bg-muted/50'}`}>
+                        <div className="flex justify-between items-start">
+                            <p className="font-semibold text-sm truncate pr-2">{ticket.subject}</p>
+                            {getStatusBadge(ticket.status)}
+                        </div>
+                        <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                        <p className="truncate pr-2">{ticket.user_email}</p>
+                        <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </button>
+                    ))
+                ) : (
+                    <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                        No tickets yet.
                     </div>
-                    <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
-                      <p className="truncate pr-2">{ticket.user}</p>
-                      <span>{new Date(ticket.date).toLocaleDateString()}</span>
-                    </div>
-                  </button>
-                ))}
+                )}
               </div>
             </CardContent>
              <CardFooter className="p-2 border-t justify-between">
                 <Button variant="ghost" size="icon"><ChevronLeft /></Button>
-                <span className="text-sm text-muted-foreground">1 of 10</span>
+                <span className="text-sm text-muted-foreground">1 of 1</span>
                 <Button variant="ghost" size="icon"><ChevronRight /></Button>
             </CardFooter>
           </Card>
@@ -93,7 +145,7 @@ export default function SupportDashboardPage() {
                         <span className="text-xs text-muted-foreground">{selectedTicket.id}</span>
                       </div>
                       <CardTitle>{selectedTicket.subject}</CardTitle>
-                      <CardDescription>From: {selectedTicket.user}</CardDescription>
+                      <CardDescription>From: {selectedTicket.user_email}</CardDescription>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" size="sm">Close Ticket</Button>
@@ -103,9 +155,9 @@ export default function SupportDashboardPage() {
                 </CardHeader>
                 <CardContent className="flex-grow overflow-y-auto space-y-4">
                   {selectedTicket.messages.map((msg, index) => (
-                    <div key={index} className={`flex ${msg.from === 'admin' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-md p-3 rounded-lg ${msg.from === 'admin' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                        <p className="text-sm">{msg.text}</p>
+                    <div key={index} className={`flex ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                        <p className="text-sm">{msg.message}</p>
                       </div>
                     </div>
                   ))}
@@ -120,7 +172,15 @@ export default function SupportDashboardPage() {
               </>
             ) : (
               <CardContent className="flex flex-col items-center justify-center h-full text-center">
-                <WavingMascotLoader text="Select a ticket to view" />
+                 {tickets.length > 0 ? (
+                    <WavingMascotLoader text="Select a ticket to view" />
+                 ) : (
+                    <div className="text-muted-foreground">
+                        <Inbox className="h-16 w-16 mx-auto mb-4" />
+                        <p className="font-semibold">The inbox is empty!</p>
+                        <p>New tickets from users will appear here.</p>
+                    </div>
+                 )}
               </CardContent>
             )}
           </Card>

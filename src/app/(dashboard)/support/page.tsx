@@ -1,4 +1,6 @@
 
+'use client';
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -18,12 +20,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Help Station",
-  description: "FAQs, support form, and contact helpdesk.",
-};
+import { useActionState, useState } from 'react';
+import { createSupportTicket } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 const faqs = [
     {
@@ -41,6 +41,35 @@ const faqs = [
 ]
 
 export default function HelpStationPage() {
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const result = await createSupportTicket({ subject, message });
+
+    if (result.success) {
+      toast({
+        title: "Ticket Submitted!",
+        description: "Our support team will get back to you shortly.",
+      });
+      setSubject('');
+      setMessage('');
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: result.error || "An unknown error occurred.",
+      });
+    }
+    setIsSubmitting(false);
+  };
+
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -50,27 +79,45 @@ export default function HelpStationPage() {
       />
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Us</CardTitle>
-              <CardDescription>
-                Fill out the form below and our team will get back to you as soon as possible.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
-                <Input id="subject" placeholder="e.g., Issue with an offer" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
-                <Textarea id="message" placeholder="Describe your issue in detail..." className="min-h-[150px]" />
-              </div>
-            </CardContent>
-            <CardFooter>
-                <Button>Submit Ticket</Button>
-            </CardFooter>
-          </Card>
+          <form onSubmit={handleSubmit}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact Us</CardTitle>
+                <CardDescription>
+                  Fill out the form below and our team will get back to you as soon as possible.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input 
+                    id="subject" 
+                    placeholder="e.g., Issue with an offer" 
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea 
+                    id="message" 
+                    placeholder="Describe your issue in detail..." 
+                    className="min-h-[150px]"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    required
+                   />
+                </div>
+              </CardContent>
+              <CardFooter>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
+                  </Button>
+              </CardFooter>
+            </Card>
+          </form>
         </div>
         <div>
           <Card>

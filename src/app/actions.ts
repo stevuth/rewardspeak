@@ -493,4 +493,91 @@ export async function unbanUser(userId: string): Promise<{ success: boolean; err
     return { success: true };
 }
 
+
+// New Server Actions for Support Tickets
+
+export async function createSupportTicket(payload: { subject: string, message: string }): Promise<{ success: boolean; error?: string }> {
+  const supabase = createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "You must be logged in to submit a ticket." };
+  }
+
+  const adminSupabase = createSupabaseAdminClient();
+  
+  const { data: ticket, error: ticketError } = await adminSupabase
+    .from('support_tickets')
+    .insert({
+      user_id: user.id,
+      user_email: user.email,
+      subject: payload.subject,
+    })
+    .select()
+    .single();
+  
+  if (ticketError) {
+    console.error("Error creating support ticket:", ticketError);
+    return { success: false, error: "Could not create the ticket." };
+  }
+  
+  const { error: messageError } = await adminSupabase
+    .from('ticket_messages')
+    .insert({
+      ticket_id: ticket.id,
+      user_id: user.id,
+      message: payload.message,
+      is_from_support: false,
+    });
     
+  if (messageError) {
+    console.error("Error creating initial ticket message:", messageError);
+    // Best-effort to clean up orphan ticket
+    await adminSupabase.from('support_tickets').delete().eq('id', ticket.id);
+    return { success: false, error: "Could not save the ticket message." };
+  }
+
+  revalidatePath('/support/dashboard');
+
+  return { success: true };
+}
+
+
+export async function getSupportTickets(): Promise<{ success: boolean; data?: any[]; error?: string }> {
+    const supabase = createSupabaseAdminClient();
+
+    // 1. Fetch all tickets
+    const { data: tickets, error: ticketsError } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (ticketsError) {
+        console.error("Error fetching support tickets:", ticketsError);
+        return { success: false, error: "Failed to fetch tickets." };
+    }
+    if (!tickets || tickets.length === 0) {
+        return { success: true, data: [] };
+    }
+    
+    // 2. Fetch all messages for those tickets in one query
+    const ticketIds = tickets.map(t => t.id);
+    const { data: messages, error: messagesError } = await supabase
+        .from('ticket_messages')
+        .select('*')
+        .in('ticket_id', ticketIds)
+        .order('created_at', { ascending: true });
+
+    if (messagesError) {
+        console.error("Error fetching ticket messages:", messagesError);
+        return { success: false, error: "Failed to fetch ticket messages." };
+    }
+
+    // 3. Map messages to their corresponding tickets
+    const ticketsWithMessages = tickets.map(ticket => ({
+        ...ticket,
+        messages: messages.filter(m => m.ticket_id === ticket.id)
+    }));
+
+    return { success: true, data: ticketsWithMessages };
+}
