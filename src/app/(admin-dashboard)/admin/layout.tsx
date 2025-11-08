@@ -17,7 +17,8 @@ import {
   Trophy,
   UserPlus,
   LogOut,
-  ShieldAlert
+  ShieldAlert,
+  LifeBuoy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -31,6 +32,7 @@ const primaryAdminNavItems = [
     { href: "/admin/withdrawals", label: "Withdrawals", icon: Gift },
     { href: "/admin/postbacks", label: "Postbacks", icon: ClipboardList },
     { href: "/admin/fraud-detection", label: "Fraud Center", icon: ShieldAlert },
+    { href: "/admin/support", label: "Support Center", icon: LifeBuoy },
 ];
 
 const secondaryAdminNavItems = [
