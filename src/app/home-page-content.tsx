@@ -111,7 +111,7 @@ const howItWorksSteps = [
     {
       icon: Hand,
       title: "Choose an Offer",
-      description: "Sign up for free and browse through hundreds of new offers daily."
+      description: "Sign up for free and browse through hundreds of new offers daily from games and apps."
     },
     {
       icon: FileSignature,
@@ -540,11 +540,13 @@ export function HomePageContent() {
                 <Link href="/support" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Support</Link>
             </nav>
 
-            <div className="flex justify-center space-x-6 mb-8">
+            <div className="flex justify-center items-center space-x-6 mb-8">
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook size={22} /></Link>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={22} /></Link>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter size={22} /></Link>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><MessageCircle size={22} /></Link>
+                <Link href="mailto:support@rewardspeak.com" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                    <Mail size={22} />
+                </Link>
             </div>
 
             <div className="border-t border-border/50 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
