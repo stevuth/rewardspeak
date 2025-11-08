@@ -24,117 +24,45 @@ export async function GET(request: NextRequest) {
 
     try {
         // --- CHECK 1: Users sharing the same IP address ---
-        const { data: ipData, error: ipError } = await supabase
-            .from('transactions')
-            .select('ip_address, user_id, user_email')
-            .not('ip_address', 'is', null)
-            .not('user_id', 'is', null);
-
-        if (ipError) throw ipError;
-
-        const ipUserMap = new Map<string, Map<string, { email: string, count: number }>>();
-        for (const { ip_address, user_id, user_email } of ipData) {
-            if (!ipUserMap.has(ip_address)) {
-                ipUserMap.set(ip_address, new Map());
-            }
-            const userMap = ipUserMap.get(ip_address)!;
-            if (!userMap.has(user_id)) {
-                userMap.set(user_id, { email: user_email || 'N/A', count: 0 });
-            }
-            userMap.get(user_id)!.count++;
-        }
-
-        for (const [ip, users] of ipUserMap.entries()) {
-            if (users.size > 1) {
-                results.push({
-                    type: 'shared_ip',
-                    ip_address: ip,
-                    user_count: users.size,
-                    users: Array.from(users.entries()).map(([userId, userData]) => ({
-                        user_id: userId,
-                        user_email: userData.email,
-                        transaction_count: userData.count,
-                    })).sort((a, b) => b.transaction_count - a.transaction_count),
-                });
-            }
-        }
-
-        // --- CHECK 2: Suspicious Referral Chains (same IP) ---
-        // 1. Get all profiles with a referrer
-        const { data: referredProfiles, error: referredError } = await supabase
-            .from('profiles')
-            .select('user_id, referred_by')
-            .not('referred_by', 'is', null);
+        // This query finds all IP addresses that are associated with more than one distinct user_id.
+        const { data: ipGroups, error: ipGroupError } = await supabase.rpc('get_ips_with_multiple_users');
         
-        if (referredError) throw referredError;
+        if (ipGroupError) throw ipGroupError;
 
-        if (referredProfiles.length > 0) {
-            const allUserIds = new Set<string>();
-            const referredMap = new Map<string, string>(); // referred_user_id -> referrer_profile_id
-            
-            referredProfiles.forEach(p => {
-                allUserIds.add(p.user_id);
-                referredMap.set(p.user_id, p.referred_by);
-            });
-
-            // 2. Get referrer user_ids
-            const { data: referrerProfiles, error: referrerError } = await supabase
-                .from('profiles')
-                .select('user_id, id')
-                .in('id', Array.from(new Set(referredProfiles.map(p => p.referred_by))));
-
-            if (referrerError) throw referrerError;
-            
-            const referrerIdMap = new Map<string, string>(); // profile_id -> user_id
-            referrerProfiles.forEach(p => {
-                allUserIds.add(p.user_id);
-                referrerIdMap.set(p.id, p.user_id);
-            });
-
-            // 3. Get last known IPs for all involved users
-            const { data: userIps, error: userIpsError } = await supabase
+        if (ipGroups && ipGroups.length > 0) {
+             const { data: transactions, error: transactionError } = await supabase
                 .from('transactions')
-                .select('user_id, ip_address, created_at')
-                .in('user_id', Array.from(allUserIds))
-                .order('created_at', { ascending: false });
+                .select('ip_address, user_id, user_email')
+                .in('ip_address', ipGroups.map(g => g.ip_address));
 
-            if (userIpsError) throw userIpsError;
+            if (transactionError) throw transactionError;
 
-            const lastIpMap = new Map<string, string>(); // user_id -> ip_address
-            userIps.forEach(tx => {
-                if (!lastIpMap.has(tx.user_id)) {
-                    lastIpMap.set(tx.user_id, tx.ip_address);
+            const ipUserMap = new Map<string, { user_count: number; users: { user_id: string; user_email: string; transaction_count: number }[] }>();
+
+            for (const tx of transactions) {
+                if (!tx.ip_address || !tx.user_id || !tx.user_email) continue;
+
+                if (!ipUserMap.has(tx.ip_address)) {
+                    ipUserMap.set(tx.ip_address, { user_count: 0, users: [] });
                 }
-            });
 
-            // 4. Get emails for all users
-            const { data: authUsers, error: authUsersError } = await supabase.auth.admin.listUsers({
-                page: 1,
-                perPage: 1000, // Adjust as needed
-            });
-            if (authUsersError) throw authUsersError;
-            const emailMap = new Map(authUsers.users.map(u => [u.id, u.email]));
-
-            // 5. Compare IPs
-            for (const [referredUserId, referrerProfileId] of referredMap.entries()) {
-                const referrerUserId = referrerIdMap.get(referrerProfileId);
-                if (!referrerUserId) continue;
-
-                const referredIp = lastIpMap.get(referredUserId);
-                const referrerIp = lastIpMap.get(referrerUserId);
-
-                if (referredIp && referrerIp && referredIp === referrerIp) {
+                const group = ipUserMap.get(tx.ip_address)!;
+                let user = group.users.find(u => u.user_id === tx.user_id);
+                if (!user) {
+                    user = { user_id: tx.user_id, user_email: tx.user_email, transaction_count: 0 };
+                    group.users.push(user);
+                    group.user_count = group.users.length;
+                }
+                user.transaction_count++;
+            }
+            
+            for (const [ip, groupData] of ipUserMap.entries()) {
+                if (groupData.user_count > 1) {
                     results.push({
-                        type: 'suspicious_referral',
-                        ip_address: referredIp,
-                        referrer: {
-                            user_id: referrerUserId,
-                            email: emailMap.get(referrerUserId) || 'N/A'
-                        },
-                        referred: {
-                            user_id: referredUserId,
-                            email: emailMap.get(referredUserId) || 'N/A'
-                        },
+                        type: 'shared_ip',
+                        ip_address: ip,
+                        user_count: groupData.user_count,
+                        users: groupData.users.sort((a,b) => b.transaction_count - a.transaction_count),
                     });
                 }
             }
