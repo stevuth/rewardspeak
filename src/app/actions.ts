@@ -466,7 +466,7 @@ export async function uploadAvatar(formData: FormData): Promise<{ success: boole
 export async function banUser(userId: string): Promise<{ success: boolean; error?: string }> {
     const supabase = createSupabaseAdminClient();
     const { error } = await supabase.auth.admin.updateUserById(userId, {
-        ban_duration: '300y' // Effectively permanent
+        ban_duration: '876000h' // 100 years
     });
 
     if (error) {
@@ -492,3 +492,5 @@ export async function unbanUser(userId: string): Promise<{ success: boolean; err
     revalidatePath('/admin/users');
     return { success: true };
 }
+
+    
