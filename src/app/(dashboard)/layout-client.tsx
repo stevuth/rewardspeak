@@ -51,7 +51,7 @@ const navItems = [
 const secondaryNavItems = [
   { href: "/history", label: "Offers Log", icon: Clock },
   { href: "/settings", label: "My Peak Profile", icon: Settings },
-  { href: "/support", label: "Help Station", icon: CircleHelp },
+  { href: "/support", label: "Support Ticket", icon: CircleHelp },
 ];
 
 const mobileNavItems = [
@@ -333,3 +333,5 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
+
+    

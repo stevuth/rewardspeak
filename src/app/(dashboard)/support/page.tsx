@@ -40,7 +40,7 @@ const faqs = [
     }
 ]
 
-export default function HelpStationPage() {
+export default function SupportTicketPage() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const { toast } = useToast();
@@ -73,7 +73,7 @@ export default function HelpStationPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Help Station"
+        title="Submit a Support Ticket"
         description="Need help? We're here for you."
         className="text-center"
       />
@@ -145,3 +145,5 @@ export default function HelpStationPage() {
     </div>
   );
 }
+
+    
