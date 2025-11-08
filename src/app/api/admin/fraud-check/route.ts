@@ -9,14 +9,7 @@ type SuspiciousIPGroup = {
     users: { user_id: string; user_email: string; transaction_count: number }[];
 };
 
-type SuspiciousReferralGroup = {
-    type: 'suspicious_referral';
-    ip_address: string;
-    referrer: { user_id: string; email: string };
-    referred: { user_id: string; email: string };
-};
-
-type SuspiciousGroup = SuspiciousIPGroup | SuspiciousReferralGroup;
+type SuspiciousGroup = SuspiciousIPGroup;
 
 export async function GET(request: NextRequest) {
     const supabase = createSupabaseAdminClient();
