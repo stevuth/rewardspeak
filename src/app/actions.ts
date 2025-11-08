@@ -81,7 +81,8 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
                 devices: offer.devices,
                 categories: offer.categories,
                 events: offer.events,
-                is_disabled: false,
+                // `is_disabled` is handled by the `ON CONFLICT` clause below.
+                // We don't set it here to avoid overwriting admin changes.
                 created_at: new Date().toISOString(), // Ensure created_at is set for new rows
             }));
         };
@@ -96,11 +97,11 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
             const allChunk = allOfferChunks[i];
             log += `Upserting chunk ${i + 1}/${allOfferChunks.length} with ${allChunk.length} offers...\n`;
             
-            // On conflict, do nothing to prevent overwriting existing data like `is_disabled`.
-            // The RLS policy requires a `created_at` field, which we now provide.
+            // On conflict, update all fields EXCEPT `is_disabled`.
+            // This preserves the admin's choice to disable an offer.
             const { error: allOffersError } = await supabase
                 .from('all_offers')
-                .upsert(allChunk, { onConflict: 'offer_id', ignoreDuplicates: true }); // Ignore duplicates to prevent overwriting existing `is_disabled` state.
+                .upsert(allChunk, { onConflict: 'offer_id' });
 
             if (allOffersError) {
                 log += `❌ Error upserting chunk ${i + 1}: ${allOffersError.message}\n`;
