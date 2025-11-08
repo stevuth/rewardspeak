@@ -1,3 +1,4 @@
+
 'use client';
 
 import { PageHeader } from "@/components/page-header";
@@ -25,7 +26,7 @@ const mockTickets = [
 
 type Ticket = typeof mockTickets[0];
 
-export default function SupportPage() {
+export default function SupportDashboardPage() {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(mockTickets[0]);
 
   const getPriorityBadge = (priority: string) => {
