@@ -16,7 +16,8 @@ import {
   Gift,
   Trophy,
   UserPlus,
-  LogOut
+  LogOut,
+  ShieldAlert
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -38,10 +39,15 @@ const secondaryAdminNavItems = [
     { href: "/admin/offer-preview", label: "Offer Preview", icon: Eye },
 ];
 
+const toolsNavItems = [
+    { href: "/admin/fraud-detection", label: "Fraud Center", icon: ShieldAlert },
+]
+
 const allAdminNavItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     ...primaryAdminNavItems,
-    ...secondaryAdminNavItems
+    ...secondaryAdminNavItems,
+    ...toolsNavItems
 ]
 
 
@@ -158,7 +164,7 @@ function AdminHeader() {
             </div>
           </div>
           
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <nav className="flex flex-row items-center gap-2 text-sm">
                 <p className="text-xs font-semibold text-muted-foreground mr-2">Manage:</p>
                 {primaryAdminNavItems.map(item => (
@@ -179,6 +185,19 @@ function AdminHeader() {
                         key={item.href}
                         href={item.href}
                         className={getNavLinkClass(item.href)}
+                    >
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                    </Link>
+                ))}
+            </nav>
+            <nav className="flex flex-row items-center gap-2 text-sm">
+                <p className="text-xs font-semibold text-muted-foreground mr-2">Tools:</p>
+                 {toolsNavItems.map(item => (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(getNavLinkClass(item.href), "border border-transparent hover:border-destructive/50 text-destructive/80 hover:text-destructive")}
                     >
                         <item.icon className="h-4 w-4" />
                         {item.label}
