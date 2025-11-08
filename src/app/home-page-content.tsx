@@ -45,6 +45,9 @@ import { motion } from 'framer-motion';
 import { LogoutSuccessModal } from '@/components/logout-success-modal';
 import { TypewriterEffect } from '@/components/typewriter-effect';
 import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 const recentCashouts: any[] = [];
 
@@ -509,7 +512,7 @@ export function HomePageContent() {
 
       </main>
 
-      <footer className="relative bg-card mt-24 pt-24 pb-12 text-center">
+      <footer className="relative bg-card mt-24 pt-24 pb-12">
         <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]">
             <svg
                 data-name="Layer 1"
@@ -527,21 +530,39 @@ export function HomePageContent() {
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={50} height={50} />
-                <span className="text-2xl font-bold font-headline">Rewards Peak</span>
-            </Link>
-            <p className="text-muted-foreground text-base max-w-md mx-auto">
-                Climb to the top with every reward you earn. Simple tasks, real money.
-            </p>
+            <div className="grid md:grid-cols-2 gap-12 text-center md:text-left">
+                <div>
+                    <Link href="/" className="inline-flex items-center justify-center md:justify-start gap-2 mb-4">
+                        <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={50} height={50} />
+                        <span className="text-2xl font-bold font-headline">Rewards Peak</span>
+                    </Link>
+                    <p className="text-muted-foreground text-base max-w-md mx-auto md:mx-0">
+                        Climb to the top with every reward you earn. Simple tasks, real money.
+                    </p>
+                </div>
+                <div>
+                    <h3 className="font-bold text-lg font-headline mb-4">Get in Touch</h3>
+                    <form className="space-y-4">
+                        <div className="grid sm:grid-cols-2 gap-4">
+                            <div className="space-y-2 text-left">
+                                <Label htmlFor="footer-name">Name</Label>
+                                <Input id="footer-name" placeholder="Your Name" />
+                            </div>
+                            <div className="space-y-2 text-left">
+                                <Label htmlFor="footer-email">Email</Label>
+                                <Input id="footer-email" type="email" placeholder="Your Email" />
+                            </div>
+                        </div>
+                        <div className="space-y-2 text-left">
+                            <Label htmlFor="footer-message">Message</Label>
+                            <Textarea id="footer-message" placeholder="How can we help?" />
+                        </div>
+                        <Button type="submit" className="w-full sm:w-auto">Send Message</Button>
+                    </form>
+                </div>
+            </div>
             
-            <nav className="flex justify-center gap-4 md:gap-8 my-8">
-                <Link href="/earn" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Earn</Link>
-                <Link href="/withdraw" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Withdraw</Link>
-                <Link href="/leaderboard" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Leaderboard</Link>
-            </nav>
-
-            <div className="border-t border-border/50 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+            <div className="border-t border-border/50 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
                 <p>&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
                 <div className="flex gap-4">
                     <Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms of Service</Link>
