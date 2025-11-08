@@ -10,13 +10,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Gift, Users, DollarSign, Check, Percent } from "lucide-react";
+import { Copy, Gift, Users, DollarSign, Check, Percent, Twitter, Facebook } from "lucide-react";
 import { GiftIllustration } from "@/components/illustrations/gift";
 import { StatCard } from "@/components/stat-card";
 import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import {
+  TwitterShareButton,
+  FacebookShareButton,
+  WhatsappShareButton,
+  WhatsappIcon,
+} from 'react-share';
+import { Separator } from "@/components/ui/separator";
+
 
 export default function InviteAndClimbPage() {
   const [referralCode, setReferralCode] = useState('GUEST');
@@ -58,6 +66,9 @@ export default function InviteAndClimbPage() {
   }, []);
 
   const referralLink = `https://rewardspeak.com/join?ref=${referralCode}`;
+  const shareTitle = "Join me on Rewards Peak and get a $1 bonus!";
+  const shareBody = `I'm earning real cash on Rewards Peak by playing games and completing tasks. Sign up with my link to get a $1 welcome bonus! 🚀`;
+
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -114,7 +125,7 @@ export default function InviteAndClimbPage() {
           <GiftIllustration />
         </div>
 
-        <div className="w-full max-w-sm space-y-6">
+        <div className="w-full max-w-md space-y-6">
           <div>
             <p className="text-muted-foreground mb-2">Your unique referral code:</p>
             <div className="relative flex items-center">
@@ -146,10 +157,28 @@ export default function InviteAndClimbPage() {
               </Button>
             </div>
           </div>
+
+          <Separator className="bg-border/50" />
+
+          <div>
+             <p className="text-muted-foreground mb-4">Share with your friends</p>
+             <div className="flex justify-center gap-4">
+                 <TwitterShareButton url={referralLink} title={shareBody} hashtags={["RewardsPeak", "EarnMoney"]}>
+                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
+                        <Twitter className="h-5 w-5" />
+                    </Button>
+                 </TwitterShareButton>
+                  <FacebookShareButton url={referralLink} quote={shareBody} hashtag="#RewardsPeak">
+                     <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
+                        <Facebook className="h-5 w-5" />
+                    </Button>
+                 </FacebookShareButton>
+                 <WhatsappShareButton url={referralLink} title={shareBody}>
+                    <WhatsappIcon size={48} round />
+                 </WhatsappShareButton>
+             </div>
+          </div>
           
-          <Button size="lg" className="w-full" onClick={handleCopyLink}>
-            <Copy className="mr-2 h-4 w-4" /> Copy Your Link
-          </Button>
         </div>
       </div>
     </div>
