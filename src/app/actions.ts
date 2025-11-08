@@ -58,7 +58,6 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
         }
 
         const prepareOffersData = (offers: NotikOffer[]) => {
-            // Filter for unique offers based on offer_id to prevent upsert conflicts
             const uniqueOffersMap = new Map<string, NotikOffer>();
             for (const offer of offers) {
                 if (!uniqueOffersMap.has(offer.offer_id)) {
@@ -82,7 +81,8 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
                 devices: offer.devices,
                 categories: offer.categories,
                 events: offer.events,
-                is_disabled: false, // Default new offers to enabled
+                is_disabled: false,
+                created_at: new Date().toISOString(), // Ensure created_at is set for new rows
             }));
         };
 
@@ -95,9 +95,12 @@ export async function syncOffers(): Promise<{ success: boolean; error?: string, 
         for (let i = 0; i < allOfferChunks.length; i++) {
             const allChunk = allOfferChunks[i];
             log += `Upserting chunk ${i + 1}/${allOfferChunks.length} with ${allChunk.length} offers...\n`;
+            
+            // On conflict, do nothing to prevent overwriting existing data like `is_disabled`.
+            // The RLS policy requires a `created_at` field, which we now provide.
             const { error: allOffersError } = await supabase
                 .from('all_offers')
-                .upsert(allChunk, { onConflict: 'offer_id', ignoreDuplicates: false });
+                .upsert(allChunk, { onConflict: 'offer_id', ignoreDuplicates: true }); // Ignore duplicates to prevent overwriting existing `is_disabled` state.
 
             if (allOffersError) {
                 log += `❌ Error upserting chunk ${i + 1}: ${allOffersError.message}\n`;
