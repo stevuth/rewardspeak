@@ -28,13 +28,11 @@ export async function GET(request: NextRequest) {
         // which avoids complex, potentially slow database queries on large tables.
 
         // 1. Fetch all transactions that have an IP and user ID.
-        // This is the part that might be slow. We'll be robust.
         const { data: transactions, error: transactionError } = await supabase
             .from('transactions')
-            .select('ip_address, user_id, user_email')
+            .select('ip_address, user_id')
             .not('ip_address', 'is', null)
-            .not('user_id', 'is', null)
-            .not('user_email', 'is', null);
+            .not('user_id', 'is', null);
 
         if (transactionError) {
             console.error("Error fetching transactions for fraud check:", transactionError);
@@ -42,36 +40,52 @@ export async function GET(request: NextRequest) {
         }
 
         // 2. Process the data in-memory to group users by IP.
-        const ipUserMap = new Map<string, Map<string, { email: string, count: number }>>();
+        const ipUserMap = new Map<string, Map<string, { count: number }>>();
+        const allUserIds = new Set<string>();
 
         for (const tx of transactions) {
-            // Skip any records with missing essential data
-            if (!tx.ip_address || !tx.user_id || !tx.user_email) continue;
+            if (!tx.ip_address || !tx.user_id) continue;
 
-            // Get or create the map for this IP
             if (!ipUserMap.has(tx.ip_address)) {
                 ipUserMap.set(tx.ip_address, new Map());
             }
             const userMap = ipUserMap.get(tx.ip_address)!;
             
-            // Get or create the data for this user
             if (!userMap.has(tx.user_id)) {
-                userMap.set(tx.user_id, { email: tx.user_email, count: 0 });
+                userMap.set(tx.user_id, { count: 0 });
             }
 
-            // Increment the transaction count for this user on this IP
             const userData = userMap.get(tx.user_id);
             if(userData) {
                 userData.count++;
             }
+            allUserIds.add(tx.user_id);
         }
 
-        // 3. Filter for IPs with more than one distinct user and format the output.
+        // 3. Fetch emails for all users involved in one go.
+        const { data: profiles, error: profilesError } = await supabase
+            .from('profiles')
+            .select('user_id, email')
+            .in('user_id', Array.from(allUserIds));
+        
+        if (profilesError) {
+             console.error("Error fetching profiles for fraud check:", profilesError);
+             throw new Error(`DB profiles fetch failed: ${profilesError.message}`);
+        }
+        
+        const emailMap = new Map<string, string>();
+        for (const profile of profiles) {
+            if (profile.email) {
+                emailMap.set(profile.user_id, profile.email);
+            }
+        }
+
+        // 4. Filter for IPs with more than one distinct user and format the output.
         for (const [ip, userMap] of ipUserMap.entries()) {
             if (userMap.size > 1) { // A suspicious IP has more than 1 user
                 const users = Array.from(userMap.entries()).map(([userId, userData]) => ({
                     user_id: userId,
-                    user_email: userData.email,
+                    user_email: emailMap.get(userId) || 'Email not found',
                     transaction_count: userData.count,
                 }));
 
