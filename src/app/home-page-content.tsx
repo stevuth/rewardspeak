@@ -539,7 +539,6 @@ export function HomePageContent() {
                 <Link href="/earn" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Earn</Link>
                 <Link href="/withdraw" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Withdraw</Link>
                 <Link href="/leaderboard" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Leaderboard</Link>
-                <Link href="/support" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Support</Link>
             </nav>
 
             <div className="flex justify-center items-center space-x-6 mb-8">
