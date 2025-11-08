@@ -246,7 +246,7 @@ export function HomePageContent() {
         <div className="absolute inset-0 z-0 bg-grid-pattern opacity-5"></div>
         <div className="absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-background to-transparent"></div>
         <div className="absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-background to-transparent"></div>
-        <div className="flex animate-scroll">
+        <div className="flex flex-nowrap animate-scroll">
             {[...paymentMethods, ...paymentMethods].map((method, index) => (
                 <div key={index} className="flex-shrink-0 w-48 flex justify-center items-center gap-4 mx-4">
                     <method.icon className="w-8 h-8 text-muted-foreground" />
@@ -261,10 +261,12 @@ export function HomePageContent() {
             }
             @keyframes scroll {
                 from { transform: translateX(0); }
-                to { transform: translateX(-50%); }
+                to { transform: translateX(-100%); }
             }
             .animate-scroll {
                 animation: scroll 20s linear infinite;
+                display: flex;
+                width: fit-content;
             }
         `}</style>
     </div>
