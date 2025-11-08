@@ -237,31 +237,6 @@ export function FuturisticAuthForm({
 
               <SubmitButton isLogin={isLogin} isPending={isPending} />
             </form>
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/10" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-[#15002B]/50 px-2 text-gray-500">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-            <button className="w-full py-3 px-4 rounded-lg bg-white/5 border border-white/10 text-white font-semibold flex items-center justify-center hover:bg-white/10 transition-transform duration-300 transform hover:scale-[1.02]">
-              <svg
-                role="img"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                className="mr-2 h-5 w-5"
-              >
-                <title>Google</title>
-                <path
-                  fill="currentColor"
-                  d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.62 1.96-4.66 1.96-3.88 0-7.03-3.15-7.03-7.03s3.15-7.03 7.03-7.03c2.25 0 3.67.92 4.48 1.68l2.54-2.54C18.33 2.92 15.78 2 12.48 2 6.87 2 2.52 6.49 2.52 12s4.35 10 9.96 10c5.79 0 9.5-4.04 9.5-9.66 0-.64-.07-1.25-.16-1.84z"
-                />
-              </svg>
-              Google
-            </button>
           </motion.div>
         </AnimatePresence>
       </div>
