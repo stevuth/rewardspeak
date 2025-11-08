@@ -360,7 +360,7 @@ export function HomePageContent() {
 
         <section className="py-16 md:py-24 grid md:grid-cols-2 gap-8 lg:gap-16 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
-                className="relative min-h-[500px]"
+                className="relative min-h-[500px] flex items-center justify-center aspect-video rounded-2xl shadow-2xl shadow-primary/10"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.5 }}
