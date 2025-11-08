@@ -116,8 +116,8 @@ export default async function TopEarnersPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Top Earners Leaderboard"
-        description="See who's at the peak of the earnings leaderboard based on current points."
+        title="Peak Performers"
+        description="A salute to our top earners. See who's leading the pack on the climb to the top."
       />
       
       {topThree.length >= 3 ? (
