@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogIn, Lock, Mail, UserPlus, KeyRound, Mountain } from "lucide-react";
+import { LogIn, Lock, Mail, UserPlus, KeyRound, Mountain, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { WavingMascotLoader } from "../waving-mascot-loader";
 
@@ -37,6 +37,9 @@ const FloatingLabelInput = ({
   defaultValue = "",
   Icon,
   required = true,
+  isPassword = false,
+  showPassword,
+  toggleShowPassword
 }: {
   id: string;
   name: string;
@@ -45,6 +48,9 @@ const FloatingLabelInput = ({
   defaultValue?: string;
   Icon: React.ElementType;
   required?: boolean;
+  isPassword?: boolean;
+  showPassword?: boolean;
+  toggleShowPassword?: () => void;
 }) => {
   return (
     <div className="relative">
@@ -54,10 +60,10 @@ const FloatingLabelInput = ({
           <input
             id={id}
             name={name}
-            type={type}
+            type={isPassword ? (showPassword ? 'text' : 'password') : type}
             defaultValue={defaultValue}
             placeholder=" " // Important for the floating label effect
-            className="floating-label-input block w-full bg-[#1A0033]/80 rounded-md py-3 pl-10 pr-3 text-base text-gray-200 placeholder-gray-500 appearance-none focus:outline-none focus:ring-0 relative z-20"
+            className="floating-label-input block w-full bg-[#1A0033]/80 rounded-md py-3 pl-10 pr-10 text-base text-gray-200 placeholder-gray-500 appearance-none focus:outline-none focus:ring-0 relative z-20"
             required={required}
           />
           <label
@@ -66,6 +72,15 @@ const FloatingLabelInput = ({
           >
             {label}
           </label>
+           {isPassword && (
+            <button
+              type="button"
+              onClick={toggleShowPassword}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-30 text-gray-400 hover:text-white"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -131,6 +146,9 @@ export function FuturisticAuthForm({
 }: AuthFormProps) {
   const isLogin = type === "login";
   const [ipAddress, setIpAddress] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => setShowPassword(prev => !prev);
 
   useEffect(() => {
     // Fetch the client's IP address when the component mounts
@@ -213,6 +231,9 @@ export function FuturisticAuthForm({
                   type="password"
                   label="Password"
                   Icon={Lock}
+                  isPassword={true}
+                  showPassword={showPassword}
+                  toggleShowPassword={toggleShowPassword}
                 />
                 {isLogin && (
                     <button type="button" className="absolute top-0 right-0 text-xs font-semibold text-secondary hover:text-secondary/80 transition mt-1">
