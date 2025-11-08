@@ -93,7 +93,7 @@ export function SettingsPageClient({ user, profileData }: { user: any, profileDa
         <div className="space-y-8">
             <PageHeader
                 title="My Peak Profile"
-                description="Manage your account and notification settings."
+                description="Manage your account settings."
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
