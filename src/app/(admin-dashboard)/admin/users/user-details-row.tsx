@@ -1,13 +1,16 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, User, Globe, Calendar, Clock, Fingerprint, Coins, Gift, Percent, Link as LinkIcon, Hash, Users as UsersIcon, ListChecks } from "lucide-react";
+import { ChevronDown, ChevronUp, User, Globe, Calendar, Clock, Fingerprint, Coins, Gift, Percent, Link as LinkIcon, Hash, Users as UsersIcon, ListChecks, Ban, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { UserProfile } from "@/app/api/get-all-users/route";
 import { SafeImage } from "@/components/safe-image";
+import { banUser, unbanUser } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 function getFlagEmoji(countryCode: string | null): string {
     if (!countryCode || countryCode.length !== 2) return '🏳️';
@@ -32,10 +35,36 @@ const DetailItem = ({ icon: Icon, label, children }: { icon: React.ElementType, 
 
 export function UserDetailsRow({ user }: { user: UserProfile }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+
+  const isBanned = user.banned_until && new Date(user.banned_until) > new Date();
+
+  const handleBan = () => {
+    startTransition(async () => {
+        const result = await banUser(user.user_id);
+        if (result.success) {
+            toast({ title: "User Banned", description: `${user.email} has been banned.` });
+        } else {
+            toast({ variant: "destructive", title: "Failed to Ban User", description: result.error });
+        }
+    });
+  }
+
+  const handleUnban = () => {
+    startTransition(async () => {
+        const result = await unbanUser(user.user_id);
+        if (result.success) {
+            toast({ title: "User Unbanned", description: `${user.email} has been unbanned.` });
+        } else {
+            toast({ variant: "destructive", title: "Failed to Unban User", description: result.error });
+        }
+    });
+  }
 
   return (
     <>
-      <TableRow>
+      <TableRow className={cn(isBanned && "bg-destructive/10")}>
         <TableCell className="w-16">
             <SafeImage 
                 src={user.avatar_url || ''}
@@ -45,7 +74,10 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
                 className="rounded-full object-cover"
             />
         </TableCell>
-        <TableCell className="font-medium max-w-[250px] truncate">{user.email ?? 'N/A'}</TableCell>
+        <TableCell className="font-medium max-w-[250px] truncate">
+            {user.email ?? 'N/A'}
+             {isBanned && <Badge variant="destructive" className="ml-2">Banned</Badge>}
+        </TableCell>
         <TableCell>
             <Badge variant="secondary">{user.points?.toLocaleString() ?? 0} Pts</Badge>
         </TableCell>
@@ -54,22 +86,35 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
             <Badge variant="outline" className="font-mono">{user.profile_id}</Badge>
         </TableCell>
         <TableCell>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? "Hide" : "Show"} Details
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4 ml-2" />
-              ) : (
-                <ChevronDown className="h-4 w-4 ml-2" />
-              )}
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOpen(!isOpen)}
+                >
+                {isOpen ? "Hide" : "Show"} Details
+                {isOpen ? (
+                    <ChevronUp className="h-4 w-4 ml-2" />
+                ) : (
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                )}
+                </Button>
+                {isBanned ? (
+                    <Button variant="outline" size="sm" onClick={handleUnban} disabled={isPending}>
+                        {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Ban className="h-4 w-4 mr-2" />}
+                        Unban
+                    </Button>
+                ) : (
+                    <Button variant="destructive" size="sm" onClick={handleBan} disabled={isPending}>
+                        {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Ban className="h-4 w-4 mr-2" />}
+                        Ban
+                    </Button>
+                )}
+            </div>
         </TableCell>
       </TableRow>
       {isOpen && (
-        <TableRow>
+        <TableRow className={cn(isBanned && "bg-destructive/10")}>
           <TableCell colSpan={6}>
             <div className="p-4 bg-muted/30 rounded-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
                 <DetailItem icon={User} label="User Email">
@@ -110,6 +155,11 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
                         {user.avatar_url || 'No avatar'}
                     </a>
                 </DetailItem>
+                {isBanned && (
+                    <DetailItem icon={Ban} label="Ban Status">
+                        <span className="text-destructive font-bold">Banned until {new Date(user.banned_until!).toLocaleString()}</span>
+                    </DetailItem>
+                )}
             </div>
           </TableCell>
         </TableRow>
