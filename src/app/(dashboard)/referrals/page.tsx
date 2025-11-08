@@ -164,14 +164,14 @@ export default function InviteAndClimbPage() {
              <p className="text-muted-foreground mb-4">Share with your friends</p>
              <div className="flex justify-center gap-4">
                  <TwitterShareButton url={referralLink} title={shareBody} hashtags={["RewardsPeak", "EarnMoney"]}>
-                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
                         <Twitter className="h-5 w-5" />
-                    </Button>
+                    </div>
                  </TwitterShareButton>
                   <FacebookShareButton url={referralLink} quote={shareBody} hashtag="#RewardsPeak">
-                     <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
+                     <div className="flex items-center justify-center h-12 w-12 rounded-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
                         <Facebook className="h-5 w-5" />
-                    </Button>
+                    </div>
                  </FacebookShareButton>
                  <WhatsappShareButton url={referralLink} title={shareBody}>
                     <WhatsappIcon size={48} round />
