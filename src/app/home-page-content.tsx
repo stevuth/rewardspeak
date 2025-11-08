@@ -86,16 +86,24 @@ const features = [
 
 const faqs = [
     {
-      question: "How much can I earn?",
-      answer: "Your earnings depend on the tasks you complete. The more offers you do, the more you can earn. There's no limit!"
+      question: "How do I start earning points?",
+      answer: "Once you sign up, head to the 'Earn' page. You can choose from thousands of offers, including playing games, trying new apps, and completing surveys. Each offer shows the points you'll earn. Just follow the instructions to get your reward!"
     },
     {
-      question: "How do I get paid?",
-      answer: "You can withdraw your earnings via PayPal, various cryptocurrencies like Bitcoin and Litecoin, and more. Payouts are fast and secure."
+      question: "How much are points worth and how can I cash out?",
+      answer: "It's simple: 1,000 points = $1.00 USD. You can cash out your earnings starting from just $10. We offer fast and secure withdrawals to PayPal and popular cryptocurrencies like USDT."
     },
     {
-        question: "Is Rewards Peak free to use?",
-        answer: "Yes, Rewards Peak is completely free. You'll never be asked to pay for anything. Just sign up and start earning."
+        question: "How does the referral program work?",
+        answer: "Share your unique referral code or link with friends. When they sign up, you'll earn 10% of their offer earnings for life! It's a great way to build a passive income stream."
+    },
+    {
+        question: "Is it really free?",
+        answer: "Yes, absolutely. Rewards Peak is 100% free to use. We will never ask you for payment information. Our partners pay us, and we share that revenue with you."
+    },
+    {
+        question: "Can I use a VPN or create multiple accounts?",
+        answer: "No. To ensure a fair platform for everyone, the use of VPNs or proxies is strictly forbidden. Each user is allowed only one account. Violating these rules will result in your account being banned."
     }
 ];
 
