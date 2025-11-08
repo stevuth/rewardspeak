@@ -108,9 +108,14 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const referralCode = formData.get('referral_code') as string | null;
+  const acceptedTerms = formData.get('accepted_terms') === 'on';
 
   if (!email || !password) {
     return { message: 'Email and password are required.', success: false };
+  }
+
+  if (!acceptedTerms) {
+    return { message: 'You must agree to the Terms of Use and Privacy Policy to create an account.', success: false };
   }
 
   const supabase = createSupabaseServerClient(true);
@@ -121,7 +126,8 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     options: {
       data: {
         referral_code: referralCode,
-        country_code: countryCode
+        country_code: countryCode,
+        accepted_terms: true
       },
     },
   });

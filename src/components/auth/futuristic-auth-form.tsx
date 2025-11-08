@@ -11,6 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useActionState } from "react";
 import { requestPasswordReset } from "@/app/auth/actions";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "../ui/checkbox";
+import Link from "next/link";
+import { Label } from "../ui/label";
 
 type AuthFormProps = {
   type: "login" | "signup";
@@ -302,14 +305,30 @@ export function FuturisticAuthForm({
                 </div>
 
                 {!isLogin && (
-                  <FloatingLabelInput
-                    id="referral_code"
-                    name="referral_code"
-                    type="text"
-                    label="Referral Code (Optional)"
-                    Icon={UserPlus}
-                    required={false}
-                  />
+                  <>
+                    <FloatingLabelInput
+                      id="referral_code"
+                      name="referral_code"
+                      type="text"
+                      label="Referral Code (Optional)"
+                      Icon={UserPlus}
+                      required={false}
+                    />
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="accepted_terms" name="accepted_terms" required />
+                      <Label htmlFor="accepted_terms" className="text-xs text-gray-400">
+                        I agree to the{" "}
+                        <Link href="/terms-of-the-peak" target="_blank" className="underline text-secondary hover:text-secondary/80">
+                          Terms of Use
+                        </Link>{" "}
+                        and{" "}
+                        <Link href="/privacy-trail" target="_blank" className="underline text-secondary hover:text-secondary/80">
+                          Privacy Policy
+                        </Link>
+                        .
+                      </Label>
+                    </div>
+                  </>
                 )}
                 
                 {/* Hidden input for IP address */}
