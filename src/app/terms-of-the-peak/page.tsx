@@ -75,7 +75,7 @@ export default function TermsOfThePeakPage() {
                     <p>We reserve the right to modify these Terms at any time. We will notify you of any changes by posting the new Terms on this page. Your continued use of the Service after any such changes constitutes your acceptance of the new Terms.</p>
                 </Section>
                  <Section title="9. Contact Us">
-                    <p>If you have any questions about these Terms, please contact us through the support page on our website.</p>
+                    <p>If you have any questions about these Terms, please contact us at <a href="mailto:support@rewardspeak.com" className="text-primary hover:underline">support@rewardspeak.com</a>.</p>
                 </Section>
             </CardContent>
         </Card>

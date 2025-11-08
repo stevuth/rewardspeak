@@ -80,7 +80,7 @@ export default function PrivacyTrailPage() {
                 </Section>
 
                 <Section title="8. Contact Us">
-                    <p>If you have any questions about this Privacy Policy, please contact us through the support page on our website.</p>
+                    <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@rewardspeak.com" className="text-primary hover:underline">support@rewardspeak.com</a>.</p>
                 </Section>
             </CardContent>
         </Card>
