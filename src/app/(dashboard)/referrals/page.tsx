@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Gift, Users, DollarSign, Check, Percent, Twitter, Facebook } from "lucide-react";
+import { Copy, Gift, Users, DollarSign, Check, Percent, Twitter, Facebook, Instagram } from "lucide-react";
 import { GiftIllustration } from "@/components/illustrations/gift";
 import { StatCard } from "@/components/stat-card";
 import { useEffect, useState } from "react";
@@ -24,6 +24,7 @@ import {
   WhatsappIcon,
 } from 'react-share';
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 
 export default function InviteAndClimbPage() {
@@ -176,6 +177,11 @@ export default function InviteAndClimbPage() {
                  <WhatsappShareButton url={referralLink} title={shareBody}>
                     <WhatsappIcon size={48} round />
                  </WhatsappShareButton>
+                  <Link href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                        <Instagram className="h-5 w-5" />
+                    </div>
+                  </Link>
              </div>
           </div>
           
