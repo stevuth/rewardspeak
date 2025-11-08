@@ -23,48 +23,52 @@ export async function GET(request: NextRequest) {
     let results: SuspiciousGroup[] = [];
 
     try {
-        // --- CHECK 1: Users sharing the same IP address ---
-        // This query finds all IP addresses that are associated with more than one distinct user_id.
-        const { data: ipGroups, error: ipGroupError } = await supabase.rpc('get_ips_with_multiple_users');
-        
-        if (ipGroupError) throw ipGroupError;
+        // --- CHECK 1: Users sharing the same IP address (Simplified Logic) ---
 
-        if (ipGroups && ipGroups.length > 0) {
-             const { data: transactions, error: transactionError } = await supabase
-                .from('transactions')
-                .select('ip_address, user_id, user_email')
-                .in('ip_address', ipGroups.map(g => g.ip_address));
+        // 1. Fetch all transactions with necessary info.
+        const { data: transactions, error: transactionError } = await supabase
+            .from('transactions')
+            .select('ip_address, user_id, user_email')
+            .not('ip_address', 'is', null)
+            .not('user_id', 'is', null)
+            .not('user_email', 'is', null);
 
-            if (transactionError) throw transactionError;
+        if (transactionError) throw transactionError;
 
-            const ipUserMap = new Map<string, { user_count: number; users: { user_id: string; user_email: string; transaction_count: number }[] }>();
+        // 2. Process the data in code to find shared IPs.
+        const ipUserMap = new Map<string, Map<string, { email: string, count: number }>>();
 
-            for (const tx of transactions) {
-                if (!tx.ip_address || !tx.user_id || !tx.user_email) continue;
+        for (const tx of transactions) {
+            if (!tx.ip_address || !tx.user_id) continue;
 
-                if (!ipUserMap.has(tx.ip_address)) {
-                    ipUserMap.set(tx.ip_address, { user_count: 0, users: [] });
-                }
-
-                const group = ipUserMap.get(tx.ip_address)!;
-                let user = group.users.find(u => u.user_id === tx.user_id);
-                if (!user) {
-                    user = { user_id: tx.user_id, user_email: tx.user_email, transaction_count: 0 };
-                    group.users.push(user);
-                    group.user_count = group.users.length;
-                }
-                user.transaction_count++;
+            if (!ipUserMap.has(tx.ip_address)) {
+                ipUserMap.set(tx.ip_address, new Map());
             }
+
+            const userMap = ipUserMap.get(tx.ip_address)!;
             
-            for (const [ip, groupData] of ipUserMap.entries()) {
-                if (groupData.user_count > 1) {
-                    results.push({
-                        type: 'shared_ip',
-                        ip_address: ip,
-                        user_count: groupData.user_count,
-                        users: groupData.users.sort((a,b) => b.transaction_count - a.transaction_count),
-                    });
-                }
+            if (!userMap.has(tx.user_id)) {
+                userMap.set(tx.user_id, { email: tx.user_email!, count: 0 });
+            }
+
+            userMap.get(tx.user_id)!.count++;
+        }
+
+        // 3. Filter for IPs with more than one user and format the output.
+        for (const [ip, userMap] of ipUserMap.entries()) {
+            if (userMap.size > 1) {
+                const users = Array.from(userMap.entries()).map(([userId, userData]) => ({
+                    user_id: userId,
+                    user_email: userData.email,
+                    transaction_count: userData.count,
+                }));
+
+                results.push({
+                    type: 'shared_ip',
+                    ip_address: ip,
+                    user_count: users.length,
+                    users: users.sort((a,b) => b.transaction_count - a.transaction_count),
+                });
             }
         }
         
