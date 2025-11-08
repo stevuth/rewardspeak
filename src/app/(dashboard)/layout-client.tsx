@@ -51,7 +51,7 @@ const navItems = [
 const secondaryNavItems = [
   { href: "/history", label: "Offers Log", icon: Clock },
   { href: "/settings", label: "My Peak Profile", icon: Settings },
-  { href: "/support", label: "Support Ticket", icon: CircleHelp },
+  { href: "/support-ticket", label: "Support Ticket", icon: CircleHelp },
 ];
 
 const mobileNavItems = [
@@ -59,7 +59,7 @@ const mobileNavItems = [
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
     { href: "/history", label: "Log", icon: Clock },
-    { href: "/support", label: "Support", icon: CircleHelp },
+    { href: "/support-ticket", label: "Support", icon: CircleHelp },
 ]
 
 const recentEarnings: any[] = [];
