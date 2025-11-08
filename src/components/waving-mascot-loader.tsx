@@ -72,7 +72,7 @@ export const WavingMascotLoader = ({ text, messages, duration = 2500 }: { text?:
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.4, ease: "easeInOut" }}
-                        className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-primary"
+                        className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-primary whitespace-nowrap"
                     >
                       {displayText}
                     </motion.p>
