@@ -541,12 +541,6 @@ export function HomePageContent() {
                 <Link href="/leaderboard" className="text-muted-foreground hover:text-primary transition-colors font-semibold">Leaderboard</Link>
             </nav>
 
-            <div className="flex justify-center items-center space-x-6 mb-8">
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook size={22} /></Link>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={22} /></Link>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter size={22} /></Link>
-            </div>
-
             <div className="border-t border-border/50 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
                 <p>&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
                 <div className="flex gap-4">
