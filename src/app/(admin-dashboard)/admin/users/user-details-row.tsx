@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, User, Globe, Calendar, Clock, Fingerprint, Coins, Gift, Percent, Link as LinkIcon, Hash } from "lucide-react";
+import { ChevronDown, ChevronUp, User, Globe, Calendar, Clock, Fingerprint, Coins, Gift, Percent, Link as LinkIcon, Hash, Users as UsersIcon, ListChecks } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { UserProfile } from "@/app/api/get-all-users/route";
 import { SafeImage } from "@/components/safe-image";
@@ -98,6 +98,12 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
                 </DetailItem>
                  <DetailItem icon={Percent} label="Lifetime Referral Earnings">
                     {user.referral_earnings?.toLocaleString() ?? 0} Pts
+                </DetailItem>
+                 <DetailItem icon={UsersIcon} label="Total Referrals">
+                    {user.referral_count.toLocaleString()}
+                </DetailItem>
+                <DetailItem icon={ListChecks} label="Offers Completed">
+                    {user.completed_offers_count.toLocaleString()}
                 </DetailItem>
                  <DetailItem icon={LinkIcon} label="Avatar URL">
                     <a href={user.avatar_url || ''} target="_blank" rel="noreferrer" className="text-primary hover:underline text-xs break-all">
