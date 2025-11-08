@@ -31,13 +31,14 @@ export async function GET() {
             referral_earnings,
             country_code,
             avatar_url,
-            users (
+            users:auth_users (
                 email,
                 created_at,
                 last_sign_in_at
             )
         `)
-        .order('created_at', { foreignTable: 'users', ascending: false });
+        .order('created_at', { foreignTable: 'auth_users', ascending: false });
+
 
     if (error) {
       console.error("Error fetching users and profiles:", error.message);
@@ -46,7 +47,8 @@ export async function GET() {
     
     // Transform the data into the desired UserProfile shape
     const combinedData: UserProfile[] = users.map(p => {
-        const userAuthData = Array.isArray(p.users) ? p.users[0] : p.users;
+        // The foreign table relationship might return null if there's no matching user in auth.users
+        const userAuthData = p.users;
         return {
             user_id: p.user_id,
             email: userAuthData?.email || null,
