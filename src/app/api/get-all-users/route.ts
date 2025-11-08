@@ -2,12 +2,17 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 
-type UserProfile = {
+export type UserProfile = {
   user_id: string;
   email: string | null;
   created_at: string;
-  profile_id: string | null;
+  last_sign_in_at: string | null;
+  profile_id: string | null; // referral code
   points: number | null;
+  withdrawn: number | null;
+  referral_earnings: number | null;
+  country_code: string | null;
+  avatar_url: string | null;
 }
 
 // This API route uses the admin client to securely fetch all users.
@@ -15,37 +20,46 @@ export async function GET() {
   try {
     const supabase = createSupabaseAdminClient();
 
-    const { data: authUsers, error: usersError } = await supabase.auth.admin.listUsers();
-    if (usersError) {
-      console.error("Error fetching users from auth:", usersError.message);
-      throw usersError;
+    // Fetch all users from both auth and profiles table, joining them.
+    const { data: users, error } = await supabase
+        .from('profiles')
+        .select(`
+            user_id,
+            id,
+            points,
+            withdrawn,
+            referral_earnings,
+            country_code,
+            avatar_url,
+            users (
+                email,
+                created_at,
+                last_sign_in_at
+            )
+        `)
+        .order('created_at', { foreignTable: 'users', ascending: false });
+
+    if (error) {
+      console.error("Error fetching users and profiles:", error.message);
+      throw error;
     }
     
-    const { data: profiles, error: profilesError } = await supabase.from('profiles').select('id, user_id, points');
-    if (profilesError) {
-      console.error("Error fetching profiles:", profilesError.message);
-      // We can continue without profiles if it fails, but we'll have less data
-    }
-
-    const profilesMap = new Map<string, { id: string, points: number }>();
-    if (profiles) {
-      for (const profile of profiles) {
-          if (profile.user_id) {
-              profilesMap.set(profile.user_id, { id: profile.id, points: profile.points ?? 0 });
-          }
-      }
-    }
-
-    const combinedData: UserProfile[] = authUsers.users.map(user => {
-      const profile = profilesMap.get(user.id);
-      return {
-        user_id: user.id,
-        email: user.email || null,
-        created_at: user.created_at,
-        profile_id: profile?.id || null,
-        points: profile?.points || 0,
-      };
-    }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    // Transform the data into the desired UserProfile shape
+    const combinedData: UserProfile[] = users.map(p => {
+        const userAuthData = Array.isArray(p.users) ? p.users[0] : p.users;
+        return {
+            user_id: p.user_id,
+            email: userAuthData?.email || null,
+            created_at: userAuthData?.created_at || new Date().toISOString(),
+            last_sign_in_at: userAuthData?.last_sign_in_at || null,
+            profile_id: p.id,
+            points: p.points,
+            withdrawn: p.withdrawn,
+            referral_earnings: p.referral_earnings,
+            country_code: p.country_code,
+            avatar_url: p.avatar_url,
+        }
+    });
     
     return NextResponse.json({ users: combinedData });
   } catch (error) {
@@ -53,4 +67,3 @@ export async function GET() {
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
-

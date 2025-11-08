@@ -12,26 +12,15 @@ import {
 import {
   Table,
   TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from "@/components/ui/table";
-import { createSupabaseBrowserClient } from "@/utils/supabase/client";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
+import { UserDetailsRow } from "./user-details-row";
+import type { UserProfile } from "@/app/api/get-all-users/route";
 
-type UserProfile = {
-  user_id: string;
-  email: string | null;
-  created_at: string;
-  profile_id: string | null;
-  points: number | null;
-}
 
 export default function ManageUsersPage() {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -118,14 +107,6 @@ export default function ManageUsersPage() {
       <Card>
         <CardContent className="pt-6">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="font-semibold">Email</TableHead>
-                <TableHead className="font-semibold">Points</TableHead>
-                <TableHead className="font-semibold">Joined</TableHead>
-                <TableHead className="font-semibold">Referral Code</TableHead>
-              </TableRow>
-            </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
@@ -135,18 +116,7 @@ export default function ManageUsersPage() {
                 </TableRow>
               ) : filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
-                  <TableRow key={user.user_id}>
-                    <TableCell className="font-medium max-w-xs truncate">
-                      {user.email ?? 'N/A'}
-                    </TableCell>
-                    <TableCell>{user.points ?? 0}</TableCell>
-                    <TableCell>
-                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="font-mono">{user.profile_id}</Badge>
-                    </TableCell>
-                  </TableRow>
+                  <UserDetailsRow key={user.user_id} user={user} />
                 ))
               ) : (
                 <TableRow>
