@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         const ipUserMap = new Map<string, Map<string, { email: string, count: number }>>();
 
         for (const tx of transactions) {
-            if (!tx.ip_address || !tx.user_id) continue;
+            if (!tx.ip_address || !tx.user_id || !tx.user_email) continue;
 
             if (!ipUserMap.has(tx.ip_address)) {
                 ipUserMap.set(tx.ip_address, new Map());
@@ -48,10 +48,13 @@ export async function GET(request: NextRequest) {
             const userMap = ipUserMap.get(tx.ip_address)!;
             
             if (!userMap.has(tx.user_id)) {
-                userMap.set(tx.user_id, { email: tx.user_email!, count: 0 });
+                userMap.set(tx.user_id, { email: tx.user_email, count: 0 });
             }
 
-            userMap.get(tx.user_id)!.count++;
+            const userData = userMap.get(tx.user_id);
+            if(userData) {
+                userData.count++;
+            }
         }
 
         // 3. Filter for IPs with more than one user and format the output.
