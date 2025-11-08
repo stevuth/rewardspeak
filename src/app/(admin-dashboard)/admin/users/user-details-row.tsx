@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, User, Globe, Calendar, Clock, Fingerprint, Coins, Gift, Percent, Link as LinkIcon, Hash, Users as UsersIcon, ListChecks, Ban, Loader2 } from "lucide-react";
@@ -37,6 +38,7 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const router = useRouter();
 
   const isBanned = user.banned_until && new Date(user.banned_until) > new Date();
 
@@ -45,6 +47,7 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
         const result = await banUser(user.user_id);
         if (result.success) {
             toast({ title: "User Banned", description: `${user.email} has been banned.` });
+            router.refresh();
         } else {
             toast({ variant: "destructive", title: "Failed to Ban User", description: result.error });
         }
@@ -56,6 +59,7 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
         const result = await unbanUser(user.user_id);
         if (result.success) {
             toast({ title: "User Unbanned", description: `${user.email} has been unbanned.` });
+            router.refresh();
         } else {
             toast({ variant: "destructive", title: "Failed to Unban User", description: result.error });
         }
