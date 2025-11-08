@@ -23,14 +23,17 @@ import { useToast } from "@/hooks/use-toast";
 import { updatePassword } from "@/app/actions";
 
 // Helper to get flag emoji from country code
-function getFlagEmoji(countryCode: string) {
-  if (!countryCode) return '';
+function getFlagEmoji(countryCode: string): string {
+  if (!countryCode || countryCode.length !== 2) return '';
+  // The regional indicator symbol letters are mapped from 'A' (U+1F1E6) to 'Z' (U+1F1FF).
+  // The formula is: 127462 - 65 ('A') + charCode.
   const codePoints = countryCode
     .toUpperCase()
     .split('')
     .map(char => 127397 + char.charCodeAt(0));
   return String.fromCodePoint(...codePoints);
 }
+
 
 export function SettingsPageClient({ user, profileData }: { user: any, profileData: any }) {
     const { toast } = useToast();
