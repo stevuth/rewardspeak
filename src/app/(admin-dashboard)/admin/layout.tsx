@@ -30,6 +30,7 @@ const primaryAdminNavItems = [
     { href: "/admin/offers", label: "Offers", icon: List },
     { href: "/admin/withdrawals", label: "Withdrawals", icon: Gift },
     { href: "/admin/postbacks", label: "Postbacks", icon: ClipboardList },
+    { href: "/admin/fraud-detection", label: "Fraud Center", icon: ShieldAlert },
 ];
 
 const secondaryAdminNavItems = [
@@ -39,15 +40,10 @@ const secondaryAdminNavItems = [
     { href: "/admin/offer-preview", label: "Offer Preview", icon: Eye },
 ];
 
-const toolsNavItems = [
-    { href: "/admin/fraud-detection", label: "Fraud Center", icon: ShieldAlert },
-]
-
 const allAdminNavItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     ...primaryAdminNavItems,
     ...secondaryAdminNavItems,
-    ...toolsNavItems
 ]
 
 
@@ -57,6 +53,17 @@ function AdminHeader() {
     // Make matching more specific for admin routes
     const fullHref = href;
     const isActive = (fullHref === "/admin/dashboard" && pathname === fullHref) || (fullHref !== "/admin/dashboard" && pathname.startsWith(fullHref));
+    
+    const isFraudCenter = href === "/admin/fraud-detection";
+    if (isFraudCenter) {
+      return cn(
+        "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors border border-transparent",
+        isActive
+          ? "bg-destructive/10 text-destructive border-destructive/50"
+          : "text-destructive/80 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50"
+      );
+    }
+    
     return cn(
       "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       isActive
@@ -185,19 +192,6 @@ function AdminHeader() {
                         key={item.href}
                         href={item.href}
                         className={getNavLinkClass(item.href)}
-                    >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                    </Link>
-                ))}
-            </nav>
-            <nav className="flex flex-row items-center gap-2 text-sm">
-                <p className="text-xs font-semibold text-muted-foreground mr-2">Tools:</p>
-                 {toolsNavItems.map(item => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(getNavLinkClass(item.href), "border border-transparent hover:border-destructive/50 text-destructive/80 hover:text-destructive")}
                     >
                         <item.icon className="h-4 w-4" />
                         {item.label}
