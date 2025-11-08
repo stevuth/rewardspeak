@@ -146,7 +146,7 @@ export function HomePageContent() {
     const supabase = createSupabaseBrowserClient();
 
     async function fetchFeaturedOffers() {
-      const offerNames = ["state of survival", "valorant", "puzzle and survival", "dice dreams"];
+      const offerNames = ["raids shadow", "richie games", "upside", "bingo vacation", "crypto mine"];
       const orFilter = offerNames.map(name => `name.ilike.%${name}%`).join(',');
 
       try {
