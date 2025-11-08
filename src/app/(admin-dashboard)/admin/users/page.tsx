@@ -1,8 +1,13 @@
 
+'use client';
+
+import { useState, useEffect, useMemo } from "react";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
   Table,
@@ -12,14 +17,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createSupabaseAdminClient } from "@/utils/supabase/admin";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Admin: Manage Users",
-  description: "View and manage all registered users.",
-};
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 type UserProfile = {
   user_id: string;
@@ -29,53 +33,116 @@ type UserProfile = {
   points: number | null;
 }
 
-async function getAllUsers(): Promise<UserProfile[]> {
-  const supabase = createSupabaseAdminClient();
+export default function ManageUsersPage() {
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [emailFilter, setEmailFilter] = useState('');
+  const [idFilter, setIdFilter] = useState('');
 
-  const { data: authUsers, error: usersError } = await supabase.auth.admin.listUsers();
-  if (usersError) {
-    console.error("Error fetching users from auth:", usersError.message);
-    return [];
-  }
-  
-  const { data: profiles, error: profilesError } = await supabase.from('profiles').select('id, user_id, points');
-  if (profilesError) {
-    console.error("Error fetching profiles:", profilesError.message);
-  }
-
-  const profilesMap = new Map<string, { id: string, points: number }>();
-  if (profiles) {
-    for (const profile of profiles) {
-        if (profile.user_id) {
-            profilesMap.set(profile.user_id, { id: profile.id, points: profile.points ?? 0 });
+  useEffect(() => {
+    async function getAllUsers() {
+      setIsLoading(true);
+      // NOTE: This uses a browser client, but fetches from a route that uses the admin client.
+      // For a real-world app, you'd create a dedicated API route that uses the Supabase Admin client
+      // to fetch all users, as listing users is a privileged operation.
+      // For this implementation, we will simulate this by fetching profiles and matching them.
+      const supabase = createSupabaseBrowserClient();
+      
+      // This is not a secure or scalable way to get all users on the client.
+      // This should be an API route with admin privileges.
+      // We will create a simplified version here for demonstration.
+      // A full implementation would require an API route.
+      // To simulate, we'll fetch all profiles, which is not ideal but works for this context.
+      const { data: profiles, error } = await supabase.from('profiles').select('*');
+      
+      if (error) {
+        console.error("Error fetching profiles:", error.message);
+        setUsers([]);
+      } else {
+        const userProfiles: UserProfile[] = (profiles || []).map(p => ({
+          user_id: p.user_id,
+          email: 'user@example.com', // Placeholder as we can't get email from profiles table easily
+          created_at: p.created_at,
+          profile_id: p.id,
+          points: p.points
+        }));
+        // Since we can't get auth users easily on client, we'll just use profile data.
+        // A proper implementation would need a dedicated API route.
+        // Let's create a temporary API route to do this correctly.
+        try {
+            const response = await fetch('/api/get-all-users');
+            if (!response.ok) throw new Error('Failed to fetch users');
+            const data = await response.json();
+            setUsers(data.users);
+        } catch (apiError) {
+             console.error("Error fetching users from API:", apiError);
+             setUsers([]);
         }
+
+      }
+      setIsLoading(false);
     }
+    getAllUsers();
+  }, []);
+  
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+        const emailMatch = emailFilter ? user.email?.toLowerCase().includes(emailFilter.toLowerCase()) : true;
+        const idMatch = idFilter ? user.user_id?.toLowerCase().includes(idFilter.toLowerCase()) : true;
+        return emailMatch && idMatch;
+    });
+  }, [users, emailFilter, idFilter]);
+  
+  const handleClear = () => {
+    setEmailFilter('');
+    setIdFilter('');
   }
-
-  const combinedData: UserProfile[] = authUsers.users.map(user => {
-    const profile = profilesMap.get(user.id);
-    return {
-      user_id: user.id,
-      email: user.email || null,
-      created_at: user.created_at,
-      profile_id: profile?.id || null,
-      points: profile?.points || 0,
-    };
-  }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-  return combinedData;
-}
-
-
-export default async function ManageUsersPage() {
-  const users = await getAllUsers();
 
   return (
     <div className="space-y-8">
       <PageHeader
         title="Manage Users"
-        description={`A total of ${users.length} users have registered.`}
+        description={`A total of ${filteredUsers.length} users match the current filters.`}
       />
+      <Card>
+        <CardHeader>
+            <CardTitle>Filter Users</CardTitle>
+        </CardHeader>
+        <CardContent className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+                <Label htmlFor="email-filter">Filter by Email</Label>
+                <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        id="email-filter"
+                        placeholder="user@example.com"
+                        value={emailFilter}
+                        onChange={(e) => setEmailFilter(e.target.value)}
+                        className="pl-8"
+                    />
+                </div>
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="id-filter">Filter by User ID</Label>
+                 <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        id="id-filter"
+                        placeholder="UUID..."
+                        value={idFilter}
+                        onChange={(e) => setIdFilter(e.target.value)}
+                        className="pl-8"
+                    />
+                </div>
+            </div>
+            {(emailFilter || idFilter) && (
+                 <Button onClick={handleClear} variant="outline" className="w-fit">
+                    <X className="mr-2 h-4 w-4"/>
+                    Clear Filters
+                </Button>
+            )}
+        </CardContent>
+      </Card>
       <Card>
         <CardContent className="pt-6">
           <Table>
@@ -84,14 +151,20 @@ export default async function ManageUsersPage() {
                 <TableHead className="font-semibold">Email</TableHead>
                 <TableHead className="font-semibold">Points</TableHead>
                 <TableHead className="font-semibold">Joined</TableHead>
-                <TableHead className="font-semibold">Profile ID</TableHead>
+                <TableHead className="font-semibold">User ID</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.length > 0 ? (
-                users.map((user) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center h-64">
+                    <WavingMascotLoader text="Loading users..." />
+                  </TableCell>
+                </TableRow>
+              ) : filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => (
                   <TableRow key={user.user_id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium max-w-xs truncate">
                       {user.email ?? 'N/A'}
                     </TableCell>
                     <TableCell>{user.points ?? 0}</TableCell>
@@ -99,14 +172,14 @@ export default async function ManageUsersPage() {
                       {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{user.profile_id ?? 'No Profile'}</Badge>
+                      <Badge variant="outline" className="font-mono">{user.user_id}</Badge>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center h-24">
-                    No users found.
+                    No users found for the current filters.
                   </TableCell>
                 </TableRow>
               )}
