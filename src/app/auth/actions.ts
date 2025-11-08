@@ -3,6 +3,8 @@
 
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/utils/supabase/server';
+import { createSupabaseAdminClient } from '@/utils/supabase/admin';
+import { revalidatePath } from 'next/cache';
 
 type VpnCheckResult = {
     isVpn: boolean;
@@ -134,6 +136,26 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   redirect('/auth/confirm');
 }
 
+export async function requestPasswordReset(prevState: { message: string, success?: boolean }, formData: FormData): Promise<{ message: string; success: boolean; }> {
+  const email = formData.get('email') as string;
+
+  if (!email) {
+    return { message: 'Please enter your email address.', success: false };
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/auth/reset-password`,
+  });
+
+  if (error) {
+    console.error("Password reset error:", error);
+    return { message: `Failed to send reset link: ${error.message}`, success: false };
+  }
+
+  return { message: 'If an account exists for this email, a password reset link has been sent.', success: true };
+}
+
 
 export async function signOut() {
   const supabase = createSupabaseServerClient();
@@ -178,5 +200,3 @@ export async function unbanUser(userId: string): Promise<{ success: boolean; err
     revalidatePath('/admin/users');
     return { success: true };
 }
-
-    
