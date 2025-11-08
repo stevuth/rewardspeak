@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
+import { CookieConsent } from "@/components/cookie-consent";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -52,6 +53,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <Analytics />
+        <CookieConsent />
       </body>
     </html>
   );
