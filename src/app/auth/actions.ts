@@ -61,6 +61,11 @@ async function checkVpn(ipAddress: string | null): Promise<VpnCheckResult> {
   }
 }
 
+// Simple regex for basic email format validation
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 
 export async function login(prevState: { message: string, success?: boolean }, formData: FormData) {
   const ipAddress = formData.get('ip_address') as string | null;
@@ -76,6 +81,10 @@ export async function login(prevState: { message: string, success?: boolean }, f
 
   if (!email || !password) {
     return { message: 'Email and password are required.', success: false };
+  }
+  
+  if (!isValidEmail(email)) {
+    return { message: 'Please enter a valid email address.', success: false };
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -113,6 +122,10 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   if (!email || !password) {
     return { message: 'Email and password are required.', success: false };
   }
+  
+  if (!isValidEmail(email)) {
+    return { message: 'Please enter a valid email address.', success: false };
+  }
 
   if (!acceptedTerms) {
     return { message: 'You must agree to the Terms of Use and Privacy Policy to create an account.', success: false };
@@ -147,6 +160,10 @@ export async function requestPasswordReset(prevState: { message: string, success
 
   if (!email) {
     return { message: 'Please enter your email address.', success: false };
+  }
+  
+  if (!isValidEmail(email)) {
+    return { message: 'Please enter a valid email address.', success: false };
   }
 
   const supabase = createSupabaseServerClient();
