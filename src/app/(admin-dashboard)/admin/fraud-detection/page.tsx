@@ -35,7 +35,8 @@ export default function FraudDetectionPage() {
             try {
                 const response = await fetch('/api/admin/fraud-check');
                 if (!response.ok) {
-                    throw new Error('Failed to fetch fraud detection data.');
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || 'Failed to fetch fraud detection data.');
                 }
                 const data = await response.json();
                 setSuspiciousGroups(data.suspicious_groups || []);
@@ -61,17 +62,19 @@ export default function FraudDetectionPage() {
         );
     }
 
+    const sharedIpGroups = suspiciousGroups.filter(g => g.type === 'shared_ip');
+
     return (
         <div className="space-y-8">
             <PageHeader
                 title="Fraud Detection Center"
                 description="This tool identifies potential fraudulent activity, such as multiple users on one IP address."
             />
-            {suspiciousGroups.length > 0 ? (
+            {sharedIpGroups.length > 0 ? (
                 <div>
                     <h2 className="text-xl font-semibold tracking-tight mb-4">Shared IP Addresses</h2>
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {suspiciousGroups.map(group => (
+                        {sharedIpGroups.map(group => (
                             <Card key={group.ip_address} className="border-destructive/50">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
