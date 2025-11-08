@@ -6,19 +6,36 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseAdminClient();
 
     try {
-        // Step 1: Find IP addresses used by more than one distinct user_id
-        const { data: ipData, error: ipError } = await supabase.rpc('get_ips_with_multiple_users');
-        
+        // Step 1: Find IP addresses used by more than one distinct user_id directly
+        const { data: ipData, error: ipError } = await supabase
+            .from('transactions')
+            .select('ip_address, user_id')
+            .not('ip_address', 'is', null)
+            .not('user_id', 'is', null);
+
         if (ipError) {
-            console.error("Error fetching suspicious IPs:", ipError);
+            console.error("Error fetching transactions for IP analysis:", ipError);
             throw ipError;
         }
 
-        if (!ipData || ipData.length === 0) {
+        const ipUserMap = new Map<string, Set<string>>();
+        for (const { ip_address, user_id } of ipData) {
+            if (!ipUserMap.has(ip_address)) {
+                ipUserMap.set(ip_address, new Set());
+            }
+            ipUserMap.get(ip_address)!.add(user_id);
+        }
+
+        const suspiciousIPs: string[] = [];
+        for (const [ip, users] of ipUserMap.entries()) {
+            if (users.size > 1) {
+                suspiciousIPs.push(ip);
+            }
+        }
+
+        if (suspiciousIPs.length === 0) {
             return NextResponse.json({ suspicious_groups: [] });
         }
-        
-        const suspiciousIPs = ipData.map((row: any) => row.ip_address);
 
         // Step 2: Fetch all transactions for these suspicious IPs
         const { data: transactions, error: txError } = await supabase
