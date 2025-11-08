@@ -545,7 +545,7 @@ export function HomePageContent() {
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram size={22} /></Link>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter size={22} /></Link>
                 <Link href="mailto:support@rewardspeak.com" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
-                    <Mail size={22} />
+                    <Mail size={22} /> Contact Us
                 </Link>
             </div>
 
