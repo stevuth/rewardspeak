@@ -197,7 +197,6 @@ export function HomePageContent() {
       try {
         const offerNames = ["bitcoin tiles", "slot mate", "call of dragons", "fish of fortune"];
         
-        // Use Promise.all to fetch each offer individually.
         const offerPromises = offerNames.map(name =>
           supabase
             .from('all_offers')
@@ -207,20 +206,20 @@ export function HomePageContent() {
             .ilike('name', `%${name}%`)
             .order('payout', { ascending: false })
             .limit(1)
-            .single() // We expect one best result
+            .single()
         );
         
         const results = await Promise.allSettled(offerPromises);
         
         const fetchedOffers = results
           .map(result => (result.status === 'fulfilled' ? result.value.data : null))
-          .filter(Boolean); // Filter out nulls from failed promises
+          .filter(Boolean);
           
         setPhoneCardOffers(fetchedOffers);
 
       } catch (error: any) {
         console.error("Error fetching offers for illustration:", error.message || error);
-        setPhoneCardOffers([]); // Set to empty on error
+        setPhoneCardOffers([]);
       } finally {
         setIsPhoneCardOffersLoading(false);
       }
