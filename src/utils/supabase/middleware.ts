@@ -25,22 +25,39 @@ export async function updateSession(request: NextRequest) {
   );
 
   // refreshing the auth token
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Redirect to home if user is not authenticated and trying to access protected routes
-  const protectedRoutes = ['/dashboard', '/earn', '/referrals', '/leaderboard', '/withdraw', '/settings', '/history', '/support'];
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth') || request.nextUrl.pathname === '/';
 
-  if (!user && (protectedRoutes.some(path => request.nextUrl.pathname.startsWith(path)) || isAdminRoute)) {
-    return NextResponse.redirect(new URL('/', request.url));
+  // If a user is not logged in:
+  if (!user) {
+    // And is trying to access a protected route (not auth or homepage), redirect to homepage
+    if (!isAuthRoute) {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
+    // Otherwise, allow access to public/auth pages
+    return response;
   }
 
-  // If user is authenticated and tries to access the home page, redirect to dashboard
-  if (user && request.nextUrl.pathname === '/') {
+  // If a user is logged in:
+  const isAdminUser = user.email?.endsWith('@rewardspeak.com');
+
+  // And tries to access an admin route but is not an admin, redirect to dashboard
+  if (isAdminRoute && !isAdminUser) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
+  // And is an admin and accessing an admin route, allow it
+  if (isAdminRoute && isAdminUser) {
+    return response;
+  }
+
+  // And tries to access a public/auth route, redirect to dashboard
+  if (isAuthRoute) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+  
+  // For all other cases of logged-in users, allow access
   return response;
 }

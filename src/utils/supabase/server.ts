@@ -3,7 +3,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
-export function createSupabaseServerClient() {
+export function createSupabaseServerClient(revalidate: boolean = false) {
   const cookieStore = cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,8 +16,9 @@ export function createSupabaseServerClient() {
         set(name: string, value: string, options: CookieOptions) {
           try { 
             cookieStore.set({ name, value, ...options });
-            // Revalidate path to ensure the new cookie is available for subsequent server actions.
-            revalidatePath('/', 'layout');
+            if (revalidate) {
+                revalidatePath('/', 'layout');
+            }
           } catch (error) {
             // This can happen in server components, safe to ignore.
           }
@@ -25,8 +26,9 @@ export function createSupabaseServerClient() {
         remove(name: string, options: CookieOptions) {
           try { 
             cookieStore.set({ name, value: '', ...options });
-            // Revalidate path to ensure the cookie is removed for subsequent server actions.
-            revalidatePath('/', 'layout');
+            if (revalidate) {
+                revalidatePath('/', 'layout');
+            }
           } catch (error) {
             // This can happen in server components, safe to ignore.
           }
