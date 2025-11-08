@@ -60,7 +60,6 @@ export default function TermsOfThePeakPage() {
                      <ul className="list-disc pl-5 space-y-2">
                         <li><strong>Points:</strong> Points are awarded for the successful completion of offers as determined by our advertising partners. We are not responsible for tracking issues and reserve the right to deny points for any reason.</li>
                         <li><strong>Withdrawals:</strong> You may request a withdrawal once you reach the minimum threshold specified for your chosen payment method. All withdrawal requests are subject to review for fraudulent activity.</li>
-                        <li><strong>Verification:</strong> We may require you to verify your identity before processing a withdrawal to prevent fraud.</li>
                     </ul>
                 </Section>
                 <Section title="5. Termination">
