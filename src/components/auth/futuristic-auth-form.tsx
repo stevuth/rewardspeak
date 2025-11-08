@@ -315,7 +315,7 @@ export function FuturisticAuthForm({
                       required={false}
                     />
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="accepted_terms" name="accepted_terms" required />
+                      <Checkbox id="accepted_terms" name="accepted_terms" />
                       <Label htmlFor="accepted_terms" className="text-xs text-gray-400">
                         I agree to the{" "}
                         <Link href="/terms-of-the-peak" target="_blank" className="underline text-secondary hover:text-secondary/80">
