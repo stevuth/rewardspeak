@@ -42,34 +42,7 @@ export default function ManageUsersPage() {
   useEffect(() => {
     async function getAllUsers() {
       setIsLoading(true);
-      // NOTE: This uses a browser client, but fetches from a route that uses the admin client.
-      // For a real-world app, you'd create a dedicated API route that uses the Supabase Admin client
-      // to fetch all users, as listing users is a privileged operation.
-      // For this implementation, we will simulate this by fetching profiles and matching them.
-      const supabase = createSupabaseBrowserClient();
-      
-      // This is not a secure or scalable way to get all users on the client.
-      // This should be an API route with admin privileges.
-      // We will create a simplified version here for demonstration.
-      // A full implementation would require an API route.
-      // To simulate, we'll fetch all profiles, which is not ideal but works for this context.
-      const { data: profiles, error } = await supabase.from('profiles').select('*');
-      
-      if (error) {
-        console.error("Error fetching profiles:", error.message);
-        setUsers([]);
-      } else {
-        const userProfiles: UserProfile[] = (profiles || []).map(p => ({
-          user_id: p.user_id,
-          email: 'user@example.com', // Placeholder as we can't get email from profiles table easily
-          created_at: p.created_at,
-          profile_id: p.id,
-          points: p.points
-        }));
-        // Since we can't get auth users easily on client, we'll just use profile data.
-        // A proper implementation would need a dedicated API route.
-        // Let's create a temporary API route to do this correctly.
-        try {
+      try {
             const response = await fetch('/api/get-all-users');
             if (!response.ok) throw new Error('Failed to fetch users');
             const data = await response.json();
@@ -79,7 +52,6 @@ export default function ManageUsersPage() {
              setUsers([]);
         }
 
-      }
       setIsLoading(false);
     }
     getAllUsers();
@@ -151,7 +123,7 @@ export default function ManageUsersPage() {
                 <TableHead className="font-semibold">Email</TableHead>
                 <TableHead className="font-semibold">Points</TableHead>
                 <TableHead className="font-semibold">Joined</TableHead>
-                <TableHead className="font-semibold">User ID</TableHead>
+                <TableHead className="font-semibold">Referral Code</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -172,7 +144,7 @@ export default function ManageUsersPage() {
                       {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-mono">{user.user_id}</Badge>
+                      <Badge variant="outline" className="font-mono">{user.profile_id}</Badge>
                     </TableCell>
                   </TableRow>
                 ))
