@@ -88,7 +88,7 @@ export default function ManageUsersPage() {
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
         const emailMatch = emailFilter ? user.email?.toLowerCase().includes(emailFilter.toLowerCase()) : true;
-        const idMatch = idFilter ? user.user_id?.toLowerCase().includes(idFilter.toLowerCase()) : true;
+        const idMatch = idFilter ? user.profile_id?.toLowerCase().includes(idFilter.toLowerCase()) : true;
         return emailMatch && idMatch;
     });
   }, [users, emailFilter, idFilter]);
@@ -123,12 +123,12 @@ export default function ManageUsersPage() {
                 </div>
             </div>
              <div className="space-y-2">
-                <Label htmlFor="id-filter">Filter by User ID</Label>
+                <Label htmlFor="id-filter">Filter by Referral Code</Label>
                  <div className="relative">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input 
                         id="id-filter"
-                        placeholder="UUID..."
+                        placeholder="e.g. 84089"
                         value={idFilter}
                         onChange={(e) => setIdFilter(e.target.value)}
                         className="pl-8"
