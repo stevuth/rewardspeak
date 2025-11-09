@@ -36,6 +36,28 @@ const SvgHeading = ({ title }: { title: string }) => {
   );
 };
 
+const SvgDescription = ({ description }: { description: string }) => {
+    // A simple heuristic to adjust viewbox width based on text length
+    const approximateWidth = description.length * 8;
+    const isCentered = true; // Assuming description is always centered
+    
+    return (
+        <svg viewBox={`0 0 ${approximateWidth} 20`} xmlns="http://www.w3.org/2000/svg" className="w-full max-w-2xl h-auto mt-1">
+             <text
+                x="50%"
+                y="50%"
+                dy=".3em"
+                textAnchor="middle"
+                fontSize="16"
+                fill="hsl(var(--muted-foreground))"
+                className="font-sans"
+            >
+                {description}
+            </text>
+        </svg>
+    )
+}
+
 
 export function PageHeader({
   title,
@@ -47,7 +69,11 @@ export function PageHeader({
        <div className={cn("flex", /center/.test(className || '') ? "justify-center" : "justify-start")}>
         <SvgHeading title={title} />
       </div>
-      {description && <p className={cn("text-muted-foreground", /center/.test(className || '') && "text-center")}>{description}</p>}
+      {description && (
+        <div className={cn("flex", /center/.test(className || '') ? "justify-center" : "justify-start")}>
+            <SvgDescription description={description} />
+        </div>
+      )}
     </div>
   );
 }
