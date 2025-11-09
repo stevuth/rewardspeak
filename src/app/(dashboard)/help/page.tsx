@@ -28,7 +28,7 @@ import { Loader2, Mail, MessageSquare, Search, Send } from 'lucide-react';
 const faqs = [
     {
         question: "How long do payouts take?",
-        answer: "Payouts are typically processed within 24-48 hours. Crypto payouts may be faster depending on network congestion."
+        answer: "Payouts are typically processed within 7 business days."
     },
     {
         question: "Why didn't I receive points for an offer?",
