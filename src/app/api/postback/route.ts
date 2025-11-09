@@ -4,7 +4,8 @@ import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 import crypto from 'crypto';
 
 // Notik's official IP address for postbacks
-const NOTIK_IP = '192.53.121.112';
+// This is commented out as it's a likely source of 403 errors if Notik uses multiple IPs.
+// const NOTIK_IP = '192.53.121.112';
 
 // Helper function to verify the HMAC-SHA1 hash
 function verifyHash(secretKey: string, url: string): boolean {
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
   const { nextUrl } = request;
   const fullUrl = nextUrl.toString();
 
-  // --- 1. IP Whitelisting ---
+  // --- 1. IP Whitelisting (Disabled for broader compatibility) ---
   const requestIp = (request.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
   
   // if (requestIp !== NOTIK_IP) {
