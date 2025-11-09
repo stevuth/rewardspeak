@@ -8,9 +8,4 @@
 [build.environment]
   # This tells Netlify's secrets scanner to ignore these specific keys,
   # as they are intended to be included in the client-side bundle.
-  SECRETS_SCAN_OMIT_KEYS = [
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_THEOREMREACH_API_KEY",
-    "IPHUB_API_KEY"
-  ]
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_THEOREMREACH_API_KEY,IPHUB_API_KEY"
