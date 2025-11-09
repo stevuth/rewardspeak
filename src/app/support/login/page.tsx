@@ -3,7 +3,7 @@
 
 import Image from 'next/image';
 import { useActionState, useEffect } from 'react';
-import { adminLogin } from '@/app/actions';
+import { supportLogin } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -14,8 +14,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 export default function SupportLoginPage() {
-  // We can reuse the adminLogin action for now, as the logic is the same.
-  const [state, formAction, isPending] = useActionState(adminLogin, { message: "", success: false });
+  const [state, formAction, isPending] = useActionState(supportLogin, { message: "", success: false });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,8 +26,8 @@ export default function SupportLoginPage() {
       });
     }
     if (state.success) {
-        // Redirect to support dashboard on success
-        redirect('/support/dashboard');
+        // This redirect is now handled by the server action itself.
+        // The client-side redirect can be removed.
     }
   }, [state, toast]);
 

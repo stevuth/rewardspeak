@@ -41,6 +41,32 @@ export async function adminLogin(prevState: { message: string, success?: boolean
     redirect('/admin');
 }
 
+
+export async function supportLogin(prevState: { message: string, success?: boolean }, formData: FormData) {
+    const supabase = createSupabaseServerClient(true);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!email || !password) {
+        return { message: 'Email and password are required.', success: false };
+    }
+    
+    if (!email.endsWith('@rewardspeak.com')) {
+        return { message: 'Access denied. This portal is for support agents only.', success: false };
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error) {
+        return { message: `Authentication failed: ${error.message}`, success: false };
+    }
+
+    redirect('/support/dashboard');
+}
+
 export async function syncOffers(): Promise<{ success: boolean; error?: string, log?: string }> {
     const supabase = createSupabaseAdminClient();
     let log = "Sync process started...\n";
@@ -516,15 +542,14 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
     
     // 1. Handle file upload if an attachment exists
     if (attachment && attachment.size > 0) {
-        // Use the admin client to check for bucket existence first for a better error message.
         const adminSupabase = createSupabaseAdminClient();
-        const { error: bucketError } = await adminSupabase.storage.getBucket('support_attachments');
+        const { data: bucketData, error: bucketError } = await adminSupabase.storage.getBucket('support_attachments');
 
-        if (bucketError) {
+        if (bucketError || !bucketData) {
             console.error("Storage bucket 'support_attachments' not found.", bucketError);
-            return { success: false, error: "Configuration error: Support attachment storage is not available. Please contact support." };
+            return { success: false, error: "Configuration error: Support attachment storage is not available. Please contact support directly." };
         }
-
+        
         const fileExt = attachment.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
