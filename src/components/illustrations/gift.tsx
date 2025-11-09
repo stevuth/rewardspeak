@@ -30,6 +30,19 @@ export function GiftIllustration() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[148px] bg-secondary/70"></div>
           {/* Ribbon horizontal */}
            <div className="absolute top-1/2 left-0 -translate-y-1/2 w-40 h-8 bg-secondary/70"></div>
+           <text
+            x="50%"
+            y="55%"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="white"
+            fontSize="48"
+            fontWeight="bold"
+            className="drop-shadow-lg"
+            style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+          >
+            $1
+          </text>
         </div>
         {/* Lid */}
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-8 bg-primary rounded-t-lg border-b-4 border-purple-800">
