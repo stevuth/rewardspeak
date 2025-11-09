@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useTransition } from 'react';
 import { createSupportTicket } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Mail, MessageSquare, Search, Send, Paperclip, X } from 'lucide-react';
@@ -51,7 +51,7 @@ const faqs = [
 
 export default function HelpPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [attachment, setAttachment] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -87,30 +87,29 @@ export default function HelpPage() {
     }
   }
 
-  const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true);
-    
+  const handleSubmit = (formData: FormData) => {
     if (attachment) {
       formData.append('attachment', attachment);
     }
-    
-    const result = await createSupportTicket(formData);
 
-    if (result.success) {
-      toast({
-        title: "Ticket Submitted!",
-        description: "Our support team will get back to you shortly.",
-      });
-      formRef.current?.reset();
-      removeAttachment();
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Submission Failed",
-        description: result.error || "An unknown error occurred.",
-      });
-    }
-    setIsSubmitting(false);
+    startTransition(async () => {
+      const result = await createSupportTicket(formData);
+
+      if (result.success) {
+        toast({
+          title: "Ticket Submitted!",
+          description: "Our support team will get back to you shortly.",
+        });
+        formRef.current?.reset();
+        removeAttachment();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Submission Failed",
+          description: result.error || "An unknown error occurred.",
+        });
+      }
+    });
   };
   
   const filteredFaqs = useMemo(() => {
@@ -220,9 +219,9 @@ export default function HelpPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="bg-card/50">
-                      <Button type="submit" disabled={isSubmitting} className="w-full">
-                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4"/>}
-                        {isSubmitting ? 'Submitting...' : 'Send Ticket'}
+                      <Button type="submit" disabled={isPending} className="w-full">
+                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4"/>}
+                        {isPending ? 'Submitting...' : 'Send Ticket'}
                       </Button>
                   </CardFooter>
                 </Card>
