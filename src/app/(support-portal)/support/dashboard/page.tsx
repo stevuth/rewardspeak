@@ -13,11 +13,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
-import { useState, useEffect } from "react";
-import { Inbox, Send, ChevronLeft, ChevronRight, Loader2, Paperclip } from "lucide-react";
+import { useState, useEffect, useTransition } from "react";
+import { Inbox, Send, ChevronLeft, ChevronRight, Loader2, Paperclip, Bot } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { getSupportTickets } from "@/app/actions";
+import { getSupportTickets, addSupportReply, getTicketTemplates } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type TicketMessage = {
   id: string;
@@ -44,16 +45,23 @@ export default function SupportDashboardPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [replyMessage, setReplyMessage] = useState('');
+  const [isReplying, startReplyTransition] = useTransition();
+  const [templates, setTemplates] = useState<{ title: string; content: string }[]>([]);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      setIsLoading(true);
+  const fetchTickets = async () => {
       const result = await getSupportTickets();
       if (result.success && result.data) {
         setTickets(result.data);
-        if (result.data.length > 0) {
+        if (result.data.length > 0 && !selectedTicket) {
             setSelectedTicket(result.data[0]);
+        } else if (selectedTicket) {
+            // If a ticket was selected, refresh its data
+            const updatedTicket = result.data.find(t => t.id === selectedTicket.id);
+            if (updatedTicket) {
+                setSelectedTicket(updatedTicket);
+            }
         }
       } else {
         toast({
@@ -63,10 +71,45 @@ export default function SupportDashboardPage() {
         });
       }
       setIsLoading(false);
-    }
+  }
+
+  useEffect(() => {
+    setIsLoading(true);
     fetchTickets();
+    
+    async function fetchTemplates() {
+        const tpl = await getTicketTemplates();
+        setTemplates(tpl);
+    }
+    fetchTemplates();
   }, [toast]);
 
+
+  const handleSendReply = async () => {
+      if (!selectedTicket || !replyMessage.trim()) return;
+
+      startReplyTransition(async () => {
+        const result = await addSupportReply({
+            ticket_id: selectedTicket.id,
+            message: replyMessage
+        });
+
+        if (result.success) {
+            setReplyMessage('');
+            await fetchTickets(); // Refetch all tickets to get the new message
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Reply Failed',
+                description: result.error,
+            });
+        }
+      });
+  }
+
+  const handleTemplateClick = (content: string) => {
+    setReplyMessage(content);
+  }
 
   const getPriorityBadge = (priority: string) => {
     switch (priority.toLowerCase()) {
@@ -161,8 +204,8 @@ export default function SupportDashboardPage() {
                         <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                         {msg.attachment_url && (
                           <div className="mt-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="relative block w-48 h-48">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={msg.attachment_url} alt="Attachment" className="rounded-md object-cover w-full h-full" />
                             </a>
                           </div>
@@ -173,9 +216,43 @@ export default function SupportDashboardPage() {
                 </CardContent>
                 <CardFooter className="p-4 border-t">
                   <div className="w-full flex items-center gap-2">
-                    <Textarea placeholder="Type your response..." className="flex-grow"/>
-                    <Button size="icon"><Send className="h-4 w-4"/></Button>
-                    <Button variant="secondary">Templates</Button>
+                    <Textarea 
+                        placeholder="Type your response..." 
+                        className="flex-grow"
+                        value={replyMessage}
+                        onChange={(e) => setReplyMessage(e.target.value)}
+                        disabled={isReplying}
+                    />
+                    <Button size="icon" onClick={handleSendReply} disabled={isReplying || !replyMessage.trim()}>
+                        {isReplying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4"/>}
+                    </Button>
+                     <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="secondary" disabled={isReplying}>Templates</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                            <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-medium leading-none flex items-center gap-2"><Bot className="h-4 w-4"/> Response Templates</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                    Select a pre-written response to quickly answer common questions.
+                                    </p>
+                                </div>
+                                <div className="grid gap-2">
+                                    {templates.map((template, index) => (
+                                        <Button
+                                            key={index}
+                                            variant="ghost"
+                                            className="justify-start"
+                                            onClick={() => handleTemplateClick(template.content)}
+                                        >
+                                            {template.title}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                   </div>
                 </CardFooter>
               </>

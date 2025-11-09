@@ -542,6 +542,7 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
     
     // 1. Handle file upload if an attachment exists
     if (attachment && attachment.size > 0) {
+        // First check if bucket exists
         const adminSupabase = createSupabaseAdminClient();
         const { data: bucketData, error: bucketError } = await adminSupabase.storage.getBucket('support_attachments');
 
@@ -651,4 +652,55 @@ export async function getSupportTickets(): Promise<{ success: boolean; data?: an
     }));
 
     return { success: true, data: ticketsWithMessages };
+}
+
+export async function addSupportReply(payload: { ticket_id: string, message: string }): Promise<{ success: boolean, error?: string }> {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Authentication required." };
+    }
+    
+    const isAdmin = user.email?.endsWith('@rewardspeak.com');
+    if (!isAdmin) {
+        return { success: false, error: "You are not authorized to reply to tickets." };
+    }
+
+    const adminSupabase = createSupabaseAdminClient();
+    const { error } = await adminSupabase
+        .from('ticket_messages')
+        .insert({
+            ticket_id: payload.ticket_id,
+            user_id: user.id, // The ID of the support agent sending the message
+            message: payload.message,
+            is_from_support: true,
+        });
+
+    if (error) {
+        console.error("Error adding support reply:", error);
+        return { success: false, error: `Database error: ${error.message}` };
+    }
+
+    revalidatePath('/support/dashboard');
+
+    return { success: true };
+}
+
+export async function getTicketTemplates(): Promise<{ title: string; content: string }[]> {
+    // In a real app, this would come from a database. For now, it's a static list.
+    return [
+        {
+            title: "Request More Info",
+            content: "Hello,\n\nThank you for reaching out. To help us investigate this further, could you please provide some more details? Specifically, we need:\n\n1. The name of the offer.\n2. The date you completed it.\n3. A screenshot of the completion if possible.\n\nThank you for your cooperation."
+        },
+        {
+            title: "Offer Credited Manually",
+            content: "Hello,\n\nWe've reviewed your case and have manually credited the points for the offer to your account. You should see the updated balance now.\n\nThank you for your patience."
+        },
+        {
+            title: "VPN/Proxy Warning",
+            content: "Hello,\n\nWe noticed that your account activity may be associated with a VPN or proxy service. As per our Terms of Service, the use of such services is not permitted.\n\nPlease disable any VPN or proxy and try again. Continued use may result in account suspension."
+        }
+    ];
 }
