@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Gift } from "lucide-react";
+import { GiftIllustration } from "./illustrations/gift";
 
 type WelcomeBonusModalProps = {
   isOpen: boolean;
@@ -22,10 +22,10 @@ export function WelcomeBonusModal({ isOpen, onClose }: WelcomeBonusModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md text-center">
         <DialogHeader>
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-secondary/20 dark:bg-secondary/30 mb-4">
-            <Gift className="h-10 w-10 text-secondary" />
+          <div className="mx-auto -mt-16 mb-4">
+            <GiftIllustration />
           </div>
-          <DialogTitle className="text-2xl font-bold font-headline">
+          <DialogTitle className="text-2xl font-bold font-headline -mt-16">
             Welcome to Rewards Peak!
           </DialogTitle>
           <DialogDescription className="text-lg text-muted-foreground mt-2">
