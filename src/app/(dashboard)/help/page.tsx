@@ -14,13 +14,14 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, useTransition, useRef } from 'react';
 import { createSupportTicket, addSupportReply } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Send, Mail, Inbox, MessageSquare } from 'lucide-react';
+import { Loader2, Send, Mail, Inbox, MessageSquare, Paperclip } from 'lucide-react';
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { User } from "@supabase/supabase-js";
+import Image from "next/image";
 
 type TicketMessage = {
   id: string;
@@ -48,11 +49,14 @@ export default function HelpPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isReplying, startReplyTransition] = useTransition();
+  const [isSubmitting, startTransition] = useTransition();
   const [replyMessage, setReplyMessage] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>(null);
   const { toast } = useToast();
   const supabase = createSupabaseBrowserClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -88,8 +92,7 @@ export default function HelpPage() {
         { event: 'INSERT', schema: 'public', table: 'ticket_messages', filter: `ticket_id=eq.${selectedTicket.id}` },
         (payload) => {
           setSelectedTicket(prev => {
-            if (!prev) return null;
-            if (prev.messages.some(msg => msg.id === payload.new.id)) {
+            if (!prev || prev.messages.some(msg => msg.id === payload.new.id)) {
                 return prev;
             }
             return {
@@ -123,7 +126,7 @@ export default function HelpPage() {
     setSelectedTicket(prev => prev ? { ...prev, messages: [...prev.messages, optimisticMessage] } : null);
     setReplyMessage('');
 
-    startReplyTransition(async () => {
+    startTransition(async () => {
       const result = await addSupportReply({
         ticket_id: selectedTicket.id,
         message: optimisticMessage.message,
@@ -132,16 +135,16 @@ export default function HelpPage() {
 
       if (!result.success) {
         toast({ variant: 'destructive', title: 'Error', description: 'Could not send reply.' });
-        // Revert optimistic update
         setSelectedTicket(prev => prev ? { ...prev, messages: prev.messages.filter(m => m.id !== tempId) } : null);
       }
-      // On success, the real-time subscription will replace the temp message with the real one if needed,
-      // but usually the optimistic one is enough.
     });
   };
 
   const handleCreateTicket = async (formData: FormData) => {
-    startReplyTransition(async () => {
+    startTransition(async () => {
+      if (attachment) {
+        formData.append('attachment', attachment);
+      }
       const result = await createSupportTicket(formData);
       if (result.success) {
         toast({ title: 'Ticket Created', description: 'We have received your message.' });
@@ -150,6 +153,8 @@ export default function HelpPage() {
             setTickets(prev => [data as Ticket, ...prev]);
             setSelectedTicket(data as Ticket);
             setView('ticket');
+            setAttachment(null);
+            setAttachmentPreview(null);
         } else {
             setView('list');
         }
@@ -157,6 +162,18 @@ export default function HelpPage() {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
     });
+  };
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({ variant: "destructive", title: "File is too large", description: "Please select an image smaller than 2MB." });
+        return;
+      }
+      setAttachment(file);
+      setAttachmentPreview(URL.createObjectURL(file));
+    }
   };
 
   if (isLoading) {
@@ -222,13 +239,25 @@ export default function HelpPage() {
                     <Textarea id="message" name="message" required className="min-h-[120px]" />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="attachment">Attach Image (Optional)</Label>
-                    <Input id="attachment" name="attachment" type="file" accept="image/*" />
+                  <Label htmlFor="attachment">Attach Image (Optional, max 2MB)</Label>
+                  <Input id="attachment" name="attachment" type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+                   <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Paperclip className="mr-2 h-4 w-4" />
+                        Choose File
+                   </Button>
+                   {attachmentPreview && (
+                     <div className="mt-2 relative w-24 h-24">
+                        <Image src={attachmentPreview} alt="Attachment preview" layout="fill" className="rounded-md object-cover" />
+                        <Button type="button" variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => { setAttachment(null); setAttachmentPreview(null); if(fileInputRef.current) fileInputRef.current.value = ''; }}>
+                            &times;
+                        </Button>
+                     </div>
+                   )}
                 </div>
             </CardContent>
             <CardFooter className="gap-2">
-                <Button type="submit" disabled={isReplying}>
-                    {isReplying ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
+                <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
                     Send
                 </Button>
                 <Button variant="outline" onClick={() => setView('list')}>Back to Tickets</Button>
@@ -253,14 +282,19 @@ export default function HelpPage() {
                     <div key={msg.id} className={`flex items-end gap-2 ${msg.is_from_support ? 'justify-start' : 'justify-end'}`}>
                         <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-muted' : 'bg-primary text-primary-foreground'}`}>
                             <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                            {msg.attachment_url && (
+                                <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
+                                    <Image src={msg.attachment_url} alt="Attachment" width={200} height={200} className="rounded-md object-cover" />
+                                </a>
+                            )}
                         </div>
                     </div>
                 ))}
             </CardContent>
             <CardFooter className="p-4 border-t gap-2">
-                <Textarea value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder="Type your reply..." disabled={isReplying} />
-                <Button onClick={handleSendReply} disabled={isReplying || !replyMessage.trim()}>
-                    {isReplying ? <Loader2 className="h-4 w-4 animate-spin"/> : <Send className="h-4 w-4" />}
+                <Textarea value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder="Type your reply..." disabled={isSubmitting} />
+                <Button onClick={handleSendReply} disabled={isSubmitting || !replyMessage.trim()}>
+                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : <Send className="h-4 w-4" />}
                 </Button>
             </CardFooter>
         </Card>

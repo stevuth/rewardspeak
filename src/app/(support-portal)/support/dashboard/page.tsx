@@ -96,8 +96,7 @@ export default function SupportDashboardPage() {
         { event: 'INSERT', schema: 'public', table: 'ticket_messages', filter: `ticket_id=eq.${selectedTicket.id}` },
         (payload) => {
           setSelectedTicket(prev => {
-            if (!prev) return null;
-            if (prev.messages.some(msg => msg.id === payload.new.id)) {
+            if (!prev || prev.messages.some(msg => msg.id === payload.new.id)) {
                 return prev;
             }
             return {
@@ -244,7 +243,7 @@ export default function SupportDashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="flex-grow overflow-y-auto space-y-4">
-                  {selectedTicket.messages.sort((a,b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((msg, index) => (
+                  {selectedTicket.messages.sort((a,b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((msg) => (
                     <div key={msg.id} className={`flex ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                         <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
