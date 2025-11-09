@@ -57,14 +57,15 @@ export function WithdrawalCard({ amount, points, onClick, method }: WithdrawalCa
         {/* Content */}
         <foreignObject x="0" y="0" width="160" height="120" className="pointer-events-none">
             <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                <p className="text-4xl font-extrabold tracking-tight text-foreground">
-                  <span className="text-2xl text-muted-foreground">$</span>{amount}
-                </p>
-                <p className="text-xs font-bold text-secondary">
+                 <div className="flex items-start">
+                    <span className="text-2xl font-semibold text-muted-foreground mr-1 mt-1">$</span>
+                    <span className="text-5xl font-extrabold text-foreground tracking-tight">{amount}</span>
+                </div>
+                <p className="text-sm font-bold text-secondary -mt-1">
                   {points.toLocaleString()} Points
                 </p>
-                 <div className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    Withdraw <ArrowRight className="w-3 h-3" />
+                 <div className="mt-auto flex items-center justify-center gap-2 text-sm font-semibold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    Withdraw <ArrowRight className="w-4 h-4" />
                 </div>
             </div>
         </foreignObject>
@@ -72,4 +73,3 @@ export function WithdrawalCard({ amount, points, onClick, method }: WithdrawalCa
     </div>
   );
 }
-
