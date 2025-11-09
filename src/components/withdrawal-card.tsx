@@ -1,8 +1,6 @@
 
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
@@ -17,40 +15,61 @@ export function WithdrawalCard({ amount, points, onClick, method }: WithdrawalCa
   const isPayPal = method === 'paypal';
 
   return (
-    <Card 
+    <div
       onClick={onClick}
-      className={cn(
-        "group relative text-center p-4 transition-all duration-300 ease-in-out cursor-pointer overflow-hidden",
-        "bg-card/50 border-border hover:border-primary/50",
-        "hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1.5"
-      )}
+      className="group relative cursor-pointer aspect-[4/3] w-full transition-transform duration-300 ease-in-out hover:-translate-y-1.5"
     >
-        <div className={cn(
-            "absolute inset-0 transition-all duration-500 opacity-0 group-hover:opacity-100",
-             isPayPal 
-                ? "bg-gradient-to-br from-[#003087]/20 via-transparent to-transparent" 
-                : "bg-gradient-to-br from-primary/20 via-transparent to-transparent"
-        )} />
+      <svg
+        viewBox="0 0 160 120"
+        className="w-full h-full drop-shadow-lg"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <linearGradient id="paypal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#003087" />
+            <stop offset="100%" stopColor="#009cde" />
+          </linearGradient>
+          <linearGradient id="usdt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--primary))" />
+            <stop offset="100%" stopColor="hsl(var(--secondary))" />
+          </linearGradient>
+           <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--card))" />
+            <stop offset="100%" stopColor="hsl(var(--muted))" />
+          </linearGradient>
+        </defs>
 
-      <CardContent className="p-2 relative z-10 flex flex-col items-center justify-center h-full">
-        <p className={cn(
-            "text-4xl font-extrabold tracking-tight", 
-            isPayPal ? "text-white" : "text-foreground"
-            )}
-        >
-          <span className="text-2xl text-muted-foreground">$</span>{amount}
-        </p>
-        <p className={cn("text-xs font-bold", isPayPal ? "text-blue-300" : "text-secondary")}>
-          {points.toLocaleString()} Points
-        </p>
-        <Button 
-            variant="secondary"
-            size="sm"
-            className="mt-4 w-full"
-        >
-            Withdraw <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
-      </CardContent>
-    </Card>
+        {/* Base shape */}
+        <path
+          d="M10 0 H150 C155.523 0 160 4.47715 160 10 V110 C160 115.523 155.523 120 150 120 H10 C4.47715 120 0 115.523 0 110 V10 C0 4.47715 4.47715 0 10 0 Z"
+          fill="url(#bg-grad)"
+          stroke="hsl(var(--border))"
+          strokeWidth="1"
+        />
+        
+        {/* Accent shape */}
+        <path
+          d="M0 10C0 4.47715 4.47715 0 10 0H80L40 120H10C4.47715 120 0 115.523 0 110V10Z"
+          fill={isPayPal ? "url(#paypal-grad)" : "url(#usdt-grad)"}
+          className="opacity-80 group-hover:opacity-100 transition-opacity"
+        />
+
+        {/* Content */}
+        <foreignObject x="0" y="0" width="160" height="120" className="pointer-events-none">
+            <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                <p className="text-4xl font-extrabold tracking-tight text-foreground">
+                  <span className="text-2xl text-muted-foreground">$</span>{amount}
+                </p>
+                <p className="text-xs font-bold text-secondary">
+                  {points.toLocaleString()} Points
+                </p>
+                 <div className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    Withdraw <ArrowRight className="w-3 h-3" />
+                </div>
+            </div>
+        </foreignObject>
+      </svg>
+    </div>
   );
 }
+
