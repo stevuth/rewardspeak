@@ -51,7 +51,7 @@ const navItems = [
 const secondaryNavItems = [
   { href: "/history", label: "Offers Log", icon: Clock },
   { href: "/settings", label: "My Peak Profile", icon: Settings },
-  { href: "/support-ticket", label: "Support Ticket", icon: CircleHelp },
+  { href: "/help", label: "Support Ticket", icon: CircleHelp },
 ];
 
 const mobileNavItems = [
@@ -159,7 +159,10 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
         );
     };
 
-    const mobileNavLinks = [...navItems, ...secondaryNavItems].filter(
+    const mobileNavLinks = [
+        ...navItems, 
+        ...secondaryNavItems
+    ].filter(
         (item) => !mobileNavItems.some((mobileItem) => mobileItem.href === item.href)
     );
 
@@ -319,5 +322,3 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
-
-    

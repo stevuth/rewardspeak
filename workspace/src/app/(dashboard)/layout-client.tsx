@@ -20,6 +20,7 @@ import {
   X,
   ClipboardList,
   LayoutGrid,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,26 +34,31 @@ import { cn } from "@/lib/utils";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import type { User } from "@supabase/supabase-js";
 import { AnimatedCounter } from "@/components/animated-counter";
+import React, { useState, useEffect } from "react";
+import { Separator } from "@/components/ui/separator";
+import { SafeImage } from "@/components/safe-image";
+import { signOut } from "@/app/auth/actions";
+
 
 const navItems = [
-    { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
-    { href: "/earn", label: "Climb & Earn", icon: LayoutGrid },
-    { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
-    { href: "/referrals", label: "Invite & Climb", icon: Users },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/earn", label: "Earn", icon: Mountain },
+    { href: "/referrals", label: "Invite & Earn", icon: Users },
+    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
 ];
 
 const secondaryNavItems = [
+  { href: "/history", label: "Offers Log", icon: Clock },
   { href: "/settings", label: "My Peak Profile", icon: Settings },
-  { href: "/history", label: "Quest Log", icon: Clock },
-  { href: "/support", label: "Help Station", icon: CircleHelp },
+  { href: "/support", label: "Support Ticket", icon: CircleHelp },
 ];
 
 const mobileNavItems = [
-    { href: "/earn", label: "Climb & Earn", icon: Mountain },
+    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
-    { href: "/leaderboard", label: "Top Climbers", icon: Trophy },
-    { href: "/settings", label: "My Profile", icon: Settings },
+    { href: "/offers-log", label: "Offers Log", icon: Clock },
+    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
 
 const recentEarnings: any[] = [];
@@ -65,7 +71,7 @@ function SidebarNavs({ user }: { user: User | null }) {
     return cn(
       "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
       isActive
-        ? "bg-primary text-primary-foreground"
+        ? "bg-secondary text-secondary-foreground"
         : "text-muted-foreground hover:bg-muted"
     );
   };
@@ -83,6 +89,12 @@ function SidebarNavs({ user }: { user: User | null }) {
             {item.label}
           </Link>
         ))}
+        {user && user.email?.endsWith('@rewardspeak.com') && (
+            <Link href="/admin" className={getNavLinkClass('/admin')}>
+                <Shield className="h-4 w-4" />
+                Admin Portal
+            </Link>
+        )}
       </nav>
 
       <div className="mt-auto p-4 space-y-1 border-t">
@@ -93,7 +105,7 @@ function SidebarNavs({ user }: { user: User | null }) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
               pathname.startsWith(item.href)
-                ? "bg-muted text-foreground"
+                ? "bg-secondary text-secondary-foreground"
                 : "text-muted-foreground hover:bg-muted"
             )}
           >
@@ -101,19 +113,21 @@ function SidebarNavs({ user }: { user: User | null }) {
             {item.label}
           </Link>
         ))}
-         <Link
-            href={`/?event=logout&user_email=${user?.email || ''}`}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-muted font-bold"
-          >
-            <LogOut className="h-4 w-4" />
-            Log Out
-          </Link>
+         <form action={signOut}>
+            <button
+                type="submit"
+                className="w-full flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-primary hover:text-primary-foreground font-bold"
+            >
+                <LogOut className="h-4 w-4" />
+                Log Out
+            </button>
+        </form>
       </div>
     </>
   );
 }
 
-function SidebarContent({ user, totalPoints, totalAmountEarned, children }: { user: User | null, totalPoints: number, totalAmountEarned: number, children?: React.ReactNode }) {
+function SidebarContent({ user, children }: { user: User | null, children?: React.ReactNode }) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -126,53 +140,32 @@ function SidebarContent({ user, totalPoints, totalAmountEarned, children }: { us
         </Link>
         {children}
       </div>
-
-      <div className="p-4 flex items-center gap-4 bg-muted/50 border-b">
-        <div className="relative h-12 w-12 shrink-0">
-          <Image
-            src={"https://picsum.photos/seed/avatar1/40/40"}
-            alt="user avatar"
-            width={48}
-            height={48}
-            className="rounded-full border-2 border-primary/50"
-            data-ai-hint={"person portrait"}
-          />
-        </div>
-        <div className="flex-1">
-          <p className="font-semibold">{user?.email}</p>
-          <div className="flex items-center gap-4">
-            <div className="text-xs">
-              <p className="text-muted-foreground">Balance</p>
-              <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
-            </div>
-            <div className="text-xs">
-              <p className="text-muted-foreground">Earned</p>
-              <p className="font-bold">$<AnimatedCounter value={totalAmountEarned} /></p>
-            </div>
-          </div>
-        </div>
-      </div>
       <SidebarNavs user={user} />
     </div>
   );
 }
 
 
-function MobileSidebar({ user }: { user: User | null }) {
+function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
     const pathname = usePathname();
+
     const getNavLinkClass = (href: string) => {
         const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
         return cn(
           "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
           isActive
-            ? "bg-primary text-primary-foreground"
-            : "text-muted-foreground hover:bg-muted"
+            ? "bg-accent text-accent-foreground"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         );
     };
 
     const mobileNavLinks = [...navItems, ...secondaryNavItems].filter(
         (item) => !mobileNavItems.some((mobileItem) => mobileItem.href === item.href)
     );
+
+     if (user && user.email?.endsWith('@rewardspeak.com')) {
+        mobileNavLinks.push({ href: "/admin", label: "Admin Portal", icon: Shield });
+    }
 
     return (
         <Sheet>
@@ -209,18 +202,18 @@ function MobileSidebar({ user }: { user: User | null }) {
                         </nav>
                         <div className="space-y-4">
                         <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
-                            <UserNav user={user} />
+                            <UserNav user={user} avatarUrl={avatarUrl} />
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold truncate">{user?.email}</p>
                                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                             </div>
                         </div>
-                        <Button variant="ghost" asChild className="w-full justify-start">
-                            <Link href={`/?event=logout&user_email=${user?.email || ''}`}>
+                        <form action={signOut}>
+                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-accent hover:text-accent-foreground">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
-                            </Link>
-                        </Button>
+                            </Button>
+                        </form>
                         </div>
                     </div>
                  </div>
@@ -229,15 +222,11 @@ function MobileSidebar({ user }: { user: User | null }) {
     );
 }
 
-function Header({ user, totalPoints, totalAmountEarned }: { user: User | null, totalPoints: number, totalAmountEarned: number }) {
+function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User | null, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null }) {
     const router = useRouter();
-    const userBalanceInCash = totalPoints / 100;
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
-            <div className="hidden md:flex">
-                <SidebarTrigger />
-            </div>
             <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
                 <ArrowLeft className="h-5 w-5" />
                 <span className="sr-only">Go back</span>
@@ -250,29 +239,36 @@ function Header({ user, totalPoints, totalAmountEarned }: { user: User | null, t
                         <span className="font-bold text-secondary">{earning.name}</span>
                         <span className="text-muted-foreground">{earning.user}</span>
                     </div>
-                    <Badge variant="secondary">{earning.amount}</Badge>
+                    {/* <Badge variant="secondary">{earning.amount}</Badge> */}
                     </div>
                 ))}
                 </div>
             </div>
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-4 ml-auto">
                 <div className="hidden sm:flex items-center gap-4">
-                    <div className="text-xs text-right">
-                        <p className="text-muted-foreground">Balance</p>
+                    <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Balance</p>
                         <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
                     </div>
-                    <div className="text-xs text-right">
-                        <p className="text-muted-foreground">Earned</p>
-                        <p className="font-bold">$<AnimatedCounter value={totalAmountEarned} /></p>
+                    <Separator orientation="vertical" className="h-6" />
+                    <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Withdrawn</p>
+                        <p className="font-bold"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
                     </div>
                 </div>
-                <div className="flex sm:hidden items-center gap-2 text-xs">
-                <span className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</span>
-                <span className="font-bold text-muted-foreground">/</span>
-                <span className="font-bold">$<AnimatedCounter value={userBalanceInCash} /></span>
+                 <div className="flex sm:hidden items-center gap-2 text-xs">
+                    <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Balance</p>
+                        <p className="font-bold text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
+                    </div>
+                     <Separator orientation="vertical" className="h-6" />
+                     <div className="text-right">
+                        <p className="text-xs text-muted-foreground">W/drawn</p>
+                        <p className="font-bold"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
+                    </div>
                 </div>
-                <UserNav user={user} />
-                <MobileSidebar user={user} />
+                <UserNav user={user} avatarUrl={avatarUrl} />
+                <MobileSidebar user={user} avatarUrl={avatarUrl} />
             </div>
         </header>
     )
@@ -280,21 +276,26 @@ function Header({ user, totalPoints, totalAmountEarned }: { user: User | null, t
 
 function MobileBottomNav() {
     const pathname = usePathname();
+    const [isClient, setIsClient] = useState(false);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     return (
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 md:hidden z-50">
-            <div className="grid grid-cols-4 gap-2">
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
+            <div className="grid grid-cols-4 gap-1">
                 {mobileNavItems.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = isClient && pathname === item.href;
                     return (
                         <Link
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex flex-col items-center gap-1 rounded-md p-2 text-xs font-bold",
-                                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                                "group flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-bold text-muted-foreground",
+                                isActive ? "text-accent" : "hover:text-foreground"
                             )}
                         >
-                            <item.icon className="h-5 w-5" />
+                            <item.icon className={cn("h-5 w-5 transition-colors duration-200", isActive ? "text-accent" : "group-hover:text-accent")} />
                             <span className="truncate">{item.label}</span>
                         </Link>
                     )
@@ -304,18 +305,15 @@ function MobileBottomNav() {
     )
 }
 
-export function LayoutClient({ user, children, profilePoints, referralEarnings }: { user: User | null, children: React.ReactNode, profilePoints: number, referralEarnings: number }) {
-    const totalPoints = profilePoints + referralEarnings;
-    const totalAmountEarned = totalPoints / 100;
-    
+export function LayoutClient({ user, children, totalPoints, withdrawnPoints, avatarUrl }: { user: User | null, children: React.ReactNode, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null }) {
     return (
         <SidebarProvider>
           <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
             <Sidebar collapsible="icon" className="bg-card border-r">
-              <SidebarContent user={user} totalPoints={totalPoints} totalAmountEarned={totalAmountEarned} />
+              <SidebarContent user={user} />
             </Sidebar>
             <div className="flex flex-col overflow-hidden">
-              <Header user={user} totalPoints={totalPoints} totalAmountEarned={totalAmountEarned} />
+              <Header user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
               <SidebarInset>
                 <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
               </SidebarInset>
