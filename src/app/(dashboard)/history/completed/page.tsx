@@ -46,6 +46,7 @@ export default function CompletedPage() {
       <PageHeader
         title="Completed Offers"
         description="A log of all quests you have successfully completed."
+        icon={CheckCircle}
       />
       <Card>
         <CardContent className="pt-6">

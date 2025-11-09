@@ -112,6 +112,7 @@ export default function HistoryPage() {
       <PageHeader
         title="Offers Log"
         description="Review your completed, pending, and rejected offers."
+        icon={History}
       />
       <Card>
         <CardHeader>

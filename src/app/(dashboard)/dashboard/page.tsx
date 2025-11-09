@@ -39,6 +39,7 @@ import { OfferGridCard } from "@/components/offer-grid-card";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { LoginSuccessModal } from "@/components/login-success-modal";
 import type { User } from "@supabase/supabase-js";
+import { QuestMap } from "@/components/illustrations/quest-map";
 
 type DashboardOffer = NotikOffer & {
   points: number;
@@ -209,7 +210,7 @@ export default function DashboardPage() {
     return (
       <Card className="text-center py-12">
         <CardContent>
-          <p className="text-muted-foreground">No {sectionTitle.toLowerCase()} right now. Check back soon!</p>
+          <p className="text-muted-foreground">No ${sectionTitle.toLowerCase()} right now. Check back soon!</p>
         </CardContent>
       </Card>
     );
@@ -231,6 +232,7 @@ export default function DashboardPage() {
       <PageHeader
         title="Dashboard"
         description={welcomeMessage}
+        icon={LayoutDashboard}
       />
       
       <div className="space-y-8">
@@ -271,23 +273,23 @@ export default function DashboardPage() {
                     recentActivity.map((offer) => (
                       <TableRow key={offer.id}>
                         <TableCell>
-                            <div className="font-medium">{offer.name}</div>
-                            <div className="text-xs text-muted-foreground sm:hidden">{offer.network}</div>
+                            <div className="font-medium">${offer.name}</div>
+                            <div className="text-xs text-muted-foreground sm:hidden">${offer.network}</div>
                         </TableCell>
-                         <TableCell className="hidden sm:table-cell">{offer.network}</TableCell>
-                         <TableCell className="hidden md:table-cell">{new Date().toLocaleDateString()}</TableCell>
+                         <TableCell className="hidden sm:table-cell">${offer.network}</TableCell>
+                         <TableCell className="hidden md:table-cell">${new Date().toLocaleDateString()}</TableCell>
                         <TableCell
                           className={cn("text-right font-bold", "text-secondary")}
                         >
                           +
-                          {offer.points.toLocaleString()}
+                          ${offer.points.toLocaleString()}
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center h-24">
-                        No recent activity.
+                      <TableCell colSpan={4}>
+                        <QuestMap />
                       </TableCell>
                     </TableRow>
                   )}

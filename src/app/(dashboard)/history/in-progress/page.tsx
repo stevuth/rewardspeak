@@ -46,6 +46,7 @@ export default function InProgressPage() {
       <PageHeader
         title="In Progress Offers"
         description="A log of all quests that are currently pending."
+        icon={Clock}
       />
       <Card>
         <CardContent className="pt-6">
