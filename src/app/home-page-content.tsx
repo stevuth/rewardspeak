@@ -14,7 +14,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Gift,
   Trophy,
   Mail,
   Facebook,
@@ -31,6 +30,7 @@ import {
   FileSignature,
   ArrowRight,
   Sparkles,
+  Gift,
 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
@@ -48,6 +48,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ReferralIllustration } from '@/components/illustrations/referral';
+import { GiftIllustration } from '@/components/illustrations/gift';
 
 const recentCashouts: any[] = [];
 
@@ -71,7 +72,7 @@ const features = [
       icon: Gift,
       title: "Instant Sign-Up Bonus",
       description: "We get you started on the right foot. New users receive a $1 bonus instantly upon signing up, so you're already earning from the moment you join.",
-      illustration: <Gift className="w-24 h-24 text-primary" />,
+      illustration: <GiftIllustration />,
     },
     {
       icon: UserPlus,
