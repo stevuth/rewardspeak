@@ -1,1 +1,6 @@
-// This file is being removed. The new file is at /src/app/(dashboard)/help/page.tsx
+
+import { redirect } from 'next/navigation';
+
+export default function OldSupportPage() {
+  redirect('/help');
+}

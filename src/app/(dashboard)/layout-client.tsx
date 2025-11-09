@@ -51,7 +51,7 @@ const navItems = [
 const secondaryNavItems = [
   { href: "/history", label: "Offers Log", icon: Clock },
   { href: "/settings", label: "My Peak Profile", icon: Settings },
-  { href: "/help", label: "Support Ticket", icon: CircleHelp },
+  { href: "/help", label: "Help Center", icon: CircleHelp },
 ];
 
 const mobileNavItems = [
@@ -90,7 +90,7 @@ function SidebarNavs({ user }: { user: User | null }) {
           </Link>
         ))}
         {user && user.email?.endsWith('@rewardspeak.com') && (
-            <Link href="/admin" className={getNavLinkClass('/admin')}>
+            <Link href="/admin/dashboard" className={getNavLinkClass('/admin')}>
                 <Shield className="h-4 w-4" />
                 Admin Portal
             </Link>
@@ -167,7 +167,7 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
     );
 
      if (user && user.email?.endsWith('@rewardspeak.com')) {
-        mobileNavLinks.push({ href: "/admin", label: "Admin Portal", icon: Shield });
+        mobileNavLinks.push({ href: "/admin/dashboard", label: "Admin Portal", icon: Shield });
     }
 
     return (

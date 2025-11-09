@@ -37,23 +37,27 @@ const offerwalls = [
         name: "TimeWall",
         description: "Complete tasks, surveys, and more to earn points.",
         logoComponent: TimeWallLogo,
-        bgColor: "bg-green-500"
+        bgClass: "bg-green-500"
     },
     {
         slug: "theoremreach",
         name: "TheoremReach",
         description: "High-quality surveys for direct rewards.",
         logoComponent: TheoremReachLogo,
-        bgColor: "bg-blue-500"
+        bgClass: "bg-blue-500"
     }
 ]
 
 const OfferwallCard = ({ wall }: { wall: typeof offerwalls[0] }) => (
     <Link href={`/offerwalls/${wall.slug}`} className="block group">
-        <Card className={cn("relative overflow-hidden h-48 flex flex-col items-center justify-center text-white transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl", wall.bgColor)}>
-            <wall.logoComponent className="w-28 h-auto object-contain" />
-            <div className="absolute bottom-4">
-                 <div className="bg-black/20 text-white text-xs font-semibold px-4 py-1.5 rounded-md backdrop-blur-sm">
+        <Card className={cn(
+            "relative overflow-hidden h-40 flex flex-col items-center justify-center text-white transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl",
+            "bg-gradient-to-br from-card to-muted/50 border-border hover:border-primary/50"
+        )}>
+             <div className={cn("absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity", wall.bgClass)} />
+            <wall.logoComponent className="w-28 h-auto object-contain relative z-10" />
+            <div className="absolute bottom-3 z-10">
+                 <div className="bg-black/30 text-white text-xs font-semibold px-3 py-1 rounded-md backdrop-blur-sm">
                     {wall.name}
                  </div>
             </div>
