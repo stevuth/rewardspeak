@@ -18,7 +18,6 @@ import { Inbox, Send, ChevronLeft, ChevronRight, Loader2, Paperclip } from "luci
 import { Textarea } from "@/components/ui/textarea";
 import { getSupportTickets } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
-import Image from "next/image";
 
 type TicketMessage = {
   id: string;
@@ -163,7 +162,8 @@ export default function SupportDashboardPage() {
                         {msg.attachment_url && (
                           <div className="mt-2">
                             <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="relative block w-48 h-48">
-                              <Image src={msg.attachment_url} alt="Attachment" layout="fill" className="rounded-md object-cover" />
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={msg.attachment_url} alt="Attachment" className="rounded-md object-cover w-full h-full" />
                             </a>
                           </div>
                         )}
