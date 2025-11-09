@@ -1,5 +1,4 @@
 
-require('dotenv').config({ path: './.env' });
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -9,6 +8,9 @@ const nextConfig: NextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  env: {
+    IPHUB_API_KEY: process.env.IPHUB_API_KEY,
   },
   images: {
     remotePatterns: [
