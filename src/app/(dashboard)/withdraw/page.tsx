@@ -24,7 +24,7 @@ import {
   PaypalLogo,
   UsdtLogo,
 } from "@/components/illustrations/crypto-logos";
-import { CheckCircle, Clock, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign } from "lucide-react";
 import { WithdrawalCard } from "@/components/withdrawal-card";
 import {
   Dialog,
@@ -197,32 +197,41 @@ export default function CashOutCabinPage() {
       />
 
       <Dialog open={!!selectedWithdrawal} onOpenChange={(isOpen) => !isOpen && handleCloseModal()}>
-        <DialogContent>
-            <DialogHeader>
-            <DialogTitle>Confirm Withdrawal</DialogTitle>
-            <DialogDescription>
-                You are about to withdraw <span className="font-bold text-primary">${selectedWithdrawal?.amount}</span> via <span className="font-bold text-primary capitalize">{selectedWithdrawal?.method}</span>.
-            </DialogDescription>
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-card to-muted/50 border-primary/20">
+            <DialogHeader className="text-center items-center">
+                <div className="p-4 bg-primary/10 rounded-full w-fit mb-4">
+                    {selectedWithdrawal?.method === 'paypal' ? <PaypalLogo className="h-8 w-8" /> : <UsdtLogo className="h-8 w-8" />}
+                </div>
+                <DialogTitle className="font-headline text-2xl">Confirm Withdrawal</DialogTitle>
+                <DialogDescription>
+                    You are cashing out <span className="font-bold text-secondary">${selectedWithdrawal?.amount}</span> via <span className="font-bold text-secondary capitalize">{selectedWithdrawal?.method}</span>.
+                </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                    <Label htmlFor="wallet-address">
-                        {selectedWithdrawal?.method === 'paypal' ? 'PayPal Email' : 'USDT (TRC20) Wallet Address'}
+                    <Label htmlFor="wallet-address" className="text-muted-foreground">
+                        {selectedWithdrawal?.method === 'paypal' ? 'Your PayPal Email' : 'Your USDT (TRC20) Wallet Address'}
                     </Label>
-                    <Input 
-                        id="wallet-address"
-                        value={walletAddress}
-                        onChange={(e) => setWalletAddress(e.target.value)}
-                        placeholder={selectedWithdrawal?.method === 'paypal' ? 'your-email@example.com' : 'T...'}
-                        disabled={isSubmitting}
-                    />
+                    <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                            {selectedWithdrawal?.method === 'paypal' ? <AtSign className="h-4 w-4" /> : <Wallet className="h-4 w-4" />}
+                        </div>
+                        <Input 
+                            id="wallet-address"
+                            value={walletAddress}
+                            onChange={(e) => setWalletAddress(e.target.value)}
+                            placeholder={selectedWithdrawal?.method === 'paypal' ? 'your-email@example.com' : 'T...'}
+                            disabled={isSubmitting}
+                            className="pl-10"
+                        />
+                    </div>
                 </div>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>Cancel</Button>
                 <Button onClick={handleSubmitWithdrawal} disabled={isSubmitting}>
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                    {isSubmitting ? 'Submitting...' : 'Submit Request'}
                 </Button>
             </DialogFooter>
         </DialogContent>
