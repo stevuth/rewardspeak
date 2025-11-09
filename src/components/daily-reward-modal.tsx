@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,21 +11,21 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { user } from "@/lib/mock-data";
 import { isToday, parseISO } from "date-fns";
 import { Gift } from "lucide-react";
 
 export function DailyRewardModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
+  const [lastLogin, setLastLogin] = useState(new Date().toISOString());
 
   useEffect(() => {
     // Check if the last login was today
-    const lastLoginDate = parseISO(user.lastLogin);
+    const lastLoginDate = parseISO(lastLogin);
     if (isToday(lastLoginDate)) {
       setHasClaimed(true);
     }
-  }, []);
+  }, [lastLogin]);
 
   const handleClaim = () => {
     // Here you would typically call an API to:
@@ -32,6 +33,7 @@ export function DailyRewardModal() {
     // 2. Add points to the user's account.
     // 3. Update the user's last login date.
     console.log("Reward claimed!");
+    setLastLogin(new Date().toISOString());
     setHasClaimed(true);
     setIsOpen(false);
   };

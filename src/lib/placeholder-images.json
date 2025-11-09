@@ -3,67 +3,109 @@
     {
       "id": "logo",
       "description": "Rewards Peak logo",
-      "imageUrl": "https://picsum.photos/seed/logo/100/100",
+      "imageUrl": "https://images.unsplash.com/photo-1618329918461-51bb072e0ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMGxvZ298ZW58MHx8fHwxNzYyNzEwODc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "mountain logo"
     },
     {
       "id": "user-avatar-1",
       "description": "User avatar",
-      "imageUrl": "https://picsum.photos/seed/avatar1/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1535643302794-19c3804b874b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVyc29uJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyNTk0NzQ3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
       "id": "adgate-logo",
       "description": "AdGate Media logo",
-      "imageUrl": "https://picsum.photos/seed/adgate/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1529612700005-e35377bf1415?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb21wYW55JTIwbG9nb3xlbnwwfHx8fDE3NjI2NzM0ODB8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "company logo"
     },
     {
       "id": "timewall-logo",
       "description": "TimeWall logo",
-      "imageUrl": "https://picsum.photos/seed/timewall/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1620226054624-5f49d1d66e5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjbG9jayUyMGxvZ298ZW58MHx8fHwxNzYyNzEyNjQzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "clock logo"
     },
     {
       "id": "offertoro-logo",
       "description": "OfferToro logo",
-      "imageUrl": "https://picsum.photos/seed/offertoro/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1761751237570-b9b4e1412565?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxidWxsJTIwbG9nb3xlbnwwfHx8fDE3NjI3MTI2NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "bull logo"
     },
     {
       "id": "cpalead-logo",
       "description": "CPALead logo",
-      "imageUrl": "https://picsum.photos/seed/cpalead/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1633758103831-501ef382c14f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnJvdyUyMGxvZ298ZW58MHx8fHwxNzYyNzEyNjQzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "arrow logo"
+    },
+    {
+      "id": "game-icon-1",
+      "description": "Lords Mobile game icon",
+      "imageUrl": "https://images.unsplash.com/photo-1642670250316-0e23cb8f947a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYXN0bGUlMjBnYW1lfGVufDB8fHx8MTc2MjcxMjY0Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "castle game"
+    },
+    {
+      "id": "game-icon-2",
+      "description": "RAID: Shadow Legends game icon",
+      "imageUrl": "https://images.unsplash.com/photo-1618498082545-71f0da44cbcf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3YXJyaW9yJTIwY2hhcmFjdGVyfGVufDB8fHx8MTc2MjcxMjY0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "warrior character"
+    },
+    {
+      "id": "game-icon-3",
+      "description": "Star Trek Fleet Command game icon",
+      "imageUrl": "https://images.unsplash.com/photo-1648793867022-a3046afe2e6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzcGFjZXNoaXAlMjBnYW1lfGVufDB8fHx8MTc2MjcxMjY0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "spaceship game"
+    },
+    {
+      "id": "survey-icon-1",
+      "description": "CPX Research survey icon",
+      "imageUrl": "https://images.unsplash.com/photo-1579226905180-636b76d96082?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjaGFydCUyMHN1cnZleXxlbnwwfHx8fDE3NjI2Mjg2OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chart survey"
+    },
+    {
+      "id": "task-icon-1",
+      "description": "InboxDollars task icon",
+      "imageUrl": "https://images.unsplash.com/photo-1683201681321-1415b8794e73?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYWlsJTIwaWNvbnxlbnwwfHx8fDE3NjI3MTI2NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mail icon"
+    },
+    {
+      "id": "task-icon-2",
+      "description": "MyPoints task icon",
+      "imageUrl": "https://images.unsplash.com/photo-1647221598091-880219fa2c8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxnaWZ0JTIwYm94fGVufDB8fHx8MTc2MjcxMjY0Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gift box"
+    },
+    {
+      "id": "task-icon-3",
+      "description": "Swagbucks task icon",
+      "imageUrl": "https://images.unsplash.com/photo-1553729459-efe14ef6055d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb25leSUyMGJhZ3xlbnwwfHx8fDE3NjI3MTI2NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "money bag"
     },
     {
       "id": "leaderboard-user-1",
       "description": "Leaderboard user 1",
-      "imageUrl": "https://picsum.photos/seed/leader1/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI1OTQ3NDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
       "id": "leaderboard-user-2",
       "description": "Leaderboard user 2",
-      "imageUrl": "https://picsum.photos/seed/leader2/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MjcwMjE5MHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
       "id": "leaderboard-user-3",
       "description": "Leaderboard user 3",
-      "imageUrl": "https://picsum.photos/seed/leader3/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1624395213043-fa2e123b2656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI2NDU4MTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {
       "id": "leaderboard-user-4",
       "description": "Leaderboard user 4",
-      "imageUrl": "https://picsum.photos/seed/leader4/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1593260853607-d0e0f639bdab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMG1vZGVsfGVufDB8fHx8MTc2MjYxNTU2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman model"
     },
     {
       "id": "leaderboard-user-5",
       "description": "Leaderboard user 5",
-      "imageUrl": "https://picsum.photos/seed/leader5/40/40",
+      "imageUrl": "https://images.unsplash.com/photo-1597843572347-e66b3eeb7b79?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYW4lMjBtb2RlbHxlbnwwfHx8fDE3NjI3MTI2NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man model"
     }
   ]

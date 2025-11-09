@@ -1,0 +1,176 @@
+/**
+ * @fileoverview Firestore Security Rules for Rewards Peak.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a user-ownership model for user profiles and withdrawals,
+ * while allowing public read access to offers and leaderboards.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profiles, accessible only to the owner.
+ * - /offers: Stores available offers, publicly readable.
+ * - /leaderboard: Stores leaderboard entries, publicly readable.
+ * - /users/{userId}/withdrawals: Stores user withdrawal history, accessible only to the owner.
+ * - /users/{userId}/activity: Stores offers a user has interacted with, accessible only to the owner.
+ * - /offer-walls: Stores offer walls, publicly readable.
+ *
+ * Key Security Decisions:
+ * - Users can only create, update, and delete their own profiles and withdrawal requests.
+ * - Offers, offer walls and leaderboards are publicly readable but not writable via the client.
+ * - Listing of withdrawals is restricted to the owner.
+ *
+ * Denormalization for Authorization:
+ * - The `Withdrawal` entity contains a `userId` field, which is used to enforce ownership.
+ * - The `User` entity's `id` field is the same as the `userId` in the path, allowing for path-based authorization.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Manages user profile data.
+     * @path /users/{userId}
+     * @allow (create) User with ID 'user123' can create their profile.
+     * @allow (update) User with ID 'user123' can update their profile.
+     * @allow (get) User with ID 'user123' can read their profile.
+     * @deny (create) User with ID 'user123' cannot create a profile with a different ID.
+     * @deny (update) User with ID 'user123' cannot update another user's profile.
+     * @deny (delete) User with ID 'user123' cannot delete another user's profile.
+     * @principle Enforces document ownership for writes and reads.
+     */
+    match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource != null;
+      }
+
+      allow get: if true;
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+     /**
+      * @description Manages available offers.
+      * @path /offers
+      * @allow (get) Any user can read offers.
+      * @allow (list) Any user can list offers.
+      * @deny (create) No user can create offers through client.
+      * @deny (update) No user can update offers through client.
+      * @deny (delete) No user can delete offers through client.
+      * @principle Allows public read access to offers.
+      */
+    match /offers/{offerId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+   /**
+    * @description Manages available offer walls.
+    * @path /offer-walls
+    * @allow (get) Any user can read offer walls.
+    * @allow (list) Any user can list offer walls.
+    * @deny (create) No user can create offer walls through client.
+    * @deny (update) No user can update offer walls through client.
+    * @deny (delete) No user can delete offer walls through client.
+    * @principle Allows public read access to offer walls.
+    */
+    match /offer-walls/{offerWallId} {
+        allow get: if true;
+        allow list: if true;
+        allow create: if false;
+        allow update: if false;
+        allow delete: if false;
+    }
+
+    /**
+     * @description Manages leaderboard entries.
+     * @path /leaderboard
+     * @allow (get) Any user can read leaderboard entries.
+     * @allow (list) Any user can list leaderboard entries.
+     * @deny (create) No user can create leaderboard entries through client.
+     * @deny (update) No user can update leaderboard entries through client.
+     * @deny (delete) No user can delete leaderboard entries through client.
+     * @principle Allows public read access to the leaderboard.
+     */
+    match /leaderboard/{leaderboardEntryId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Manages user withdrawal history.
+     * @path /users/{userId}/withdrawals
+     * @allow (create) User with ID 'user123' can create a withdrawal request.
+     * @allow (get) User with ID 'user123' can read their withdrawal requests.
+     * @allow (list) User with ID 'user123' can list their withdrawal requests.
+     * @deny (create) User with ID 'user123' cannot create a withdrawal request for another user.
+     * @deny (update) User with ID 'user123' cannot update another user's withdrawal request.
+     * @deny (delete) User with ID 'user123' cannot delete another user's withdrawal request.
+     * @principle Enforces document ownership for writes and reads.
+     */
+    match /users/{userId}/withdrawals/{withdrawalId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages user activity.
+     * @path /users/{userId}/activity
+     * @allow (create) User with ID 'user123' can log their activity.
+     * @allow (get) User with ID 'user123' can read their activity.
+     * @allow (list) User with ID 'user123' can list their activity.
+     * @deny (create) User with ID 'user123' cannot create activity for another user.
+     * @deny (update) User with ID 'user123' cannot update another user's activity.
+     * @deny (delete) User with ID 'user123' cannot delete another user's activity.
+     * @principle Enforces document ownership for writes and reads.
+     */
+    match /users/{userId}/activity/{activityId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

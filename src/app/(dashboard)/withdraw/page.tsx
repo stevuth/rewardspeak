@@ -348,5 +348,4 @@ export default function CashOutCabinPage() {
       </Card>
     </div>
   );
-    
-    
+}
