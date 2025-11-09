@@ -218,6 +218,7 @@ export default function CashOutCabinPage() {
       <Dialog open={!!selectedWithdrawal} onOpenChange={(isOpen) => !isOpen && handleCloseModal()}>
         <DialogContent
           className="w-full max-w-md p-0 bg-transparent border-0 shadow-none outline-none"
+          hideCloseButton
         >
           <DialogTitle className="sr-only">Confirm Withdrawal</DialogTitle>
           <div className="relative">
@@ -329,10 +330,9 @@ export default function CashOutCabinPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Withdrawal History</CardTitle>
-          <CardDescription>A log of your recent cash-out requests.</CardDescription>
+          <PageHeader title="Withdrawal History" description="A log of your recent cash-out requests." />
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 pt-0">
           {isLoadingHistory ? (
              <div className="h-24 flex items-center justify-center">
                 <WavingMascotLoader text="Loading History..." />
@@ -348,4 +348,5 @@ export default function CashOutCabinPage() {
       </Card>
     </div>
   );
-}
+    
+    
