@@ -29,10 +29,10 @@ export async function GET(request: NextRequest) {
   // --- 1. IP Whitelisting ---
   const requestIp = (request.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
   
-  if (requestIp !== NOTIK_IP) {
-    console.warn(`[POSTBACK_DENIED] Blocked IP: ${requestIp}. Expected: ${NOTIK_IP}`);
-    return new NextResponse('Forbidden', { status: 403 });
-  }
+  // if (requestIp !== NOTIK_IP) {
+  //   console.warn(`[POSTBACK_DENIED] Blocked IP: ${requestIp}. Expected: ${NOTIK_IP}`);
+  //   return new NextResponse('Forbidden', { status: 403 });
+  // }
 
   // --- 2. Hash Verification ---
   const secretKey = process.env.NOTIK_SECRET_KEY;
