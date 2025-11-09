@@ -23,10 +23,9 @@ const SvgHeading = ({ title }: { title: string }) => {
         y="50%"
         dy=".3em"
         textAnchor="middle"
-        fontSize="36"
         fontWeight="bold"
         fill={`url(#${uniqueId})`}
-        className="font-headline tracking-tight"
+        className="font-headline tracking-tight text-[28px] sm:text-[36px]"
         stroke="hsl(var(--background))"
         strokeWidth="0.5"
       >
@@ -39,7 +38,6 @@ const SvgHeading = ({ title }: { title: string }) => {
 const SvgDescription = ({ description }: { description: string }) => {
     // A simple heuristic to adjust viewbox width based on text length
     const approximateWidth = description.length * 8;
-    const isCentered = true; // Assuming description is always centered
     
     return (
         <svg viewBox={`0 0 ${approximateWidth} 20`} xmlns="http://www.w3.org/2000/svg" className="w-full max-w-2xl h-auto mt-1">
@@ -48,9 +46,8 @@ const SvgDescription = ({ description }: { description: string }) => {
                 y="50%"
                 dy=".3em"
                 textAnchor="middle"
-                fontSize="16"
                 fill="hsl(var(--muted-foreground))"
-                className="font-sans"
+                className="font-sans text-sm sm:text-base"
             >
                 {description}
             </text>
