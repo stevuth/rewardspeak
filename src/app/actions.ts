@@ -516,17 +516,26 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
     
     // 1. Handle file upload if an attachment exists
     if (attachment && attachment.size > 0) {
+        // First, verify the bucket exists using the admin client to provide a better error.
+        const adminSupabase = createSupabaseAdminClient();
+        const { data: bucket, error: bucketError } = await adminSupabase.storage.getBucket('support_attachments');
+
+        if (bucketError || !bucket) {
+            console.error("Storage bucket 'support_attachments' not found.", bucketError);
+            return { success: false, error: "Configuration error: Support attachment storage is not available. Please contact support." };
+        }
+
         const fileExt = attachment.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
-        // Use the regular server client which respects RLS for the user
+        // Use the user's client to upload, which respects RLS policies
         const { error: uploadError } = await supabase.storage
             .from('support_attachments')
             .upload(fileName, attachment);
 
         if (uploadError) {
             console.error("Error uploading support attachment:", uploadError);
-            return { success: false, error: "Failed to upload attachment." };
+            return { success: false, error: `Failed to upload attachment: ${uploadError.message}` };
         }
         
         const { data: urlData } = supabase.storage
