@@ -1,35 +1,37 @@
 
 "use client";
 
-import { useActionState, useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
+import { useActionState } from "react";
 import { login, signup } from "@/app/auth/actions";
-import { FuturisticAuthForm } from "./futuristic-auth-form";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { FuturisticAuthForm } from "./futuristic-auth-form";
 
-export function AuthForm({
-  type,
-  onSwitch,
-}: {
+type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
-}) {
-  const [state, formAction, isPending] = useActionState(type === 'login' ? login : signup, { message: "", success: false });
-  const router = useRouter();
+};
+
+// This component is a wrapper that handles the state and actions for the auth form.
+// It uses the visual `FuturisticAuthForm` component for the UI.
+export function AuthForm({ type, onSwitch }: AuthFormProps) {
+  const isLogin = type === "login";
+  const [state, formAction, isPending] = useActionState(
+    isLogin ? login : signup,
+    { message: "" }
+  );
+
   const { toast } = useToast();
 
   useEffect(() => {
-    if (state.success && type === 'login') {
-      router.push('/dashboard?event=login');
-    } else if (state.message && !isPending && !state.success) {
-      // Show error toast only if there's an error message and the form is not pending
+    if (state.message && !state.success) {
       toast({
-        variant: 'destructive',
-        title: "Authentication Error",
+        variant: "destructive",
+        title: "Authentication Failed",
         description: state.message,
       });
     }
-  }, [state, type, router, toast, isPending]);
+  }, [state, toast]);
 
   return (
     <FuturisticAuthForm

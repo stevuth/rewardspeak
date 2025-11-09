@@ -203,6 +203,7 @@ export default function CashOutCabinPage() {
           hideCloseButton={true}
           className="w-full max-w-md p-0 bg-transparent border-0 shadow-none outline-none"
         >
+          <DialogTitle className="sr-only">Confirm Withdrawal</DialogTitle>
           <div className="relative">
             <svg
               viewBox="0 0 400 420"
