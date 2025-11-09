@@ -22,6 +22,7 @@ import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { QuestMap } from "@/components/illustrations/quest-map";
 
 export const metadata: Metadata = {
   title: "Offers Log",
@@ -56,20 +57,24 @@ const StatusBadge = ({ status }: { status: Offer["status"] }) => {
   return <Badge variant="secondary">{status}</Badge>;
 };
 
-const OfferHistoryTable = ({ offers }: { offers: Offer[] }) => (
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>Quest</TableHead>
-        <TableHead>Partner</TableHead>
-        <TableHead>Date</TableHead>
-        <TableHead>Status</TableHead>
-        <TableHead className="text-right">Points</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {offers.length > 0 ? (
-        offers.map((offer) => (
+const OfferHistoryTable = ({ offers, emptyState }: { offers: Offer[], emptyState?: React.ReactNode }) => {
+  if (offers.length === 0) {
+    return <>{emptyState}</>;
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Quest</TableHead>
+          <TableHead>Partner</TableHead>
+          <TableHead>Date</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead className="text-right">Points</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {offers.map((offer) => (
           <TableRow key={offer.id}>
             <TableCell className="font-medium">{offer.title}</TableCell>
             <TableCell>{offer.partner}</TableCell>
@@ -87,17 +92,11 @@ const OfferHistoryTable = ({ offers }: { offers: Offer[] }) => (
               {offer.points.toLocaleString()}
             </TableCell>
           </TableRow>
-        ))
-      ) : (
-        <TableRow>
-          <TableCell colSpan={5} className="text-center h-24">
-            No history yet. Complete some quests!
-          </TableCell>
-        </TableRow>
-      )}
-    </TableBody>
-  </Table>
-);
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
 
 export default function HistoryPage() {
   const offerHistory = popularOffers.sort(
@@ -129,13 +128,13 @@ export default function HistoryPage() {
               <TabsTrigger value="completed">Completed</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
-              <OfferHistoryTable offers={allOffers} />
+              <OfferHistoryTable offers={allOffers} emptyState={<QuestMap />} />
             </TabsContent>
             <TabsContent value="in-progress">
-               <OfferHistoryTable offers={inProgressOffers} />
+               <OfferHistoryTable offers={inProgressOffers} emptyState={<QuestMap />} />
             </TabsContent>
             <TabsContent value="completed">
-               <OfferHistoryTable offers={completedOffers} />
+               <OfferHistoryTable offers={completedOffers} emptyState={<QuestMap />} />
             </TabsContent>
           </Tabs>
         </CardContent>

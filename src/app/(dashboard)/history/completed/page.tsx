@@ -3,9 +3,6 @@ import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Table,
@@ -20,6 +17,7 @@ import { popularOffers, type Offer } from "@/lib/mock-data";
 import { CheckCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
+import { QuestMap } from "@/components/illustrations/quest-map";
 
 export const metadata: Metadata = {
   title: "Completed Offers",
@@ -51,19 +49,19 @@ export default function CompletedPage() {
       />
       <Card>
         <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Quest</TableHead>
-                <TableHead>Partner</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Points</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {completedOffers.length > 0 ? (
-                completedOffers.map((offer) => (
+          {completedOffers.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Quest</TableHead>
+                  <TableHead>Partner</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Points</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {completedOffers.map((offer) => (
                   <TableRow key={offer.id}>
                     <TableCell className="font-medium">{offer.title}</TableCell>
                     <TableCell>{offer.partner}</TableCell>
@@ -78,16 +76,12 @@ export default function CompletedPage() {
                       {offer.points.toLocaleString()}
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center h-24">
-                    No completed quests yet.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+             <QuestMap />
+          )}
         </CardContent>
       </Card>
     </div>

@@ -20,6 +20,7 @@ import { Crown, Medal } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { EmptyPodium } from "@/components/illustrations/empty-podium";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -134,8 +135,8 @@ export default async function TopEarnersPage() {
       </div>
       ) : (
         <Card className="text-center py-12">
-            <CardContent>
-                <p className="text-muted-foreground">The podium is waiting for its champions. Start earning to claim a spot!</p>
+            <CardContent className="p-0">
+                <EmptyPodium />
             </CardContent>
         </Card>
       )}
@@ -180,19 +181,11 @@ export default async function TopEarnersPage() {
                   </TableRow>
                 ))
               ) : (
-                leaderboardData.length <= 3 && leaderboardData.length > 0 ? (
-                    <TableRow>
-                        <TableCell colSpan={3} className="text-center h-24">
-                           More earners are climbing the ranks!
-                        </TableCell>
-                    </TableRow>
-                ) : (
-                    <TableRow>
-                        <TableCell colSpan={3} className="text-center h-24">
-                            The leaderboard is empty. Start earning to get on the board!
-                        </TableCell>
-                    </TableRow>
-                )
+                <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                        {leaderboardData.length <= 3 ? "More earners are climbing the ranks!" : "The leaderboard is empty. Start earning to get on the board!"}
+                    </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>

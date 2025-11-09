@@ -41,6 +41,7 @@ import { processWithdrawalRequest } from "@/app/actions";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { WithdrawalSuccessModal } from "@/components/withdrawal-success-modal";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
+import { EmptyTreasureChest } from "@/components/illustrations/empty-treasure-chest";
 
 type Withdrawal = {
   id: string;
@@ -269,24 +270,22 @@ export default function CashOutCabinPage() {
           <CardDescription>A log of your recent cash-out requests.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoadingHistory ? (
+          {isLoadingHistory ? (
+             <div className="h-24 flex items-center justify-center">
+                <WavingMascotLoader text="Loading History..." />
+             </div>
+          ) : history.length > 0 ? (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                        <WavingMascotLoader text="Loading History..." />
-                    </TableCell>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Method</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
                 </TableRow>
-              ) : history.length > 0 ? (
-                history.map((withdrawal) => (
+              </TableHeader>
+              <TableBody>
+                {history.map((withdrawal) => (
                   <TableRow key={withdrawal.id}>
                     <TableCell>{new Date(withdrawal.created_at).toLocaleString()}</TableCell>
                     <TableCell className="font-medium capitalize">{withdrawal.method}</TableCell>
@@ -297,16 +296,12 @@ export default function CashOutCabinPage() {
                       ${withdrawal.amount_usd.toFixed(2)}
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    No withdrawal history yet.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <EmptyTreasureChest />
+          )}
         </CardContent>
       </Card>
     </div>
