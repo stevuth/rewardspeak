@@ -482,13 +482,6 @@ export async function updatePassword(newPassword: string): Promise<{ success: bo
     return { success: true };
 }
 
-// This server action is no longer used for avatar uploads.
-// The logic has been moved to the /api/avatar/upload route handler.
-export async function uploadAvatar(formData: FormData): Promise<{ success: boolean, error?: string, url?: string }> {
-    console.error("uploadAvatar server action is deprecated. Use /api/avatar/upload instead.");
-    return { success: false, error: 'This function is deprecated.' };
-}
-
 export async function banUser(userId: string): Promise<{ success: boolean; error?: string }> {
     const supabase = createSupabaseAdminClient();
     const { error } = await supabase.auth.admin.updateUserById(userId, {

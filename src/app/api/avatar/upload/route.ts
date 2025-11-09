@@ -1,38 +1,11 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { createClient } from '@supabase/supabase-js';
+import { createSupabaseApiClient } from '@/utils/supabase/api';
+import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 
 export async function POST(request: NextRequest) {
-  // We need a new response object to manage cookies correctly.
-  const response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-
-  // 1. Get Authenticated User using a temporary server client to read cookies.
-  // This is the most reliable way to handle auth in API routes.
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options) {
-          request.cookies.set({ name, value, ...options });
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options) {
-          request.cookies.set({ name, value: '', ...options });
-          response.cookies.set({ name, value, ...options });
-        },
-      },
-    }
-  );
-
+  // 1. Get Authenticated User using the standard API client
+  const supabase = createSupabaseApiClient(request);
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (userError || !user) {
@@ -47,18 +20,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'No file provided.' }, { status: 400 });
   }
 
-  // 3. Use a direct Admin Client for all storage and database writes.
-  // This is a more robust method for server-side-only operations.
-  const adminSupabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-            autoRefreshToken: false,
-            persistSession: false
-        }
-      }
-  );
+  // 3. Use the Admin Client for storage and database writes.
+  const adminSupabase = createSupabaseAdminClient();
   
   const fileExtension = file.name.split('.').pop();
   const fileName = `${Date.now()}.${fileExtension}`;
