@@ -253,10 +253,9 @@ export default function DashboardPage() {
         
         <div>
           <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Your latest completed quests.</CardDescription>
-            </CardHeader>
+             <CardHeader>
+                <PageHeader title="Recent Activity" description="Your latest completed quests." />
+             </CardHeader>
             <CardContent className="pt-0">
                <Table>
                 <TableHeader>
