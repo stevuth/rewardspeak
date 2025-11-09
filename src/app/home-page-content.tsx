@@ -49,6 +49,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ReferralIllustration } from '@/components/illustrations/referral';
 import { GiftIllustration } from '@/components/illustrations/gift';
+import { WithdrawalsIllustration } from '@/components/illustrations/withdrawals';
 
 const recentCashouts: any[] = [];
 
@@ -84,7 +85,7 @@ const features = [
       icon: Wallet,
       title: "Withdrawals from just $10.00",
       description: "Access your earnings quickly and securely. With low withdrawal minimums, you can cash out your hard-earned rewards without the long wait.",
-      illustration: <Wallet className="w-24 h-24 text-primary" />,
+      illustration: <WithdrawalsIllustration />,
     },
 ];
 
