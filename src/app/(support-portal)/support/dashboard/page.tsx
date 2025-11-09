@@ -16,7 +16,7 @@ import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { useState, useEffect, useTransition } from "react";
 import { Inbox, Send, ChevronLeft, ChevronRight, Loader2, Paperclip, Bot } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { getSupportTickets, addSupportReply, getTicketTemplates } from "@/app/actions";
+import { getSupportTickets, addSupportReply, getTicketTemplates, updateTicketStatus } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
@@ -48,6 +48,7 @@ export default function SupportDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [replyMessage, setReplyMessage] = useState('');
   const [isReplying, startReplyTransition] = useTransition();
+  const [isUpdatingStatus, startStatusUpdateTransition] = useTransition();
   const [templates, setTemplates] = useState<{ title: string; content: string }[]>([]);
   const { toast } = useToast();
   const supabase = createSupabaseBrowserClient();
@@ -152,6 +153,23 @@ export default function SupportDashboardPage() {
       });
   }
 
+  const handleTicketStatusChange = () => {
+    if (!selectedTicket) return;
+    const newStatus = selectedTicket.status === 'open' ? 'closed' : 'open';
+    
+    startStatusUpdateTransition(async () => {
+        const result = await updateTicketStatus(selectedTicket.id, newStatus);
+        if (result.success) {
+            toast({ title: `Ticket ${newStatus}`, description: 'The ticket status has been updated.' });
+            // Optimistically update the UI
+            setSelectedTicket(prev => prev ? { ...prev, status: newStatus } : null);
+            setTickets(prev => prev.map(t => t.id === selectedTicket.id ? { ...t, status: newStatus } : t));
+        } else {
+            toast({ variant: 'destructive', title: 'Update Failed', description: result.error });
+        }
+    });
+  }
+
   const handleTemplateClick = (content: string) => {
     setReplyMessage(content);
   }
@@ -237,7 +255,10 @@ export default function SupportDashboardPage() {
                       <CardDescription>From: {selectedTicket.user_email}</CardDescription>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm">Close Ticket</Button>
+                        <Button variant="outline" size="sm" onClick={handleTicketStatusChange} disabled={isUpdatingStatus}>
+                            {isUpdatingStatus ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                            {selectedTicket.status === 'open' ? 'Close Ticket' : 'Re-open Ticket'}
+                        </Button>
                         <Button variant="destructive" size="sm">Ban User</Button>
                     </div>
                   </div>

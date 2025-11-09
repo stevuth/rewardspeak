@@ -38,7 +38,7 @@ export async function adminLogin(prevState: { message: string, success?: boolean
         return { message: `Authentication failed: ${error.message}`, success: false };
     }
 
-    redirect('/admin');
+    redirect('/admin/dashboard');
 }
 
 
@@ -542,8 +542,7 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
     
     // 1. Handle file upload if an attachment exists
     if (attachment && attachment.size > 0) {
-        const adminSupabase = createSupabaseAdminClient();
-        const { data: bucketData, error: bucketError } = await adminSupabase.storage.getBucket('support_attachments');
+        const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('support_attachments');
 
         if (bucketError || !bucketData) {
             console.error("Storage bucket 'support_attachments' not found.", bucketError);
@@ -704,4 +703,22 @@ export async function getTicketTemplates(): Promise<{ title: string; content: st
             content: "Hello,\n\nWe noticed that your account activity may be associated with a VPN or proxy service. As per our Terms of Service, the use of such services is not permitted.\n\nPlease disable any VPN or proxy and try again. Continued use may result in account suspension."
         }
     ];
+}
+
+export async function updateTicketStatus(ticketId: string, status: 'open' | 'closed'): Promise<{ success: boolean; error?: string }> {
+    const supabase = createSupabaseAdminClient();
+    const { error } = await supabase
+        .from('support_tickets')
+        .update({ status: status, updated_at: new Date().toISOString() })
+        .eq('id', ticketId);
+
+    if (error) {
+        console.error(`Failed to update ticket ${ticketId} to ${status}:`, error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/support/dashboard');
+    revalidatePath('/help');
+    
+    return { success: true };
 }
