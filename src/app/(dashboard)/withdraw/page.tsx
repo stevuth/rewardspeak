@@ -24,7 +24,7 @@ import {
   PaypalLogo,
   UsdtLogo,
 } from "@/components/illustrations/crypto-logos";
-import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign, X } from "lucide-react";
 import { WithdrawalCard } from "@/components/withdrawal-card";
 import {
   Dialog,
@@ -32,7 +32,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter
+  DialogFooter,
+  DialogOverlay
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -197,43 +198,79 @@ export default function CashOutCabinPage() {
       />
 
       <Dialog open={!!selectedWithdrawal} onOpenChange={(isOpen) => !isOpen && handleCloseModal()}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-br from-card to-muted/50 border-primary/20">
-            <DialogHeader className="text-center items-center">
-                <div className="p-4 bg-primary/10 rounded-full w-fit mb-4">
+        <DialogOverlay />
+        <DialogContent
+          hideCloseButton={true}
+          className="w-full max-w-md p-0 bg-transparent border-0 shadow-none outline-none"
+        >
+          <div className="relative">
+            <svg
+              viewBox="0 0 400 420"
+              className="w-full h-auto drop-shadow-2xl"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="modal-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="hsl(var(--card))" />
+                  <stop offset="100%" stopColor="hsl(var(--background))" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M20 0 H380 C391.046 0 400 8.95431 400 20 V400 C400 411.046 391.046 420 380 420 H20 C8.95431 420 0 411.046 0 400 V20 C0 8.95431 8.95431 0 20 0 Z"
+                fill="url(#modal-bg)"
+                stroke="hsl(var(--primary) / 0.2)"
+                strokeWidth="1"
+              />
+            </svg>
+            <div className="absolute inset-0 p-8 flex flex-col">
+              <button
+                onClick={handleCloseModal}
+                className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
+              >
+                <span className="text-xs uppercase tracking-wider">Close</span>
+              </button>
+              
+              <div className="text-center">
+                 <div className="p-4 bg-primary/10 rounded-full w-fit mb-4 mx-auto">
                     {selectedWithdrawal?.method === 'paypal' ? <PaypalLogo className="h-8 w-8" /> : <UsdtLogo className="h-8 w-8" />}
                 </div>
-                <DialogTitle className="font-headline text-2xl">Confirm Withdrawal</DialogTitle>
-                <DialogDescription>
+                <h2 className="font-headline text-2xl font-bold">Confirm Withdrawal</h2>
+                <p className="text-muted-foreground mt-2">
                     You are cashing out <span className="font-bold text-secondary">${selectedWithdrawal?.amount}</span> via <span className="font-bold text-secondary capitalize">{selectedWithdrawal?.method}</span>.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label htmlFor="wallet-address" className="text-muted-foreground">
-                        {selectedWithdrawal?.method === 'paypal' ? 'Your PayPal Email' : 'Your USDT (TRC20) Wallet Address'}
-                    </Label>
-                    <div className="relative">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                            {selectedWithdrawal?.method === 'paypal' ? <AtSign className="h-4 w-4" /> : <Wallet className="h-4 w-4" />}
-                        </div>
-                        <Input 
-                            id="wallet-address"
-                            value={walletAddress}
-                            onChange={(e) => setWalletAddress(e.target.value)}
-                            placeholder={selectedWithdrawal?.method === 'paypal' ? 'your-email@example.com' : 'T...'}
-                            disabled={isSubmitting}
-                            className="pl-10"
-                        />
-                    </div>
-                </div>
-            </div>
-            <DialogFooter>
+                </p>
+              </div>
+
+              <div className="space-y-4 py-6 flex-grow">
+                  <div className="space-y-2">
+                      <Label htmlFor="wallet-address" className="text-muted-foreground">
+                          {selectedWithdrawal?.method === 'paypal' ? 'Your PayPal Email' : 'Your USDT (TRC20) Wallet Address'}
+                      </Label>
+                      <div className="relative">
+                          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                              {selectedWithdrawal?.method === 'paypal' ? <AtSign className="h-4 w-4" /> : <Wallet className="h-4 w-4" />}
+                          </div>
+                          <Input 
+                              id="wallet-address"
+                              value={walletAddress}
+                              onChange={(e) => setWalletAddress(e.target.value)}
+                              placeholder={selectedWithdrawal?.method === 'paypal' ? 'your-email@example.com' : 'T...'}
+                              disabled={isSubmitting}
+                              className="pl-10"
+                          />
+                      </div>
+                  </div>
+              </div>
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-auto">
                 <Button variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>Cancel</Button>
                 <Button onClick={handleSubmitWithdrawal} disabled={isSubmitting}>
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {isSubmitting ? 'Submitting...' : 'Submit Request'}
                 </Button>
-            </DialogFooter>
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
       
