@@ -128,6 +128,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'fxpdfkianxufsjsblgpi.supabase.co',
+        port: '',
+        pathname: '/**',
+      }
     ],
   },
 };
