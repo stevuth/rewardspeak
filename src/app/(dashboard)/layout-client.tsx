@@ -55,8 +55,8 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
-    { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/earn", label: "Earn", icon: Mountain },
+    { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/history", label: "Offers Log", icon: Clock },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
@@ -288,7 +288,7 @@ function MobileBottomNav() {
                             href={item.href}
                             className={cn(
                                 "group flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-bold text-muted-foreground",
-                                isActive ? "text-accent border-b-2 border-accent" : "hover:text-foreground"
+                                isActive ? "text-accent" : "hover:text-foreground"
                             )}
                         >
                             <item.icon className={cn("h-5 w-5 transition-colors duration-200", isActive ? "text-accent" : "group-hover:text-accent")} />
@@ -319,3 +319,5 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
+
+    
