@@ -20,45 +20,13 @@ initializeApp({
 
 const db = getFirestore();
 
-import { popularOffers, quickTasks, leaderboardData, offerWalls } from '../src/lib/mock-data';
-
-async function seedCollection(collectionName: string, data: any[]) {
-    const collectionRef = db.collection(collectionName);
-    const batch = db.batch();
-    
-    console.log(`Seeding ${collectionName}...`);
-
-    for (const item of data) {
-        const docRef = collectionRef.doc(); // Auto-generate ID
-        batch.set(docRef, item);
-    }
-
-    try {
-        await batch.commit();
-        console.log(`Successfully seeded ${data.length} documents into ${collectionName}.`);
-    } catch (error) {
-        console.error(`Error seeding ${collectionName}:`, error);
-    }
-}
+// Seeding data is now managed directly by the database or API integrations.
+// This seed script is a placeholder for any future database initialization needs.
 
 async function main() {
   console.log("Starting database seed process...");
-
-  const allOffers = [...popularOffers.map(o => ({...o, isPopular: true})), ...quickTasks.map(o => ({...o, isQuickTask: true}))];
-  
-  // Combine all seeding operations
-  const seedingOperations = [
-    seedCollection('offers', allOffers),
-    seedCollection('leaderboard', leaderboardData),
-    seedCollection('offer-walls', offerWalls),
-  ];
-
-  try {
-    await Promise.all(seedingOperations);
-    console.log("Database seeding completed successfully!");
-  } catch (error) {
-    console.error("An error occurred during the database seeding process:", error);
-  }
+  console.log("No data to seed. The database is managed via API synchronization and user activity.");
+  console.log("Database seeding completed successfully!");
 }
 
 main();

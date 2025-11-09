@@ -13,7 +13,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { popularOffers, type Offer } from "@/lib/mock-data";
 import { CheckCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
@@ -23,6 +22,15 @@ export const metadata: Metadata = {
   title: "Completed Offers",
   description: "Review your completed offers.",
 };
+
+type Offer = {
+    id: string;
+    title: string;
+    partner: string;
+    points: number;
+    date?: string;
+    status: "Completed" | "Pending" | "Rejected";
+}
 
 const StatusBadge = ({ status }: { status: Offer["status"] }) => {
   if (status === "Completed") {
@@ -37,9 +45,7 @@ const StatusBadge = ({ status }: { status: Offer["status"] }) => {
 };
 
 export default function CompletedPage() {
-  const completedOffers = popularOffers
-    .filter((o) => o.status === "Completed")
-    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime());
+  const completedOffers: Offer[] = [];
 
   return (
     <div className="space-y-8">

@@ -10,9 +10,9 @@ type OfferCardProps = {
   offer: NotikOffer & {
     points: number;
     category: string;
-    title?: string;
-    partner?: string;
-    imageUrl?: string;
+    title?: string; // a name property is available on NotikOffer
+    partner?: string; // a network property is available on NotikOffer
+    imageUrl?: string; // an image_url property is available on NotikOffer
   };
 };
 
@@ -23,7 +23,7 @@ export function OfferCard({ offer }: OfferCardProps) {
         <div className="flex items-center gap-4">
           <Image
             src={offer.image_url || offer.imageUrl || ''}
-            alt={`${offer.partner} logo`}
+            alt={offer.name || offer.title || "Offer"}
             width={64}
             height={64}
             className="rounded-lg border-2 border-primary/20"

@@ -16,7 +16,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { popularOffers, type Offer } from "@/lib/mock-data";
 import { CheckCircle, Clock, XCircle, History } from "lucide-react";
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
@@ -28,6 +27,15 @@ export const metadata: Metadata = {
   title: "Offers Log",
   description: "Review your completed, pending, and rejected offers.",
 };
+
+type Offer = {
+    id: string;
+    title: string;
+    partner: string;
+    points: number;
+    date?: string;
+    status: "Completed" | "Pending" | "Rejected";
+}
 
 const StatusBadge = ({ status }: { status: Offer["status"] }) => {
   if (status === "Completed") {
@@ -99,9 +107,7 @@ const OfferHistoryTable = ({ offers, emptyState }: { offers: Offer[], emptyState
 }
 
 export default function HistoryPage() {
-  const offerHistory = popularOffers.sort(
-    (a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime()
-  );
+  const offerHistory: Offer[] = [];
 
   const inProgressOffers = offerHistory.filter(o => o.status === 'Pending');
   const completedOffers = offerHistory.filter(o => o.status === 'Completed');

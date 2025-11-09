@@ -5,20 +5,14 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, ChevronRight, Loader2, LayoutDashboard } from "lucide-react";
+import { ChevronRight, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import {
@@ -28,7 +22,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
 import { WelcomeBonusModal } from "@/components/welcome-bonus-modal";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -210,7 +203,7 @@ export default function DashboardPage() {
     return (
       <Card className="text-center py-12">
         <CardContent>
-          <p className="text-muted-foreground">No ${sectionTitle.toLowerCase()} right now. Check back soon!</p>
+          <p className="text-muted-foreground">No {sectionTitle.toLowerCase()} right now. Check back soon!</p>
         </CardContent>
       </Card>
     );
@@ -241,6 +234,9 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold tracking-tight font-headline">
                 Featured Offers
             </h2>
+             <Link href="/earn" className="text-sm font-semibold text-primary hover:text-secondary transition-colors flex items-center">
+                View All <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
           </div>
           {renderOfferCarousel(featuredOffers, "Featured Offers")}
         </div>
@@ -249,6 +245,9 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold tracking-tight font-headline">
               Top Converting Offers
             </h2>
+             <Link href="/earn" className="text-sm font-semibold text-primary hover:text-secondary transition-colors flex items-center">
+                View All <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
           </div>
           {renderOfferCarousel(topConvertingOffers, "Top Converting Offers")}
         </div>
@@ -256,33 +255,16 @@ export default function DashboardPage() {
         <div>
           <Card>
              <CardHeader>
-                <PageHeader title="Recent Activity" description="Your latest completed quests." />
+                <PageHeader title="Recent Activity" description="Your latest completed quests will appear here." />
              </CardHeader>
             <CardContent className="pt-0">
                <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Quest</TableHead>
-                    <TableHead className="hidden sm:table-cell">Partner</TableHead>
-                    <TableHead className="hidden md:table-cell">Date</TableHead>
-                    <TableHead className="text-right">Points</TableHead>
-                  </TableRow>
-                </TableHeader>
                 <TableBody>
                   {recentActivity.length > 0 ? (
                     recentActivity.map((offer) => (
                       <TableRow key={offer.id}>
                         <TableCell>
-                            <div className="font-medium">${offer.name}</div>
-                            <div className="text-xs text-muted-foreground sm:hidden">${offer.network}</div>
-                        </TableCell>
-                         <TableCell className="hidden sm:table-cell">${offer.network}</TableCell>
-                         <TableCell className="hidden md:table-cell">${new Date().toLocaleDateString()}</TableCell>
-                        <TableCell
-                          className={cn("text-right font-bold", "text-secondary")}
-                        >
-                          +
-                          ${offer.points.toLocaleString()}
+                            <div className="font-medium">{offer.name}</div>
                         </TableCell>
                       </TableRow>
                     ))
