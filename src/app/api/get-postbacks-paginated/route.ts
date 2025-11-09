@@ -12,9 +12,6 @@ export async function GET(request: NextRequest) {
   const to = from + limit - 1;
 
   try {
-    // The `profiles!inner(*)` syntax was causing an error if a user_id in transactions
-    // did not have a corresponding entry in profiles. This is a more robust way to join.
-    // The `profiles(email)` syntax correctly performs a left join.
     const { data, error, count } = await supabase
       .from('transactions')
       .select(`
@@ -37,10 +34,12 @@ export async function GET(request: NextRequest) {
     
     // Flatten the data to make it easier to work with on the client
     const flattenedData = data.map(tx => {
+        // The join can return an array or an object depending on the relationship.
+        // We'll handle both cases to be safe.
         const profile = Array.isArray(tx.profiles) ? tx.profiles[0] : tx.profiles;
         return {
             ...tx,
-            user_email: profile?.email || tx.user_id, // Fallback to user_id if email is not found
+            user_email: profile?.email || tx.user_id || 'N/A', // Fallback to user_id or N/A
             profiles: undefined, // Remove the nested object
         }
     });
