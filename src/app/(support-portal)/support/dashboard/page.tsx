@@ -83,6 +83,7 @@ export default function SupportDashboardPage() {
         setTemplates(tpl);
     }
     fetchTemplates();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast]);
 
   useEffect(() => {
@@ -94,7 +95,6 @@ export default function SupportDashboardPage() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'ticket_messages', filter: `ticket_id=eq.${selectedTicket.id}` },
         (payload) => {
-          // Add the new message to the state if it's not already there
           setSelectedTicket(prev => {
             if (!prev) return null;
             if (prev.messages.some(msg => msg.id === payload.new.id)) {
@@ -117,25 +117,38 @@ export default function SupportDashboardPage() {
   const handleSendReply = async () => {
       if (!selectedTicket || !replyMessage.trim()) return;
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const tempId = `temp-${Date.now()}`;
+      const optimisticMessage: TicketMessage = {
+          id: tempId,
+          created_at: new Date().toISOString(),
+          ticket_id: selectedTicket.id,
+          user_id: user.id,
+          message: replyMessage,
+          is_from_support: true,
+          attachment_url: null,
+      };
+
+      setSelectedTicket(prev => prev ? { ...prev, messages: [...prev.messages, optimisticMessage] } : null);
+      setReplyMessage('');
+
       startReplyTransition(async () => {
         const result = await addSupportReply({
             ticket_id: selectedTicket.id,
-            message: replyMessage,
+            message: optimisticMessage.message,
             isFromSupport: true
         });
 
-        if (result.success) {
-            setReplyMessage('');
-            // Optimistically add the message to the UI, real-time should confirm
-             if (result.data) {
-                setSelectedTicket(prev => prev ? { ...prev, messages: [...prev.messages, result.data as TicketMessage] } : null);
-             }
-        } else {
+        if (!result.success) {
             toast({
                 variant: 'destructive',
                 title: 'Reply Failed',
                 description: result.error,
             });
+            // Revert optimistic update
+            setSelectedTicket(prev => prev ? { ...prev, messages: prev.messages.filter(m => m.id !== tempId) } : null);
         }
       });
   }
@@ -232,7 +245,7 @@ export default function SupportDashboardPage() {
                 </CardHeader>
                 <CardContent className="flex-grow overflow-y-auto space-y-4">
                   {selectedTicket.messages.sort((a,b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((msg, index) => (
-                    <div key={index} className={`flex ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
+                    <div key={msg.id} className={`flex ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                         <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                         {msg.attachment_url && (

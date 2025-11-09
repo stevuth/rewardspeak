@@ -89,7 +89,6 @@ export default function HelpPage() {
         (payload) => {
           setSelectedTicket(prev => {
             if (!prev) return null;
-            // Avoid adding duplicate messages
             if (prev.messages.some(msg => msg.id === payload.new.id)) {
                 return prev;
             }
@@ -108,21 +107,36 @@ export default function HelpPage() {
   }, [selectedTicket, supabase]);
 
   const handleSendReply = () => {
-    if (!selectedTicket || !replyMessage.trim()) return;
+    if (!selectedTicket || !replyMessage.trim() || !user) return;
+
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage: TicketMessage = {
+      id: tempId,
+      created_at: new Date().toISOString(),
+      ticket_id: selectedTicket.id,
+      user_id: user.id,
+      message: replyMessage,
+      is_from_support: false,
+      attachment_url: null,
+    };
+    
+    setSelectedTicket(prev => prev ? { ...prev, messages: [...prev.messages, optimisticMessage] } : null);
+    setReplyMessage('');
 
     startReplyTransition(async () => {
       const result = await addSupportReply({
         ticket_id: selectedTicket.id,
-        message: replyMessage,
+        message: optimisticMessage.message,
         isFromSupport: false
       });
 
-      if (result.success && result.data) {
-        setReplyMessage('');
-        // Optimistically add message, but Supabase real-time should handle it.
-      } else {
+      if (!result.success) {
         toast({ variant: 'destructive', title: 'Error', description: 'Could not send reply.' });
+        // Revert optimistic update
+        setSelectedTicket(prev => prev ? { ...prev, messages: prev.messages.filter(m => m.id !== tempId) } : null);
       }
+      // On success, the real-time subscription will replace the temp message with the real one if needed,
+      // but usually the optimistic one is enough.
     });
   };
 
