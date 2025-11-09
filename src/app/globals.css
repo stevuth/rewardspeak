@@ -114,7 +114,7 @@
 @layer utilities {
   .futuristic-auth-form .floating-label-input:focus ~ label,
   .futuristic-auth-form .floating-label-input:not(:placeholder-shown) ~ label {
-    @apply -translate-y-5 scale-75 text-secondary;
+    @apply -translate-y-full scale-75 text-secondary;
   }
 
   .futuristic-auth-form .animated-border-wrap {
