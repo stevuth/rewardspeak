@@ -247,7 +247,7 @@ export default function HelpPage() {
                    </Button>
                    {attachmentPreview && (
                      <div className="mt-2 relative w-24 h-24">
-                        <Image src={attachmentPreview} alt="Attachment preview" layout="fill" className="rounded-md object-cover" />
+                        <img src={attachmentPreview} alt="Attachment preview" className="rounded-md object-cover w-full h-full" />
                         <Button type="button" variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => { setAttachment(null); setAttachmentPreview(null); if(fileInputRef.current) fileInputRef.current.value = ''; }}>
                             &times;
                         </Button>
@@ -284,7 +284,7 @@ export default function HelpPage() {
                             <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                             {msg.attachment_url && (
                                 <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
-                                    <Image src={msg.attachment_url} alt="Attachment" width={200} height={200} className="rounded-md object-cover" />
+                                    <img src={msg.attachment_url} alt="Attachment" width={200} height={200} className="rounded-md object-cover max-w-full h-auto" />
                                 </a>
                             )}
                         </div>
