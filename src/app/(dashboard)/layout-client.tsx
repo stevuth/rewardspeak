@@ -61,6 +61,38 @@ const mobileNavItems = [
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
 
+const SvgNavButton = ({ href, icon: Icon, label, isActive }: { href: string; icon: React.ElementType; label: string; isActive: boolean }) => {
+  const gradId = `grad-${label.replace(/\s+/g, '-')}`;
+  return (
+    <Link href={href} className="relative block w-full group">
+      <svg
+        viewBox="0 0 200 50"
+        preserveAspectRatio="none"
+        className="w-full h-auto"
+      >
+        <defs>
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={isActive ? 'hsl(var(--secondary))' : 'hsl(var(--primary))'} />
+            <stop offset="100%" stopColor={isActive ? 'hsl(var(--primary))' : 'hsl(var(--secondary))'} />
+          </linearGradient>
+        </defs>
+        <path
+          d="M 5 5 C 10 0, 190 0, 195 5 L 195 45 C 190 50, 10 50, 5 45 Z"
+          fill={isActive ? `url(#${gradId})` : 'hsl(var(--muted)/0.5)'}
+          stroke={isActive ? 'hsl(var(--primary)/0.5)' : 'hsl(var(--border))'}
+          strokeWidth="1"
+          className="transition-all duration-300 group-hover:fill-[hsl(var(--muted))] "
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-start px-4 gap-3 pointer-events-none">
+        <Icon className={cn("h-5 w-5 transition-colors", isActive ? "text-secondary-foreground" : "text-muted-foreground group-hover:text-primary")} />
+        <span className={cn("font-semibold transition-colors", isActive ? "text-secondary-foreground" : "text-foreground")}>{label}</span>
+      </div>
+    </Link>
+  );
+};
+
+
 const recentEarnings: any[] = [];
 
 function SidebarNavs({ user }: { user: User | null }) {
@@ -149,22 +181,10 @@ function SidebarContent({ user, children }: { user: User | null, children?: Reac
 function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
     const pathname = usePathname();
 
-    const getNavLinkClass = (href: string) => {
-        const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
-        return cn(
-          "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
-          isActive
-            ? "bg-accent text-accent-foreground"
-            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-        );
-    };
-
     const mobileNavLinks = [
         ...navItems, 
         ...secondaryNavItems
-    ].filter(
-        (item) => !mobileNavItems.some((mobileItem) => mobileItem.href === item.href)
-    );
+    ];
 
      if (user && user.email?.endsWith('@rewardspeak.com')) {
         mobileNavLinks.push({ href: "/admin/dashboard", label: "Admin Portal", icon: Shield });
@@ -178,9 +198,9 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                     <span className="sr-only">Toggle navigation menu</span>
                 </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="w-full bg-card p-0 rounded-b-2xl">
+            <SheetContent side="left" className="w-full max-w-xs bg-card p-0">
                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                 <div className="w-full">
+                 <div className="w-full h-full flex flex-col">
                     <div className="p-4 border-b flex items-center justify-between">
                         <Link
                         href="/dashboard"
@@ -190,21 +210,19 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                           <span className="text-lg font-bold">Rewards Peak</span>
                         </Link>
                     </div>
-                     <div className="grid grid-cols-2 gap-4 p-4">
-                        <nav className="flex-1 space-y-1">
+                     <nav className="flex-1 space-y-2 p-4 overflow-y-auto">
                         {mobileNavLinks.map((item) => (
-                            <Link
-                            key={item.href}
-                            href={item.href}
-                            className={getNavLinkClass(item.href)}
-                            >
-                            <item.icon className="h-4 w-4" />
-                            {item.label}
-                            </Link>
+                           <SvgNavButton
+                              key={item.href}
+                              href={item.href}
+                              icon={item.icon}
+                              label={item.label}
+                              isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href)}
+                           />
                         ))}
-                        </nav>
-                        <div className="space-y-4">
-                        <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
+                    </nav>
+                     <div className="mt-auto p-4 border-t space-y-4">
+                        <div className="p-2 flex items-center gap-4 bg-muted/50 rounded-lg">
                             <UserNav user={user} avatarUrl={avatarUrl} />
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold truncate">{user?.email}</p>
@@ -212,12 +230,11 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                             </div>
                         </div>
                         <form action={signOut}>
-                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-accent hover:text-accent-foreground">
+                            <Button variant="destructive" type="submit" className="w-full justify-start">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
                             </Button>
                         </form>
-                        </div>
                     </div>
                  </div>
             </SheetContent>
