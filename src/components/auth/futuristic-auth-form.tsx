@@ -2,15 +2,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useActionState } from "react";
+import { login, signup, requestPasswordReset } from "@/app/auth/actions";
+import { useToast } from "@/hooks/use-toast";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogIn, Lock, Mail, UserPlus, Eye, EyeOff, Send } from "lucide-react";
 import Image from "next/image";
 import { WavingMascotLoader } from "../waving-mascot-loader";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
-import { useActionState } from "react";
-import { requestPasswordReset } from "@/app/auth/actions";
-import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "../ui/checkbox";
 import Link from "next/link";
 import { Label } from "../ui/label";
@@ -18,8 +18,6 @@ import { Label } from "../ui/label";
 type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
-  formAction: (payload: FormData) => void;
-  isPending: boolean;
 };
 
 const pageVariants = {
@@ -198,10 +196,25 @@ function ForgotPasswordModal({ open, onOpenChange }: { open: boolean, onOpenChan
 export function FuturisticAuthForm({
   type,
   onSwitch,
-  formAction,
-  isPending
 }: AuthFormProps) {
   const isLogin = type === "login";
+  const [state, formAction, isPending] = useActionState(
+    isLogin ? login : signup,
+    { message: "" }
+  );
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (state.message && !state.success) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Failed",
+        description: state.message,
+      });
+    }
+  }, [state, toast]);
+
   const [ipAddress, setIpAddress] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
