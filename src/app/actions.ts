@@ -522,7 +522,7 @@ export async function unbanUser(userId: string): Promise<{ success: boolean; err
 
 // New Server Actions for Support Tickets
 
-export async function createSupportTicket(formData: FormData): Promise<{ success: boolean; error?: string }> {
+export async function createSupportTicket(formData: FormData): Promise<{ success: boolean; error?: string, ticketId?: string }> {
     const supabase = createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -542,7 +542,6 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
     
     // 1. Handle file upload if an attachment exists
     if (attachment && attachment.size > 0) {
-        // First check if bucket exists
         const adminSupabase = createSupabaseAdminClient();
         const { data: bucketData, error: bucketError } = await adminSupabase.storage.getBucket('support_attachments');
 
@@ -554,7 +553,6 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
         const fileExt = attachment.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
-        // Use the user's client to upload, which respects RLS policies
         const { error: uploadError } = await supabase.storage
             .from('support_attachments')
             .upload(fileName, attachment);
@@ -571,8 +569,6 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
         attachmentUrl = urlData.publicUrl;
     }
 
-    // Use admin client for DB writes to bypass RLS for creating tickets/messages,
-    // as our RLS is primarily for user-facing reads/writes.
     const adminSupabase = createSupabaseAdminClient();
 
     // 2. Create the ticket
@@ -591,7 +587,7 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
         return { success: false, error: "Could not create the ticket." };
     }
   
-    // 3. Create the initial message with the attachment URL
+    // 3. Create the initial message
     const { error: messageError } = await adminSupabase
         .from('ticket_messages')
         .insert({
@@ -604,14 +600,14 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
         
     if (messageError) {
         console.error("Error creating initial ticket message:", messageError);
-        // Best-effort to clean up orphan ticket
         await adminSupabase.from('support_tickets').delete().eq('id', ticket.id);
         return { success: false, error: "Could not save the ticket message." };
     }
 
     revalidatePath('/support/dashboard');
+    revalidatePath('/help');
 
-    return { success: true };
+    return { success: true, ticketId: ticket.id };
 }
 
 
@@ -632,7 +628,6 @@ export async function getSupportTickets(): Promise<{ success: boolean; data?: an
         return { success: true, data: [] };
     }
     
-    // 2. Fetch all messages for those tickets in one query
     const ticketIds = tickets.map(t => t.id);
     const { data: messages, error: messagesError } = await supabase
         .from('ticket_messages')
@@ -645,7 +640,6 @@ export async function getSupportTickets(): Promise<{ success: boolean; data?: an
         return { success: false, error: "Failed to fetch ticket messages." };
     }
 
-    // 3. Map messages to their corresponding tickets
     const ticketsWithMessages = tickets.map(ticket => ({
         ...ticket,
         messages: messages.filter(m => m.ticket_id === ticket.id)
@@ -654,7 +648,7 @@ export async function getSupportTickets(): Promise<{ success: boolean; data?: an
     return { success: true, data: ticketsWithMessages };
 }
 
-export async function addSupportReply(payload: { ticket_id: string, message: string }): Promise<{ success: boolean, error?: string }> {
+export async function addSupportReply(payload: { ticket_id: string, message: string, isFromSupport: boolean }): Promise<{ success: boolean; data?: any, error?: string }> {
     const supabase = createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -662,20 +656,26 @@ export async function addSupportReply(payload: { ticket_id: string, message: str
         return { success: false, error: "Authentication required." };
     }
     
+    // Server-side validation
     const isAdmin = user.email?.endsWith('@rewardspeak.com');
-    if (!isAdmin) {
-        return { success: false, error: "You are not authorized to reply to tickets." };
+    if (payload.isFromSupport && !isAdmin) {
+        return { success: false, error: "You are not authorized to send messages as support." };
+    }
+     if (!payload.isFromSupport && isAdmin) {
+        return { success: false, error: "Admins cannot send messages as users." };
     }
 
     const adminSupabase = createSupabaseAdminClient();
-    const { error } = await adminSupabase
+    const { data: newMessage, error } = await adminSupabase
         .from('ticket_messages')
         .insert({
             ticket_id: payload.ticket_id,
-            user_id: user.id, // The ID of the support agent sending the message
+            user_id: user.id, // The ID of the sender
             message: payload.message,
-            is_from_support: true,
-        });
+            is_from_support: payload.isFromSupport,
+        })
+        .select()
+        .single();
 
     if (error) {
         console.error("Error adding support reply:", error);
@@ -683,8 +683,9 @@ export async function addSupportReply(payload: { ticket_id: string, message: str
     }
 
     revalidatePath('/support/dashboard');
+    revalidatePath('/help');
 
-    return { success: true };
+    return { success: true, data: newMessage };
 }
 
 export async function getTicketTemplates(): Promise<{ title: string; content: string }[]> {

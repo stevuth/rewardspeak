@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getSupportTickets, addSupportReply, getTicketTemplates } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 
 type TicketMessage = {
   id: string;
@@ -49,15 +50,15 @@ export default function SupportDashboardPage() {
   const [isReplying, startReplyTransition] = useTransition();
   const [templates, setTemplates] = useState<{ title: string; content: string }[]>([]);
   const { toast } = useToast();
+  const supabase = createSupabaseBrowserClient();
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (selectFirst: boolean = false) => {
       const result = await getSupportTickets();
       if (result.success && result.data) {
         setTickets(result.data);
-        if (result.data.length > 0 && !selectedTicket) {
+        if (selectFirst && result.data.length > 0 && !selectedTicket) {
             setSelectedTicket(result.data[0]);
         } else if (selectedTicket) {
-            // If a ticket was selected, refresh its data
             const updatedTicket = result.data.find(t => t.id === selectedTicket.id);
             if (updatedTicket) {
                 setSelectedTicket(updatedTicket);
@@ -75,7 +76,7 @@ export default function SupportDashboardPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchTickets();
+    fetchTickets(true); // Initially fetch and select the first ticket
     
     async function fetchTemplates() {
         const tpl = await getTicketTemplates();
@@ -84,6 +85,34 @@ export default function SupportDashboardPage() {
     fetchTemplates();
   }, [toast]);
 
+  useEffect(() => {
+    if (!selectedTicket) return;
+
+    const channel = supabase
+      .channel(`ticket-messages-${selectedTicket.id}`)
+      .on<TicketMessage>(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ticket_messages', filter: `ticket_id=eq.${selectedTicket.id}` },
+        (payload) => {
+          // Add the new message to the state if it's not already there
+          setSelectedTicket(prev => {
+            if (!prev) return null;
+            if (prev.messages.some(msg => msg.id === payload.new.id)) {
+                return prev;
+            }
+            return {
+              ...prev,
+              messages: [...prev.messages, payload.new]
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedTicket, supabase]);
 
   const handleSendReply = async () => {
       if (!selectedTicket || !replyMessage.trim()) return;
@@ -91,12 +120,16 @@ export default function SupportDashboardPage() {
       startReplyTransition(async () => {
         const result = await addSupportReply({
             ticket_id: selectedTicket.id,
-            message: replyMessage
+            message: replyMessage,
+            isFromSupport: true
         });
 
         if (result.success) {
             setReplyMessage('');
-            await fetchTickets(); // Refetch all tickets to get the new message
+            // Optimistically add the message to the UI, real-time should confirm
+             if (result.data) {
+                setSelectedTicket(prev => prev ? { ...prev, messages: [...prev.messages, result.data as TicketMessage] } : null);
+             }
         } else {
             toast({
                 variant: 'destructive',
@@ -198,13 +231,12 @@ export default function SupportDashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="flex-grow overflow-y-auto space-y-4">
-                  {selectedTicket.messages.map((msg, index) => (
+                  {selectedTicket.messages.sort((a,b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((msg, index) => (
                     <div key={index} className={`flex ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                         <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                         {msg.attachment_url && (
                           <div className="mt-2">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="relative block w-48 h-48">
                               <img src={msg.attachment_url} alt="Attachment" className="rounded-md object-cover w-full h-full" />
                             </a>
