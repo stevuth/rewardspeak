@@ -143,8 +143,7 @@ export default async function TopEarnersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Leaderboard</CardTitle>
-          <CardDescription>A list of the top 100 earners on Rewards Peak.</CardDescription>
+          <PageHeader title="Leaderboard" description="A list of the top 100 earners on Rewards Peak." />
         </CardHeader>
         <CardContent>
           <Table>
