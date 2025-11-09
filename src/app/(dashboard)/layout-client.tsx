@@ -55,7 +55,6 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/history", label: "Offers Log", icon: Clock },
@@ -280,7 +279,7 @@ function MobileBottomNav() {
 
     return (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
-            <div className="grid grid-cols-5 gap-1 place-items-center">
+            <div className="grid grid-cols-4 gap-1 place-items-center">
                 {mobileNavItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
