@@ -228,7 +228,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
       </header>
 
       <main className="flex-1">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-center">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 text-center">
             <div className="max-w-4xl mx-auto">
                 <TypewriterEffect sentences={heroSentences} />
                 <motion.p
@@ -250,14 +250,14 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
                     </Button>
                 </motion.div>
             </div>
-            <div className="mt-16">
+            <div className="mt-12">
               <OfferCarousel offers={featuredOffers} />
             </div>
         </section>
         
-        <section className="py-12 md:py-20 bg-card/20">
+        <section className="py-10 md:py-16 bg-card/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-12">
+                <div className="text-center max-w-3xl mx-auto mb-10">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
                         How You Make Money
                     </h2>
@@ -272,7 +272,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
                         </svg>
                     </div>
 
-                    <div className="relative grid md:grid-cols-3 gap-12">
+                    <div className="relative grid md:grid-cols-3 gap-10">
                         {howItWorksSteps.map((step, i) => (
                             <motion.div 
                                 key={step.title}
@@ -299,7 +299,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
 
-        <section className="py-12 md:py-20 grid md:grid-cols-2 gap-8 lg:gap-16 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-10 md:py-16 grid md:grid-cols-2 gap-8 lg:gap-12 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
                 className="relative min-h-[500px] flex items-center justify-center"
                 initial={{ opacity: 0, x: -50 }}
@@ -326,15 +326,15 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </motion.div>
         </section>
 
-        <section className="bg-background py-12 md:py-20">
+        <section className="bg-background py-10 md:py-16">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-12">
+                <div className="text-center max-w-3xl mx-auto mb-10">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
                         Not your typical <span className="text-primary">rewards platform</span>
                     </h2>
                     <p className="text-muted-foreground">Here’s what makes Rewards Peak different from the rest.</p>
                 </div>
-                <div className="grid grid-cols-1 gap-y-16">
+                <div className="grid grid-cols-1 gap-y-12">
                     {features.map((feature, index) => (
                         <motion.div 
                             key={feature.title}
@@ -342,7 +342,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.3 }}
                             transition={{ duration: 0.6 }}
-                            className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
+                            className="grid md:grid-cols-2 gap-8 md:gap-12 items-center"
                         >
                             <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
                                 <div className="w-80 h-80 flex items-center justify-center p-8">
@@ -365,65 +365,69 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
         
         <PaymentMethodsMarquee />
 
-        <section className="py-12 md:py-20">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
-                <div className="text-center md:text-left">
-                    <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
-                    <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
-                    <Button size="lg" onClick={() => setIsSignupOpen(true)}>Start earning now</Button>
-                </div>
-                <div className="space-y-4">
-                    {recentCashouts.length > 0 ? (
-                        recentCashouts.map((cashout, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, x: 50 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.2 }}
-                            >
-                                <Card className="bg-card/80 backdrop-blur-sm p-4">
-                                    <div className="flex items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4 overflow-hidden">
-                                            <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
-                                                <cashout.icon className="w-6 h-6 text-muted-foreground" />
-                                            </div>
-                                            <div className="truncate">
-                                                <p className="font-bold text-sm truncate">{cashout.name}</p>
-                                                <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
-                                            </div>
+        <section className="py-10 md:py-16 grid md:grid-cols-2 gap-8 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center md:text-left">
+                <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
+                <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
+                <Button size="lg" onClick={() => setIsSignupOpen(true)}>Start earning now</Button>
+            </div>
+            <div className="space-y-4">
+                {recentCashouts.length > 0 ? (
+                    recentCashouts.map((cashout, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: index * 0.2 }}
+                        >
+                            <Card className="bg-card/80 backdrop-blur-sm p-4">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4 overflow-hidden">
+                                        <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
+                                            <cashout.icon className="w-6 h-6 text-muted-foreground" />
                                         </div>
-                                        <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
+                                        <div className="truncate">
+                                            <p className="font-bold text-sm truncate">{cashout.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
+                                        </div>
                                     </div>
-                                </Card>
-                            </motion.div>
-                        ))
-                    ) : (
-                        <Card className="bg-card/80 backdrop-blur-sm p-8 text-center border-dashed">
-                            <p className="text-muted-foreground">The community feed is buzzing! <br/> Sign up to see live earnings.</p>
-                        </Card>
-                    )}
-                </div>
+                                    <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
+                                </div>
+                            </Card>
+                        </motion.div>
+                    ))
+                ) : (
+                    <Card className="bg-card/80 backdrop-blur-sm p-8 text-center border-dashed">
+                        <p className="text-muted-foreground">The community feed is buzzing! <br/> Sign up to see live earnings.</p>
+                    </Card>
+                )}
             </div>
         </section>
         
-        <section className="bg-card/20 py-12 md:py-20">
+        <section className="bg-card/20 py-10 md:py-16">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-                <div className="text-center">
+                <div className="text-center mb-10">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
                         Frequently Asked Questions
                     </h2>
-                    <p className="text-muted-foreground mb-8">
+                    <p className="text-muted-foreground">
                         Have questions? We've got answers.
                     </p>
                 </div>
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="single" collapsible className="w-full space-y-4">
                     {faqs.map((faq, index) => (
-                        <AccordionItem value={`item-${index}`} key={index} className="group">
-                            <AccordionTrigger>{faq.question}</AccordionTrigger>
-                            <AccordionContent>
-                            {faq.answer}
-                            </AccordionContent>
+                        <AccordionItem value={`item-${index}`} key={index} asChild>
+                            <Card className="bg-card/50 overflow-hidden transition-all hover:border-primary/50">
+                                <AccordionTrigger className="p-6 text-left">
+                                    {faq.question}
+                                </AccordionTrigger>
+                                <AccordionContent className="p-6 pt-0">
+                                    <div className="prose prose-invert prose-sm text-muted-foreground">
+                                        {faq.answer}
+                                    </div>
+                                </AccordionContent>
+                            </Card>
                         </AccordionItem>
                     ))}
                 </Accordion>
