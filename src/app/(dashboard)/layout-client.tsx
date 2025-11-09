@@ -66,14 +66,9 @@ const recentEarnings: any[] = [];
 
 function SidebarNavs({ user }: { user: User | null }) {
   const pathname = usePathname();
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
 
   const getNavLinkClass = (href: string) => {
-    const isActive = isClient && pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
+    const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
     return cn(
       "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
       isActive
@@ -110,7 +105,7 @@ function SidebarNavs({ user }: { user: User | null }) {
             href={item.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
-              isClient && pathname.startsWith(item.href)
+              pathname.startsWith(item.href)
                 ? "bg-secondary text-secondary-foreground"
                 : "text-muted-foreground hover:bg-muted"
             )}
@@ -154,13 +149,9 @@ function SidebarContent({ user, children }: { user: User | null, children?: Reac
 
 function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
     const pathname = usePathname();
-    const [isClient, setIsClient] = useState(false);
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
 
     const getNavLinkClass = (href: string) => {
-        const isActive = isClient && pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
+        const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
         return cn(
           "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
           isActive
@@ -286,16 +277,12 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
 
 function MobileBottomNav() {
     const pathname = usePathname();
-    const [isClient, setIsClient] = useState(false);
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
 
     return (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
             <div className="grid grid-cols-5 gap-1 place-items-center">
                 {mobileNavItems.map((item) => {
-                    const isActive = isClient && pathname === item.href;
+                    const isActive = pathname === item.href;
                     return (
                         <Link
                             key={item.href}
