@@ -8,82 +8,116 @@ export function ReferralIllustration() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto"
     >
-      <g>
-        {/* Rising Arrow */}
-        <path
-          d="M178.5 48.5L208.5 18.5L238.5 48.5"
-          stroke="hsl(var(--primary))"
-          strokeWidth="18"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M208.5 27.5V118.5C208.5 127.332 201.332 134.5 192.5 134.5H168.5"
-          stroke="hsl(var(--primary))"
-          strokeWidth="18"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+      <defs>
+        <linearGradient
+          id="btn-grad"
+          x1="128"
+          y1="90"
+          x2="128"
+          y2="170"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#6E26D9" />
+          <stop offset="1" stopColor="#4A1C99" />
+        </linearGradient>
+        <linearGradient
+          id="arrow-grad"
+          x1="180"
+          y1="30"
+          x2="180"
+          y2="140"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#8A2BE2" />
+          <stop offset="1" stopColor="#5D1B99" />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#000" floodOpacity="0.3"/>
+        </filter>
+      </defs>
 
+      <g filter="url(#shadow)">
         {/* Gear */}
         <path
-          d="M136.33 37.1C133.47 31.62 127.58 28 121 28C114.42 28 108.53 31.62 105.67 37.1L101.44 45.1C97.16 45.93 93.13 47.65 89.56 50.12L81.71 46.54C76.24 43.83 69.8 44.98 65.81 49.33L60.33 55.33C56.34 59.68 56.16 66.19 59.94 70.3L64.26 74.95C61.56 78.69 59.62 82.91 58.61 87.54L50.54 90.99C44.98 93.28 42.41 99.58 44.13 105.2L48.13 118.9C49.85 124.52 55.02 128.29 60.71 128.29C61.12 128.29 61.53 128.27 61.94 128.22L70.54 127.11C72.06 131.56 74.52 135.68 77.74 139.2L73.61 146.99C70.62 152.47 72.18 159.21 77.29 162.5L83.81 166.33C88.92 169.62 95.84 168.27 99.44 163.5L104.29 157C108.13 158.91 112.35 160.1 116.82 160.5L118.82 169.21C121.11 174.77 127.41 177.34 133.03 175.62L146.71 171.62C152.33 169.9 156.1 164.73 156.1 159C156.1 158.59 156.08 158.18 156.03 157.77L154.92 149.17C159.37 147.65 163.49 145.19 167.11 141.97L174.9 146.1C180.38 149 187.12 147.44 190.41 142.33L194.24 135.81C197.53 130.7 196.18 123.78 191.5 120.18L184.99 115.33C186.9 111.49 188.09 107.27 188.5 102.8L197.21 100.8C202.77 98.51 205.34 92.21 203.62 86.59L199.62 72.91C197.9 67.29 192.73 63.52 187 63.52C186.59 63.52 186.18 63.54 185.77 63.59L177.17 64.7C175.65 60.25 173.19 56.13 169.97 52.91L174.1 45.12C177 39.64 175.44 32.9 170.33 29.61L163.81 25.78C158.7 22.49 151.78 23.84 148.18 28.52L143.33 35.03C139.49 35.85 135.71 37.1 132.33 38.1L136.33 37.1Z" fill="hsl(var(--primary))" fillOpacity="0.8"/>
-        
-        {/* Referral Button */}
-        <rect
-          x="30"
-          y="76"
-          width="170"
-          height="60"
-          rx="12"
+          d="M107.5 73.5a16.5 16.5 0 1 0 33 0 16.5 16.5 0 1 0 -33 0z"
           fill="hsl(var(--primary))"
+          stroke="#4A1C99"
+          strokeWidth="3"
+        />
+        <path
+          d="M124 57l-3.5 -10h-7l-3.5 10H98l-4.5 -13.5 8 -8L113 42l11-11 11.5 6.5 8 8L150 57h-12l-3.5-10-7.5-2.5-7.5 2.5L124 57z M124 89.5l-3.5 10h-7l-3.5 -10H98l-4.5 13.5 8 8L113 104l11 11 11.5 -6.5 8 -8L150 89.5h-12l-3.5 10-7.5 2.5-7.5-2.5L124 89.5z"
+          fill="hsl(var(--primary))"
+          transform="translate(0, -5)"
+        />
+        <circle cx="124" cy="73" r="8" fill="#4A1C99" />
+
+        {/* Arrow */}
+        <path
+          d="M165 140 L 165 60 C 165 50 170 45 180 45 L 210 45 L 180 15 L 150 45 L 180 45 C 175 45 170 50 170 60 L 170 140 Z"
+          fill="url(#arrow-grad)"
+          transform="translate(-5, 0)"
+        />
+        <path
+          d="M160 140 L 160 60 C 160 50 165 45 175 45 L 205 45 L 175 15 L 145 45 L 175 45 C 170 45 165 50 165 60 L 165 140 Z"
+          fill="hsl(var(--primary))"
+          transform="translate(-5, 0)"
+        />
+
+        {/* Button */}
+        <rect
+          x="40"
+          y="95"
+          width="180"
+          height="70"
+          rx="15"
+          fill="#3D157F"
         />
         <rect
-          x="32"
-          y="78"
-          width="166"
-          height="56"
-          rx="10"
-          fill="url(#buttonGradient)"
+          x="45"
+          y="90"
+          width="170"
+          height="70"
+          rx="12"
+          fill="url(#btn-grad)"
+          stroke="#A45EFF"
+          strokeWidth="2"
         />
         <text
-          x="115"
-          y="114"
+          x="130"
+          y="135"
           textAnchor="middle"
           fill="white"
-          fontSize="24"
+          fontSize="32"
           fontWeight="bold"
           letterSpacing="2"
         >
           REFERRAL
         </text>
 
-        {/* Crystals */}
-        <path d="M50 160 l20 -25 l-25 -15 l-15 25z" fill="hsl(var(--primary))" opacity="0.9" />
-        <path d="M75 185 l25 -30 l-30 -18 l-20 30z" fill="hsl(var(--primary))" opacity="0.9" />
-        
-        {/* Money Stack */}
-        <g transform="translate(130, 150) rotate(-15)">
-            <rect x="0" y="25" width="100" height="50" rx="5" fill="#22C55E" />
-            <rect x="0" y="20" width="100" height="50" rx="5" fill="#22C55E" />
-            <rect x="0" y="15" width="100" height="50" rx="5" fill="#22C55E" />
-            <rect x="0" y="10" width="100" height="50" rx="5" fill="#22C55E" />
-            <rect x="0" y="5" width="100" height="50" rx="5" fill="#16A34A" />
-            <rect x="0" y="0" width="100" height="50" rx="5" fill="#16A34A" />
-
-            {/* Band */}
-            <path d="M-5 25 H105 L95 55 H-15Z" fill="#FBBF24" />
-            <text x="50" y="47" textAnchor="middle" fill="#CA8A04" fontSize="36" fontWeight="bold">
+        {/* Cash */}
+        <g transform="translate(100, 150) rotate(15)">
+          <rect x="0" y="20" width="110" height="50" rx="5" fill="#15803d" />
+          <rect x="0" y="15" width="110" height="50" rx="5" fill="#16a34a" />
+          <rect x="0" y="10" width="110" height="50" rx="5" fill="#22c55e" />
+          <rect x="0" y="5" width="110" height="50" rx="5" fill="#4ade80" />
+          {/* Band */}
+          <path d="M-5 25 H115 L105 55 H-15Z" fill="#facc15" />
+          <text
+            x="55"
+            y="52"
+            textAnchor="middle"
+            fill="#b45309"
+            fontSize="36"
+            fontWeight="bold"
+          >
             $
-            </text>
+          </text>
         </g>
+
+        {/* Crystals */}
+        <path d="M50 180 l15 -20 l-20 -15 l-15 20z" fill="#8A2BE2" stroke="#4A1C99" strokeWidth="2" />
+        <path d="M70 210 l15 -20 l-20 -15 l-15 20z" fill="#8A2BE2" stroke="#4A1C99" strokeWidth="2" />
       </g>
-      <defs>
-        <linearGradient id="buttonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style={{stopColor: "hsl(var(--primary))", stopOpacity: 0.8}} />
-            <stop offset="100%" style={{stopColor: "hsl(var(--primary))", stopOpacity: 1}} />
-        </linearGradient>
-      </defs>
     </svg>
   );
 }
