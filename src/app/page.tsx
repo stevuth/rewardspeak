@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { HomePageContent } from "@/app/home-page-content";
-import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 import { createSupabaseServerClient } from '@/utils/supabase/server';
 
 async function getHomePageData() {
@@ -60,12 +59,9 @@ export default async function Home() {
     const { featuredOffers, phoneCardOffers } = await getHomePageData();
 
     return (
-        <React.Suspense fallback={
-            <div className="flex h-screen w-screen items-center justify-center">
-                <WavingMascotLoader text="Loading..." />
-            </div>
-        }>
-          <HomePageContent featuredOffers={featuredOffers} phoneCardOffers={phoneCardOffers} />
-        </React.Suspense>
-    )
+      <HomePageContent
+        featuredOffers={featuredOffers}
+        phoneCardOffers={phoneCardOffers}
+      />
+    );
 }

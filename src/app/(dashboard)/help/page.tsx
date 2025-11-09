@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { User } from "@supabase/supabase-js";
 import Image from "next/image";
+import { SupportIllustration } from "@/components/illustrations/support-illustration";
 
 type TicketMessage = {
   id: string;
@@ -186,10 +187,17 @@ export default function HelpPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title="Help Center"
-        description="Get help or create a new support ticket."
-      />
+       <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+                <PageHeader
+                    title="Help Center"
+                    description="Get help or create a new support ticket. We're here to assist you on your climb."
+                />
+            </div>
+            <div className="hidden md:flex justify-center items-center">
+                <SupportIllustration />
+            </div>
+        </div>
 
       {view === 'list' && (
         <Card>

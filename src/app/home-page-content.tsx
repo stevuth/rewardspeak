@@ -51,6 +51,7 @@ import { ReferralIllustration } from '@/components/illustrations/referral';
 import { GiftIllustration } from '@/components/illustrations/gift';
 import { WithdrawalsIllustration } from '@/components/illustrations/withdrawals';
 import { CommunityIllustration } from '@/components/illustrations/community';
+import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 
 const recentCashouts: any[] = [];
 
@@ -144,7 +145,7 @@ const heroSentences = [
 ];
 
 
-export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredOffers: any[], phoneCardOffers: any[] }) {
+function AuthModals() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
@@ -163,7 +164,44 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
     setIsLoginOpen(!isLoginOpen);
     setIsSignupOpen(!isSignupOpen);
   };
+  
+  return (
+    <>
+      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
+            <DialogTitle className="sr-only">Log In</DialogTitle>
+            <AuthForm type="login" onSwitch={onSwitchForms} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
+        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
+            <DialogTitle className="sr-only">Sign Up</DialogTitle>
+            <AuthForm type="signup" onSwitch={onSwitchForms} />
+        </DialogContent>
+      </Dialog>
+      <LogoutSuccessModal isOpen={isLogoutOpen} onClose={() => setIsLogoutOpen(false)} />
 
+      <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={60} height={60} />
+        </Link>
+        <nav className="flex items-center gap-2">
+          <Button variant="ghost" onClick={() => setIsLoginOpen(true)}>
+              <LogIn className="mr-2 h-4 w-4" />
+              Sign In
+          </Button>
+          <Button onClick={() => setIsSignupOpen(true)}>
+                <UserPlus className="mr-2 h-4 w-4"/>
+                Sign Up & Claim $1
+          </Button>
+        </nav>
+      </header>
+    </>
+  )
+}
+
+
+export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredOffers: any[], phoneCardOffers: any[] }) {
   const PaymentMethodsMarquee = () => (
     <div className="relative w-full overflow-hidden bg-background py-8">
         <div className="absolute inset-0 z-0 bg-grid-pattern opacity-5"></div>
@@ -197,38 +235,12 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
-      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
-            <DialogTitle className="sr-only">Log In</DialogTitle>
-            <AuthForm type="login" onSwitch={onSwitchForms} />
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
-            <DialogTitle className="sr-only">Sign Up</DialogTitle>
-            <AuthForm type="signup" onSwitch={onSwitchForms} />
-        </DialogContent>
-      </Dialog>
-      <LogoutSuccessModal isOpen={isLogoutOpen} onClose={() => setIsLogoutOpen(false)} />
-
-      <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={60} height={60} />
-        </Link>
-        <nav className="flex items-center gap-2">
-          <Button variant="ghost" onClick={() => setIsLoginOpen(true)}>
-              <LogIn className="mr-2 h-4 w-4" />
-              Sign In
-          </Button>
-          <Button onClick={() => setIsSignupOpen(true)}>
-                <UserPlus className="mr-2 h-4 w-4"/>
-                Sign Up & Claim $1
-          </Button>
-        </nav>
-      </header>
-
+      <React.Suspense fallback={<div className="h-20" />}>
+        <AuthModals />
+      </React.Suspense>
+      
       <main className="flex-1">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 text-center">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 text-center">
             <div className="max-w-4xl mx-auto">
                 <TypewriterEffect sentences={heroSentences} />
                 <motion.p
@@ -244,7 +256,10 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <Button size="lg" onClick={() => setIsSignupOpen(true)} className="font-bold">
+                    <Button size="lg" onClick={() => {
+                        const event = new CustomEvent('open-signup');
+                        window.dispatchEvent(event);
+                    }} className="font-bold">
                         Start Earning Now
                         <DollarSign className="ml-2 h-4 w-4" />
                     </Button>
@@ -255,7 +270,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
         
-        <section className="py-8 md:py-12 bg-card/20">
+        <section className="py-4 md:py-8 bg-card/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-10">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
@@ -299,7 +314,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
 
-        <section className="py-8 md:py-12 grid md:grid-cols-2 gap-8 lg:gap-12 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-4 md:py-8 grid md:grid-cols-2 gap-8 lg:gap-12 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
                 className="relative min-h-[500px] flex items-center justify-center"
                 initial={{ opacity: 0, x: -50 }}
@@ -320,13 +335,16 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
                     Earn by playing <span className="text-primary">your favorite games</span>
                 </h2>
                 <p className="text-lg text-muted-foreground mb-8">Turn your gaming skills into cash. Discover new games, complete objectives, and get paid for your progress. It's that simple.</p>
-                <Button size="lg" onClick={() => setIsSignupOpen(true)}>
+                <Button size="lg" onClick={() => {
+                        const event = new CustomEvent('open-signup');
+                        window.dispatchEvent(event);
+                    }}>
                     Browse Game Offers <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
             </motion.div>
         </section>
 
-        <section className="bg-background py-8 md:py-12">
+        <section className="bg-background py-4 md:py-8">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-10">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
@@ -365,11 +383,14 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
         
         <PaymentMethodsMarquee />
 
-        <section className="py-8 md:py-12 grid md:grid-cols-2 gap-8 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-4 md:py-8 grid md:grid-cols-2 gap-8 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center md:text-left">
                 <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
                 <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
-                <Button size="lg" onClick={() => setIsSignupOpen(true)}>Start earning now</Button>
+                <Button size="lg" onClick={() => {
+                        const event = new CustomEvent('open-signup');
+                        window.dispatchEvent(event);
+                    }}>Start earning now</Button>
             </div>
             <div className="space-y-4">
                 {recentCashouts.length > 0 ? (
@@ -405,7 +426,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
         
-        <section className="bg-card/20 py-8 md:py-12">
+        <section className="bg-card/20 py-4 md:py-8">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
                 <div className="text-center mb-10">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">

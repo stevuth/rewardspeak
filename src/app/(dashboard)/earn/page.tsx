@@ -22,6 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
+import { TheoremReachLogo, TimeWallLogo } from "@/components/illustrations/offerwall-logos";
 
 type Offer = NotikOffer & {
   points: number;
@@ -35,16 +36,14 @@ const offerwalls = [
         slug: "timewall",
         name: "TimeWall",
         description: "Complete tasks, surveys, and more to earn points.",
-        logoUrl: "https://timewall.io/img/timewall_logo_on_dark.png",
-        logoHint: "timewall logo",
+        logoComponent: TimeWallLogo,
         bgColor: "bg-green-500"
     },
     {
         slug: "theoremreach",
         name: "TheoremReach",
         description: "High-quality surveys for direct rewards.",
-        logoUrl: "https://publishers.theoremreach.com/packs/images/logo-icon-4027a12eb2c56c5b9ca470636aa023c7.svg",
-        logoHint: "theoremreach logo",
+        logoComponent: TheoremReachLogo,
         bgColor: "bg-blue-500"
     }
 ]
@@ -52,14 +51,7 @@ const offerwalls = [
 const OfferwallCard = ({ wall }: { wall: typeof offerwalls[0] }) => (
     <Link href={`/offerwalls/${wall.slug}`} className="block group">
         <Card className={cn("relative overflow-hidden h-48 flex flex-col items-center justify-center text-white transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-xl", wall.bgColor)}>
-            <Image
-                src={wall.logoUrl}
-                alt={`${wall.name} logo`}
-                width={120}
-                height={60}
-                className="object-contain"
-                data-ai-hint={wall.logoHint}
-            />
+            <wall.logoComponent className="w-28 h-auto object-contain" />
             <div className="absolute bottom-4">
                  <div className="bg-black/20 text-white text-xs font-semibold px-4 py-1.5 rounded-md backdrop-blur-sm">
                     {wall.name}
