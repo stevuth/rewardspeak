@@ -55,11 +55,10 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
-    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
-    { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-    { href: "/history", label: "Log", icon: Clock },
-    { href: "/support-ticket", label: "Support", icon: CircleHelp },
+    { href: "/earn", label: "Earn", icon: Mountain },
+    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
+    { href: "/history", label: "Offers Log", icon: Clock },
 ]
 
 const recentEarnings: any[] = [];
