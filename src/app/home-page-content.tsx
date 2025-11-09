@@ -228,7 +228,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
       </header>
 
       <main className="flex-1">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 text-center">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 text-center">
             <div className="max-w-4xl mx-auto">
                 <TypewriterEffect sentences={heroSentences} />
                 <motion.p
@@ -255,7 +255,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
         
-        <section className="py-10 md:py-16 bg-card/20">
+        <section className="py-8 md:py-12 bg-card/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-10">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
@@ -299,7 +299,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
 
-        <section className="py-10 md:py-16 grid md:grid-cols-2 gap-8 lg:gap-12 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-8 md:py-12 grid md:grid-cols-2 gap-8 lg:gap-12 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
                 className="relative min-h-[500px] flex items-center justify-center"
                 initial={{ opacity: 0, x: -50 }}
@@ -326,7 +326,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </motion.div>
         </section>
 
-        <section className="bg-background py-10 md:py-16">
+        <section className="bg-background py-8 md:py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-10">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
@@ -365,7 +365,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
         
         <PaymentMethodsMarquee />
 
-        <section className="py-10 md:py-16 grid md:grid-cols-2 gap-8 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-8 md:py-12 grid md:grid-cols-2 gap-8 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center md:text-left">
                 <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
                 <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
@@ -405,7 +405,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
         
-        <section className="bg-card/20 py-10 md:py-16">
+        <section className="bg-card/20 py-8 md:py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
                 <div className="text-center mb-10">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
@@ -436,7 +436,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
 
       </main>
 
-      <footer className="relative bg-card mt-16 pt-16 pb-12">
+      <footer className="relative bg-card mt-12 pt-16 pb-12">
         <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]">
             <svg
                 data-name="Layer 1"
@@ -454,7 +454,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="grid md:grid-cols-2 gap-12 text-center md:text-left">
+            <div className="grid md:grid-cols-2 gap-10 text-center md:text-left">
                 <div>
                     <Link href="/" className="inline-flex items-center justify-center md:justify-start gap-2 mb-4">
                         <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={50} height={50} />
@@ -466,23 +466,12 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
                 </div>
                 <div>
                     <h3 className="font-bold text-lg font-headline mb-4">Get in Touch</h3>
-                    <form className="space-y-4">
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            <div className="space-y-2 text-left">
-                                <Label htmlFor="footer-name">Name</Label>
-                                <Input id="footer-name" placeholder="Your Name" />
-                            </div>
-                            <div className="space-y-2 text-left">
-                                <Label htmlFor="footer-email">Email</Label>
-                                <Input id="footer-email" type="email" placeholder="Your Email" />
-                            </div>
-                        </div>
-                        <div className="space-y-2 text-left">
-                            <Label htmlFor="footer-message">Message</Label>
-                            <Textarea id="footer-message" placeholder="How can we help?" />
-                        </div>
-                        <Button type="submit" className="w-full sm:w-auto">Send Message</Button>
-                    </form>
+                    <p className="text-muted-foreground text-base">
+                        For any inquiries or support, please email us at:
+                    </p>
+                    <a href="mailto:support@rewardspeak.com" className="text-primary hover:underline text-lg font-semibold">
+                        support@rewardspeak.com
+                    </a>
                 </div>
             </div>
             
