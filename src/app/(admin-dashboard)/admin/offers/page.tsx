@@ -230,7 +230,6 @@ export default function ManageOffersPage() {
         <PageHeader
           title="Manage Offers"
           description={`Showing page ${currentPage} of ${totalPages}. Total offers: ${count}.`}
-          icon={List}
         />
         <Button onClick={handleSyncOffers} disabled={isSyncing}>
           <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />

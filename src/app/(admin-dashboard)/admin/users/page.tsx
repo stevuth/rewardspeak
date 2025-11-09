@@ -66,7 +66,6 @@ export default function ManageUsersPage() {
       <PageHeader
         title="Manage Users"
         description={`A total of ${filteredUsers.length} users match the current filters.`}
-        icon={Users}
       />
       <Card>
         <CardHeader>

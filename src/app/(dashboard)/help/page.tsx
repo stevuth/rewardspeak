@@ -192,7 +192,6 @@ export default function HelpPage() {
                 <PageHeader
                     title="Help Center"
                     description="Get help or create a new support ticket. We're here to assist you on your climb."
-                    icon={CircleHelp}
                 />
             </div>
             <div className="hidden md:flex justify-center items-center">
@@ -288,8 +287,8 @@ export default function HelpPage() {
             </CardHeader>
             <CardContent className="flex-grow overflow-y-auto space-y-4">
                 {selectedTicket.messages.sort((a,b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map(msg => (
-                    <div key={msg.id} className={`flex items-end gap-2 ${msg.is_from_support ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-muted' : 'bg-primary text-primary-foreground'}`}>
+                    <div key={msg.id} className={`flex items-end gap-2 ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                             <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                             {msg.attachment_url && (
                                 <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">

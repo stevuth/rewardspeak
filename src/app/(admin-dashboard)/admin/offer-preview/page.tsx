@@ -197,7 +197,6 @@ export default function OfferPreviewPage() {
       <PageHeader
         title="Offer Preview"
         description={`This is how offers are displayed to users. Total enabled offers available: ${allOffers.length}.`}
-        icon={Eye}
       />
       
        <section>

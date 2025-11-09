@@ -69,7 +69,6 @@ export default function FraudDetectionPage() {
             <PageHeader
                 title="Fraud Detection Center"
                 description="This tool identifies potential fraudulent activity, such as multiple users on one IP address."
-                icon={ShieldAlert}
             />
             {sharedIpGroups.length > 0 ? (
                 <div>

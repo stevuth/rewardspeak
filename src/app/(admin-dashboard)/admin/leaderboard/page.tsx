@@ -117,7 +117,6 @@ export default async function AdminLeaderboardPage() {
       <PageHeader
         title="Top Earners Leaderboard"
         description="See who's at the peak of the earnings leaderboard based on current points."
-        icon={Trophy}
       />
       
       {topThree.length >= 3 ? (

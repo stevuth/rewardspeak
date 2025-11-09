@@ -199,7 +199,6 @@ export default function SupportDashboardPage() {
       <PageHeader
         title="Support Center"
         description="Respond to user inquiries and manage support tickets."
-        icon={LifeBuoy}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-220px)]">

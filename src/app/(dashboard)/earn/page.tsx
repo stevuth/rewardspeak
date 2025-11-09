@@ -268,7 +268,6 @@ export default function EarnPage() {
       <PageHeader
         title="Earn"
         description="Main earning hub that leads to all available earning opportunities."
-        icon={Mountain}
       />
       
       <div className="relative">
@@ -330,5 +329,3 @@ export default function EarnPage() {
     </div>
   );
 }
-
-    

@@ -95,7 +95,6 @@ export default function FeaturedContentPage() {
       <PageHeader
         title="Manage Featured Content"
         description="Manually set the offers that appear in the 'Featured' and 'Top Converting' sections."
-        icon={Star}
       />
       <Card>
         <CardHeader>

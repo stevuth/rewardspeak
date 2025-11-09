@@ -90,7 +90,6 @@ export default function PostbacksPage() {
         <PageHeader
           title="Postback History"
           description={`A log of all successful offer completions. Page ${currentPage} of ${totalPages}.`}
-          icon={ClipboardList}
         />
 
       <Card>

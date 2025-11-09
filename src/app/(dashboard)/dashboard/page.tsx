@@ -231,7 +231,6 @@ export default function DashboardPage() {
       <PageHeader
         title="Dashboard"
         description={welcomeMessage}
-        icon={LayoutDashboard}
       />
       
       <div className="space-y-8">

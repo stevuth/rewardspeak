@@ -81,7 +81,6 @@ export default async function AdminPortalPage() {
       <PageHeader
         title="Admin Portal"
         description="Welcome to the control center. Manage your application here."
-        icon={LayoutDashboard}
       />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>

@@ -94,7 +94,6 @@ export function SettingsPageClient({ user, profileData }: { user: any, profileDa
             <PageHeader
                 title="My Peak Profile"
                 description="Manage your account settings."
-                icon={Settings}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -233,7 +233,6 @@ export default function WithdrawalRequestsPage() {
       <PageHeader
         title="Withdrawal Requests"
         description={`Manage and approve user withdrawal requests. Page ${currentPage} of ${totalPages}.`}
-        icon={Gift}
       />
 
        <Card>

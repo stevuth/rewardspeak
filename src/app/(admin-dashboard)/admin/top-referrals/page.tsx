@@ -74,7 +74,6 @@ export default async function TopReferralsPage() {
       <PageHeader
         title="Top Referrals Leaderboard"
         description="See who is driving the most growth through referrals, ranked by lifetime referral earnings."
-        icon={UserPlus}
       />
       
       <Card>

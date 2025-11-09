@@ -119,7 +119,6 @@ export default async function TopEarnersPage() {
       <PageHeader
         title="Peak Performers"
         description="A salute to our top earners. See who's leading the pack on the climb to the top."
-        icon={Trophy}
       />
       
       {topThree.length >= 3 ? (
