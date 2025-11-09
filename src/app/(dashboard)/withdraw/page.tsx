@@ -10,21 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   PaypalLogo,
   UsdtLogo,
 } from "@/components/illustrations/crypto-logos";
-import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign, X, Gift } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign, Gift } from "lucide-react";
 import { WithdrawalCard } from "@/components/withdrawal-card";
 import {
   Dialog,
@@ -90,6 +82,27 @@ type WithdrawalMethod = 'paypal' | 'usdt';
 type SelectedWithdrawal = {
     method: WithdrawalMethod;
     amount: number;
+}
+
+const HistoryItem = ({ withdrawal }: { withdrawal: Withdrawal }) => {
+  const Icon = withdrawal.method === 'paypal' ? PaypalLogo : UsdtLogo;
+  return (
+    <div className="flex items-center justify-between p-4 rounded-lg bg-card/50 border border-border/50 hover:bg-muted/50 transition-colors">
+      <div className="flex items-center gap-4">
+        <div className="p-2 bg-muted rounded-full">
+          <Icon className="w-6 h-6" />
+        </div>
+        <div>
+          <p className="font-semibold capitalize">{withdrawal.method} Withdrawal</p>
+          <p className="text-xs text-muted-foreground">{new Date(withdrawal.created_at).toLocaleString()}</p>
+        </div>
+      </div>
+      <div className="text-right">
+        <p className="font-bold text-secondary text-lg">${withdrawal.amount_usd.toFixed(2)}</p>
+        <StatusBadge status={withdrawal.status} />
+      </div>
+    </div>
+  )
 }
 
 export default function CashOutCabinPage() {
@@ -188,6 +201,7 @@ export default function CashOutCabinPage() {
       <PageHeader
         title="Cash-Out Cabin"
         description="Withdraw your earnings. 1,000 Points = $1.00 USD."
+        icon={Gift}
       />
 
       <WithdrawalSuccessModal
@@ -316,36 +330,15 @@ export default function CashOutCabinPage() {
           <CardTitle>Withdrawal History</CardTitle>
           <CardDescription>A log of your recent cash-out requests.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           {isLoadingHistory ? (
              <div className="h-24 flex items-center justify-center">
                 <WavingMascotLoader text="Loading History..." />
              </div>
           ) : history.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {history.map((withdrawal) => (
-                  <TableRow key={withdrawal.id}>
-                    <TableCell>{new Date(withdrawal.created_at).toLocaleString()}</TableCell>
-                    <TableCell className="font-medium capitalize">{withdrawal.method}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={withdrawal.status} />
-                    </TableCell>
-                    <TableCell className="text-right font-bold text-secondary">
-                      ${withdrawal.amount_usd.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            history.map((withdrawal) => (
+              <HistoryItem key={withdrawal.id} withdrawal={withdrawal} />
+            ))
           ) : (
             <EmptyTreasureChest />
           )}
