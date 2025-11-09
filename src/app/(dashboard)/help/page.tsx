@@ -92,15 +92,14 @@ export default function HelpPage() {
       <PageHeader
         title="Help Center"
         description="Have a question or need assistance? We're here to help."
-        className="text-center"
       />
       
       <div className="grid gap-12 md:grid-cols-2">
           {/* FAQ Section */}
           <div className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold font-headline text-center md:text-left">Frequently Asked Questions</h2>
-                <p className="text-muted-foreground text-center md:text-left">Find quick answers to common questions.</p>
+                <h2 className="text-2xl font-bold font-headline">Frequently Asked Questions</h2>
+                <p className="text-muted-foreground">Find quick answers to common questions.</p>
               </div>
               
               <div className="relative">
@@ -138,8 +137,8 @@ export default function HelpPage() {
           {/* Contact Form Section */}
           <div className="space-y-6">
               <div className="space-y-2">
-                  <h2 className="text-2xl font-bold font-headline text-center md:text-left">Still need help?</h2>
-                  <p className="text-muted-foreground text-center md:text-left">Send us a message and we'll get back to you.</p>
+                  <h2 className="text-2xl font-bold font-headline">Still need help?</h2>
+                  <p className="text-muted-foreground">Send us a message and we'll get back to you.</p>
               </div>
               <form onSubmit={handleSubmit}>
                 <Card className="overflow-hidden border-2 border-primary/20 shadow-lg shadow-primary/10">
