@@ -50,6 +50,7 @@ import { Label } from '@/components/ui/label';
 import { ReferralIllustration } from '@/components/illustrations/referral';
 import { GiftIllustration } from '@/components/illustrations/gift';
 import { WithdrawalsIllustration } from '@/components/illustrations/withdrawals';
+import { CommunityIllustration } from '@/components/illustrations/community';
 
 const recentCashouts: any[] = [];
 
@@ -67,7 +68,7 @@ const features = [
       icon: Users,
       title: "Community of Earners",
       description: "Join thousands of members worldwide who are cashing out real money on a daily basis. With a vibrant community, you're part of a global network of ambitious earners.",
-      illustration: <Users className="w-24 h-24 text-primary" />,
+      illustration: <CommunityIllustration />,
     },
     {
       icon: Gift,
