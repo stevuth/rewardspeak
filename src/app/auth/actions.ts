@@ -193,33 +193,3 @@ export async function signOut() {
   // The redirect now includes query params to trigger the success modal on the homepage.
   return redirect('/?event=logout');
 }
-
-export async function banUser(userId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = createSupabaseAdminClient();
-    const { error } = await supabase.auth.admin.updateUserById(userId, {
-        ban_duration: '876000h' // 100 years
-    });
-
-    if (error) {
-        console.error(`Failed to ban user ${userId}:`, error);
-        return { success: false, error: error.message };
-    }
-
-    revalidatePath('/admin/users');
-    return { success: true };
-}
-
-export async function unbanUser(userId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = createSupabaseAdminClient();
-    const { error } = await supabase.auth.admin.updateUserById(userId, {
-        ban_duration: 'none'
-    });
-
-    if (error) {
-        console.error(`Failed to unban user ${userId}:`, error);
-        return { success: false, error: error.message };
-    }
-
-    revalidatePath('/admin/users');
-    return { success: true };
-}

@@ -8,6 +8,8 @@ import {
   Card,
   CardContent,
   CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
   Table,
@@ -19,10 +21,11 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, ClipboardList } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, ClipboardList, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
+import { Input } from "@/components/ui/input";
 
 type Transaction = {
   id: number;
@@ -47,6 +50,8 @@ export default function PostbacksPage() {
   const currentPage = Number(searchParams.get('page')) || 1;
   const ITEMS_PER_PAGE = 20;
   const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+
+  const postbackUrl = "https://rewardspeak.com/api/postback";
 
   const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
@@ -85,12 +90,44 @@ export default function PostbacksPage() {
     return `${pathname}?${params.toString()}`;
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(postbackUrl);
+    toast({
+      title: "Copied to clipboard!",
+      description: "Postback URL is ready to be used.",
+      icon: <Check className="text-green-500" />,
+    });
+  };
+
   return (
     <div className="space-y-8">
         <PageHeader
           title="Postback History"
           description={`A log of all successful offer completions. Page ${currentPage} of ${totalPages}.`}
         />
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Postback URL</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-2">
+            Use this URL to configure postbacks with your offer partners. Append partner-specific parameters as needed.
+          </p>
+          <div className="relative flex items-center">
+            <Input
+              id="postback-url"
+              type="text"
+              value={postbackUrl}
+              readOnly
+              className="pr-12 bg-muted border-dashed font-mono"
+            />
+            <Button variant="ghost" size="icon" className="absolute right-1" onClick={handleCopy}>
+              <Copy className="h-5 w-5" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent className="pt-6">
