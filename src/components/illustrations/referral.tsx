@@ -49,17 +49,23 @@ export function ReferralIllustration() {
         <text x="130" y="125" textAnchor="middle" fill="white" fontSize="28" fontWeight="bold" letterSpacing="2">REFERRAL</text>
 
         {/* Cash Stack */}
-        <path d="M100 155 L200 135 L205 150 L105 170 Z" fill="#15803D"/>
-        <path d="M100 165 L200 145 L205 160 L105 180 Z" fill="#15803D"/>
-        <path d="M100 175 L200 155 L205 170 L105 190 Z" fill="#15803D"/>
-        <path d="M98 152 L198 132 L203 147 L103 167 Z" fill="url(#cash-grad)"/>
-        <path d="M98 162 L198 142 L203 157 L103 177 Z" fill="url(#cash-grad)"/>
-        <path d="M98 172 L198 152 L203 167 L103 187 Z" fill="url(#cash-grad)"/>
+        <g transform="translate(100, 130) rotate(-15 50 25)">
+            <rect x="0" y="0" width="100" height="50" rx="5" fill="#15803D" />
+            <rect x="2" y="2" width="96" height="46" rx="3" fill="url(#cash-grad)" />
+            {/* Bill details */}
+            <circle cx="50" cy="25" r="12" fill="none" stroke="white" strokeWidth="2" strokeOpacity="0.5" />
+            <text x="50" y="30" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold" fillOpacity="0.7">$</text>
+            {/* Stack effect */}
+            <path d="M 0 5 C 20 10, 80 10, 100 5" fill="none" stroke="#10B981" strokeWidth="2" />
+            <path d="M 0 45 C 20 40, 80 40, 100 45" fill="none" stroke="#10B981" strokeWidth="2" />
 
-        {/* Money Band */}
-        <path d="M130 143 L175 133 L185 163 L140 173 Z" fill="url(#band-grad)"/>
-        <path d="M157 159 C 158 156, 162 155, 164 156 C 166 157, 167 161, 166 163 C 165 165, 161 166, 159 165 C 157 164, 156 161, 157 159 Z" fill="#FDE047"/>
-        <path d="M148.5 156.5C148.5 153.186 150.91 150.5 154 150.5C155.59 150.5 157.034 151.216 158 152.317V148.5H161V158.85C161 162.164 158.59 164.5 155.5 164.5C152.41 164.5 150 161.814 150 158.5H153C153 160.157 154.12 161.5 155.5 161.5C156.88 161.5 158 160.157 158 158.5V158H157.5C156.035 158 154.767 157.643 153.832 156.963L153.5 156.75V156.5H148.5V153.5H153.5V155.5C154.439 155.857 155.561 156 157 156H158V155.317C157.034 154.216 155.59 153.5 154 153.5C152.067 153.5 150.5 154.843 150.5 156.5H148.5Z" fill="#FDE047"/>
+            <path d="M-2 5 L-2 45" stroke="#14532D" strokeWidth="4" strokeLinecap="round"/>
+            <path d="M-5 8 L-5 42" stroke="#14532D" strokeWidth="3" strokeLinecap="round"/>
+
+            {/* Band */}
+            <rect x="35" y="-5" width="30" height="60" rx="3" fill="url(#band-grad)" />
+            <text x="50" y="30" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold" fillOpacity="0.5">$$</text>
+        </g>
 
         {/* Crystals */}
         <path d="M60 180 l15 -20 l15 20 l-15 20 z" fill="url(#crystal-grad)" />
