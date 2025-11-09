@@ -512,7 +512,6 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
         return { success: false, error: "Subject and message are required." };
     }
 
-    const adminSupabase = createSupabaseAdminClient();
     let attachmentUrl: string | null = null;
     
     // 1. Handle file upload if an attachment exists
@@ -520,7 +519,8 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
         const fileExt = attachment.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
-        const { error: uploadError } = await adminSupabase.storage
+        // Use the regular server client which respects RLS for the user
+        const { error: uploadError } = await supabase.storage
             .from('support_attachments')
             .upload(fileName, attachment);
 
@@ -529,12 +529,16 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
             return { success: false, error: "Failed to upload attachment." };
         }
         
-        const { data: urlData } = adminSupabase.storage
+        const { data: urlData } = supabase.storage
             .from('support_attachments')
             .getPublicUrl(fileName);
             
         attachmentUrl = urlData.publicUrl;
     }
+
+    // Use admin client for DB writes to bypass RLS for creating tickets/messages,
+    // as our RLS is primarily for user-facing reads/writes.
+    const adminSupabase = createSupabaseAdminClient();
 
     // 2. Create the ticket
     const { data: ticket, error: ticketError } = await adminSupabase
