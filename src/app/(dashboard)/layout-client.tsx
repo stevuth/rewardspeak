@@ -55,10 +55,11 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
-    { href: "/withdraw", label: "Cash-Out", icon: Gift },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/earn", label: "Earn", icon: Mountain },
-    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
+    { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/history", label: "Offers Log", icon: Clock },
+    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
 
 const recentEarnings: any[] = [];
@@ -292,7 +293,7 @@ function MobileBottomNav() {
 
     return (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
-            <div className="grid grid-cols-5 gap-1">
+            <div className="grid grid-cols-5 gap-1 place-items-center">
                 {mobileNavItems.map((item) => {
                     const isActive = isClient && pathname === item.href;
                     return (
@@ -300,7 +301,7 @@ function MobileBottomNav() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "group flex flex-col items-center gap-1 p-2 text-xs font-bold text-muted-foreground",
+                                "group flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-bold text-muted-foreground",
                                 isActive ? "text-accent border-b-2 border-accent" : "hover:text-foreground"
                             )}
                         >
@@ -332,5 +333,3 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
-
-    
