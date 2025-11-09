@@ -47,6 +47,7 @@ import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gam
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { ReferralIllustration } from '@/components/illustrations/referral';
 
 const recentCashouts: any[] = [];
 
@@ -76,7 +77,7 @@ const features = [
       icon: UserPlus,
       title: "Lifetime Referral Earnings",
       description: "The earning doesn't stop with you. Invite your friends and earn a percentage of their earnings for life. The more they earn, the more you earn.",
-      illustration: <Users className="w-24 h-24 text-primary" />,
+      illustration: <ReferralIllustration />,
     },
     {
       icon: Wallet,
@@ -341,7 +342,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
                             className="grid md:grid-cols-2 gap-8 md:gap-16 items-center"
                         >
                             <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
-                                <div className="w-48 h-48 flex items-center justify-center bg-card p-8 rounded-2xl shadow-lg">
+                                <div className="w-64 h-64 flex items-center justify-center p-8">
                                     {feature.illustration}
                                 </div>
                             </div>
