@@ -228,7 +228,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
       </header>
 
       <main className="flex-1">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-center">
             <div className="max-w-4xl mx-auto">
                 <TypewriterEffect sentences={heroSentences} />
                 <motion.p
@@ -255,9 +255,9 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
         
-        <section className="py-16 md:py-24 bg-card/20">
+        <section className="py-12 md:py-20 bg-card/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
+                <div className="text-center max-w-3xl mx-auto mb-12">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
                         How You Make Money
                     </h2>
@@ -299,7 +299,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
 
-        <section className="py-16 md:py-24 grid md:grid-cols-2 gap-8 lg:gap-16 items-center container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 md:py-20 grid md:grid-cols-2 gap-8 lg:gap-16 items-center container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
                 className="relative min-h-[500px] flex items-center justify-center"
                 initial={{ opacity: 0, x: -50 }}
@@ -326,9 +326,9 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </motion.div>
         </section>
 
-        <section className="bg-background py-16 md:py-24">
+        <section className="bg-background py-12 md:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
+                <div className="text-center max-w-3xl mx-auto mb-12">
                     <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
                         Not your typical <span className="text-primary">rewards platform</span>
                     </h2>
@@ -365,7 +365,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
         
         <PaymentMethodsMarquee />
 
-        <section className="py-16 md:py-24">
+        <section className="py-12 md:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
                 <div className="text-center md:text-left">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
@@ -407,7 +407,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
             </div>
         </section>
         
-        <section className="bg-card/20 py-16 md:py-24">
+        <section className="bg-card/20 py-12 md:py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
                 <div className="text-center">
                     <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
@@ -432,7 +432,7 @@ export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredO
 
       </main>
 
-      <footer className="relative bg-card mt-24 pt-24 pb-12">
+      <footer className="relative bg-card mt-16 pt-16 pb-12">
         <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]">
             <svg
                 data-name="Layer 1"
