@@ -28,6 +28,20 @@ export function WithdrawalsIllustration() {
         <path d="M40 80 C40 65, 50 60, 65 60 H190 C205 60, 215 65, 215 80 V180 C215 195, 205 200, 190 200 H65 C50 200, 40 195, 40 180 Z" fill="url(#wallet-grad)" />
         <path d="M40 85 H215 V95 C205 100, 50 100, 40 95 Z" fill="#4C1D95"/>
         
+        {/* $10 Text */}
+        <text
+            x="128"
+            y="145"
+            fontFamily="var(--font-sans), sans-serif"
+            fontSize="48"
+            fontWeight="bold"
+            fill="white"
+            textAnchor="middle"
+            style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.2)" }}
+        >
+            $10
+        </text>
+
         {/* Wallet Button */}
         <circle cx="190" cy="82" r="8" fill="#F3F3F3" opacity="0.3"/>
         
