@@ -212,9 +212,7 @@ export default function CashOutCabinPage() {
       />
 
       <Dialog open={!!selectedWithdrawal} onOpenChange={(isOpen) => !isOpen && handleCloseModal()}>
-        <DialogOverlay />
         <DialogContent
-          hideCloseButton={true}
           className="w-full max-w-md p-0 bg-transparent border-0 shadow-none outline-none"
         >
           <DialogTitle className="sr-only">Confirm Withdrawal</DialogTitle>
@@ -294,7 +292,7 @@ export default function CashOutCabinPage() {
           <PaypalLogo className="w-8 h-8" />
           <h2 className="text-2xl font-bold font-headline">PayPal</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {withdrawalOptions.paypal.map(amount => (
               <WithdrawalCard
                 key={`paypal-${amount}`}
@@ -312,7 +310,7 @@ export default function CashOutCabinPage() {
           <UsdtLogo className="w-8 h-8" />
           <h2 className="text-2xl font-bold font-headline">USDT (Tether)</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {withdrawalOptions.usdt.map(amount => (
               <WithdrawalCard
                 key={`usdt-${amount}`}
