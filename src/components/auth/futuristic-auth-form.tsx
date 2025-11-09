@@ -19,7 +19,6 @@ type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
   formAction: (payload: FormData) => void;
-  state: { message: string; success?: boolean };
   isPending: boolean;
 };
 
@@ -200,7 +199,6 @@ export function FuturisticAuthForm({
   type,
   onSwitch,
   formAction,
-  state,
   isPending
 }: AuthFormProps) {
   const isLogin = type === "login";

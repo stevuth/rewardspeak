@@ -38,7 +38,6 @@ export function AuthForm({ type, onSwitch }: AuthFormProps) {
       type={type}
       onSwitch={onSwitch}
       formAction={formAction}
-      state={state}
       isPending={isPending}
     />
   );

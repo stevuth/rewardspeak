@@ -116,10 +116,7 @@ export default function HistoryPage() {
       />
       <Card>
         <CardHeader>
-          <CardTitle>Offer History</CardTitle>
-          <CardDescription>
-            A complete log of all quests you've embarked on.
-          </CardDescription>
+           <PageHeader title="Offer History" description="A complete log of all quests you've embarked on." />
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="all" className="w-full">

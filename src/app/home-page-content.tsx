@@ -1,510 +1,67 @@
 
-'use client';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Trophy,
-  Mail,
-  Facebook,
-  Instagram,
-  Twitter,
-  MessageCircle,
-  UserPlus,
-  Wallet,
-  Hand,
-  CheckCircle,
-  DollarSign,
-  LogIn,
-  Users,
-  FileSignature,
-  ArrowRight,
-  Sparkles,
-  Gift,
-} from 'lucide-react';
-import Image from 'next/image';
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { AuthForm } from '@/components/auth/auth-form';
-import { useSearchParams } from 'next/navigation';
-import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
-import { OfferCarousel } from '@/components/offer-carousel';
-import { Card } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-import { LogoutSuccessModal } from '@/components/logout-success-modal';
-import { TypewriterEffect } from '@/components/typewriter-effect';
-import { EarnByGamingIllustration } from '@/components/illustrations/earn-by-gaming';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { ReferralIllustration } from '@/components/illustrations/referral';
-import { GiftIllustration } from '@/components/illustrations/gift';
-import { WithdrawalsIllustration } from '@/components/illustrations/withdrawals';
-import { CommunityIllustration } from '@/components/illustrations/community';
-import { WavingMascotLoader } from '@/components/waving-mascot-loader';
+import { createSupabaseServerClient } from '@/utils/supabase/server';
+import { HomePageClient } from './home-page-client';
 
-const recentCashouts: any[] = [];
+async function getHomePageData() {
+    const supabase = createSupabaseServerClient();
+    const featuredOfferNames = ["raids shadow", "richie games", "upside", "bingo vacation", "crypto mine", "state of survival"];
+    const phoneCardOfferNames = ["bitcoin tiles", "slot mate", "call of dragons", "fish of fortune"];
 
-const paymentMethods = [
-    { icon: PaypalLogo, name: 'Paypal'},
-    { icon: BinanceCoinLogo, name: 'Binance'},
-    { icon: UsdCoinLogo, name: 'USD Coin'},
-    { icon: LitecoinLogo, name: 'Litecoin'},
-    { icon: EthereumLogo, name: 'Ethereum'},
-    { icon: BitcoinLogo, name: 'Bitcoin'},
-];
+    try {
+        const orFilter = featuredOfferNames.map(name => `name.ilike.%${name}%`).join(',');
+        const { data: featuredData, error: featuredError } = await supabase
+            .from('all_offers')
+            .select('*')
+            .or(orFilter)
+            .limit(20);
 
-const features = [
-    {
-      icon: Users,
-      title: "Community of Earners",
-      description: "Join thousands of members worldwide who are cashing out real money on a daily basis. With a vibrant community, you're part of a global network of ambitious earners.",
-      illustration: <CommunityIllustration />,
-    },
-    {
-      icon: Gift,
-      title: "Instant Sign-Up Bonus",
-      description: "We get you started on the right foot. New users receive a $1 bonus instantly upon signing up, so you're already earning from the moment you join.",
-      illustration: <GiftIllustration />,
-    },
-    {
-      icon: UserPlus,
-      title: "Lifetime Referral Earnings",
-      description: "The earning doesn't stop with you. Invite your friends and earn a percentage of their earnings for life. The more they earn, the more you earn.",
-      illustration: <ReferralIllustration />,
-    },
-    {
-      icon: Wallet,
-      title: "Withdrawals from just $10.00",
-      description: "Access your earnings quickly and securely. With low withdrawal minimums, you can cash out your hard-earned rewards without the long wait.",
-      illustration: <WithdrawalsIllustration />,
-    },
-];
+        if (featuredError) throw featuredError;
 
-const faqs = [
-    {
-      question: "How do I start earning points?",
-      answer: "Once you sign up, head to the 'Earn' page. You can choose from thousands of offers, including playing games, trying new apps, and completing surveys. Each offer shows the points you'll earn. Just follow the instructions to get your reward!"
-    },
-    {
-      question: "How much are points worth and how can I cash out?",
-      answer: "It's simple: 1,000 points = $1.00 USD. You can cash out your earnings starting from just $10. We offer fast and secure withdrawals to PayPal and popular cryptocurrencies like USDT."
-    },
-    {
-        question: "How does the referral program work?",
-        answer: "Share your unique referral code or link with friends. When they sign up, you'll earn 10% of their offer earnings for life! It's a great way to build a passive income stream."
-    },
-    {
-        question: "Is it really free?",
-        answer: "Yes, absolutely. Rewards Peak is 100% free to use. We will never ask you for payment information. Our partners pay us, and we share that revenue with you."
-    },
-    {
-        question: "Can I use a VPN or create multiple accounts?",
-        answer: "No. To ensure a fair platform for everyone, the use of VPNs or proxies is strictly forbidden. Each user is allowed only one account. Violating these rules will result in your account being banned."
+        const uniqueFeaturedOffers = new Map();
+        featuredOfferNames.forEach(name => {
+            const bestMatch = featuredData.find(offer => offer.name.toLowerCase().includes(name));
+            if (bestMatch && !uniqueFeaturedOffers.has(bestMatch.offer_id)) {
+                uniqueFeaturedOffers.set(bestMatch.offer_id, bestMatch);
+            }
+        });
+        
+        const phoneCardPromises = phoneCardOfferNames.map(name =>
+            supabase
+                .from('all_offers')
+                .select('name, image_url, categories, payout, offer_id')
+                .not('image_url', 'is', null)
+                .neq('image_url', '')
+                .ilike('name', `%${name}%`)
+                .order('payout', { ascending: false })
+                .limit(1)
+                .single()
+        );
+        
+        const phoneCardResults = await Promise.allSettled(phoneCardPromises);
+        const phoneCardOffers = phoneCardResults
+            .map(result => (result.status === 'fulfilled' ? result.value.data : null))
+            .filter(Boolean);
+
+        return {
+            featuredOffers: Array.from(uniqueFeaturedOffers.values()),
+            phoneCardOffers: phoneCardOffers
+        };
+
+    } catch (error: any) {
+        console.error("Error fetching homepage data:", error.message || error);
+        return { featuredOffers: [], phoneCardOffers: [] };
     }
-];
-
-const howItWorksSteps = [
-    {
-      icon: Hand,
-      title: "Choose an Offer",
-      description: "Sign up for free and browse through hundreds of new offers daily from games and apps."
-    },
-    {
-      icon: FileSignature,
-      title: "Complete the Task",
-      description: "Follow the simple on-screen instructions to complete the task. It's that easy."
-    },
-    {
-      icon: DollarSign,
-      title: "Get Paid",
-      description: "Redeem your earnings for PayPal cash or crypto. Fast and secure payouts."
-    }
-];
-
-const heroSentences = [
-    { words: [ { text: "Join", colorClass: "text-primary" }, { text: "thousands", colorClass: "text-secondary" }, { text: "earning", colorClass: "text-foreground" }, { text: "real", colorClass: "text-primary" }, { text: "rewards", colorClass: "text-secondary" }, { text: "every", colorClass: "text-foreground" }, { text: "day.", colorClass: "text-primary" }, ] },
-    { words: [ { text: "Cash", colorClass: "text-secondary" }, { text: "rewards", colorClass: "text-foreground" }, { text: "for", colorClass: "text-primary" }, { text: "every", colorClass: "text-secondary" }, { text: "task", colorClass: "text-foreground" }, { text: "you", colorClass: "text-primary" }, { text: "complete.", colorClass: "text-secondary" }, ] },
-    { words: [ { text: "Your", colorClass: "text-foreground" }, { text: "next", colorClass: "text-primary" }, { text: "dollar", colorClass: "text-secondary" }, { text: "is", colorClass: "text-foreground" }, { text: "just", colorClass: "text-primary" }, { text: "a", colorClass: "text-secondary" }, { text: "task", colorClass: "text-foreground" }, { text: "away.", colorClass: "text-primary" }, ] },
-    { words: [ { text: "Start", colorClass: "text-secondary" }, { text: "earning", colorClass: "text-foreground" }, { text: "while", colorClass: "text-primary" }, { text: "others", colorClass: "text-secondary" }, { text: "are", colorClass: "text-foreground" }, { text: "scrolling.", colorClass: "text-primary" }, ] },
-    { words: [ { text: "From", colorClass: "text-foreground" }, { text: "clicks", colorClass: "text-primary" }, { text: "to", colorClass: "text-secondary" }, { text: "cash,", colorClass: "text-foreground" }, { text: "join", colorClass: "text-primary" }, { text: "now!", colorClass: "text-secondary" }, ] },
-    { words: [ { text: "Sign", colorClass: "text-secondary" }, { text: "up", colorClass: "text-foreground" }, { text: "today", colorClass: "text-primary" }, { text: "and", colorClass: "text-secondary" }, { text: "start", colorClass: "text-foreground" }, { text: "earning", colorClass: "text-primary" }, { text: "instantly.", colorClass: "text-secondary" }, ] },
-    { words: [ { text: "The", colorClass: "text-foreground" }, { text: "smarter", colorClass: "text-primary" }, { text: "way", colorClass: "text-secondary" }, { text: "to", colorClass: "text-foreground" }, { text: "make", colorClass: "text-primary" }, { text: "money", colorClass: "text-secondary" }, { text: "online.", colorClass: "text-foreground" }, ] },
-    { words: [ { text: "Join.", colorClass: "text-primary" }, { text: "Earn.", colorClass: "text-secondary" }, { text: "Withdraw.", colorClass: "text-primary" }, { text: "Repeat.", colorClass: "text-secondary" }, ] },
-    { words: [ { text: "Your", colorClass: "text-foreground" }, { text: "side", colorClass: "text-primary" }, { text: "income", colorClass: "text-secondary" }, { text: "starts", colorClass: "text-foreground" }, { text: "here.", colorClass: "text-primary" }, ] },
-];
-
-
-function AuthModals() {
-  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-  const [isSignupOpen, setIsSignupOpen] = React.useState(false);
-  const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
-
-  const searchParams = useSearchParams();
-
-  React.useEffect(() => {
-    const event = searchParams.get('event');
-    if (event === 'logout') {
-      setIsLogoutOpen(true);
-      window.history.replaceState({}, '', '/');
-    }
-  }, [searchParams]);
-
-  const onSwitchForms = () => {
-    setIsLoginOpen(!isLoginOpen);
-    setIsSignupOpen(!isSignupOpen);
-  };
-  
-  return (
-    <>
-      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
-            <DialogTitle className="sr-only">Log In</DialogTitle>
-            <AuthForm type="login" onSwitch={onSwitchForms} />
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-        <DialogContent className="p-0 border-0 bg-transparent shadow-none">
-            <DialogTitle className="sr-only">Sign Up</DialogTitle>
-            <AuthForm type="signup" onSwitch={onSwitchForms} />
-        </DialogContent>
-      </Dialog>
-      <LogoutSuccessModal isOpen={isLogoutOpen} onClose={() => setIsLogoutOpen(false)} />
-
-      <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={60} height={60} />
-        </Link>
-        <nav className="flex items-center gap-2">
-          <Button variant="ghost" onClick={() => setIsLoginOpen(true)}>
-              <LogIn className="mr-2 h-4 w-4" />
-              Sign In
-          </Button>
-          <Button onClick={() => setIsSignupOpen(true)}>
-                <UserPlus className="mr-2 h-4 w-4"/>
-                Sign Up & Claim $1
-          </Button>
-        </nav>
-      </header>
-    </>
-  )
 }
 
 
-export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredOffers: any[], phoneCardOffers: any[] }) {
-  const PaymentMethodsMarquee = () => (
-    <div className="relative w-full overflow-hidden bg-background py-8">
-        <div className="absolute inset-0 z-0 bg-grid-pattern opacity-5"></div>
-        <div className="absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-background to-transparent"></div>
-        <div className="absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-background to-transparent"></div>
-        <div className="flex flex-nowrap animate-scroll">
-            {[...paymentMethods, ...paymentMethods].map((method, index) => (
-                <div key={index} className="flex-shrink-0 w-48 flex justify-center items-center gap-4 mx-4">
-                    <method.icon className="w-8 h-8 text-muted-foreground" />
-                    <span className="text-muted-foreground font-semibold text-lg">{method.name}</span>
-                </div>
-            ))}
-        </div>
-        <style jsx>{`
-            .bg-grid-pattern {
-                background-image: linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(to right, hsl(var(--border)) 1px, hsl(var(--background)) 1px);
-                background-size: 2rem 2rem;
-            }
-            @keyframes scroll {
-                from { transform: translateX(0); }
-                to { transform: translateX(-100%); }
-            }
-            .animate-scroll {
-                animation: scroll 20s linear infinite;
-                display: flex;
-                width: fit-content;
-            }
-        `}</style>
-    </div>
-  );
+export async function HomePageContent() {
+    const { featuredOffers, phoneCardOffers } = await getHomePageData();
 
-  return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
-      <React.Suspense fallback={<div className="h-20" />}>
-        <AuthModals />
-      </React.Suspense>
-      
-      <main className="flex-1">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 text-center">
-            <div className="max-w-4xl mx-auto">
-                <TypewriterEffect sentences={heroSentences} />
-                <motion.p
-                  className="mt-4 mb-8 text-lg text-muted-foreground"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  Ready to earn? Create your free account and get your first reward today.
-                </motion.p>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                    <Button size="lg" onClick={() => {
-                        const event = new CustomEvent('open-signup');
-                        window.dispatchEvent(event);
-                    }} className="font-bold">
-                        Start Earning Now
-                        <DollarSign className="ml-2 h-4 w-4" />
-                    </Button>
-                </motion.div>
-            </div>
-            <div className="mt-12">
-              <OfferCarousel offers={featuredOffers} />
-            </div>
-        </section>
-        
-        <section className="py-4 md:py-8 bg-card/20">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-10">
-                    <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
-                        How You Make Money
-                    </h2>
-                    <p className="text-lg text-muted-foreground">Earning cash has never been this simple. Follow three easy steps to start your journey.</p>
-                </div>
-
-                <div className="relative">
-                    {/* Connecting Dashed Line for Desktop */}
-                    <div className="hidden md:block absolute top-1/2 left-0 w-full h-px -translate-y-1/2">
-                        <svg width="100%" height="2" className="overflow-visible">
-                            <line x1="0" y1="1" x2="100%" y2="1" stroke="hsl(var(--border))" strokeWidth="2" strokeDasharray="8 8" />
-                        </svg>
-                    </div>
-
-                    <div className="relative grid md:grid-cols-3 gap-10">
-                        {howItWorksSteps.map((step, i) => (
-                            <motion.div 
-                                key={step.title}
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: i * 0.2 }}
-                                className="text-center flex flex-col items-center"
-                            >
-                                <div className="relative mb-6">
-                                    <div className="flex items-center justify-center w-24 h-24 rounded-full bg-card border-2 border-primary/20 text-primary shadow-lg shadow-primary/10">
-                                        <step.icon className="w-10 h-10" />
-                                    </div>
-                                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-secondary text-secondary-foreground font-bold text-sm">
-                                        {i + 1}
-                                    </div>
-                                </div>
-                                <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
-                                <p className="text-muted-foreground max-w-xs">{step.description}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section className="py-4 md:py-8 grid md:grid-cols-2 gap-8 lg:gap-12 items-center container mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div 
-                className="relative min-h-[500px] flex items-center justify-center"
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.6 }}
-            >
-                <EarnByGamingIllustration offers={phoneCardOffers} isLoading={false} />
-            </motion.div>
-            <motion.div 
-                className="text-center md:text-left"
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.6 }}
-            >
-                <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
-                    Earn by playing <span className="text-primary">your favorite games</span>
-                </h2>
-                <p className="text-lg text-muted-foreground mb-8">Turn your gaming skills into cash. Discover new games, complete objectives, and get paid for your progress. It's that simple.</p>
-                <Button size="lg" onClick={() => {
-                        const event = new CustomEvent('open-signup');
-                        window.dispatchEvent(event);
-                    }}>
-                    Browse Game Offers <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-            </motion.div>
-        </section>
-
-        <section className="bg-background py-4 md:py-8">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-10">
-                    <h2 className="text-3xl md:text-5xl font-bold font-headline mb-4">
-                        Not your typical <span className="text-primary">rewards platform</span>
-                    </h2>
-                    <p className="text-muted-foreground">Here’s what makes Rewards Peak different from the rest.</p>
-                </div>
-                <div className="grid grid-cols-1 gap-y-12">
-                    {features.map((feature, index) => (
-                        <motion.div 
-                            key={feature.title}
-                            initial={{ opacity: 0, y: 50 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, amount: 0.3 }}
-                            transition={{ duration: 0.6 }}
-                            className="grid md:grid-cols-2 gap-8 md:gap-12 items-center"
-                        >
-                            <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
-                                <div className="w-80 h-80 flex items-center justify-center p-8">
-                                    {feature.illustration}
-                                </div>
-                            </div>
-                            <div className="text-center md:text-left">
-                                <div className="inline-flex items-center gap-3 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold mb-4">
-                                    <feature.icon className="w-4 h-4" />
-                                    <span>{feature.title}</span>
-                                </div>
-                                <h3 className="text-2xl md:text-3xl font-bold font-headline mb-4">{feature.title}</h3>
-                                <p className="text-muted-foreground text-lg">{feature.description}</p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
-        </section>
-        
-        <PaymentMethodsMarquee />
-
-        <section className="py-4 md:py-8 grid md:grid-cols-2 gap-8 items-center container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center md:text-left">
-                <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">What are you waiting for?</h2>
-                <p className="text-muted-foreground mb-6">Join the people getting paid right now!</p>
-                <Button size="lg" onClick={() => {
-                        const event = new CustomEvent('open-signup');
-                        window.dispatchEvent(event);
-                    }}>Start earning now</Button>
-            </div>
-            <div className="space-y-4">
-                {recentCashouts.length > 0 ? (
-                    recentCashouts.map((cashout, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, x: 50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: index * 0.2 }}
-                        >
-                            <Card className="bg-card/80 backdrop-blur-sm p-4">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4 overflow-hidden">
-                                        <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-card">
-                                            <cashout.icon className="w-6 h-6 text-muted-foreground" />
-                                        </div>
-                                        <div className="truncate">
-                                            <p className="font-bold text-sm truncate">{cashout.name}</p>
-                                            <p className="text-xs text-muted-foreground truncate">just cashed out <span className="font-bold text-primary">${cashout.amount.toFixed(2)}</span> via {cashout.currency}</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground flex-shrink-0 ml-2">{cashout.time}</p>
-                                </div>
-                            </Card>
-                        </motion.div>
-                    ))
-                ) : (
-                    <Card className="bg-card/80 backdrop-blur-sm p-8 text-center border-dashed">
-                        <p className="text-muted-foreground">The community feed is buzzing! <br/> Sign up to see live earnings.</p>
-                    </Card>
-                )}
-            </div>
-        </section>
-        
-        <section className="bg-card/20 py-4 md:py-8">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl md:text-4xl font-bold font-headline mb-2">
-                        Frequently Asked Questions
-                    </h2>
-                    <p className="text-muted-foreground">
-                        Have questions? We've got answers.
-                    </p>
-                </div>
-                <Accordion type="single" collapsible className="w-full space-y-4">
-                    {faqs.map((faq, index) => (
-                        <AccordionItem value={`item-${index}`} key={index} asChild>
-                            <Card className="bg-card/50 overflow-hidden transition-all hover:border-primary/50">
-                                <AccordionTrigger className="p-6 text-left">
-                                    {faq.question}
-                                </AccordionTrigger>
-                                <AccordionContent className="p-6 pt-0">
-                                    <div className="prose prose-invert prose-sm text-muted-foreground">
-                                        {faq.answer}
-                                    </div>
-                                </AccordionContent>
-                            </Card>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </div>
-        </section>
-
-      </main>
-
-      <footer className="relative bg-card mt-12 pt-16 pb-12">
-        <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]">
-            <svg
-                data-name="Layer 1"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 1200 120"
-                preserveAspectRatio="none"
-                className="relative block w-[calc(100%+1.3px)] h-[150px]"
-                style={{ filter: 'drop-shadow(0 -5px 5px rgba(0,0,0,0.1))' }}
-            >
-                <path
-                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31.74,904.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-                className="fill-card"
-                ></path>
-            </svg>
-        </div>
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="grid md:grid-cols-2 gap-10 text-center md:text-left">
-                <div>
-                    <Link href="/" className="inline-flex items-center justify-center md:justify-start gap-2 mb-4">
-                        <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={50} height={50} />
-                        <span className="text-2xl font-bold font-headline">Rewards Peak</span>
-                    </Link>
-                    <p className="text-muted-foreground text-base max-w-md mx-auto md:mx-0">
-                        Climb to the top with every reward you earn. Simple tasks, real money.
-                    </p>
-                </div>
-                <div>
-                    <h3 className="font-bold text-lg font-headline mb-4">Get in Touch</h3>
-                    <p className="text-muted-foreground text-base">
-                        For any inquiries or support, please email us at:
-                    </p>
-                    <a href="mailto:support@rewardspeak.com" className="text-primary hover:underline text-lg font-semibold">
-                        support@rewardspeak.com
-                    </a>
-                </div>
-            </div>
-            
-            <div className="border-t border-border/50 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-                <p>&copy; {new Date().getFullYear()} Rewards Peak. All rights reserved.</p>
-                <div className="flex gap-4">
-                    <Link href="/terms-of-the-peak" className="hover:text-primary transition-colors">Terms of Service</Link>
-                    <Link href="/privacy-trail" className="hover:text-primary transition-colors">Privacy Policy</Link>
-                </div>
-            </div>
-        </div>
-      </footer>
-    </div>
-  );
+    return (
+      <HomePageClient
+        featuredOffers={featuredOffers}
+        phoneCardOffers={phoneCardOffers}
+      />
+    );
 }
