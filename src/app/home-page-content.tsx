@@ -40,7 +40,6 @@ import { useSearchParams } from 'next/navigation';
 import { PaypalLogo, LitecoinLogo, UsdCoinLogo, BinanceCoinLogo, BitcoinLogo, EthereumLogo } from '@/components/illustrations/crypto-logos';
 import { OfferCarousel } from '@/components/offer-carousel';
 import { Card } from '@/components/ui/card';
-import { createSupabaseBrowserClient } from '@/utils/supabase/client';
 import { motion } from 'framer-motion';
 import { LogoutSuccessModal } from '@/components/logout-success-modal';
 import { TypewriterEffect } from '@/components/typewriter-effect';
@@ -141,52 +140,12 @@ const heroSentences = [
 ];
 
 
-export function HomePageContent() {
-  const [isClient, setIsClient] = React.useState(false);
+export function HomePageContent({ featuredOffers, phoneCardOffers }: { featuredOffers: any[], phoneCardOffers: any[] }) {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignupOpen, setIsSignupOpen] = React.useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
-  const [featuredOffers, setFeaturedOffers] = React.useState<any[]>([]);
-  const [phoneCardOffers, setPhoneCardOffers] = React.useState<any[]>([]);
-  const [isPhoneCardOffersLoading, setIsPhoneCardOffersLoading] = React.useState(true);
-
 
   const searchParams = useSearchParams();
-
-  React.useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-
-    async function fetchFeaturedOffers() {
-      const offerNames = ["raids shadow", "richie games", "upside", "bingo vacation", "crypto mine", "state of survival"];
-      const orFilter = offerNames.map(name => `name.ilike.%${name}%`).join(',');
-
-      try {
-        const { data, error } = await supabase
-          .from('all_offers')
-          .select('*')
-          .or(orFilter)
-          .limit(20);
-
-        if (error) throw error;
-        
-        const uniqueOffers = new Map();
-        offerNames.forEach(name => {
-          const bestMatch = data.find(offer => offer.name.toLowerCase().includes(name));
-          if (bestMatch && !uniqueOffers.has(bestMatch.offer_id)) {
-            uniqueOffers.set(bestMatch.offer_id, bestMatch);
-          }
-        });
-
-        setFeaturedOffers(Array.from(uniqueOffers.values()));
-        
-      } catch (error: any) {
-        console.error("Error fetching featured offers:", error.message || error);
-        setFeaturedOffers([]);
-      }
-    }
-    
-    fetchFeaturedOffers();
-  }, []);
 
   React.useEffect(() => {
     const event = searchParams.get('event');
@@ -195,49 +154,6 @@ export function HomePageContent() {
       window.history.replaceState({}, '', '/');
     }
   }, [searchParams]);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-  
-  React.useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-    
-    async function fetchOffersForIllustration() {
-      setIsPhoneCardOffersLoading(true);
-      try {
-        const offerNames = ["bitcoin tiles", "slot mate", "call of dragons", "fish of fortune"];
-        
-        const offerPromises = offerNames.map(name =>
-          supabase
-            .from('all_offers')
-            .select('name, image_url, categories, payout, offer_id')
-            .not('image_url', 'is', null)
-            .neq('image_url', '')
-            .ilike('name', `%${name}%`)
-            .order('payout', { ascending: false })
-            .limit(1)
-            .single()
-        );
-        
-        const results = await Promise.allSettled(offerPromises);
-        
-        const fetchedOffers = results
-          .map(result => (result.status === 'fulfilled' ? result.value.data : null))
-          .filter(Boolean);
-          
-        setPhoneCardOffers(fetchedOffers);
-
-      } catch (error: any) {
-        console.error("Error fetching offers for illustration:", error.message || error);
-        setPhoneCardOffers([]);
-      } finally {
-        setIsPhoneCardOffersLoading(false);
-      }
-    }
-
-    fetchOffersForIllustration();
-  }, []);
 
   const onSwitchForms = () => {
     setIsLoginOpen(!isLoginOpen);
@@ -387,7 +303,7 @@ export function HomePageContent() {
                 viewport={{ once: true, amount: 0.5 }}
                 transition={{ duration: 0.6 }}
             >
-                <EarnByGamingIllustration offers={phoneCardOffers} isLoading={isPhoneCardOffersLoading} />
+                <EarnByGamingIllustration offers={phoneCardOffers} isLoading={false} />
             </motion.div>
             <motion.div 
                 className="text-center md:text-left"
