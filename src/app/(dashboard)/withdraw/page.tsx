@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   PaypalLogo,
@@ -25,7 +24,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogOverlay
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +33,7 @@ import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { WithdrawalSuccessModal } from "@/components/withdrawal-success-modal";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { EmptyTreasureChest } from "@/components/illustrations/empty-treasure-chest";
+import { cn } from "@/lib/utils";
 
 type Withdrawal = {
   id: string;
@@ -45,31 +44,37 @@ type Withdrawal = {
 };
 
 const StatusBadge = ({ status }: { status: Withdrawal["status"] }) => {
+  const baseClasses = "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold";
+  
   if (status === "completed") {
     return (
-      <Badge className="bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600/30">
-        <CheckCircle className="mr-1 h-3 w-3" />
+      <div className={cn(baseClasses, "bg-secondary/10 text-secondary border border-secondary/20")}>
+        <CheckCircle className="h-3 w-3" />
         Completed
-      </Badge>
+      </div>
     );
   }
   if (status === "pending") {
     return (
-      <Badge variant="outline" className="text-foreground border-border">
-        <Clock className="mr-1 h-3 w-3" />
+      <div className={cn(baseClasses, "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20")}>
+        <Clock className="h-3 w-3" />
         Pending
-      </Badge>
+      </div>
     );
   }
   if (status === "rejected") {
     return (
-      <Badge variant="destructive">
-        <XCircle className="mr-1 h-3 w-3" />
+      <div className={cn(baseClasses, "bg-destructive/10 text-destructive border border-destructive/20")}>
+        <XCircle className="h-3 w-3" />
         Rejected
-      </Badge>
+      </div>
     );
   }
-  return <Badge variant="secondary">{status}</Badge>;
+  return (
+    <div className={cn(baseClasses, "bg-muted text-muted-foreground")}>
+      {status}
+    </div>
+  );
 };
 
 const withdrawalOptions = {
@@ -201,7 +206,6 @@ export default function CashOutCabinPage() {
       <PageHeader
         title="Cash-Out Cabin"
         description="Withdraw your earnings. 1,000 Points = $1.00 USD."
-        icon={Gift}
       />
 
       <WithdrawalSuccessModal
