@@ -1,6 +1,7 @@
 
 'use client';
 
+import React, { Suspense } from 'react';
 import {
     Card,
     CardContent,
@@ -11,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 
 const AuthErrorIllustration = () => (
     <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
@@ -51,8 +53,7 @@ const AuthErrorIllustration = () => (
     </div>
 );
 
-
-export default function AuthErrorPage() {
+function AuthErrorContent() {
     const searchParams = useSearchParams();
     const message = searchParams.get('message') || "An unknown error occurred. Please try again.";
 
@@ -75,5 +76,13 @@ export default function AuthErrorPage() {
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+export default function AuthErrorPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><WavingMascotLoader text="Loading..." /></div>}>
+            <AuthErrorContent />
+        </Suspense>
     );
 }
