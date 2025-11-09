@@ -14,10 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { useState, useEffect } from "react";
-import { Inbox, Send, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Inbox, Send, ChevronLeft, ChevronRight, Loader2, Paperclip } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { getSupportTickets } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 type TicketMessage = {
   id: string;
@@ -26,6 +27,7 @@ type TicketMessage = {
   user_id: string; // ID of the user who sent the message
   message: string;
   is_from_support: boolean;
+  attachment_url: string | null;
 };
 
 type Ticket = {
@@ -157,7 +159,14 @@ export default function SupportDashboardPage() {
                   {selectedTicket.messages.map((msg, index) => (
                     <div key={index} className={`flex ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                        <p className="text-sm">{msg.message}</p>
+                        <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                        {msg.attachment_url && (
+                          <div className="mt-2">
+                            <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="relative block w-48 h-48">
+                              <Image src={msg.attachment_url} alt="Attachment" layout="fill" className="rounded-md object-cover" />
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

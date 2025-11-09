@@ -496,50 +496,83 @@ export async function unbanUser(userId: string): Promise<{ success: boolean; err
 
 // New Server Actions for Support Tickets
 
-export async function createSupportTicket(payload: { subject: string, message: string }): Promise<{ success: boolean; error?: string }> {
-  const supabase = createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export async function createSupportTicket(formData: FormData): Promise<{ success: boolean; error?: string }> {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    return { success: false, error: "You must be logged in to submit a ticket." };
-  }
-
-  const adminSupabase = createSupabaseAdminClient();
-  
-  const { data: ticket, error: ticketError } = await adminSupabase
-    .from('support_tickets')
-    .insert({
-      user_id: user.id,
-      user_email: user.email,
-      subject: payload.subject,
-    })
-    .select()
-    .single();
-  
-  if (ticketError) {
-    console.error("Error creating support ticket:", ticketError);
-    return { success: false, error: "Could not create the ticket." };
-  }
-  
-  const { error: messageError } = await adminSupabase
-    .from('ticket_messages')
-    .insert({
-      ticket_id: ticket.id,
-      user_id: user.id,
-      message: payload.message,
-      is_from_support: false,
-    });
+    if (!user) {
+        return { success: false, error: "You must be logged in to submit a ticket." };
+    }
     
-  if (messageError) {
-    console.error("Error creating initial ticket message:", messageError);
-    // Best-effort to clean up orphan ticket
-    await adminSupabase.from('support_tickets').delete().eq('id', ticket.id);
-    return { success: false, error: "Could not save the ticket message." };
-  }
+    const subject = formData.get('subject') as string;
+    const message = formData.get('message') as string;
+    const attachment = formData.get('attachment') as File | null;
 
-  revalidatePath('/support/dashboard');
+    if (!subject || !message) {
+        return { success: false, error: "Subject and message are required." };
+    }
 
-  return { success: true };
+    const adminSupabase = createSupabaseAdminClient();
+    let attachmentUrl: string | null = null;
+    
+    // 1. Handle file upload if an attachment exists
+    if (attachment && attachment.size > 0) {
+        const fileExt = attachment.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await adminSupabase.storage
+            .from('support_attachments')
+            .upload(fileName, attachment);
+
+        if (uploadError) {
+            console.error("Error uploading support attachment:", uploadError);
+            return { success: false, error: "Failed to upload attachment." };
+        }
+        
+        const { data: urlData } = adminSupabase.storage
+            .from('support_attachments')
+            .getPublicUrl(fileName);
+            
+        attachmentUrl = urlData.publicUrl;
+    }
+
+    // 2. Create the ticket
+    const { data: ticket, error: ticketError } = await adminSupabase
+        .from('support_tickets')
+        .insert({
+            user_id: user.id,
+            user_email: user.email,
+            subject: subject,
+        })
+        .select()
+        .single();
+    
+    if (ticketError) {
+        console.error("Error creating support ticket:", ticketError);
+        return { success: false, error: "Could not create the ticket." };
+    }
+  
+    // 3. Create the initial message with the attachment URL
+    const { error: messageError } = await adminSupabase
+        .from('ticket_messages')
+        .insert({
+            ticket_id: ticket.id,
+            user_id: user.id,
+            message: message,
+            is_from_support: false,
+            attachment_url: attachmentUrl,
+        });
+        
+    if (messageError) {
+        console.error("Error creating initial ticket message:", messageError);
+        // Best-effort to clean up orphan ticket
+        await adminSupabase.from('support_tickets').delete().eq('id', ticket.id);
+        return { success: false, error: "Could not save the ticket message." };
+    }
+
+    revalidatePath('/support/dashboard');
+
+    return { success: true };
 }
 
 

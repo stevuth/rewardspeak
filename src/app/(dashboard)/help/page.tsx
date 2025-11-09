@@ -20,10 +20,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { createSupportTicket } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, MessageSquare, Search, Send } from 'lucide-react';
+import { Loader2, Mail, MessageSquare, Search, Send, Paperclip, X } from 'lucide-react';
+import Image from "next/image";
 
 const faqs = [
     {
@@ -49,25 +50,59 @@ const faqs = [
 ];
 
 export default function HelpPage() {
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Please select an image smaller than 5MB.",
+        });
+        return;
+      }
+      setAttachment(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAttachment = () => {
+    setAttachment(null);
+    setPreview(null);
+    if (formRef.current) {
+        const fileInput = formRef.current.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+    }
+  }
+
+  const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
     
-    const result = await createSupportTicket({ subject, message });
+    if (attachment) {
+      formData.append('attachment', attachment);
+    }
+    
+    const result = await createSupportTicket(formData);
 
     if (result.success) {
       toast({
         title: "Ticket Submitted!",
         description: "Our support team will get back to you shortly.",
       });
-      setSubject('');
-      setMessage('');
+      formRef.current?.reset();
+      removeAttachment();
     } else {
       toast({
         variant: "destructive",
@@ -140,7 +175,7 @@ export default function HelpPage() {
                   <h2 className="text-2xl font-bold font-headline">Still need help?</h2>
                   <p className="text-muted-foreground">Send us a message and we'll get back to you.</p>
               </div>
-              <form onSubmit={handleSubmit}>
+              <form action={handleSubmit} ref={formRef}>
                 <Card className="overflow-hidden border-2 border-primary/20 shadow-lg shadow-primary/10">
                   <CardHeader className="bg-gradient-to-br from-primary/10 to-card">
                     <CardTitle className="flex items-center gap-2 font-headline text-xl">
@@ -155,23 +190,33 @@ export default function HelpPage() {
                     <div className="space-y-2">
                       <Label htmlFor="subject">Subject</Label>
                       <Input 
-                        id="subject" 
+                        id="subject"
+                        name="subject"
                         placeholder="e.g., Issue with an offer" 
-                        value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
                         required
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="message">Message</Label>
                       <Textarea 
-                        id="message" 
+                        id="message"
+                        name="message"
                         placeholder="Describe your issue in detail..." 
                         className="min-h-[150px]"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
                         required
                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="attachment">Attach Image (Optional)</Label>
+                        <Input id="attachment" type="file" onChange={handleFileChange} accept="image/png, image/jpeg, image/gif" className="file:text-primary file:font-semibold" />
+                        {preview && (
+                            <div className="relative w-32 h-32 mt-2">
+                                <Image src={preview} alt="Attachment preview" layout="fill" className="rounded-md object-cover" />
+                                <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={removeAttachment}>
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        )}
                     </div>
                   </CardContent>
                   <CardFooter className="bg-card/50">
