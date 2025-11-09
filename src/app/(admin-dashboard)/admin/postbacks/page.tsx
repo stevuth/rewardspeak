@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
@@ -90,6 +90,7 @@ export default function PostbacksPage() {
         <PageHeader
           title="Postback History"
           description={`A log of all successful offer completions. Page ${currentPage} of ${totalPages}.`}
+          icon={ClipboardList}
         />
 
       <Card>

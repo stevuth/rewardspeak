@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { useState, useEffect, useTransition } from "react";
-import { Inbox, Send, ChevronLeft, ChevronRight, Loader2, Paperclip, Bot } from "lucide-react";
+import { Inbox, Send, ChevronLeft, ChevronRight, Loader2, Paperclip, Bot, LifeBuoy } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { getSupportTickets, addSupportReply, getTicketTemplates, updateTicketStatus } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
@@ -199,6 +199,7 @@ export default function SupportDashboardPage() {
       <PageHeader
         title="Support Center"
         description="Respond to user inquiries and manage support tickets."
+        icon={LifeBuoy}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-220px)]">

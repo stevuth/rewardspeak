@@ -9,7 +9,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ChevronRight, Loader2 } from "lucide-react";
+import { CheckCircle, ChevronRight, Loader2, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -231,6 +231,7 @@ export default function DashboardPage() {
       <PageHeader
         title="Dashboard"
         description={welcomeMessage}
+        icon={LayoutDashboard}
       />
       
       <div className="space-y-8">

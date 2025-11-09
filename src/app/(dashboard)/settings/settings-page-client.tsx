@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Globe, CalendarDays, Fingerprint, Loader2 } from "lucide-react";
+import { Globe, CalendarDays, Fingerprint, Loader2, Settings } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { AvatarUploader } from "@/components/avatar-uploader";
@@ -94,6 +94,7 @@ export function SettingsPageClient({ user, profileData }: { user: any, profileDa
             <PageHeader
                 title="My Peak Profile"
                 description="Manage your account settings."
+                icon={Settings}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
+import { UserPlus } from "lucide-react";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -73,6 +74,7 @@ export default async function TopReferralsPage() {
       <PageHeader
         title="Top Referrals Leaderboard"
         description="See who is driving the most growth through referrals, ranked by lifetime referral earnings."
+        icon={UserPlus}
       />
       
       <Card>

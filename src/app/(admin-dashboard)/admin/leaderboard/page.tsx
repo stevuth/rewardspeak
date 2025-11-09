@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Medal } from "lucide-react";
+import { Crown, Medal, Trophy } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -117,6 +117,7 @@ export default async function AdminLeaderboardPage() {
       <PageHeader
         title="Top Earners Leaderboard"
         description="See who's at the peak of the earnings leaderboard based on current points."
+        icon={Trophy}
       />
       
       {topThree.length >= 3 ? (

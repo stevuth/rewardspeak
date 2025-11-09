@@ -95,6 +95,7 @@ export default function InviteAndClimbPage() {
       <PageHeader
         title="Invite & Earn"
         description="Share your code to earn a percentage of what your friends make, for life."
+        icon={Users}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

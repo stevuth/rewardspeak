@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Loader2, Percent, ListTodo } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Loader2, Percent, ListTodo, List } from "lucide-react";
 import { OfferDetailsRow } from "./offer-details-row";
 import { syncOffers, getOfferPayoutPercentage, updateOfferPayoutPercentage, getOfferDisplayLimit, updateOfferDisplayLimit } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
@@ -230,6 +230,7 @@ export default function ManageOffersPage() {
         <PageHeader
           title="Manage Offers"
           description={`Showing page ${currentPage} of ${totalPages}. Total offers: ${count}.`}
+          icon={List}
         />
         <Button onClick={handleSyncOffers} disabled={isSyncing}>
           <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />

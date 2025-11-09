@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 import { Badge } from '@/components/ui/badge';
-import { User, Fingerprint } from 'lucide-react';
+import { User, Fingerprint, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type SuspiciousUser = {
@@ -69,6 +69,7 @@ export default function FraudDetectionPage() {
             <PageHeader
                 title="Fraud Detection Center"
                 description="This tool identifies potential fraudulent activity, such as multiple users on one IP address."
+                icon={ShieldAlert}
             />
             {sharedIpGroups.length > 0 ? (
                 <div>

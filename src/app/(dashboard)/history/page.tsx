@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { popularOffers, type Offer } from "@/lib/mock-data";
-import { CheckCircle, Clock, XCircle } from "lucide-react";
+import { CheckCircle, Clock, XCircle, History } from "lucide-react";
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -112,6 +112,7 @@ export default function HistoryPage() {
       <PageHeader
         title="Offers Log"
         description="Review your completed, pending, and rejected offers."
+        icon={History}
       />
       <Card>
         <CardHeader>

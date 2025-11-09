@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { updateFeaturedContent, getFeaturedContent } from "@/app/actions";
-import { Loader2 } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 export default function FeaturedContentPage() {
@@ -95,6 +95,7 @@ export default function FeaturedContentPage() {
       <PageHeader
         title="Manage Featured Content"
         description="Manually set the offers that appear in the 'Featured' and 'Top Converting' sections."
+        icon={Star}
       />
       <Card>
         <CardHeader>

@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Search, X } from "lucide-react";
+import { Search, X, Users } from "lucide-react";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { UserDetailsRow } from "./user-details-row";
 import type { UserProfile } from "@/app/api/get-all-users/route";
@@ -66,6 +66,7 @@ export default function ManageUsersPage() {
       <PageHeader
         title="Manage Users"
         description={`A total of ${filteredUsers.length} users match the current filters.`}
+        icon={Users}
       />
       <Card>
         <CardHeader>

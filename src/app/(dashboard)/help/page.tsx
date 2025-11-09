@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, useTransition, useRef } from 'react';
 import { createSupportTicket, addSupportReply } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Send, Mail, Inbox, MessageSquare, Paperclip } from 'lucide-react';
+import { Loader2, Send, Mail, Inbox, MessageSquare, Paperclip, CircleHelp } from 'lucide-react';
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
@@ -192,6 +192,7 @@ export default function HelpPage() {
                 <PageHeader
                     title="Help Center"
                     description="Get help or create a new support ticket. We're here to assist you on your climb."
+                    icon={CircleHelp}
                 />
             </div>
             <div className="hidden md:flex justify-center items-center">

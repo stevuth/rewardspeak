@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, Check, X, Search, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Check, X, Search, Download, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { getWithdrawalRequests, updateWithdrawalRequestStatus, updateBulkWithdrawalRequestStatus, getAllWithdrawalRequestsForCSV } from "@/app/actions";
@@ -233,6 +233,7 @@ export default function WithdrawalRequestsPage() {
       <PageHeader
         title="Withdrawal Requests"
         description={`Manage and approve user withdrawal requests. Page ${currentPage} of ${totalPages}.`}
+        icon={Gift}
       />
 
        <Card>

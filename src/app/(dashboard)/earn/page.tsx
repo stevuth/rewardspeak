@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { Input } from "@/components/ui/input";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, Mountain } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
@@ -268,6 +268,7 @@ export default function EarnPage() {
       <PageHeader
         title="Earn"
         description="Main earning hub that leads to all available earning opportunities."
+        icon={Mountain}
       />
       
       <div className="relative">

@@ -1,7 +1,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { List, Users, Star, Gift, Trophy, UserPlus, Eye, ClipboardList } from "lucide-react";
+import { List, Users, Star, Gift, Trophy, UserPlus, Eye, ClipboardList, LayoutDashboard } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -81,6 +81,7 @@ export default async function AdminPortalPage() {
       <PageHeader
         title="Admin Portal"
         description="Welcome to the control center. Manage your application here."
+        icon={LayoutDashboard}
       />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>

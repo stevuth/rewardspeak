@@ -24,7 +24,7 @@ import {
   PaypalLogo,
   UsdtLogo,
 } from "@/components/illustrations/crypto-logos";
-import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign, X } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign, X, Gift } from "lucide-react";
 import { WithdrawalCard } from "@/components/withdrawal-card";
 import {
   Dialog,
@@ -188,6 +188,7 @@ export default function CashOutCabinPage() {
       <PageHeader
         title="Cash-Out Cabin"
         description="Withdraw your earnings. 1,000 Points = $1.00 USD."
+        icon={Gift}
       />
 
       <WithdrawalSuccessModal

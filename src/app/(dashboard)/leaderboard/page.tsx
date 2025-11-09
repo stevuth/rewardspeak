@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Medal } from "lucide-react";
+import { Crown, Medal, Trophy } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
@@ -119,6 +119,7 @@ export default async function TopEarnersPage() {
       <PageHeader
         title="Peak Performers"
         description="A salute to our top earners. See who's leading the pack on the climb to the top."
+        icon={Trophy}
       />
       
       {topThree.length >= 3 ? (
