@@ -259,7 +259,6 @@ export default function SupportDashboardPage() {
                             {isUpdatingStatus ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             {selectedTicket.status === 'open' ? 'Close Ticket' : 'Re-open Ticket'}
                         </Button>
-                        <Button variant="destructive" size="sm">Ban User</Button>
                     </div>
                   </div>
                 </CardHeader>
