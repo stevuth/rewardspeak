@@ -1,4 +1,3 @@
-
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -19,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AnimatedCounter } from "@/components/animated-counter";
-import { withdrawalMethods } from "@/lib/mock-data";
 import { Wallet } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -53,14 +51,7 @@ export default function CashOutCabinPage() {
                     <SelectValue placeholder="Select a method" />
                   </SelectTrigger>
                   <SelectContent>
-                    {withdrawalMethods.map((method) => (
-                      <SelectItem key={method.name} value={method.name}>
-                        <span className="flex items-center gap-2">
-                          {method.name} (Min: {method.min.toLocaleString()}{" "}
-                          pts)
-                        </span>
-                      </SelectItem>
-                    ))}
+                    {/* Withdrawal methods would be populated here */}
                   </SelectContent>
                 </Select>
               </div>
