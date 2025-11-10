@@ -11,25 +11,25 @@ export async function GET(request: NextRequest) {
   const supabase = createSupabaseAdminClient();
 
   const userIdParam = nextUrl.searchParams.get('user_id');
-  const userAmountParam = nextUrl.searchParams.get('amount'); // User's share (e.g., 1.2)
-  const totalPayoutParam = nextUrl.searchParams.get('payout'); // Total payout (e.g., 2)
+  const userAmountParam = nextUrl.searchParams.get('amount'); // User's share
+  const totalPayoutParam = nextUrl.searchParams.get('payout'); // Total payout
   const txnId = nextUrl.searchParams.get('txn_id');
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name') || 'N/A';
   
-  if (!userIdParam || !userAmountParam) {
-    console.warn('[POSTBACK_WARNING] Missing user_id or amount. Cannot process postback.', { url: fullUrl });
+  if (!userIdParam) {
+    console.warn('[POSTBACK_WARNING] Missing user_id. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
-  
-  const userAmountFloat = parseFloat(userAmountParam);
-  if (isNaN(userAmountFloat)) {
-    console.warn('[POSTBACK_WARNING] Invalid user amount value received. Cannot parse to a number.', { amount: userAmountParam });
-    return new NextResponse('1', { status: 200 });
-  }
 
-  // Parse the total payout, defaulting to 0 if it's not present or invalid
-  const totalPayoutFloat = parseFloat(totalPayoutParam || '0');
+  // **Critical Fix:** Ensure all numeric values are properly parsed and default to 0 if missing or invalid.
+  const amountAsFloat = parseFloat(userAmountParam || '0');
+  const payoutAsFloat = parseFloat(totalPayoutParam || '0');
+
+  if (isNaN(amountAsFloat) || isNaN(payoutAsFloat)) {
+      console.error('[POSTBACK_ERROR] Invalid numeric value received for amount or payout.', { userAmountParam, totalPayoutParam });
+      return new NextResponse('1', { status: 200 });
+  }
 
   try {
     const { data: profile, error: profileError } = await supabase
@@ -69,8 +69,8 @@ export async function GET(request: NextRequest) {
       .from('transactions')
       .insert({
         user_id: actualUserId,
-        amount_usd: userAmountFloat,      // User's share from 'amount'
-        payout_usd: totalPayoutFloat,     // Total payout from 'payout'
+        amount_usd: amountAsFloat,
+        payout_usd: payoutAsFloat,
         offer_id: offerId,
         offer_name: offerName,
         txn_id: txnId,
@@ -80,6 +80,8 @@ export async function GET(request: NextRequest) {
 
     if (transactionError) {
       console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${actualUserId}`, transactionError);
+       // Return a 500 error to indicate failure to the offerwall if logging fails
+      return new NextResponse('Error logging transaction', { status: 500 });
     } else {
       console.log(`[POSTBACK_SUCCESS] Logged transaction for user ${actualUserId}.`);
     }
