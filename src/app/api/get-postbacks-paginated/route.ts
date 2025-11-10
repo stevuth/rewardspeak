@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         offer_name,
         points,
         user_id,
-        payout_usd,
+        amount_usd,
         postback_url
       `, { count: 'exact' })
       .order('created_at', { ascending: false })

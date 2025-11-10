@@ -35,7 +35,7 @@ type Transaction = {
   offer_name: string;
   points: number;
   user_email: string;
-  payout_usd: number;
+  amount_usd: number;
   postback_url: string;
 };
 
@@ -147,7 +147,7 @@ export default function PostbacksPage() {
                 <TableHead>Offer Name</TableHead>
                 <TableHead>Offer ID</TableHead>
                 <TableHead>Points</TableHead>
-                <TableHead>Payout (USD)</TableHead>
+                <TableHead>Amount (USD)</TableHead>
                 <TableHead>Txn ID</TableHead>
               </TableRow>
             </TableHeader>
@@ -170,7 +170,7 @@ export default function PostbacksPage() {
                         <Badge variant="secondary" className="font-mono">{tx.offer_id || 'N/A'}</Badge>
                     </TableCell>
                     <TableCell className="font-bold text-primary">{tx.points?.toLocaleString()}</TableCell>
-                    <TableCell className="font-semibold text-muted-foreground">${(tx.payout_usd || 0).toFixed(2)}</TableCell>
+                    <TableCell className="font-semibold text-muted-foreground">${(tx.amount_usd || 0).toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">{tx.txn_id || 'N/A'}</Badge>
                     </TableCell>
