@@ -12,35 +12,39 @@ export async function GET(request: NextRequest) {
   const to = from + limit - 1;
 
   try {
-    // Step 1: Fetch transactions with a minimal, safe set of columns
+    // Select the core fields that we know exist, and add user_payout_usd which we want.
+    // If user_payout_usd doesn't exist, Supabase will return an error, but we'll handle it.
+    // For now, we assume it does exist based on the user's request.
     const { data: transactions, error, count } = await supabase
       .from('transactions')
       .select(`
         id,
         created_at,
         txn_id,
+        offer_id,
         offer_name,
         points_credited,
-        user_id
+        user_payout_usd,
+        user_id,
+        postback_url
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);
 
     if (error) {
       console.error("API route get-postbacks-paginated error (step 1):", error);
-      throw error;
+      // It's likely the column 'user_payout_usd' doesn't exist. We'll return an error response.
+      return NextResponse.json({ error: `Database query failed: ${error.message}` }, { status: 500 });
     }
 
     if (!transactions || transactions.length === 0) {
         return NextResponse.json({ transactions: [], count: 0 });
     }
 
-    // Step 2: Gather unique user IDs
     const userIds = [...new Set(transactions.map(tx => tx.user_id).filter(Boolean))];
 
     let emailMap = new Map<string, string>();
 
-    // Step 3: Fetch corresponding profiles
     if (userIds.length > 0) {
         const { data: profiles, error: profileError } = await supabase
             .from('profiles')
@@ -54,7 +58,6 @@ export async function GET(request: NextRequest) {
         }
     }
     
-    // Step 4: Combine the data
     const combinedData = transactions.map(tx => ({
         ...tx,
         user_email: tx.user_id ? emailMap.get(tx.user_id) || 'N/A' : 'N/A',
