@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
   const supabase = createSupabaseAdminClient();
 
   const userIdParam = nextUrl.searchParams.get('user_id');
-  const userAmountParam = nextUrl.searchParams.get('amount'); // User's share
-  const totalPayoutParam = nextUrl.searchParams.get('payout'); // Total payout
   const txnId = nextUrl.searchParams.get('txn_id');
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name') || 'N/A';
@@ -22,16 +20,9 @@ export async function GET(request: NextRequest) {
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
 
-  // **Critical Fix:** Ensure all numeric values are properly parsed and default to 0 if missing or invalid.
-  const amountAsFloat = parseFloat(userAmountParam || '0');
-  const payoutAsFloat = parseFloat(totalPayoutParam || '0');
-
-  if (isNaN(amountAsFloat) || isNaN(payoutAsFloat)) {
-      console.error('[POSTBACK_ERROR] Invalid numeric value received for amount or payout.', { userAmountParam, totalPayoutParam });
-      return new NextResponse('1', { status: 200 });
-  }
-
   try {
+    // Note: The incoming user_id is the short, public-facing referral code (from the profiles.id column).
+    // We must look up the actual Supabase auth user ID (profiles.user_id) to credit the correct user.
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('user_id')
@@ -44,7 +35,7 @@ export async function GET(request: NextRequest) {
     }
     const actualUserId = profile.user_id;
     
-    // Check for duplicate transaction ID
+    // Check for duplicate transaction ID to prevent double-crediting
     if (txnId) {
         const { count, error: txnCheckError } = await supabase
             .from('transactions')
@@ -57,25 +48,21 @@ export async function GET(request: NextRequest) {
         }
 
         if (count && count > 0) {
-            console.log(`[POSTBACK_DUPLICATE] Duplicate txn_id received: ${txnId}. Acknowledging without crediting.`);
+            console.log(`[POSTBACK_DUPLICATE] Duplicate txn_id received: ${txnId}. Acknowledging without processing.`);
             return new NextResponse('1', { status: 200 });
         }
     } else {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
     
-    // Log the transaction with the exact values from the postback
+    // Log the transaction with only the columns that exist in the table.
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
         user_id: actualUserId,
-        amount_usd: amountAsFloat,
-        payout_usd: payoutAsFloat,
         offer_id: offerId,
         offer_name: offerName,
-        txn_id: txnId,
-        ip_address: requestIp,
-        postback_url: fullUrl,
+        txn_id: txnId
       });
 
     if (transactionError) {
