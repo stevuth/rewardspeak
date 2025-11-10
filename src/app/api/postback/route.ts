@@ -15,16 +15,23 @@ export async function GET(request: NextRequest) {
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name') || 'N/A';
   
-  // Robustly parse amount and payout, defaulting to 0 if null, undefined, or empty string.
   const userAmountParam = nextUrl.searchParams.get('amount');
   const totalPayoutParam = nextUrl.searchParams.get('payout');
   
-  const userAmount = userAmountParam ? parseFloat(userAmountParam) : 0;
-  const totalPayout = totalPayoutParam ? parseFloat(totalPayoutParam) : 0;
+  // Strict validation: Ensure we always have a valid number, defaulting to 0.
+  let userAmount = parseFloat(userAmountParam || '0');
+  if (!isFinite(userAmount)) {
+    userAmount = 0;
+  }
+  
+  let totalPayout = parseFloat(totalPayoutParam || '0');
+  if (!isFinite(totalPayout)) {
+    totalPayout = 0;
+  }
 
   if (!userIdParam) {
     console.warn('[POSTBACK_WARNING] Missing user_id. Cannot process postback.', { url: fullUrl });
-    return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
+    return new NextResponse('1', { status: 200 });
   }
 
   try {
@@ -58,7 +65,7 @@ export async function GET(request: NextRequest) {
     } else {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
-    
+
     const transactionData = {
       user_id: actualUserId,
       offer_id: offerId,
