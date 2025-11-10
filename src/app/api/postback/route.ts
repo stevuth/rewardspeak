@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
     }
 
     const transactionData = {
-      id: randomUUID(), // Generate a unique ID for the primary key
+      id: randomUUID(),
       user_id: actualUserId,
       offer_id: offerId,
       offer_name: offerName,
@@ -83,10 +83,14 @@ export async function GET(request: NextRequest) {
       .insert(transactionData);
 
     if (transactionError) {
-      console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${actualUserId}`, {
-        error: transactionError,
-        data: transactionData
+      console.error('❌ Supabase Insert Error:', {
+        message: transactionError.message,
+        details: transactionError.details,
+        hint: transactionError.hint,
+        code: transactionError.code,
       });
+      console.error('📦 Attempted data:', JSON.stringify(transactionData, null, 2));
+
       return new NextResponse('Error logging transaction', { status: 500 });
     } else {
       console.log(`[POSTBACK_SUCCESS] Logged transaction for user ${actualUserId}.`);
