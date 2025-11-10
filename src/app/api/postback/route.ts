@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
   // Robustly parse numbers, defaulting to 0 if invalid or missing.
   const userAmount = parseFloat(userAmountParam || '0');
   const totalPayout = parseFloat(totalPayoutParam || '0');
+
+  // Explicitly check for NaN after parsing
   const finalUserAmount = isFinite(userAmount) ? userAmount : 0;
   const finalTotalPayout = isFinite(totalPayout) ? totalPayout : 0;
 
@@ -37,7 +39,7 @@ export async function GET(request: NextRequest) {
   try {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('user_id, points')
+      .select('*')
       .eq('user_id', userIdParam)
       .single();
 
@@ -74,11 +76,9 @@ export async function GET(request: NextRequest) {
       payout_usd: finalTotalPayout,
     };
 
-    const { data, error: transactionError } = await supabase
+    const { error: transactionError } = await supabase
       .from('transactions')
-      .insert(transactionData)
-      .select()
-      .single();
+      .insert(transactionData);
 
     if (transactionError) {
       console.error('❌ Supabase Insert Error:', {
@@ -110,9 +110,42 @@ export async function GET(request: NextRequest) {
                 hint: updateError.hint,
                 code: updateError.code
             });
-            // Note: The transaction is logged, but points failed. This should be monitored.
         } else {
             console.log(`[POINTS_SUCCESS] Credited ${pointsToCredit} points to user ${actualUserId}. New balance: ${newTotalPoints}.`);
+
+            // --- Start: Referral Logic ---
+            if (profile.referred_by) {
+                console.log(`User ${actualUserId} was referred by ${profile.referred_by}. Calculating referral bonus.`);
+                
+                // Find the referrer's profile using the referral code (which is the profile 'id')
+                const { data: referrerProfile, error: referrerError } = await supabase
+                    .from('profiles')
+                    .select('user_id, points, referral_earnings')
+                    .eq('id', profile.referred_by)
+                    .single();
+
+                if (referrerError || !referrerProfile) {
+                    console.error(`[REFERRAL_ERROR] Could not find referrer profile with ID: ${profile.referred_by}`, referrerError);
+                } else {
+                    const referralBonus = Math.round(pointsToCredit * 0.10);
+                    if (referralBonus > 0) {
+                        const newReferrerPoints = (referrerProfile.points || 0) + referralBonus;
+                        const newReferralEarnings = (referrerProfile.referral_earnings || 0) + referralBonus;
+
+                        const { error: referrerUpdateError } = await supabase
+                            .from('profiles')
+                            .update({ points: newReferrerPoints, referral_earnings: newReferralEarnings })
+                            .eq('user_id', referrerProfile.user_id);
+                        
+                        if (referrerUpdateError) {
+                            console.error(`❌ Referral Points Update Error for referrer ${referrerProfile.user_id}:`, referrerUpdateError);
+                        } else {
+                            console.log(`[REFERRAL_SUCCESS] Credited ${referralBonus} referral points to user ${referrerProfile.user_id}.`);
+                        }
+                    }
+                }
+            }
+            // --- End: Referral Logic ---
         }
     }
     // --- End: Update user points directly ---
