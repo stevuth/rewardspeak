@@ -35,8 +35,9 @@ export async function GET(request: NextRequest) {
   const payoutUsd = parseFloat(payout || '0');
 
   try {
+    // Check for duplicate transaction ID
     if (txnId) {
-        const { data: existingTxns, error: txnCheckError } = await supabase
+        const { data: existingTxn, error: txnCheckError } = await supabase
             .from('transactions')
             .select('id')
             .eq('txn_id', txnId)
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
             return new NextResponse('Internal Server Error while checking transaction', { status: 500 });
         }
 
-        if (existingTxns && existingTxns.length > 0) {
+        if (existingTxn && existingTxn.length > 0) {
             console.log(`[POSTBACK_DUPLICATE] Duplicate txn_id received: ${txnId}. Acknowledging without crediting.`);
             return new NextResponse('1', { status: 200 });
         }
@@ -55,53 +56,29 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    if (userId && pointsCredited > 0) {
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('user_id, points')
-            .eq('user_id', userId)
-            .single();
-
-        if (profileError || !profile) {
-            console.warn(`[POSTBACK_INVALID_USER] User with user_id ${userId} not found. Skipping credit, but logging transaction.`);
-        } else {
-            // --- Direct Logic Implementation ---
-            // 1. Update user's points
-            const newPoints = (profile.points || 0) + pointsCredited;
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({ points: newPoints })
-                .eq('user_id', userId);
-
-            if (updateError) {
-                console.error(`[POSTBACK_DB_ERROR] Failed to update points for user ${userId}:`, updateError);
-                // Even if points update fails, we still log the transaction attempt
-            } else {
-                console.log(`[POSTBACK_SUCCESS] Credited ${pointsCredited} points to user ${userId}. New balance: ${newPoints}.`);
-            }
-        }
-    } else {
-        console.warn(`[POSTBACK_INFO] Skipping user credit. Missing userId or amount is zero. UserID: ${userId}, Amount: ${pointsCredited}.`);
-    }
-
-    // Always log the transaction, regardless of whether the user was credited.
-    const { error: logError } = await supabase.from('transactions').insert({
-        user_id: userId,
-        points_credited: pointsCredited,
-        txn_id: txnId,
-        offer_id: offerId,
-        offer_name: offerName,
-        payout_usd: payoutUsd,
-        postback_url: fullUrl,
-        ip_address: requestIp,
-        status: userId && pointsCredited > 0 ? 'credited' : 'uncredited',
+    // Call the RPC function to credit points and log the transaction in one go.
+    const { error: rpcError } = await supabase.rpc('credit_user_points', {
+      p_user_id: userId,
+      p_points_to_add: pointsCredited,
+      p_txn_id: txnId,
+      p_offer_id: offerId,
+      p_offer_name: offerName,
+      p_payout_usd: payoutUsd,
+      p_postback_url: fullUrl,
+      p_ip_address: requestIp,
     });
-
-    if (logError) {
-        console.error('[POSTBACK_DB_ERROR] Failed to log transaction:', logError);
-        // Do not fail the request here, as logging is secondary to acknowledging the postback.
+    
+    if (rpcError) {
+      // The RPC function handles cases where the user doesn't exist.
+      // Any error here is unexpected.
+      console.error('[POSTBACK_RPC_ERROR] Error executing credit_user_points RPC:', rpcError);
+      // Even with an error, we must return a success status to Notik.
+      // The error is logged for internal review.
+    } else {
+      console.log(`[POSTBACK_SUCCESS] RPC credit_user_points executed for user ${userId} with ${pointsCredited} points.`);
     }
 
+    // Always acknowledge the postback with a '1' to prevent retries.
     return new NextResponse('1', { status: 200 });
 
   } catch (error) {
