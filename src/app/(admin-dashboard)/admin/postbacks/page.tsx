@@ -33,8 +33,8 @@ type Transaction = {
   txn_id: string;
   offer_name: string;
   user_payout_usd: number; // User's earnings in USD
-  offer_payout_usd: number; // Original offer payout
-  points_credited: number; // Points user received
+  offer_payout_usd: number; // Original offer payout from partner
+  points_credited: number;
   user_email: string;
   postback_url: string;
 };
@@ -96,7 +96,6 @@ export default function PostbacksPage() {
     toast({
       title: "Copied to clipboard!",
       description: "Postback URL is ready to be used.",
-      icon: <Check className="text-green-500" />,
     });
   };
 
