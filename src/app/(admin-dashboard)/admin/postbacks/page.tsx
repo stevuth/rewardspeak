@@ -34,8 +34,8 @@ type Transaction = {
   offer_id: string;
   offer_name: string;
   amount: number;
-  payout_usd: number;
   user_email: string;
+  payout_usd: number;
   postback_url: string;
 };
 
@@ -55,6 +55,13 @@ export default function PostbacksPage() {
   const postbackUrl = "https://rewardspeak.com/api/postback";
 
   const fetchTransactions = useCallback(async () => {
+    // Prevent fetching if we know the page is invalid from a previous load
+    if (totalPages > 0 && currentPage > totalPages) {
+        setIsLoading(false);
+        setTransactions([]);
+        return;
+    }
+    
     setIsLoading(true);
     
     const params = new URLSearchParams();
@@ -80,7 +87,7 @@ export default function PostbacksPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, toast]);
+  }, [currentPage, toast, totalPages]);
 
   useEffect(() => {
     fetchTransactions();
@@ -104,7 +111,7 @@ export default function PostbacksPage() {
     <div className="space-y-8">
         <PageHeader
           title="Postback History"
-          description={`A log of all successful offer completions. Page ${currentPage} of ${totalPages}.`}
+          description={`A log of all successful offer completions. Page ${currentPage} of ${totalPages || 1}.`}
         />
       
       <Card>
