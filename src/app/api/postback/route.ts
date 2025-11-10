@@ -78,13 +78,14 @@ export async function GET(request: NextRequest) {
       .from('transactions')
       .insert({
         user_id: userId,
+        amount_usd: payoutAsFloat,
         payout_usd: payoutAsFloat,
         offer_id: offerId,
         offer_name: offerName,
         txn_id: txnId,
         ip_address: requestIp,
         postback_url: fullUrl,
-        amount: Math.round(payoutAsFloat * 1000), // Storing points in the amount column
+        points: Math.round(payoutAsFloat * 1000), // Storing points in the points column
       });
 
     if (transactionError) {
