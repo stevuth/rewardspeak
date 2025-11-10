@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, ClipboardList, Copy, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
@@ -31,10 +31,12 @@ type Transaction = {
   id: number;
   created_at: string;
   txn_id: string;
+  offer_id: string;
   offer_name: string;
   points_credited: number;
-  payout_usd: number;
   user_email: string;
+  amount: number; // User's reward in USD
+  payout: number; // Original payout from the partner in USD
   postback_url: string;
 };
 
@@ -63,7 +65,8 @@ export default function PostbacksPage() {
     try {
       const response = await fetch(`/api/get-postbacks-paginated?${params.toString()}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch transactions");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch transactions");
       }
       const { transactions: fetchedTransactions, count: totalCount } = await response.json();
       setTransactions(fetchedTransactions);
@@ -73,7 +76,7 @@ export default function PostbacksPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not fetch postback history.",
+        description: error instanceof Error ? error.message : "Could not fetch postback history.",
       });
     } finally {
       setIsLoading(false);
@@ -95,7 +98,6 @@ export default function PostbacksPage() {
     toast({
       title: "Copied to clipboard!",
       description: "Postback URL is ready to be used.",
-      icon: <Check className="text-green-500" />,
     });
   };
 
@@ -137,16 +139,17 @@ export default function PostbacksPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>User Email</TableHead>
                 <TableHead>Offer Name</TableHead>
-                <TableHead>Points</TableHead>
-                <TableHead>Payout (USD)</TableHead>
+                <TableHead>Offer ID</TableHead>
+                <TableHead>Offer Payout (USD)</TableHead>
+                <TableHead>Amount (USD)</TableHead>
+                <TableHead>Points Credited</TableHead>
                 <TableHead>Txn ID</TableHead>
-                <TableHead>Postback URL</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-64">
+                  <TableCell colSpan={8} className="text-center h-64">
                     <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
@@ -158,19 +161,20 @@ export default function PostbacksPage() {
                     </TableCell>
                     <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
                     <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
-                    <TableCell className="font-bold text-secondary">{tx.points_credited?.toLocaleString()}</TableCell>
-                    <TableCell>${tx.payout_usd?.toFixed(4)}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-mono">{tx.txn_id}</Badge>
+                        <Badge variant="secondary" className="font-mono">{tx.offer_id || 'N/A'}</Badge>
                     </TableCell>
-                    <TableCell className="max-w-sm truncate text-xs text-muted-foreground">
-                        {tx.postback_url}
+                    <TableCell>${tx.payout?.toFixed(2)}</TableCell>
+                    <TableCell className="font-bold text-secondary">${tx.amount?.toFixed(2)}</TableCell>
+                    <TableCell className="font-bold text-primary">{tx.points_credited?.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-mono">{tx.txn_id || 'N/A'}</Badge>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>

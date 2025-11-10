@@ -12,16 +12,17 @@ export async function GET(request: NextRequest) {
   const to = from + limit - 1;
 
   try {
-    // Step 1: Fetch transactions without the problematic join
     const { data: transactions, error, count } = await supabase
       .from('transactions')
       .select(`
         id,
         created_at,
         txn_id,
+        offer_id,
         offer_name,
         points_credited,
-        payout_usd,
+        amount,
+        payout,
         user_id,
         postback_url
       `, { count: 'exact' })
@@ -29,21 +30,18 @@ export async function GET(request: NextRequest) {
       .range(from, to);
 
     if (error) {
-      // This will catch the 400 Bad Request error if the query is still invalid.
       console.error("API route get-postbacks-paginated error (step 1):", error);
-      throw error;
+      return NextResponse.json({ error: `Database query failed: ${error.message}` }, { status: 500 });
     }
 
     if (!transactions || transactions.length === 0) {
         return NextResponse.json({ transactions: [], count: 0 });
     }
 
-    // Step 2: Gather unique user IDs from the fetched transactions
     const userIds = [...new Set(transactions.map(tx => tx.user_id).filter(Boolean))];
 
     let emailMap = new Map<string, string>();
 
-    // Step 3: Fetch corresponding profiles only if there are user IDs to fetch
     if (userIds.length > 0) {
         const { data: profiles, error: profileError } = await supabase
             .from('profiles')
@@ -51,14 +49,12 @@ export async function GET(request: NextRequest) {
             .in('user_id', userIds);
 
         if (profileError) {
-            // Log the error but don't fail the whole request. We can still show transaction data.
             console.error("API route get-postbacks-paginated error (step 2):", profileError);
         } else {
             emailMap = new Map(profiles.map(p => [p.user_id, p.email]));
         }
     }
     
-    // Step 4: Combine the data
     const combinedData = transactions.map(tx => ({
         ...tx,
         user_email: tx.user_id ? emailMap.get(tx.user_id) || 'N/A' : 'N/A',
