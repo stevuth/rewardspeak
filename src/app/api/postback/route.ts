@@ -19,11 +19,8 @@ export async function GET(request: NextRequest) {
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
 
-  // This is the user's reward in USD
-  const userPayoutUsd = parseFloat(amountUSD);
-  
   // Convert the user's USD reward to points (1000 points = $1)
-  const pointsToCredit = Math.round(userPayoutUsd * 1000);
+  const pointsToCredit = Math.round(parseFloat(amountUSD) * 1000);
 
   try {
     // Check for duplicate transaction ID
@@ -46,28 +43,24 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // Call the RPC function to credit points and log the transaction.
-    // The amount is passed as points, and other details are for logging.
-    const { error: rpcError } = await supabase.rpc('process_withdrawal', {
+    // Call the dedicated RPC function to credit points and log the transaction.
+    const { error: rpcError } = await supabase.rpc('credit_user_points', {
       p_user_id: userId,
-      p_email: 'postback@rewardspeak.com', // Email not available here, using placeholder
-      p_amount_usd: -pointsToCredit, // Use negative to signify a credit, not a withdrawal
-      p_method: 'offer_completion',
-      p_wallet_address: JSON.stringify({
-        offer_id: offerId,
-        offer_name: offerName,
-        txn_id: txnId,
-        ip_address: requestIp,
-        postback_url: fullUrl
-      }),
+      p_points_to_add: pointsToCredit,
+      p_amount_usd: parseFloat(amountUSD),
+      p_offer_id: offerId,
+      p_offer_name: offerName,
+      p_txn_id: txnId,
+      p_ip_address: requestIp,
+      p_postback_url: fullUrl
     });
     
     if (rpcError) {
-      console.error('[POSTBACK_RPC_ERROR] Error executing process_withdrawal RPC for offer credit:', rpcError);
+      console.error('[POSTBACK_RPC_ERROR] Error executing credit_user_points RPC:', rpcError);
       // Even with an error, we must return a success status to the partner.
       // The error is logged for internal review.
     } else {
-      console.log(`[POSTBACK_SUCCESS] RPC process_withdrawal executed for user ${userId} with ${pointsToCredit} points.`);
+      console.log(`[POSTBACK_SUCCESS] RPC credit_user_points executed for user ${userId} with ${pointsToCredit} points.`);
     }
 
     // Always acknowledge the postback with a '1' to prevent retries.
