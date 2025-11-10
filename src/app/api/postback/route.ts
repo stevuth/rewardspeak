@@ -8,20 +8,23 @@ export async function GET(request: NextRequest) {
   const requestIp = (request.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
   const supabase = createSupabaseAdminClient();
 
-  const userId = nextUrl.searchParams.get('user_id');
+  const referralCode = nextUrl.searchParams.get('user_id'); // This is the short ID from the profiles table
   const amountUSD = nextUrl.searchParams.get('amount');
   const txnId = nextUrl.searchParams.get('txn_id');
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name');
   
-  if (!userId || !amountUSD) {
-    console.warn('[POSTBACK_WARNING] Missing user_id or amount. Cannot process postback.', { url: fullUrl });
+  if (!referralCode || !amountUSD) {
+    console.warn('[POSTBACK_WARNING] Missing user_id (referral code) or amount. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
 
-  // Convert the user's USD reward to points (1000 points = $1)
-  const pointsToCredit = Math.round(parseFloat(amountUSD) * 1000);
   const payoutAsFloat = parseFloat(amountUSD);
+  if (isNaN(payoutAsFloat)) {
+    console.warn('[POSTBACK_WARNING] Invalid amount value received. Cannot parse to a number.', { amount: amountUSD });
+    return new NextResponse('1', { status: 200 });
+  }
+  const pointsToCredit = Math.round(payoutAsFloat * 1000);
 
   try {
     // Check for duplicate transaction ID
@@ -44,17 +47,19 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // 1. Fetch the user's current points
+    // 1. Fetch the user's profile using the referral code to get the actual user_id (UUID)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('points')
-      .eq('user_id', userId)
+      .select('user_id, points')
+      .eq('id', referralCode) // 'id' is the short referral code
       .single();
 
-    if (profileError || !profile) {
-      console.error(`[POSTBACK_USER_ERROR] Could not find profile for user_id: ${userId}`, profileError);
-      return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries even if user not found
+    if (profileError || !profile || !profile.user_id) {
+      console.error(`[POSTBACK_USER_ERROR] Could not find profile for referral code: ${referralCode}`, profileError);
+      return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
     }
+
+    const userId = profile.user_id; // The correct UUID for the user
 
     // 2. Calculate new point total
     const currentPoints = profile.points || 0;
@@ -68,11 +73,10 @@ export async function GET(request: NextRequest) {
 
     if (updateError) {
       console.error(`[POSTBACK_UPDATE_ERROR] Failed to update points for user_id: ${userId}`, updateError);
-       // Even with an error, we must return a success status to the partner.
       return new NextResponse('1', { status: 200 });
     }
 
-    // 4. Log the transaction
+    // 4. Log the transaction using the correct user_id (UUID)
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
@@ -84,17 +88,15 @@ export async function GET(request: NextRequest) {
         txn_id: txnId,
         ip_address: requestIp,
         postback_url: fullUrl,
-        type: 'credit', // Explicitly mark as a credit
+        type: 'credit',
       });
 
     if (transactionError) {
       console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${userId}`, transactionError);
-      // The user was credited, but logging failed. Log this for manual review.
     } else {
       console.log(`[POSTBACK_SUCCESS] Credited ${pointsToCredit} points to user ${userId}.`);
     }
 
-    // Always acknowledge the postback with a '1' to prevent retries.
     return new NextResponse('1', { status: 200 });
 
   } catch (error) {
