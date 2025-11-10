@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
         offer_name,
         points_credited,
         user_payout_usd,
-        offer_payout_usd,
         user_id,
         postback_url
       `, { count: 'exact' })
