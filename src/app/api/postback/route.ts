@@ -78,10 +78,10 @@ export async function GET(request: NextRequest) {
       .from('transactions')
       .insert({
         user_id: userId,
-        amount_usd: payoutAsFloat, // Corrected column name
-        payout_usd: payoutAsFloat, // Corrected column name
+        amount_usd: payoutAsFloat,
+        payout_usd: payoutAsFloat,
         offer_id: offerId,
-        offer_name: offerName,
+        offer_name: offerName || 'N/A', // Provide a default value if offer_name is null
         txn_id: txnId,
         ip_address: requestIp,
         postback_url: fullUrl,
