@@ -1,9 +1,7 @@
-
 'use server';
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
-import { randomUUID } from 'crypto';
 
 export async function GET(request: NextRequest) {
   const { nextUrl } = request;
@@ -25,12 +23,17 @@ export async function GET(request: NextRequest) {
   }
   
   let totalPayout = parseFloat(totalPayoutParam || '0');
-   if (!isFinite(totalPayout)) {
+  if (!isFinite(totalPayout)) {
     totalPayout = 0;
   }
 
   if (!userIdParam) {
     console.warn('[POSTBACK_WARNING] Missing user_id. Cannot process postback.', { url: fullUrl });
+    return new NextResponse('1', { status: 200 });
+  }
+
+  if (!txnId) {
+    console.warn('[POSTBACK_WARNING] Missing required txn_id. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 });
   }
 
@@ -47,26 +50,24 @@ export async function GET(request: NextRequest) {
     }
     const actualUserId = profile.user_id;
     
-    if (txnId) {
-        const { count, error: txnCheckError } = await supabase
-            .from('transactions')
-            .select('*', { count: 'exact', head: true })
-            .eq('txn_id', txnId);
+    // Check for duplicate transaction
+    const { count, error: txnCheckError } = await supabase
+      .from('transactions')
+      .select('*', { count: 'exact', head: true })
+      .eq('txn_id', txnId);
 
-        if (txnCheckError) {
-            console.error('[POSTBACK_DB_ERROR] Error checking for existing transaction:', txnCheckError);
-            return new NextResponse('1', { status: 200 });
-        }
+    if (txnCheckError) {
+      console.error('[POSTBACK_DB_ERROR] Error checking for existing transaction:', txnCheckError);
+      return new NextResponse('1', { status: 200 });
+    }
 
-        if (count && count > 0) {
-            console.log(`[POSTBACK_DUPLICATE] Duplicate txn_id received: ${txnId}. Acknowledging without processing.`);
-            return new NextResponse('1', { status: 200 });
-        }
-    } else {
-        console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
+    if (count && count > 0) {
+      console.log(`[POSTBACK_DUPLICATE] Duplicate txn_id received: ${txnId}. Acknowledging without processing.`);
+      return new NextResponse('1', { status: 200 });
     }
 
     const transactionData = {
+      // ✅ REMOVED: id field (auto-generated)
       user_id: actualUserId,
       offer_id: offerId,
       offer_name: offerName,
@@ -76,10 +77,12 @@ export async function GET(request: NextRequest) {
       amount_usd: userAmount,
       payout_usd: totalPayout,
     };
-    
-    const { error: transactionError } = await supabase
+
+    const { data, error: transactionError } = await supabase
       .from('transactions')
-      .insert(transactionData);
+      .insert(transactionData)
+      .select()
+      .single();
 
     if (transactionError) {
       console.error('❌ Supabase Insert Error:', {
@@ -91,25 +94,9 @@ export async function GET(request: NextRequest) {
       console.error('📦 Attempted data:', JSON.stringify(transactionData, null, 2));
 
       return new NextResponse('Error logging transaction', { status: 500 });
-    } else {
-      console.log(`[POSTBACK_SUCCESS] Logged transaction for user ${actualUserId}.`);
     }
 
-    // After successfully logging the transaction, add the points to the user's profile
-    const pointsToCredit = Math.round(userAmount * 1000);
-    if (pointsToCredit > 0) {
-      const { error: rpcError } = await supabase.rpc('add_points', {
-        user_id_input: actualUserId,
-        points_to_add: pointsToCredit
-      });
-
-      if (rpcError) {
-          console.error(`[POSTBACK_POINTS_ERROR] Failed to add points for user ${actualUserId}:`, rpcError);
-      } else {
-          console.log(`[POSTBACK_POINTS_SUCCESS] Credited ${pointsToCredit} points to user ${actualUserId}.`);
-      }
-    }
-
+    console.log(`[POSTBACK_SUCCESS] Created transaction #${data.id} for user ${actualUserId}.`);
     return new NextResponse('1', { status: 200 });
 
   } catch (error) {
