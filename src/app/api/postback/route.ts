@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
 
   // Convert the user's USD reward to points (1000 points = $1)
   const pointsToCredit = Math.round(parseFloat(amountUSD) * 1000);
+  const payoutAsFloat = parseFloat(amountUSD);
 
   try {
     // Check for duplicate transaction ID
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
       .insert({
         user_id: userId,
         amount: pointsToCredit,
-        payout_usd: parseFloat(amountUSD),
+        payout_usd: payoutAsFloat,
         offer_id: offerId,
         offer_name: offerName,
         txn_id: txnId,
