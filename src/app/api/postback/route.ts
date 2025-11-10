@@ -83,7 +83,6 @@ export async function GET(request: NextRequest) {
         user_id: userId,
         amount_usd: userAmountFloat,      // User's share
         payout_usd: totalPayoutFloat,   // Total payout from advertiser
-        points: pointsToCredit,
         offer_id: offerId,
         offer_name: offerName,
         txn_id: txnId,

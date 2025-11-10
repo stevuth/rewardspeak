@@ -33,7 +33,6 @@ type Transaction = {
   txn_id: string;
   offer_id: string;
   offer_name: string;
-  points: number;
   user_email: string;
   amount_usd: number;
   payout_usd: number;
@@ -147,7 +146,6 @@ export default function PostbacksPage() {
                 <TableHead>User Email</TableHead>
                 <TableHead>Offer Name</TableHead>
                 <TableHead>Offer ID</TableHead>
-                <TableHead>Points</TableHead>
                 <TableHead>Amount (USD)</TableHead>
                 <TableHead>Payout (USD)</TableHead>
                 <TableHead>Txn ID</TableHead>
@@ -156,7 +154,7 @@ export default function PostbacksPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-64">
+                  <TableCell colSpan={7} className="text-center h-64">
                     <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
@@ -171,7 +169,6 @@ export default function PostbacksPage() {
                     <TableCell>
                         <Badge variant="secondary" className="font-mono">{tx.offer_id || 'N/A'}</Badge>
                     </TableCell>
-                    <TableCell className="font-bold text-primary">{tx.points?.toLocaleString()}</TableCell>
                     <TableCell className="font-semibold text-muted-foreground">${(tx.amount_usd || 0).toFixed(2)}</TableCell>
                     <TableCell className="font-semibold text-muted-foreground">${(tx.payout_usd || 0).toFixed(2)}</TableCell>
                     <TableCell>
@@ -181,7 +178,7 @@ export default function PostbacksPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24">
+                  <TableCell colSpan={7} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>
