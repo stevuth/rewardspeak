@@ -15,14 +15,19 @@ export async function GET(request: NextRequest) {
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name') || 'N/A';
   
+  // Robustly parse amount and payout, defaulting to 0 if null, undefined, or empty string.
+  const userAmountParam = nextUrl.searchParams.get('amount');
+  const totalPayoutParam = nextUrl.searchParams.get('payout');
+  
+  const userAmount = userAmountParam ? parseFloat(userAmountParam) : 0;
+  const totalPayout = totalPayoutParam ? parseFloat(totalPayoutParam) : 0;
+
   if (!userIdParam) {
     console.warn('[POSTBACK_WARNING] Missing user_id. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
 
   try {
-    // Note: The incoming user_id is the short, public-facing referral code (from the profiles.id column).
-    // We must look up the actual Supabase auth user ID (profiles.user_id) to credit the correct user.
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('user_id')
@@ -35,7 +40,6 @@ export async function GET(request: NextRequest) {
     }
     const actualUserId = profile.user_id;
     
-    // Check for duplicate transaction ID to prevent double-crediting
     if (txnId) {
         const { count, error: txnCheckError } = await supabase
             .from('transactions')
@@ -55,19 +59,26 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
     
-    // Log the transaction with only the columns that exist in the table.
+    const transactionData = {
+      user_id: actualUserId,
+      offer_id: offerId,
+      offer_name: offerName,
+      txn_id: txnId,
+      ip_address: requestIp,
+      postback_url: fullUrl,
+      amount_usd: userAmount,
+      payout_usd: totalPayout,
+    };
+
     const { error: transactionError } = await supabase
       .from('transactions')
-      .insert({
-        user_id: actualUserId,
-        offer_id: offerId,
-        offer_name: offerName,
-        txn_id: txnId
-      });
+      .insert(transactionData);
 
     if (transactionError) {
-      console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${actualUserId}`, transactionError);
-       // Return a 500 error to indicate failure to the offerwall if logging fails
+      console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${actualUserId}`, {
+        error: transactionError,
+        data: transactionData
+      });
       return new NextResponse('Error logging transaction', { status: 500 });
     } else {
       console.log(`[POSTBACK_SUCCESS] Logged transaction for user ${actualUserId}.`);
