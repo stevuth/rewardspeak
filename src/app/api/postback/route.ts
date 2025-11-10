@@ -8,14 +8,14 @@ export async function GET(request: NextRequest) {
   const requestIp = (request.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
   const supabase = createSupabaseAdminClient();
 
-  const referralCode = nextUrl.searchParams.get('user_id'); // This is the short ID from the profiles table
+  const userId = nextUrl.searchParams.get('user_id');
   const amountUSD = nextUrl.searchParams.get('amount');
   const txnId = nextUrl.searchParams.get('txn_id');
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name');
   
-  if (!referralCode || !amountUSD) {
-    console.warn('[POSTBACK_WARNING] Missing user_id (referral code) or amount. Cannot process postback.', { url: fullUrl });
+  if (!userId || !amountUSD) {
+    console.warn('[POSTBACK_WARNING] Missing user_id or amount. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
 
@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
     console.warn('[POSTBACK_WARNING] Invalid amount value received. Cannot parse to a number.', { amount: amountUSD });
     return new NextResponse('1', { status: 200 });
   }
-  const pointsToCredit = Math.round(payoutAsFloat * 1000);
 
   try {
     // Check for duplicate transaction ID
@@ -47,33 +46,17 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // 1. Fetch the user's profile using the referral code to get the actual user_id (UUID)
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('user_id, points')
-      .eq('id', referralCode) // 'id' is the short referral code
+    // Since we have the correct user_id, let's call a single RPC to handle the update and get the current points.
+    const { data: updatedProfile, error: rpcError } = await supabase
+      .rpc('credit_points_and_get_profile', {
+          p_user_id: userId,
+          p_points_to_add: Math.round(payoutAsFloat * 1000)
+      })
       .single();
 
-    if (profileError || !profile || !profile.user_id) {
-      console.error(`[POSTBACK_USER_ERROR] Could not find profile for referral code: ${referralCode}`, profileError);
-      return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
-    }
-
-    const userId = profile.user_id; // The correct UUID for the user
-
-    // 2. Calculate new point total
-    const currentPoints = profile.points || 0;
-    const newTotalPoints = currentPoints + pointsToCredit;
-
-    // 3. Update the user's profile with the new point total
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ points: newTotalPoints })
-      .eq('user_id', userId);
-
-    if (updateError) {
-      console.error(`[POSTBACK_UPDATE_ERROR] Failed to update points for user_id: ${userId}`, updateError);
-      return new NextResponse('1', { status: 200 });
+    if (rpcError || !updatedProfile) {
+        console.error(`[POSTBACK_RPC_ERROR] Could not credit points for user: ${userId}`, rpcError);
+        return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
     }
 
     // 4. Log the transaction using the correct user_id (UUID)
@@ -81,7 +64,7 @@ export async function GET(request: NextRequest) {
       .from('transactions')
       .insert({
         user_id: userId,
-        amount: pointsToCredit,
+        amount: Math.round(payoutAsFloat * 1000), // Ensure amount is an integer for points
         payout_usd: payoutAsFloat,
         offer_id: offerId,
         offer_name: offerName,
@@ -94,7 +77,7 @@ export async function GET(request: NextRequest) {
     if (transactionError) {
       console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${userId}`, transactionError);
     } else {
-      console.log(`[POSTBACK_SUCCESS] Credited ${pointsToCredit} points to user ${userId}.`);
+      console.log(`[POSTBACK_SUCCESS] Credited points to user ${userId}. New balance: ${updatedProfile.points}.`);
     }
 
     return new NextResponse('1', { status: 200 });
