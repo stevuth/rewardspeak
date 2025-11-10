@@ -13,21 +13,17 @@ export async function GET(request: NextRequest) {
   const txnId = nextUrl.searchParams.get('txn_id');
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name');
-  const originalPayoutUSD = nextUrl.searchParams.get('payout');
   
-  if (!userId) {
-    console.warn('[POSTBACK_WARNING] No user_id provided. Cannot process postback.', { url: fullUrl });
+  if (!userId || !amountUSD) {
+    console.warn('[POSTBACK_WARNING] Missing user_id or amount. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
 
   // This is the user's reward in USD
-  const userPayoutUsd = parseFloat(amountUSD || '0');
+  const userPayoutUsd = parseFloat(amountUSD);
   
   // Convert the user's USD reward to points (1000 points = $1)
   const pointsToCredit = Math.round(userPayoutUsd * 1000);
-
-  // Original payout from the partner, if available
-  const offerPayout = parseFloat(originalPayoutUSD || '0');
 
   try {
     // Check for duplicate transaction ID
@@ -50,25 +46,28 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // Call the RPC function to credit points and log the transaction in one go.
-    const { error: rpcError } = await supabase.rpc('credit_user_points', {
+    // Call the RPC function to credit points and log the transaction.
+    // The amount is passed as points, and other details are for logging.
+    const { error: rpcError } = await supabase.rpc('process_withdrawal', {
       p_user_id: userId,
-      p_points_to_add: pointsToCredit,
-      p_user_payout_usd: userPayoutUsd, // This is the user's earnings in USD
-      p_offer_payout_usd: offerPayout, // This is the original offer payout
-      p_txn_id: txnId,
-      p_offer_id: offerId,
-      p_offer_name: offerName,
-      p_postback_url: fullUrl,
-      p_ip_address: requestIp,
+      p_email: 'postback@rewardspeak.com', // Email not available here, using placeholder
+      p_amount_usd: -pointsToCredit, // Use negative to signify a credit, not a withdrawal
+      p_method: 'offer_completion',
+      p_wallet_address: JSON.stringify({
+        offer_id: offerId,
+        offer_name: offerName,
+        txn_id: txnId,
+        ip_address: requestIp,
+        postback_url: fullUrl
+      }),
     });
     
     if (rpcError) {
-      console.error('[POSTBACK_RPC_ERROR] Error executing credit_user_points RPC:', rpcError);
-      // Even with an error, we must return a success status to Notik.
+      console.error('[POSTBACK_RPC_ERROR] Error executing process_withdrawal RPC for offer credit:', rpcError);
+      // Even with an error, we must return a success status to the partner.
       // The error is logged for internal review.
     } else {
-      console.log(`[POSTBACK_SUCCESS] RPC credit_user_points executed for user ${userId} with ${pointsToCredit} points.`);
+      console.log(`[POSTBACK_SUCCESS] RPC process_withdrawal executed for user ${userId} with ${pointsToCredit} points.`);
     }
 
     // Always acknowledge the postback with a '1' to prevent retries.
