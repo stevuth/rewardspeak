@@ -3,6 +3,22 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 import crypto from 'crypto';
 
+// Helper function to verify the HMAC-SHA1 hash
+function verifyHash(secretKey: string, url: string): boolean {
+  const urlObj = new URL(url);
+  const hash = urlObj.searchParams.get('hash');
+  urlObj.searchParams.delete('hash');
+  
+  const reconstructedUrl = urlObj.toString();
+  
+  const hmac = crypto.createHmac('sha1', secretKey);
+  hmac.update(reconstructedUrl);
+  const generatedHash = hmac.digest('hex');
+  
+  return generatedHash === hash;
+}
+
+
 export async function GET(request: NextRequest) {
   const { nextUrl } = request;
   const fullUrl = nextUrl.toString();
@@ -43,26 +59,30 @@ export async function GET(request: NextRequest) {
 
     // --- User Balance Update (only if userId and amount are present) ---
     if (userId && pointsCredited > 0) {
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('user_id')
             .eq('user_id', userId)
             .single();
 
-        if (profile) {
-            const rpcParams: any = {
+        if (profileError && profileError.code !== 'PGRST116') {
+            console.error(`[POSTBACK_DB_ERROR] Error checking for user profile ${userId}:`, profileError);
+            return new NextResponse('Internal Server Error while checking user', { status: 500 });
+        }
+
+        if (!profile) {
+            console.warn(`[POSTBACK_INVALID] User with user_id ${userId} not found. Skipping credit, but logging transaction.`);
+        } else {
+            const { error: rpcError } = await supabase.rpc('credit_user_points', {
                 p_user_id: userId,
                 p_points_to_add: pointsCredited,
+                p_txn_id: txnId,
+                p_offer_id: offerId,
+                p_offer_name: offerName,
                 p_payout_usd: payoutUsd,
                 p_postback_url: fullUrl,
                 p_ip_address: requestIp,
-                p_status: 'credited'
-            };
-            if(txnId) rpcParams.p_txn_id = txnId;
-            if(offerId) rpcParams.p_offer_id = offerId;
-            if(offerName) rpcParams.p_offer_name = offerName;
-
-            const { error: rpcError } = await supabase.rpc('credit_user_points', rpcParams);
+            });
             
             if (rpcError) {
                 console.error('[POSTBACK_DB_ERROR] Error calling credit_user_points RPC:', rpcError);
@@ -70,36 +90,29 @@ export async function GET(request: NextRequest) {
             } else {
                 console.log(`[POSTBACK_SUCCESS] Credited ${pointsCredited} points to user ${userId} for txn_id ${txnId || 'N/A'}.`);
             }
-        } else {
-            console.warn(`[POSTBACK_INVALID] User with user_id ${userId} not found. Skipping credit, but logging transaction.`);
-             // Log transaction even if user not found
-            await supabase.from('transactions').insert({
-                user_id: userId,
-                points_credited: pointsCredited,
-                txn_id: txnId,
-                offer_id: offerId,
-                offer_name: offerName,
-                payout_usd: payoutUsd,
-                postback_url: fullUrl,
-                ip_address: requestIp,
-                status: 'uncredited',
-            });
         }
     } else {
-         console.warn(`[POSTBACK_INFO] Skipping user credit. Missing userId or amount is zero. UserID: ${userId}, Amount: ${pointsCredited}.`);
-          await supabase.from('transactions').insert({
-            user_id: userId,
-            points_credited: pointsCredited,
-            txn_id: txnId,
-            offer_id: offerId,
-            offer_name: offerName,
-            payout_usd: payoutUsd,
-            postback_url: fullUrl,
-            ip_address: requestIp,
-            status: 'uncredited',
-        });
+        console.warn(`[POSTBACK_INFO] Skipping user credit. Missing userId or amount is zero. UserID: ${userId}, Amount: ${pointsCredited}.`);
     }
 
+    // Always log the transaction, regardless of whether the user was credited.
+    const { error: logError } = await supabase.from('transactions').insert({
+        user_id: userId,
+        points_credited: pointsCredited,
+        txn_id: txnId,
+        offer_id: offerId,
+        offer_name: offerName,
+        payout_usd: payoutUsd,
+        postback_url: fullUrl,
+        ip_address: requestIp,
+        status: userId && pointsCredited > 0 ? 'credited' : 'uncredited',
+    });
+
+    if (logError) {
+        console.error('[POSTBACK_DB_ERROR] Failed to log transaction:', logError);
+    }
+
+    // --- Success Response ---
     return new NextResponse('1', { status: 200 });
 
   } catch (error) {
