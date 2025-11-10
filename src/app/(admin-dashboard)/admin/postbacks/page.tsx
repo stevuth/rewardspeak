@@ -31,6 +31,7 @@ type Transaction = {
   id: number;
   created_at: string;
   txn_id: string;
+  offer_id: string;
   offer_name: string;
   user_payout_usd: number;
   points_credited: number;
@@ -136,6 +137,7 @@ export default function PostbacksPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>User Email</TableHead>
                 <TableHead>Offer Name</TableHead>
+                <TableHead>Offer ID</TableHead>
                 <TableHead>Amount (USD)</TableHead>
                 <TableHead>Points Credited</TableHead>
                 <TableHead>Txn ID</TableHead>
@@ -145,7 +147,7 @@ export default function PostbacksPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-64">
+                  <TableCell colSpan={8} className="text-center h-64">
                     <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
@@ -157,6 +159,9 @@ export default function PostbacksPage() {
                     </TableCell>
                     <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
                     <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
+                    <TableCell>
+                        <Badge variant="secondary" className="font-mono">{tx.offer_id}</Badge>
+                    </TableCell>
                     <TableCell className="font-bold text-secondary">${tx.user_payout_usd?.toFixed(4)}</TableCell>
                     <TableCell className="font-bold text-primary">{tx.points_credited?.toLocaleString()}</TableCell>
                     <TableCell>
@@ -169,7 +174,7 @@ export default function PostbacksPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>
