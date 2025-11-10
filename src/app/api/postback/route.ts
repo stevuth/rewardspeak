@@ -9,24 +9,25 @@ export async function GET(request: NextRequest) {
   const supabase = createSupabaseAdminClient();
 
   const userId = nextUrl.searchParams.get('user_id');
-  const amountUSD = nextUrl.searchParams.get('amount'); // User's share of the payout in USD.
-  const payoutUSD = nextUrl.searchParams.get('payout'); // Total payout from advertiser in USD.
+  const amountParam = nextUrl.searchParams.get('amount'); // User's share (e.g., 1.2)
+  const payoutParam = nextUrl.searchParams.get('payout'); // Total payout (e.g., 2)
   const txnId = nextUrl.searchParams.get('txn_id');
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name') || 'N/A';
   
-  if (!userId || !amountUSD) {
+  if (!userId || !amountParam) {
     console.warn('[POSTBACK_WARNING] Missing user_id or amount. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
   
-  const userAmountFloat = parseFloat(amountUSD);
+  const userAmountFloat = parseFloat(amountParam);
   if (isNaN(userAmountFloat)) {
-    console.warn('[POSTBACK_WARNING] Invalid amount value received. Cannot parse to a number.', { amount: amountUSD });
+    console.warn('[POSTBACK_WARNING] Invalid user amount value received. Cannot parse to a number.', { amount: amountParam });
     return new NextResponse('1', { status: 200 });
   }
 
-  const totalPayoutFloat = parseFloat(payoutUSD || '0');
+  // Parse the total payout, defaulting to 0 if it's not present or invalid
+  const totalPayoutFloat = parseFloat(payoutParam || '0');
 
   try {
     // Check for duplicate transaction ID
@@ -38,7 +39,8 @@ export async function GET(request: NextRequest) {
 
         if (txnCheckError) {
             console.error('[POSTBACK_DB_ERROR] Error checking for existing transaction:', txnCheckError);
-            return new NextResponse('Internal Server Error while checking transaction', { status: 500 });
+            // Still acknowledge to prevent retries but log the server error
+            return new NextResponse('1', { status: 200 });
         }
 
         if (count && count > 0) {
@@ -49,40 +51,26 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // 1. Fetch the user's current points
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('points')
-      .eq('user_id', userId)
-      .single();
-
-    if (profileError || !profile) {
-      console.error(`[POSTBACK_USER_ERROR] Could not find profile for user_id: ${userId}`, profileError);
-      return new NextResponse('1', { status: 200 });
-    }
-
-    // 2. Calculate new point total based on the 'amount' field
+    // Since we are not storing points directly, we must still credit the user's balance.
+    // The user's point balance is updated based on the `amount` (user's share).
     const pointsToCredit = Math.round(userAmountFloat * 1000);
-    const newTotalPoints = (profile.points || 0) + pointsToCredit;
+    const { error: rpcError } = await supabase.rpc('add_points', {
+      user_id_input: userId,
+      points_to_add: pointsToCredit
+    });
 
-    // 3. Update the user's profile with the new point total
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ points: newTotalPoints })
-      .eq('user_id', userId);
-
-    if (updateError) {
-      console.error(`[POSTBACK_CREDIT_ERROR] Could not credit points for user_id: ${userId}`, updateError);
+    if (rpcError) {
+      console.error(`[POSTBACK_CREDIT_ERROR] Could not credit points for user_id: ${userId} via RPC.`, rpcError);
       return new NextResponse('1', { status: 200 });
     }
     
-    // 4. Log the transaction with correct field mapping
+    // Log the transaction with the exact values from the postback
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
         user_id: userId,
-        amount_usd: userAmountFloat,      // User's share
-        payout_usd: totalPayoutFloat,   // Total payout from advertiser
+        amount_usd: userAmountFloat,      // User's share from 'amount'
+        payout_usd: totalPayoutFloat,     // Total payout from 'payout'
         offer_id: offerId,
         offer_name: offerName,
         txn_id: txnId,
@@ -93,7 +81,7 @@ export async function GET(request: NextRequest) {
     if (transactionError) {
       console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${userId}`, transactionError);
     } else {
-      console.log(`[POSTBACK_SUCCESS] Credited ${pointsToCredit} points to user ${userId}. New balance: ${newTotalPoints}.`);
+      console.log(`[POSTBACK_SUCCESS] Credited ${pointsToCredit} points to user ${userId}.`);
     }
 
     return new NextResponse('1', { status: 200 });
