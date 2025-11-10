@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const to = from + limit - 1;
 
   try {
-    // Step 1: Fetch transactions without the problematic join
+    // Step 1: Fetch transactions
     const { data: transactions, error, count } = await supabase
       .from('transactions')
       .select(`
@@ -21,7 +21,8 @@ export async function GET(request: NextRequest) {
         txn_id,
         offer_name,
         points_credited,
-        payout_usd,
+        user_payout_usd,
+        offer_payout_usd,
         user_id,
         postback_url
       `, { count: 'exact' })
@@ -29,7 +30,6 @@ export async function GET(request: NextRequest) {
       .range(from, to);
 
     if (error) {
-      // This will catch the 400 Bad Request error if the query is still invalid.
       console.error("API route get-postbacks-paginated error (step 1):", error);
       throw error;
     }
@@ -38,12 +38,12 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ transactions: [], count: 0 });
     }
 
-    // Step 2: Gather unique user IDs from the fetched transactions
+    // Step 2: Gather unique user IDs
     const userIds = [...new Set(transactions.map(tx => tx.user_id).filter(Boolean))];
 
     let emailMap = new Map<string, string>();
 
-    // Step 3: Fetch corresponding profiles only if there are user IDs to fetch
+    // Step 3: Fetch corresponding profiles
     if (userIds.length > 0) {
         const { data: profiles, error: profileError } = await supabase
             .from('profiles')
@@ -51,7 +51,6 @@ export async function GET(request: NextRequest) {
             .in('user_id', userIds);
 
         if (profileError) {
-            // Log the error but don't fail the whole request. We can still show transaction data.
             console.error("API route get-postbacks-paginated error (step 2):", profileError);
         } else {
             emailMap = new Map(profiles.map(p => [p.user_id, p.email]));

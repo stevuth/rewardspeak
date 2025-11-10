@@ -32,8 +32,9 @@ type Transaction = {
   created_at: string;
   txn_id: string;
   offer_name: string;
-  points_credited: number;
-  payout_usd: number;
+  user_payout_usd: number; // User's earnings in USD
+  offer_payout_usd: number; // Original offer payout
+  points_credited: number; // Points user received
   user_email: string;
   postback_url: string;
 };
@@ -137,8 +138,9 @@ export default function PostbacksPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>User Email</TableHead>
                 <TableHead>Offer Name</TableHead>
+                <TableHead>Amount (USD)</TableHead>
                 <TableHead>Points Credited</TableHead>
-                <TableHead>Payout (USD)</TableHead>
+                <TableHead>Offer Payout</TableHead>
                 <TableHead>Txn ID</TableHead>
                 <TableHead>Postback URL</TableHead>
               </TableRow>
@@ -146,7 +148,7 @@ export default function PostbacksPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-64">
+                  <TableCell colSpan={8} className="text-center h-64">
                     <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
@@ -158,8 +160,9 @@ export default function PostbacksPage() {
                     </TableCell>
                     <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
                     <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
-                    <TableCell className="font-bold text-secondary">{tx.points_credited?.toLocaleString()}</TableCell>
-                    <TableCell>${tx.payout_usd?.toFixed(4)}</TableCell>
+                    <TableCell className="font-bold text-secondary">${tx.user_payout_usd?.toFixed(4)}</TableCell>
+                    <TableCell className="font-bold text-primary">{tx.points_credited?.toLocaleString()}</TableCell>
+                    <TableCell>${tx.offer_payout_usd?.toFixed(4)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">{tx.txn_id}</Badge>
                     </TableCell>
@@ -170,7 +173,7 @@ export default function PostbacksPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24">
+                  <TableCell colSpan={8} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>
