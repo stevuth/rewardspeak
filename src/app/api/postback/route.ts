@@ -1,3 +1,4 @@
+
 'use server';
 
 import { NextResponse, type NextRequest } from 'next/server';
@@ -41,11 +42,11 @@ export async function GET(request: NextRequest) {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('user_id')
-      .eq('id', userIdParam)
+      .eq('user_id', userIdParam) // CORRECTED: Querying the correct 'user_id' column
       .single();
 
     if (profileError || !profile) {
-      console.error(`[POSTBACK_USER_ERROR] Could not find a profile with referral code (id): ${userIdParam}`, profileError);
+      console.error(`[POSTBACK_USER_ERROR] Could not find a profile with user_id: ${userIdParam}`, profileError);
       return new NextResponse('1', { status: 200 });
     }
     const actualUserId = profile.user_id;
@@ -67,7 +68,6 @@ export async function GET(request: NextRequest) {
     }
 
     const transactionData = {
-      // ✅ REMOVED: id field (auto-generated)
       user_id: actualUserId,
       offer_id: offerId,
       offer_name: offerName,
@@ -96,7 +96,25 @@ export async function GET(request: NextRequest) {
       return new NextResponse('Error logging transaction', { status: 500 });
     }
 
-    console.log(`[POSTBACK_SUCCESS] Created transaction #${data.id} for user ${actualUserId}.`);
+    // Call the RPC to add points to the user's profile
+    const { error: rpcError } = await supabase.rpc('add_points', {
+      p_user_id: actualUserId,
+      p_points_to_add: Math.round(userAmount * 1000)
+    });
+
+    if (rpcError) {
+        console.error('❌ RPC Error calling add_points:', {
+            message: rpcError.message,
+            details: rpcError.details,
+            hint: rpcError.hint,
+            code: rpcError.code
+        });
+        // Note: The transaction is logged, but points failed. This should be monitored.
+    } else {
+        console.log(`[POINTS_SUCCESS] Credited ${Math.round(userAmount * 1000)} points to user ${actualUserId}.`);
+    }
+
+    console.log(`[POSTBACK_SUCCESS] Created transaction for user ${actualUserId}.`);
     return new NextResponse('1', { status: 200 });
 
   } catch (error) {
