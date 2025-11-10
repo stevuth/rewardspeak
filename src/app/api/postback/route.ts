@@ -43,24 +43,54 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // Call the dedicated RPC function to credit points and log the transaction.
-    const { error: rpcError } = await supabase.rpc('credit_user_points', {
-      p_user_id: userId,
-      p_points_to_add: pointsToCredit,
-      p_amount_usd: parseFloat(amountUSD),
-      p_offer_id: offerId,
-      p_offer_name: offerName,
-      p_txn_id: txnId,
-      p_ip_address: requestIp,
-      p_postback_url: fullUrl
-    });
-    
-    if (rpcError) {
-      console.error('[POSTBACK_RPC_ERROR] Error executing credit_user_points RPC:', rpcError);
-      // Even with an error, we must return a success status to the partner.
-      // The error is logged for internal review.
+    // 1. Fetch the user's current points
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('points')
+      .eq('user_id', userId)
+      .single();
+
+    if (profileError || !profile) {
+      console.error(`[POSTBACK_USER_ERROR] Could not find profile for user_id: ${userId}`, profileError);
+      return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries even if user not found
+    }
+
+    // 2. Calculate new point total
+    const currentPoints = profile.points || 0;
+    const newTotalPoints = currentPoints + pointsToCredit;
+
+    // 3. Update the user's profile with the new point total
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ points: newTotalPoints })
+      .eq('user_id', userId);
+
+    if (updateError) {
+      console.error(`[POSTBACK_UPDATE_ERROR] Failed to update points for user_id: ${userId}`, updateError);
+       // Even with an error, we must return a success status to the partner.
+      return new NextResponse('1', { status: 200 });
+    }
+
+    // 4. Log the transaction
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: userId,
+        amount: pointsToCredit,
+        payout_usd: parseFloat(amountUSD),
+        offer_id: offerId,
+        offer_name: offerName,
+        txn_id: txnId,
+        ip_address: requestIp,
+        postback_url: fullUrl,
+        type: 'credit', // Explicitly mark as a credit
+      });
+
+    if (transactionError) {
+      console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${userId}`, transactionError);
+      // The user was credited, but logging failed. Log this for manual review.
     } else {
-      console.log(`[POSTBACK_SUCCESS] RPC credit_user_points executed for user ${userId} with ${pointsToCredit} points.`);
+      console.log(`[POSTBACK_SUCCESS] Credited ${pointsToCredit} points to user ${userId}.`);
     }
 
     // Always acknowledge the postback with a '1' to prevent retries.
