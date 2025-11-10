@@ -12,9 +12,6 @@ export async function GET(request: NextRequest) {
   const to = from + limit - 1;
 
   try {
-    // Select the core fields that we know exist, and add user_payout_usd which we want.
-    // If user_payout_usd doesn't exist, Supabase will return an error, but we'll handle it.
-    // For now, we assume it does exist based on the user's request.
     const { data: transactions, error, count } = await supabase
       .from('transactions')
       .select(`
@@ -25,6 +22,7 @@ export async function GET(request: NextRequest) {
         offer_name,
         points_credited,
         user_payout_usd,
+        payout_usd,
         user_id,
         postback_url
       `, { count: 'exact' })
@@ -33,7 +31,6 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("API route get-postbacks-paginated error (step 1):", error);
-      // It's likely the column 'user_payout_usd' doesn't exist. We'll return an error response.
       return NextResponse.json({ error: `Database query failed: ${error.message}` }, { status: 500 });
     }
 
