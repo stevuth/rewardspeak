@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     console.warn('[POSTBACK_WARNING] Missing user_id or amount. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
-
+  
   const payoutAsFloat = parseFloat(amountUSD);
   if (isNaN(payoutAsFloat)) {
     console.warn('[POSTBACK_WARNING] Invalid amount value received. Cannot parse to a number.', { amount: amountUSD });
@@ -46,38 +46,51 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // Since we have the correct user_id, let's call a single RPC to handle the update and get the current points.
-    const { data: updatedProfile, error: rpcError } = await supabase
-      .rpc('credit_points_and_get_profile', {
-          p_user_id: userId,
-          p_points_to_add: Math.round(payoutAsFloat * 1000)
-      })
+    // 1. Fetch the user's current points
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('points')
+      .eq('user_id', userId)
       .single();
 
-    if (rpcError || !updatedProfile) {
-        console.error(`[POSTBACK_RPC_ERROR] Could not credit points for user: ${userId}`, rpcError);
-        return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
+    if (profileError || !profile) {
+      console.error(`[POSTBACK_USER_ERROR] Could not find profile for user_id: ${userId}`, profileError);
+      return new NextResponse('1', { status: 200 });
     }
 
-    // 4. Log the transaction using the correct user_id (UUID)
+    // 2. Calculate new point total
+    const pointsToCredit = Math.round(payoutAsFloat * 1000);
+    const newTotalPoints = (profile.points || 0) + pointsToCredit;
+
+    // 3. Update the user's profile with the new point total
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ points: newTotalPoints })
+      .eq('user_id', userId);
+
+    if (updateError) {
+      console.error(`[POSTBACK_CREDIT_ERROR] Could not credit points for user_id: ${userId}`, updateError);
+      return new NextResponse('1', { status: 200 });
+    }
+    
+    // 4. Log the transaction
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
         user_id: userId,
-        amount: Math.round(payoutAsFloat * 1000), // Ensure amount is an integer for points
         payout_usd: payoutAsFloat,
         offer_id: offerId,
         offer_name: offerName,
         txn_id: txnId,
         ip_address: requestIp,
         postback_url: fullUrl,
-        type: 'credit',
+        amount: Math.round(payoutAsFloat * 1000), // Storing points in the amount column
       });
 
     if (transactionError) {
       console.error(`[POSTBACK_LOG_ERROR] Failed to log transaction for user_id: ${userId}`, transactionError);
     } else {
-      console.log(`[POSTBACK_SUCCESS] Credited points to user ${userId}. New balance: ${updatedProfile.points}.`);
+      console.log(`[POSTBACK_SUCCESS] Credited ${pointsToCredit} points to user ${userId}. New balance: ${newTotalPoints}.`);
     }
 
     return new NextResponse('1', { status: 200 });
