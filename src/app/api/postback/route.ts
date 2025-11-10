@@ -9,21 +9,24 @@ export async function GET(request: NextRequest) {
   const supabase = createSupabaseAdminClient();
 
   const userId = nextUrl.searchParams.get('user_id');
-  const amountUSD = nextUrl.searchParams.get('amount');
+  const amountUSD = nextUrl.searchParams.get('amount'); // User's share of the payout in USD.
+  const payoutUSD = nextUrl.searchParams.get('payout'); // Total payout from advertiser in USD.
   const txnId = nextUrl.searchParams.get('txn_id');
   const offerId = nextUrl.searchParams.get('offer_id');
-  const offerName = nextUrl.searchParams.get('offer_name');
+  const offerName = nextUrl.searchParams.get('offer_name') || 'N/A';
   
   if (!userId || !amountUSD) {
     console.warn('[POSTBACK_WARNING] Missing user_id or amount. Cannot process postback.', { url: fullUrl });
     return new NextResponse('1', { status: 200 }); // Acknowledge to prevent retries
   }
   
-  const payoutAsFloat = parseFloat(amountUSD);
-  if (isNaN(payoutAsFloat)) {
+  const userAmountFloat = parseFloat(amountUSD);
+  if (isNaN(userAmountFloat)) {
     console.warn('[POSTBACK_WARNING] Invalid amount value received. Cannot parse to a number.', { amount: amountUSD });
     return new NextResponse('1', { status: 200 });
   }
+
+  const totalPayoutFloat = parseFloat(payoutUSD || '0');
 
   try {
     // Check for duplicate transaction ID
@@ -58,8 +61,8 @@ export async function GET(request: NextRequest) {
       return new NextResponse('1', { status: 200 });
     }
 
-    // 2. Calculate new point total
-    const pointsToCredit = Math.round(payoutAsFloat * 1000);
+    // 2. Calculate new point total based on the 'amount' field
+    const pointsToCredit = Math.round(userAmountFloat * 1000);
     const newTotalPoints = (profile.points || 0) + pointsToCredit;
 
     // 3. Update the user's profile with the new point total
@@ -73,19 +76,19 @@ export async function GET(request: NextRequest) {
       return new NextResponse('1', { status: 200 });
     }
     
-    // 4. Log the transaction
+    // 4. Log the transaction with correct field mapping
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
         user_id: userId,
-        amount_usd: payoutAsFloat,
-        payout_usd: payoutAsFloat,
+        amount_usd: userAmountFloat,      // User's share
+        payout_usd: totalPayoutFloat,   // Total payout from advertiser
+        points: pointsToCredit,
         offer_id: offerId,
-        offer_name: offerName || 'N/A',
+        offer_name: offerName,
         txn_id: txnId,
         ip_address: requestIp,
         postback_url: fullUrl,
-        points: pointsToCredit,
       });
 
     if (transactionError) {
