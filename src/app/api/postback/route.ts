@@ -3,6 +3,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
+import { randomUUID } from 'crypto';
 
 export async function GET(request: NextRequest) {
   const { nextUrl } = request;
@@ -96,17 +97,17 @@ export async function GET(request: NextRequest) {
 
     // After successfully logging the transaction, add the points to the user's profile
     const pointsToCredit = Math.round(userAmount * 1000);
-    const { error: rpcError } = await supabase.rpc('add_points', {
-      user_id_input: actualUserId,
-      points_to_add: pointsToCredit
-    });
+    if (pointsToCredit > 0) {
+      const { error: rpcError } = await supabase.rpc('add_points', {
+        user_id_input: actualUserId,
+        points_to_add: pointsToCredit
+      });
 
-    if (rpcError) {
-        console.error(`[POSTBACK_POINTS_ERROR] Failed to add points for user ${actualUserId}:`, rpcError);
-        // We don't return an error to the postback service here,
-        // because the transaction was already logged. This should be handled internally.
-    } else {
-        console.log(`[POSTBACK_POINTS_SUCCESS] Credited ${pointsToCredit} points to user ${actualUserId}.`);
+      if (rpcError) {
+          console.error(`[POSTBACK_POINTS_ERROR] Failed to add points for user ${actualUserId}:`, rpcError);
+      } else {
+          console.log(`[POSTBACK_POINTS_SUCCESS] Credited ${pointsToCredit} points to user ${actualUserId}.`);
+      }
     }
 
     return new NextResponse('1', { status: 200 });
