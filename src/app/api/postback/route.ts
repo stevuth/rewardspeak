@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 import crypto from 'crypto';
 
-// Helper function to verify the HMAC-SHA1 hash
+// This function is no longer used but kept for reference or future re-integration.
 function verifyHash(secretKey: string, url: string): boolean {
   const urlObj = new URL(url);
   const hash = urlObj.searchParams.get('hash');
@@ -18,14 +18,12 @@ function verifyHash(secretKey: string, url: string): boolean {
   return generatedHash === hash;
 }
 
-
 export async function GET(request: NextRequest) {
   const { nextUrl } = request;
   const fullUrl = nextUrl.toString();
   const requestIp = (request.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
   const supabase = createSupabaseAdminClient();
 
-  // --- Process Optional Parameters ---
   const userId = nextUrl.searchParams.get('user_id');
   const amount = nextUrl.searchParams.get('amount');
   const txnId = nextUrl.searchParams.get('txn_id');
@@ -37,16 +35,16 @@ export async function GET(request: NextRequest) {
   const payoutUsd = parseFloat(payout || '0');
 
   try {
-    // --- Duplicate Transaction Prevention (only if txnId is present) ---
     if (txnId) {
         const { data: existingTxns, error: txnCheckError } = await supabase
             .from('transactions')
             .select('id')
-            .eq('txn_id', txnId);
+            .eq('txn_id', txnId)
+            .limit(1);
 
         if (txnCheckError) {
             console.error('[POSTBACK_DB_ERROR] Error checking for existing transaction:', txnCheckError);
-            return new NextResponse('Internal Server Error', { status: 500 });
+            return new NextResponse('Internal Server Error while checking transaction', { status: 500 });
         }
 
         if (existingTxns && existingTxns.length > 0) {
@@ -57,38 +55,29 @@ export async function GET(request: NextRequest) {
         console.warn(`[POSTBACK_WARNING] No txn_id provided. Cannot check for duplicate transactions. URL: ${fullUrl}`);
     }
 
-    // --- User Balance Update (only if userId and amount are present) ---
     if (userId && pointsCredited > 0) {
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('user_id')
+            .select('user_id, points')
             .eq('user_id', userId)
             .single();
 
-        if (profileError && profileError.code !== 'PGRST116') {
-            console.error(`[POSTBACK_DB_ERROR] Error checking for user profile ${userId}:`, profileError);
-            return new NextResponse('Internal Server Error while checking user', { status: 500 });
-        }
-
-        if (!profile) {
-            console.warn(`[POSTBACK_INVALID] User with user_id ${userId} not found. Skipping credit, but logging transaction.`);
+        if (profileError || !profile) {
+            console.warn(`[POSTBACK_INVALID_USER] User with user_id ${userId} not found. Skipping credit, but logging transaction.`);
         } else {
-            const { error: rpcError } = await supabase.rpc('credit_user_points', {
-                p_user_id: userId,
-                p_points_to_add: pointsCredited,
-                p_txn_id: txnId,
-                p_offer_id: offerId,
-                p_offer_name: offerName,
-                p_payout_usd: payoutUsd,
-                p_postback_url: fullUrl,
-                p_ip_address: requestIp,
-            });
-            
-            if (rpcError) {
-                console.error('[POSTBACK_DB_ERROR] Error calling credit_user_points RPC:', rpcError);
-                return new NextResponse('Internal Server Error during RPC call', { status: 500 });
+            // --- Direct Logic Implementation ---
+            // 1. Update user's points
+            const newPoints = (profile.points || 0) + pointsCredited;
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ points: newPoints })
+                .eq('user_id', userId);
+
+            if (updateError) {
+                console.error(`[POSTBACK_DB_ERROR] Failed to update points for user ${userId}:`, updateError);
+                // Even if points update fails, we still log the transaction attempt
             } else {
-                console.log(`[POSTBACK_SUCCESS] Credited ${pointsCredited} points to user ${userId} for txn_id ${txnId || 'N/A'}.`);
+                console.log(`[POSTBACK_SUCCESS] Credited ${pointsCredited} points to user ${userId}. New balance: ${newPoints}.`);
             }
         }
     } else {
@@ -110,9 +99,9 @@ export async function GET(request: NextRequest) {
 
     if (logError) {
         console.error('[POSTBACK_DB_ERROR] Failed to log transaction:', logError);
+        // Do not fail the request here, as logging is secondary to acknowledging the postback.
     }
 
-    // --- Success Response ---
     return new NextResponse('1', { status: 200 });
 
   } catch (error) {
