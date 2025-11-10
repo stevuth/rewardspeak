@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         txn_id,
         offer_id,
         offer_name,
-        points:amount,
+        points,
         user_id,
         payout_usd,
         postback_url
