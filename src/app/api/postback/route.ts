@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
         amount_usd: payoutAsFloat,
         payout_usd: payoutAsFloat,
         offer_id: offerId,
-        offer_name: offerName || 'N/A', // Provide a default value if offer_name is null
+        offer_name: offerName || 'N/A',
         txn_id: txnId,
         ip_address: requestIp,
         postback_url: fullUrl,
