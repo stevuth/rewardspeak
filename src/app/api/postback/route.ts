@@ -18,15 +18,8 @@ export async function GET(request: NextRequest) {
   const userAmountParam = nextUrl.searchParams.get('amount');
   const totalPayoutParam = nextUrl.searchParams.get('payout');
   
-  let userAmount = parseFloat(userAmountParam || '0');
-  if (!isFinite(userAmount)) {
-    userAmount = 0;
-  }
-  
-  let totalPayout = parseFloat(totalPayoutParam || '0');
-  if (!isFinite(totalPayout)) {
-    totalPayout = 0;
-  }
+  const userAmount = parseFloat(userAmountParam || '0');
+  const totalPayout = parseFloat(totalPayoutParam || '0');
 
   if (!userIdParam) {
     console.warn('[POSTBACK_WARNING] Missing user_id. Cannot process postback.', { url: fullUrl });
@@ -42,7 +35,7 @@ export async function GET(request: NextRequest) {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('user_id')
-      .eq('user_id', userIdParam) // CORRECTED: Querying the correct 'user_id' column
+      .eq('user_id', userIdParam)
       .single();
 
     if (profileError || !profile) {
@@ -97,9 +90,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Call the RPC to add points to the user's profile
+    const pointsToCredit = Math.round(userAmount * 1000);
     const { error: rpcError } = await supabase.rpc('add_points', {
       p_user_id: actualUserId,
-      p_points_to_add: Math.round(userAmount * 1000)
+      p_points_to_add: pointsToCredit
     });
 
     if (rpcError) {
@@ -111,7 +105,7 @@ export async function GET(request: NextRequest) {
         });
         // Note: The transaction is logged, but points failed. This should be monitored.
     } else {
-        console.log(`[POINTS_SUCCESS] Credited ${Math.round(userAmount * 1000)} points to user ${actualUserId}.`);
+        console.log(`[POINTS_SUCCESS] Credited ${pointsToCredit} points to user ${actualUserId}.`);
     }
 
     console.log(`[POSTBACK_SUCCESS] Created transaction for user ${actualUserId}.`);
