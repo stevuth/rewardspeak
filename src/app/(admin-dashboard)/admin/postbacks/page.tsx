@@ -31,12 +31,11 @@ type Transaction = {
   id: number;
   created_at: string;
   txn_id: string;
-  offer_id: string;
   offer_name: string;
   points_credited: number;
   user_email: string;
   user_payout_usd: number;
-  payout_usd: number; // Original payout from the partner
+  payout: number; // Original payout from the partner
   postback_url: string;
 };
 
@@ -142,14 +141,13 @@ export default function PostbacksPage() {
                 <TableHead>Offer Payout (USD)</TableHead>
                 <TableHead>Amount (USD)</TableHead>
                 <TableHead>Points Credited</TableHead>
-                <TableHead>Offer ID</TableHead>
                 <TableHead>Txn ID</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-64">
+                  <TableCell colSpan={7} className="text-center h-64">
                     <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
@@ -161,12 +159,9 @@ export default function PostbacksPage() {
                     </TableCell>
                     <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
                     <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
-                    <TableCell>${tx.payout_usd?.toFixed(2)}</TableCell>
+                    <TableCell>${tx.payout?.toFixed(2)}</TableCell>
                     <TableCell className="font-bold text-secondary">${tx.user_payout_usd?.toFixed(2)}</TableCell>
                     <TableCell className="font-bold text-primary">{tx.points_credited?.toLocaleString()}</TableCell>
-                     <TableCell>
-                      <Badge variant="outline" className="font-mono">{tx.offer_id || 'N/A'}</Badge>
-                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">{tx.txn_id || 'N/A'}</Badge>
                     </TableCell>
@@ -174,7 +169,7 @@ export default function PostbacksPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24">
+                  <TableCell colSpan={7} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>

@@ -18,11 +18,10 @@ export async function GET(request: NextRequest) {
         id,
         created_at,
         txn_id,
-        offer_id,
         offer_name,
         points_credited,
         user_payout_usd,
-        payout_usd,
+        payout,
         user_id,
         postback_url
       `, { count: 'exact' })
