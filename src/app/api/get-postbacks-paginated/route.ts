@@ -12,19 +12,16 @@ export async function GET(request: NextRequest) {
   const to = from + limit - 1;
 
   try {
-    // Step 1: Fetch transactions
+    // Step 1: Fetch transactions with a minimal, safe set of columns
     const { data: transactions, error, count } = await supabase
       .from('transactions')
       .select(`
         id,
         created_at,
         txn_id,
-        offer_id,
         offer_name,
         points_credited,
-        user_payout_usd,
-        user_id,
-        postback_url
+        user_id
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);

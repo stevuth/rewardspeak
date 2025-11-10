@@ -21,22 +21,20 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, ClipboardList, Copy, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { Input } from "@/components/ui/input";
 
+// Simplified Transaction type to match the corrected API response
 type Transaction = {
   id: number;
   created_at: string;
   txn_id: string;
-  offer_id: string;
   offer_name: string;
-  user_payout_usd: number;
   points_credited: number;
   user_email: string;
-  postback_url: string;
 };
 
 export default function PostbacksPage() {
@@ -137,17 +135,14 @@ export default function PostbacksPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>User Email</TableHead>
                 <TableHead>Offer Name</TableHead>
-                <TableHead>Offer ID</TableHead>
-                <TableHead>Amount (USD)</TableHead>
                 <TableHead>Points Credited</TableHead>
                 <TableHead>Txn ID</TableHead>
-                <TableHead>Postback URL</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-64">
+                  <TableCell colSpan={5} className="text-center h-64">
                     <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
@@ -159,22 +154,15 @@ export default function PostbacksPage() {
                     </TableCell>
                     <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
                     <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
-                    <TableCell>
-                        <Badge variant="secondary" className="font-mono">{tx.offer_id}</Badge>
-                    </TableCell>
-                    <TableCell className="font-bold text-secondary">${tx.user_payout_usd?.toFixed(4)}</TableCell>
                     <TableCell className="font-bold text-primary">{tx.points_credited?.toLocaleString()}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">{tx.txn_id}</Badge>
-                    </TableCell>
-                    <TableCell className="max-w-sm truncate text-xs text-muted-foreground">
-                        {tx.postback_url}
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24">
+                  <TableCell colSpan={5} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>
