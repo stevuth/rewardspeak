@@ -35,7 +35,6 @@ type Transaction = {
   offer_name: string;
   points_credited: number;
   user_email: string;
-  amount: number; // User's reward in USD
   payout: number; // Original payout from the partner in USD
   postback_url: string;
 };
@@ -141,7 +140,6 @@ export default function PostbacksPage() {
                 <TableHead>Offer Name</TableHead>
                 <TableHead>Offer ID</TableHead>
                 <TableHead>Offer Payout (USD)</TableHead>
-                <TableHead>Amount (USD)</TableHead>
                 <TableHead>Points Credited</TableHead>
                 <TableHead>Txn ID</TableHead>
               </TableRow>
@@ -149,7 +147,7 @@ export default function PostbacksPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-64">
+                  <TableCell colSpan={7} className="text-center h-64">
                     <WavingMascotLoader text="Loading Postbacks..." />
                   </TableCell>
                 </TableRow>
@@ -165,7 +163,6 @@ export default function PostbacksPage() {
                         <Badge variant="secondary" className="font-mono">{tx.offer_id || 'N/A'}</Badge>
                     </TableCell>
                     <TableCell>${tx.payout?.toFixed(2)}</TableCell>
-                    <TableCell className="font-bold text-secondary">${tx.amount?.toFixed(2)}</TableCell>
                     <TableCell className="font-bold text-primary">{tx.points_credited?.toLocaleString()}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">{tx.txn_id || 'N/A'}</Badge>
@@ -174,7 +171,7 @@ export default function PostbacksPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24">
+                  <TableCell colSpan={7} className="text-center h-24">
                     No postbacks recorded yet.
                   </TableCell>
                 </TableRow>
