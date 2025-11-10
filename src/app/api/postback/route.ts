@@ -39,18 +39,19 @@ export async function GET(request: NextRequest) {
   try {
     // --- Duplicate Transaction Prevention (only if txnId is present) ---
     if (txnId) {
-        const { data: existingTxn, error: txnCheckError } = await supabase
-        .from('transactions')
-        .select('id')
-        .eq('txn_id', txnId)
-        .single();
+        // FIX: Use .maybeSingle() or a list query to prevent 406 error.
+        // A direct query is better here.
+        const { data: existingTxns, error: txnCheckError } = await supabase
+            .from('transactions')
+            .select('id')
+            .eq('txn_id', txnId);
 
-        if (txnCheckError && txnCheckError.code !== 'PGRST116') { // PGRST116 means 'Not a single row was found'
+        if (txnCheckError) {
             console.error('[POSTBACK_DB_ERROR] Error checking for existing transaction:', txnCheckError);
             return new NextResponse('Internal Server Error', { status: 500 });
         }
 
-        if (existingTxn) {
+        if (existingTxns && existingTxns.length > 0) {
             console.log(`[POSTBACK_DUPLICATE] Duplicate txn_id received: ${txnId}. Acknowledging without crediting.`);
             return new NextResponse('1', { status: 200 });
         }
