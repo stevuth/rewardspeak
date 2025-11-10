@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name');
   
-  const pointsCredited = amount ? parseInt(amount, 10) : 0;
+  // Convert the incoming USD amount to points (1000 points = $1)
+  const userRewardUSD = amount ? parseFloat(amount) : 0;
+  const pointsCredited = Math.round(userRewardUSD * 1000);
   const payoutUsd = parseFloat(payout || '0');
 
   try {
