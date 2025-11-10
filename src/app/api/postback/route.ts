@@ -3,6 +3,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
+import { randomUUID } from 'crypto';
 
 export async function GET(request: NextRequest) {
   const { nextUrl } = request;
@@ -18,7 +19,6 @@ export async function GET(request: NextRequest) {
   const userAmountParam = nextUrl.searchParams.get('amount');
   const totalPayoutParam = nextUrl.searchParams.get('payout');
   
-  // Strict validation: Ensure we always have a valid number, defaulting to 0.
   let userAmount = parseFloat(userAmountParam || '0');
   if (!isFinite(userAmount)) {
     userAmount = 0;
@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
     }
 
     const transactionData = {
+      id: randomUUID(), // Generate a unique ID for the primary key
       user_id: actualUserId,
       offer_id: offerId,
       offer_name: offerName,
