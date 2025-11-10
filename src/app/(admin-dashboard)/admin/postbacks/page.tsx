@@ -139,7 +139,7 @@ export default function PostbacksPage() {
                 <TableHead>User Email</TableHead>
                 <TableHead>Offer Name</TableHead>
                 <TableHead>Offer ID</TableHead>
-                <TableHead>Points</TableHead>
+                <TableHead>Points Credited</TableHead>
                 <TableHead>Payout (USD)</TableHead>
                 <TableHead>Txn ID</TableHead>
               </TableRow>
