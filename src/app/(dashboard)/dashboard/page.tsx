@@ -223,7 +223,6 @@ export default function DashboardPage() {
         offer={selectedOffer}
       />
       <PageHeader
-        title="Dashboard"
         description={welcomeMessage}
         icon={LayoutDashboard}
       />
