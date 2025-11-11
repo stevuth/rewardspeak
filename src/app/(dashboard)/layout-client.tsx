@@ -203,8 +203,8 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
     useEffect(() => {
         if (!user) return;
         
+        const supabase = createSupabaseBrowserClient();
         const fetchUnreadStatus = async () => {
-            const supabase = createSupabaseBrowserClient();
             const { data: tickets, error } = await supabase
                 .from('support_tickets')
                 .select('id, messages:ticket_messages(is_from_support)')
