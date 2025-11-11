@@ -284,10 +284,10 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
                     </div>
                 </div>
                 <Link href="/help" className="relative">
-                    <Button variant="ghost" size="icon" className="relative">
-                        <Bell className="h-5 w-5" />
+                    <Button variant="ghost" size="icon" className="relative h-8 w-8">
+                        <Bell className="h-4 w-4" />
                         {hasUnreadMessages && (
-                            <span className="absolute top-2 right-2 flex h-2 w-2">
+                            <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
                             </span>
@@ -367,3 +367,5 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
+
+    
