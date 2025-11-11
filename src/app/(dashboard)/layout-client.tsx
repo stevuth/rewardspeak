@@ -163,7 +163,9 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                         <UserNav user={user} avatarUrl={avatarUrl} />
                         <div className="flex-1 min-w-0">
                             <p className="font-semibold truncate">{user?.email}</p>
-                            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                             <Link href="/settings" onClick={closeSheet} className="text-xs text-muted-foreground hover:text-primary transition-colors">
+                                View profile
+                            </Link>
                         </div>
                     </div>
                  </SidebarContent>
@@ -236,7 +238,7 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
 const mobileNavItems = [
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/earn", label: "Earn", icon: DollarSign },
-    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
+    { href: "/leaderboard", label: "Leaders", icon: Trophy },
 ];
 
 const MobileNavItem = ({ item, isActive }: { item: typeof mobileNavItems[0], isActive: boolean }) => (
