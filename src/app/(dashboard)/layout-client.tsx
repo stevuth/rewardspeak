@@ -18,6 +18,7 @@ import {
   LogOut,
   ArrowLeft,
   Shield,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,10 +32,11 @@ import { cn } from "@/lib/utils";
 import { SidebarProvider, Sidebar, SidebarInset } from "@/components/ui/sidebar";
 import type { User } from "@supabase/supabase-js";
 import { AnimatedCounter } from "@/components/animated-counter";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { signOut } from "@/app/auth/actions";
 import { motion } from 'framer-motion';
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 
 
 const navItems = [
@@ -196,6 +198,41 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
     const router = useRouter();
     const pathname = usePathname();
     const isDashboard = pathname === '/dashboard';
+    const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+
+    useEffect(() => {
+        if (!user) return;
+        
+        const fetchUnreadStatus = async () => {
+            const supabase = createSupabaseBrowserClient();
+            const { data: tickets, error } = await supabase
+                .from('support_tickets')
+                .select('id, messages:ticket_messages(is_from_support)')
+                .eq('user_id', user.id)
+                .eq('status', 'open');
+
+            if (error || !tickets) return;
+
+            const hasUnread = tickets.some(ticket => 
+                ticket.messages.length > 0 && ticket.messages[ticket.messages.length - 1].is_from_support
+            );
+            setHasUnreadMessages(hasUnread);
+        };
+        
+        fetchUnreadStatus();
+
+        const channel = supabase
+            .channel('public:ticket_messages')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ticket_messages' }, 
+                (payload) => {
+                    fetchUnreadStatus();
+                }
+            ).subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        }
+    }, [user]);
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
@@ -246,6 +283,18 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
                         <p className="font-bold"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
                     </div>
                 </div>
+                <Link href="/help" className="relative">
+                    <Button variant="ghost" size="icon" className="relative">
+                        <Bell className="h-5 w-5" />
+                        {hasUnreadMessages && (
+                            <span className="absolute top-2 right-2 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                            </span>
+                        )}
+                        <span className="sr-only">Notifications</span>
+                    </Button>
+                </Link>
                 <UserNav user={user} avatarUrl={avatarUrl} />
                 <MobileSidebar user={user} avatarUrl={avatarUrl} />
             </div>
