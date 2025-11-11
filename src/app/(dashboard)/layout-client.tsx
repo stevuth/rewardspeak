@@ -12,6 +12,7 @@ import {
   Users,
   CircleHelp,
   Settings,
+  Menu,
   Clock,
   DollarSign,
   LogOut,
@@ -50,7 +51,7 @@ const secondaryNavItems = [
   { href: "/help", label: "Help Center", icon: CircleHelp },
 ];
 
-const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick: () => void }) => {
+const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick?: () => void }) => {
   return (
     <Link href={href} className="relative block w-full group" onClick={onClick}>
       <svg
@@ -80,53 +81,44 @@ const recentEarnings: any[] = [];
 function SidebarNavs({ user }: { user: User | null }) {
   const pathname = usePathname();
 
-  const getNavLinkClass = (href: string) => {
-    const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
-    return cn(
-      "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
-      isActive
-        ? "bg-secondary text-secondary-foreground"
-        : "text-muted-foreground hover:bg-muted"
-    );
-  };
-
   return (
     <>
-      <nav className="flex-1 space-y-1 p-4">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={getNavLinkClass(item.href)}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
+      <nav className="flex-1 space-y-2 p-4">
+        {navItems.map((item) => {
+          const isActive = pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href);
+          return (
+            <SvgNavButton
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              isActive={isActive}
+            />
+          );
+        })}
         {user && user.email?.endsWith('@rewardspeak.com') && (
-            <Link href="/admin/dashboard" className={getNavLinkClass('/admin')}>
-                <Shield className="h-4 w-4" />
-                Admin Portal
-            </Link>
+            <SvgNavButton
+              href="/admin/dashboard"
+              icon={Shield}
+              label="Admin Portal"
+              isActive={pathname.startsWith('/admin')}
+            />
         )}
       </nav>
 
-      <div className="mt-auto p-4 space-y-1 border-t">
-        {secondaryNavItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
-              pathname.startsWith(item.href)
-                ? "bg-secondary text-secondary-foreground"
-                : "text-muted-foreground hover:bg-muted"
-            )}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
+      <div className="mt-auto p-4 space-y-2 border-t">
+        {secondaryNavItems.map((item) => {
+           const isActive = pathname.startsWith(item.href);
+           return (
+            <SvgNavButton
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              isActive={isActive}
+            />
+          );
+        })}
          <form action={signOut}>
             <button
                 type="submit"
@@ -314,8 +306,7 @@ const MobileNavItem = ({ item, isActive }: { item: typeof mobileNavItems[0], isA
             isActive ? "text-primary" : "text-muted-foreground"
         )}>{item.label}</span>
         {isActive && (
-            <motion.div
-                layoutId="active-nav-underline"
+            <div
                 className="absolute bottom-0 h-0.5 w-full rounded-full bg-primary"
             />
         )}
