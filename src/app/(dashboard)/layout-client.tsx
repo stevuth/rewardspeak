@@ -301,7 +301,7 @@ const mobileNavItems = [
 
 const MobileNavItem = ({ href, icon: Icon, label }: { href:string, icon: React.ElementType, label: string }) => {
     const pathname = usePathname();
-    const isActive = pathname.startsWith(href);
+    const isActive = pathname === href;
     return (
         <Link
             href={href}
@@ -310,9 +310,9 @@ const MobileNavItem = ({ href, icon: Icon, label }: { href:string, icon: React.E
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
             )}
         >
-            {isActive && <div className="absolute top-0 h-0.5 w-full rounded-b-full bg-primary" />}
             <Icon className="h-5 w-5" />
             <span className="truncate">{label}</span>
+            {isActive && <div className="absolute bottom-0 h-0.5 w-full rounded-t-full bg-primary" />}
         </Link>
     );
 };
