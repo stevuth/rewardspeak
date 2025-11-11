@@ -20,7 +20,7 @@ function SupportHeader() {
           <span className="text-xl">Support Portal</span>
       </Link>
       <form action={handleLogout}>
-        <Button variant="destructive">
+        <Button variant="ghost" className="hover:bg-primary hover:text-primary-foreground">
             <LogOut className="mr-2 h-4 w-4" />
             Log Out
         </Button>
@@ -43,3 +43,5 @@ export default function SupportDashboardLayout({
     </div>
   );
 }
+
+    

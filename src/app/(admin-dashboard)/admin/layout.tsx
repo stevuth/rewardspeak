@@ -115,7 +115,7 @@ function AdminHeader() {
                     </Link>
                 </Button>
                 <form action={handleLogout} className="w-full">
-                    <Button variant="destructive" className="w-full">
+                    <Button variant="ghost" className="w-full hover:bg-primary hover:text-primary-foreground">
                         <LogOut className="mr-2 h-4 w-4" />
                         Log Out
                     </Button>
@@ -131,7 +131,7 @@ function AdminHeader() {
               </Link>
             </Button>
              <form action={handleLogout}>
-                <Button variant="destructive" size="icon">
+                <Button variant="ghost" size="icon" className="hover:bg-primary hover:text-primary-foreground">
                     <LogOut className="h-4 w-4" />
                 </Button>
             </form>
@@ -164,7 +164,7 @@ function AdminHeader() {
                 </Link>
               </Button>
               <form action={handleLogout}>
-                <Button variant="destructive">
+                <Button variant="ghost" className="hover:bg-primary hover:text-primary-foreground">
                     <LogOut className="mr-2 h-4 w-4" />
                     Log Out
                 </Button>
@@ -219,3 +219,5 @@ export default function AdminDashboardLayout({
     </div>
   );
 }
+
+    

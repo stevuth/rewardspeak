@@ -37,11 +37,12 @@ import { AnimatedCounter } from "@/components/animated-counter";
 import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { SafeImage } from "@/components/safe-image";
+import { signOut } from "@/app/auth/actions";
 
 
 const navItems = [
-    { href: "/dashboard", label: "Peak Dashboard", icon: LayoutDashboard },
-    { href: "/earn", label: "Earn", icon: LayoutGrid },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/referrals", label: "Invite & Earn", icon: Users },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
@@ -50,28 +51,48 @@ const navItems = [
 const secondaryNavItems = [
   { href: "/history", label: "Offers Log", icon: Clock },
   { href: "/settings", label: "My Peak Profile", icon: Settings },
-  { href: "/support", label: "Help Station", icon: CircleHelp },
+  { href: "/help", label: "Help Center", icon: CircleHelp },
 ];
 
 const mobileNavItems = [
-    { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/earn", label: "Earn", icon: Mountain },
+    { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/history", label: "Offers Log", icon: Clock },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
+
+const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick: () => void }) => {
+  return (
+    <Link href={href} className="relative block w-full group" onClick={onClick}>
+      <svg
+        viewBox="0 0 200 50"
+        preserveAspectRatio="none"
+        className="w-full h-auto"
+      >
+        <path
+          d="M 5 5 C 10 0, 190 0, 195 5 L 195 45 C 190 50, 10 50, 5 45 Z"
+          fill={isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted)/0.5)'}
+          stroke={isActive ? 'hsl(var(--primary)/0.5)' : 'hsl(var(--border))'}
+          strokeWidth="1"
+          className="transition-all duration-300 group-hover:fill-[hsl(var(--muted))] "
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-start px-4 gap-3 pointer-events-none">
+        <Icon className={cn("h-5 w-5 transition-colors", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary")} />
+        <span className={cn("font-semibold transition-colors", isActive ? "text-primary-foreground" : "text-foreground")}>{label}</span>
+      </div>
+    </Link>
+  );
+};
+
 
 const recentEarnings: any[] = [];
 
 function SidebarNavs({ user }: { user: User | null }) {
   const pathname = usePathname();
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
 
   const getNavLinkClass = (href: string) => {
-    const isActive = isClient && pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
+    const isActive = pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
     return cn(
       "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
       isActive
@@ -94,7 +115,7 @@ function SidebarNavs({ user }: { user: User | null }) {
           </Link>
         ))}
         {user && user.email?.endsWith('@rewardspeak.com') && (
-            <Link href="/admin" className={getNavLinkClass('/admin')}>
+            <Link href="/admin/dashboard" className={getNavLinkClass('/admin')}>
                 <Shield className="h-4 w-4" />
                 Admin Portal
             </Link>
@@ -108,7 +129,7 @@ function SidebarNavs({ user }: { user: User | null }) {
             href={item.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold",
-              isClient && pathname.startsWith(item.href)
+              pathname.startsWith(item.href)
                 ? "bg-secondary text-secondary-foreground"
                 : "text-muted-foreground hover:bg-muted"
             )}
@@ -117,19 +138,21 @@ function SidebarNavs({ user }: { user: User | null }) {
             {item.label}
           </Link>
         ))}
-         <Link
-            href={`/?event=logout&user_email=${user?.email || ''}`}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-primary hover:text-primary-foreground font-bold"
-          >
-            <LogOut className="h-4 w-4" />
-            Log Out
-          </Link>
+         <form action={signOut}>
+            <button
+                type="submit"
+                className="w-full flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-primary hover:text-primary-foreground font-bold"
+            >
+                <LogOut className="h-4 w-4" />
+                Log Out
+            </button>
+        </form>
       </div>
     </>
   );
 }
 
-function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, children }: { user: User | null, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null, children?: React.ReactNode }) {
+function SidebarContent({ user, children }: { user: User | null, children?: React.ReactNode }) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -142,78 +165,36 @@ function SidebarContent({ user, totalPoints, withdrawnPoints, avatarUrl, childre
         </Link>
         {children}
       </div>
-
-      <div className="p-4 space-y-4 bg-muted/50 border-b">
-        <div className="flex items-center gap-4">
-            <div className="relative h-12 w-12 shrink-0">
-            <SafeImage
-                src={avatarUrl || `https://picsum.photos/seed/${user?.id || 'avatar'}/48/48`}
-                alt="user avatar"
-                width={48}
-                height={48}
-                className="rounded-full border-2 border-primary/50"
-                data-ai-hint={"person portrait"}
-            />
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">{user?.email}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-            </div>
-        </div>
-        <div className="flex items-center justify-around text-center">
-            <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Balance</p>
-                <p className="font-bold text-lg text-secondary"><AnimatedCounter value={totalPoints} /> Pts</p>
-            </div>
-            <Separator orientation="vertical" className="h-8" />
-            <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Withdrawn</p>
-                <p className="font-bold text-lg"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
-            </div>
-        </div>
-      </div>
       <SidebarNavs user={user} />
     </div>
   );
 }
 
 
-function MobileSidebar({ user }: { user: User | null }) {
+function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
     const pathname = usePathname();
-    const [isClient, setIsClient] = useState(false);
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    const [isOpen, setIsOpen] = useState(false);
 
-    const getNavLinkClass = (href: string) => {
-        const isActive = isClient && pathname.startsWith(href) && (href !== '/dashboard' || pathname === href);
-        return cn(
-          "flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm",
-          isActive
-            ? "bg-accent text-accent-foreground"
-            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-        );
-    };
-
-    const mobileNavLinks = [...navItems, ...secondaryNavItems].filter(
-        (item) => !mobileNavItems.some((mobileItem) => mobileItem.href === item.href)
-    );
+    const mobileNavLinks = [
+        ...navItems, 
+        ...secondaryNavItems
+    ];
 
      if (user && user.email?.endsWith('@rewardspeak.com')) {
-        mobileNavLinks.push({ href: "/admin", label: "Admin Portal", icon: Shield });
+        mobileNavLinks.push({ href: "/admin/dashboard", label: "Admin Portal", icon: Shield });
     }
 
     return (
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="shrink-0 md:hidden">
                     <Menu className="h-5 w-5" />
                     <span className="sr-only">Toggle navigation menu</span>
                 </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="w-full bg-card p-0 rounded-b-2xl">
+            <SheetContent side="left" className="w-full max-w-xs bg-card p-0">
                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                 <div className="w-full">
+                 <div className="w-full h-full flex flex-col">
                     <div className="p-4 border-b flex items-center justify-between">
                         <Link
                         href="/dashboard"
@@ -223,34 +204,32 @@ function MobileSidebar({ user }: { user: User | null }) {
                           <span className="text-lg font-bold">Rewards Peak</span>
                         </Link>
                     </div>
-                     <div className="grid grid-cols-2 gap-4 p-4">
-                        <nav className="flex-1 space-y-1">
+                     <nav className="flex-1 space-y-2 p-4 overflow-y-auto">
                         {mobileNavLinks.map((item) => (
-                            <Link
-                            key={item.href}
-                            href={item.href}
-                            className={getNavLinkClass(item.href)}
-                            >
-                            <item.icon className="h-4 w-4" />
-                            {item.label}
-                            </Link>
+                           <SvgNavButton
+                              key={item.href}
+                              href={item.href}
+                              icon={item.icon}
+                              label={item.label}
+                              isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href)}
+                              onClick={() => setIsOpen(false)}
+                           />
                         ))}
-                        </nav>
-                        <div className="space-y-4">
-                        <div className="p-4 flex items-center gap-4 bg-muted/50 rounded-lg">
-                            <UserNav user={user} />
+                    </nav>
+                     <div className="mt-auto p-4 border-t space-y-4">
+                        <div className="p-2 flex items-center gap-4 bg-muted/50 rounded-lg">
+                            <UserNav user={user} avatarUrl={avatarUrl} />
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold truncate">{user?.email}</p>
                                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                             </div>
                         </div>
-                        <Button variant="ghost" asChild className="w-full justify-start hover:bg-accent hover:text-accent-foreground">
-                            <Link href={`/?event=logout&user_email=${user?.email || ''}`}>
+                        <form action={signOut}>
+                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-primary hover:text-primary-foreground">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
-                            </Link>
-                        </Button>
-                        </div>
+                            </Button>
+                        </form>
                     </div>
                  </div>
             </SheetContent>
@@ -262,10 +241,7 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
     const router = useRouter();
 
     return (
-        <header className="flex h-20 items-center gap-4 border-b bg-card px-4 lg:px-6">
-            <div className="hidden md:flex">
-                <SidebarTrigger />
-            </div>
+        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
             <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
                 <ArrowLeft className="h-5 w-5" />
                 <span className="sr-only">Go back</span>
@@ -307,7 +283,7 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
                     </div>
                 </div>
                 <UserNav user={user} avatarUrl={avatarUrl} />
-                <MobileSidebar user={user} />
+                <MobileSidebar user={user} avatarUrl={avatarUrl} />
             </div>
         </header>
     )
@@ -315,23 +291,19 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
 
 function MobileBottomNav() {
     const pathname = usePathname();
-    const [isClient, setIsClient] = useState(false);
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
 
     return (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-4 gap-1 place-items-center">
                 {mobileNavItems.map((item) => {
-                    const isActive = isClient && pathname === item.href;
+                    const isActive = pathname === item.href;
                     return (
                         <Link
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "group flex flex-col items-center gap-1 p-2 text-xs font-bold text-muted-foreground",
-                                isActive ? "text-accent border-b-2 border-accent" : "hover:text-foreground"
+                                "group flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-bold text-muted-foreground",
+                                isActive ? "text-accent" : "hover:text-foreground"
                             )}
                         >
                             <item.icon className={cn("h-5 w-5 transition-colors duration-200", isActive ? "text-accent" : "group-hover:text-accent")} />
@@ -349,7 +321,7 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         <SidebarProvider>
           <div className="grid min-h-screen w-full md:grid-cols-[auto_1fr]">
             <Sidebar collapsible="icon" className="bg-card border-r">
-              <SidebarContent user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
+              <SidebarContent user={user} />
             </Sidebar>
             <div className="flex flex-col overflow-hidden">
               <Header user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
@@ -362,3 +334,7 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
+
+    
+
+    
