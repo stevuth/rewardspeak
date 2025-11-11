@@ -109,6 +109,14 @@ const faqs = [
         answer: "Yes, absolutely. Rewards Peak is 100% free to use. We will never ask you for payment information. Our partners pay us, and we share that revenue with you."
     },
     {
+        question: "How long does it take to get my money after cashing out?",
+        answer: "Withdrawal requests are typically processed within 24-72 hours. We review each request to ensure security and prevent fraud, so some may take a little longer. You'll receive an email confirmation once your payment is sent."
+    },
+    {
+        question: "Why didn't I get points for an offer I completed?",
+        answer: "Most offers credit instantly, but some can take up to 24 hours to be confirmed by our partners. If it's been longer than that, make sure you followed all offer instructions, didn't use a VPN, and completed it on the correct device. For further help, please contact our support team with a screenshot of your completion."
+    },
+    {
         question: "Can I use a VPN or create multiple accounts?",
         answer: "No. To ensure a fair platform for everyone, the use of VPNs or proxies is strictly forbidden. Each user is allowed only one account. Violating these rules will result in your account being banned."
     }
