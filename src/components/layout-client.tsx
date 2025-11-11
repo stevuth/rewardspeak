@@ -21,6 +21,7 @@ import {
   ClipboardList,
   LayoutGrid,
   Shield,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +39,7 @@ import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { SafeImage } from "@/components/safe-image";
 import { signOut } from "@/app/auth/actions";
+import { motion } from 'framer-motion';
 
 
 const navItems = [
@@ -56,9 +58,9 @@ const secondaryNavItems = [
 
 const mobileNavItems = [
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
-    { href: "/earn", label: "Earn", icon: DollarSign },
-    { href: "/history", label: "Offers Log", icon: Clock },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
+    { href: "/history", label: "Offers Log", icon: Clock },
+    { href: "/referrals", label: "Referrals", icon: Users },
 ]
 
 const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick: () => void }) => {
@@ -300,31 +302,68 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
     )
 }
 
+const MobileNavItem = ({ item, isActive }: { item: typeof mobileNavItems[0], isActive: boolean }) => (
+    <motion.div whileTap={{ scale: 0.9 }}>
+        <Link
+            href={item.href}
+            className={cn(
+                "group relative flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-semibold",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+            )}
+        >
+            {isActive && (
+                <motion.div
+                    layoutId="active-nav-highlight"
+                    className="absolute inset-0 bg-primary/10 rounded-full"
+                    style={{ filter: 'blur(10px)' }}
+                />
+            )}
+            <item.icon className="h-5 w-5" />
+            <span className="truncate">{item.label}</span>
+        </Link>
+    </motion.div>
+);
+
 function MobileBottomNav() {
     const pathname = usePathname();
+    const isEarnActive = pathname === '/earn';
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-1 md:hidden z-50">
-            <div className="grid grid-cols-4 gap-1 place-items-center">
-                {mobileNavItems.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                "group flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-bold text-muted-foreground",
-                                isActive ? "text-accent" : "hover:text-foreground"
-                            )}
-                        >
-                            <item.icon className={cn("h-5 w-5 transition-colors duration-200", isActive ? "text-accent" : "group-hover:text-accent")} />
-                            <span className="truncate">{item.label}</span>
-                        </Link>
-                    )
-                })}
+        <div className="fixed bottom-0 left-0 right-0 h-24 md:hidden z-50 pointer-events-none">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm pointer-events-auto">
+                <div
+                    className="relative grid h-16 items-center rounded-full border border-border/50 bg-card/70 backdrop-blur-xl"
+                    style={{ gridTemplateColumns: '1fr 1fr auto 1fr 1fr' }}
+                >
+                    <MobileNavItem item={mobileNavItems[0]} isActive={pathname === mobileNavItems[0].href} />
+                    <MobileNavItem item={mobileNavItems[1]} isActive={pathname === mobileNavItems[1].href} />
+
+                    <div className="relative flex justify-center">
+                        <motion.div whileTap={{ scale: 0.9 }}>
+                            <Link href="/earn" className="relative -top-6">
+                                <div className={cn(
+                                    "relative flex h-16 w-16 items-center justify-center rounded-full border-4 border-background transition-all duration-300",
+                                    isEarnActive ? "bg-secondary shadow-lg shadow-secondary/30" : "bg-primary"
+                                )}>
+                                    {isEarnActive && (
+                                        <motion.div
+                                            layoutId="active-earn-highlight"
+                                            className="absolute inset-0 rounded-full bg-secondary"
+                                            style={{ filter: 'blur(12px)' }}
+                                        />
+                                    )}
+                                    <DollarSign className={cn("h-7 w-7 transition-colors", isEarnActive ? "text-secondary-foreground" : "text-primary-foreground")} />
+                                </div>
+                            </Link>
+                        </motion.div>
+                    </div>
+                    
+                    <MobileNavItem item={mobileNavItems[2]} isActive={pathname === mobileNavItems[2].href} />
+                    <MobileNavItem item={mobileNavItems[3]} isActive={pathname === mobileNavItems[3].href} />
+                </div>
             </div>
         </div>
-    )
+    );
 }
 
 export function LayoutClient({ user, children, totalPoints, withdrawnPoints, avatarUrl }: { user: User | null, children: React.ReactNode, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null }) {
@@ -337,7 +376,7 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
             <div className="flex flex-col overflow-hidden">
               <Header user={user} totalPoints={totalPoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl} />
               <SidebarInset>
-                <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-20 md:pb-8">{children}</main>
+                <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background overflow-y-auto pb-28 md:pb-8">{children}</main>
               </SidebarInset>
               <MobileBottomNav />
             </div>
