@@ -55,14 +55,6 @@ const secondaryNavItems = [
   { href: "/help", label: "Help Center", icon: CircleHelp },
 ];
 
-const mobileNavItems = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/earn", label: "Earn", icon: DollarSign },
-    { href: "/withdraw", label: "Cash-Out", icon: Gift },
-    { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-    { href: "/referrals", label: "Referrals", icon: Users },
-]
-
 const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick: () => void }) => {
   return (
     <Link href={href} className="relative block w-full group" onClick={onClick}>
@@ -301,6 +293,12 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
     )
 }
 
+const mobileNavItems = [
+    { href: "/earn", label: "Earn", icon: DollarSign },
+    { href: "/withdraw", label: "Cash-Out", icon: Gift },
+    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
+];
+
 const MobileNavItem = ({ href, icon: Icon, label, isActive }: { href:string, icon: React.ElementType, label: string, isActive: boolean }) => (
     <Link
         href={href}
@@ -309,7 +307,7 @@ const MobileNavItem = ({ href, icon: Icon, label, isActive }: { href:string, ico
             isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
         )}
     >
-        <div className="absolute top-0 h-0.5 w-1/2 rounded-b-full bg-primary transition-all duration-300" style={{ transform: isActive ? 'scaleX(1)' : 'scaleX(0)' }}/>
+        {isActive && <div className="absolute top-0 h-0.5 w-1/2 rounded-b-full bg-primary" />}
         <Icon className="h-5 w-5" />
         <span className="truncate">{label}</span>
     </Link>
@@ -320,9 +318,9 @@ function MobileBottomNav() {
 
     return (
         <div className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t border-border/50 md:hidden z-50">
-            <div className="grid h-full grid-cols-5 items-center">
+            <div className="grid h-full grid-cols-3 items-center">
                  {mobileNavItems.map((item) => {
-                    const isActive = pathname === item.href || (item.href === '/earn' && pathname.startsWith('/earn'));
+                    const isActive = pathname.startsWith(item.href);
                     return (
                         <MobileNavItem key={item.href} href={item.href} icon={item.icon} label={item.label} isActive={isActive} />
                     )
