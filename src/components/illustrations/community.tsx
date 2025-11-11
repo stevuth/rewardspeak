@@ -12,13 +12,22 @@ export function CommunityIllustration() {
   const [animationProps, setAnimationProps] = useState<AnimationProps[]>([]);
 
   useEffect(() => {
-    // This code now runs only on the client, after the initial render.
-    const newAnimationProps = Array(8).fill(null).map(() => ({
-        dur: `${2 + Math.random() * 2}s`,
-        begin: `${Math.random()}s`,
+    // This code runs only on the client, after the initial render, to avoid hydration mismatch.
+    const newAnimationProps = Array(6).fill(null).map(() => ({
+        dur: `${3 + Math.random() * 3}s`, // duration between 3s and 6s
+        begin: `${Math.random() * 2}s`, // start delay up to 2s
     }));
     setAnimationProps(newAnimationProps);
   }, []);
+
+  const userPositions = [
+    { cx: 50, cy: 50 },
+    { cx: 206, cy: 50 },
+    { cx: 50, cy: 206 },
+    { cx: 206, cy: 206 },
+    { cx: 128, cy: 30 },
+    { cx: 128, cy: 226 },
+  ];
 
   return (
     <svg
@@ -30,58 +39,59 @@ export function CommunityIllustration() {
       className="w-full h-auto"
     >
       <defs>
-        <filter id="glow-community" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="10" result="coloredBlur" />
-          <feMerge>
-            <feMergeNode in="coloredBlur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <radialGradient id="globe-grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-          <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.6" />
+        <radialGradient id="network-grad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
         </radialGradient>
-        <linearGradient id="user-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="user-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="hsl(var(--card-foreground))" />
             <stop offset="100%" stopColor="hsl(var(--muted-foreground))" />
         </linearGradient>
       </defs>
 
-      {/* Central Globe */}
-      <g filter="url(#glow-community)">
-        <circle cx="128" cy="128" r="50" fill="url(#globe-grad)" />
-        <path d="M128 78 C 100 90, 100 166, 128 178" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
-        <path d="M128 78 C 156 90, 156 166, 128 178" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
-        <path d="M90 100 C 110 95, 146 95, 166 100" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
-        <path d="M90 156 C 110 161, 146 161, 166 156" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
-      </g>
-      
-      {/* Users and connections */}
-      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
-        const x = 128 + 90 * Math.cos(angle * Math.PI / 180);
-        const y = 128 + 90 * Math.sin(angle * Math.PI / 180);
-        const anims = animationProps[i] || { dur: '3s', begin: '0s' }; // Default values for SSR
+      {/* Central Network Hub */}
+      <circle cx="128" cy="128" r="40" fill="url(#network-grad)" />
+      <circle cx="128" cy="128" r="20" fill="none" stroke="hsl(var(--secondary))" strokeWidth="1.5" strokeDasharray="4 4" />
+      <circle cx="128" cy="128" r="30" fill="none" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.7" />
 
+      {/* Users and Connections */}
+      {userPositions.map((pos, i) => {
+        const anims = animationProps[i] || { dur: '4s', begin: '0s' }; // Default for SSR
+        const isHorizontal = pos.cy === 128;
+        const xOffset = isHorizontal ? (pos.cx < 128 ? -8 : 8) : 0;
+        const yOffset = !isHorizontal ? (pos.cy < 128 ? -8 : 8) : 0;
+        
         return (
-            <g key={angle}>
-                <path d={`M128 128 C ${(128 + x)/2} ${(128 + y)/2}, ${x} ${y}, ${x} ${y}`} stroke="hsl(var(--border))" strokeWidth="1.5" fill="none" strokeOpacity="0.7"/>
-                
+            <g key={i}>
+                {/* Connection Line */}
+                <path d={`M128 128 C ${(128 + pos.cx)/2} ${(128 + pos.cy)/2}, ${pos.cx} ${pos.cy}, ${pos.cx} ${pos.cy}`} stroke="hsl(var(--border))" strokeWidth="1" fill="none" strokeOpacity="0.5"/>
+
                 {/* User Icon */}
-                <g transform={`translate(${x-12}, ${y-12})`}>
-                    <circle cx="12" cy="12" r="12" fill="url(#user-grad)" stroke="hsl(var(--primary))" strokeWidth="1"/>
-                    <path d="M12 15 C 10 19, 14 19, 12 15" stroke="hsl(var(--primary))" strokeWidth="1" fill="none"/>
-                    <circle cx="12" cy="9" r="3" fill="hsl(var(--primary))" opacity="0.8"/>
+                <g transform={`translate(${pos.cx - 16}, ${pos.cy - 16})`}>
+                    <circle cx="16" cy="16" r="16" fill="url(#user-icon-grad)" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" />
+                    <path d="M16 19 C 13 24, 19 24, 16 19" stroke="hsl(var(--primary))" strokeWidth="1.5" fill="none" />
+                    <circle cx="16" cy="12" r="4" fill="hsl(var(--primary))" />
                 </g>
 
-                {/* Animated Earning Coin */}
-                <circle cx="128" cy="128" r="3" fill="hsl(var(--secondary))">
+                {/* Animated Earning Coin ($) */}
+                <text
+                    x={pos.cx + xOffset}
+                    y={pos.cy + yOffset}
+                    fill="hsl(var(--secondary))"
+                    fontSize="20"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                >
+                    $
                     <animateMotion
                         dur={anims.dur}
                         repeatCount="indefinite"
-                        path={`M0,0 C ${(x - 128)/2} ${(y - 128)/2}, ${x - 128} ${y-128}, ${x - 128} ${y-128}`}
+                        path={`M0,0 C ${-(pos.cx - 128)/2},${-(pos.cy - 128)/2}, ${-(pos.cx-128)},${-(pos.cy-128)}, ${-(pos.cx-128)},${-(pos.cy-128)}`}
                         begin={anims.begin}
                     />
-                </circle>
+                    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.2;0.8;1" dur={anims.dur} repeatCount="indefinite" begin={anims.begin} />
+                </text>
             </g>
         )
       })}
