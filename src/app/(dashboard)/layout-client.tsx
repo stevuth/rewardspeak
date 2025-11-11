@@ -326,7 +326,7 @@ const MobileNavItem = ({ href, icon: Icon, label, isActive }: { href:string, ico
 
 function MobileBottomNav() {
     const pathname = usePathname();
-    const isEarnActive = pathname === '/earn';
+    const isEarnActive = pathname.startsWith('/earn');
 
     return (
         <div className="fixed bottom-0 left-0 right-0 h-24 md:hidden z-50 pointer-events-none">
