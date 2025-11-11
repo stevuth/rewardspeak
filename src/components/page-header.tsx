@@ -70,7 +70,7 @@ const SvgDescription = ({ description }: { description: string }) => {
                 y="50%"
                 dy=".3em"
                 fill="hsl(var(--muted-foreground))"
-                className="font-sans text-sm sm:text-base"
+                className="font-sans text-base"
             >
                 {description}
             </text>
