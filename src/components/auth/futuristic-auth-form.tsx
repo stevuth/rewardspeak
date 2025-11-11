@@ -37,8 +37,6 @@ const FloatingLabelInput = ({
   id,
   name,
   type,
-  label,
-  defaultValue = "",
   Icon,
   required = true,
   isPassword = false,
@@ -48,8 +46,6 @@ const FloatingLabelInput = ({
   id: string;
   name: string;
   type: string;
-  label: string;
-  defaultValue?: string;
   Icon: React.ElementType;
   required?: boolean;
   isPassword?: boolean;
@@ -65,17 +61,10 @@ const FloatingLabelInput = ({
             id={id}
             name={name}
             type={isPassword ? (showPassword ? 'text' : 'password') : type}
-            defaultValue={defaultValue}
             placeholder=" " // Important for the floating label effect
             className="floating-label-input block w-full bg-[#1A0033]/80 rounded-md py-3 pl-10 pr-10 text-base text-gray-200 placeholder-gray-500 appearance-none focus:outline-none focus:ring-0 relative z-20"
             required={required}
           />
-          <label
-            htmlFor={id}
-            className="absolute top-1/2 left-10 -translate-y-1/2 text-gray-400 text-base duration-300 origin-[0] pointer-events-none z-30"
-          >
-            {label}
-          </label>
            {isPassword && (
             <button
               type="button"
@@ -90,6 +79,7 @@ const FloatingLabelInput = ({
     </div>
   );
 };
+
 
 const loadingMessages = [
     "Authenticating...",
@@ -168,12 +158,12 @@ function ForgotPasswordModal({ open, onOpenChange }: { open: boolean, onOpenChan
                     </DialogDescription>
                 </DialogHeader>
                 <form action={formAction}>
-                    <div className="py-4">
+                    <div className="py-4 space-y-2">
+                        <Label htmlFor="reset-email">Email Address</Label>
                         <FloatingLabelInput
                             id="reset-email"
                             name="email"
                             type="email"
-                            label="Email Address"
                             Icon={Mail}
                         />
                     </div>
@@ -299,42 +289,48 @@ export function FuturisticAuthForm({
                   </button>
                 </p>
 
-                <FloatingLabelInput
-                  id="email"
-                  name="email"
-                  type="email"
-                  label="Email Address"
-                  Icon={Mail}
-                />
-                <div className="relative">
-                  <FloatingLabelInput
-                    id="password"
-                    name="password"
-                    type="password"
-                    label="Password"
-                    Icon={Lock}
-                    isPassword={true}
-                    showPassword={showPassword}
-                    toggleShowPassword={toggleShowPassword}
-                  />
-                  {isLogin && (
-                      <button type="button" onClick={() => setShowForgotModal(true)} className="absolute top-0 right-0 text-xs font-semibold text-secondary hover:text-secondary/80 transition mt-1">
-                          Forgot Password?
-                      </button>
-                  )}
+                <div className="space-y-2">
+                    <Label htmlFor="email" className="text-gray-400 text-base">Email Address</Label>
+                    <FloatingLabelInput
+                        id="email"
+                        name="email"
+                        type="email"
+                        Icon={Mail}
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <Label htmlFor="password" className="text-gray-400 text-base">Password</Label>
+                        {isLogin && (
+                            <button type="button" onClick={() => setShowForgotModal(true)} className="text-xs font-semibold text-secondary hover:text-secondary/80 transition">
+                                Forgot Password?
+                            </button>
+                        )}
+                    </div>
+                    <FloatingLabelInput
+                        id="password"
+                        name="password"
+                        type="password"
+                        Icon={Lock}
+                        isPassword={true}
+                        showPassword={showPassword}
+                        toggleShowPassword={toggleShowPassword}
+                    />
                 </div>
 
                 {!isLogin && (
                   <>
-                    <FloatingLabelInput
-                      id="referral_code"
-                      name="referral_code"
-                      type="text"
-                      label="Referral Code (Optional)"
-                      Icon={UserPlus}
-                      required={false}
-                      defaultValue={referralCode}
-                    />
+                    <div className="space-y-2">
+                        <Label htmlFor="referral_code" className="text-gray-400 text-base">Referral Code (Optional)</Label>
+                        <FloatingLabelInput
+                            id="referral_code"
+                            name="referral_code"
+                            type="text"
+                            Icon={UserPlus}
+                            required={false}
+                        />
+                    </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox id="accepted_terms" name="accepted_terms" required />
                       <Label htmlFor="accepted_terms" className="text-xs text-gray-400">
