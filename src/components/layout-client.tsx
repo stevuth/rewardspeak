@@ -14,7 +14,7 @@ import {
   Settings,
   Menu,
   Clock,
-  Mountain,
+  DollarSign,
   LogOut,
   ArrowLeft,
   X,
@@ -42,7 +42,7 @@ import { signOut } from "@/app/auth/actions";
 
 const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/earn", label: "Earn", icon: Mountain },
+    { href: "/earn", label: "Earn", icon: DollarSign },
     { href: "/referrals", label: "Invite & Earn", icon: Users },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
     { href: "/withdraw", label: "Cash-Out Cabin", icon: Gift },
@@ -56,7 +56,7 @@ const secondaryNavItems = [
 
 const mobileNavItems = [
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
-    { href: "/earn", label: "Earn", icon: Mountain },
+    { href: "/earn", label: "Earn", icon: DollarSign },
     { href: "/history", label: "Offers Log", icon: Clock },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
