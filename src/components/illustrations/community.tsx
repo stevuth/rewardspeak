@@ -11,42 +11,58 @@ export function CommunityIllustration() {
     >
       <defs>
         <filter id="glow-community" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="12" result="coloredBlur" />
+          <feGaussianBlur stdDeviation="10" result="coloredBlur" />
           <feMerge>
             <feMergeNode in="coloredBlur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <radialGradient id="core-grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-          <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="1" />
-          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.8" />
+        <radialGradient id="globe-grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.6" />
         </radialGradient>
+        <linearGradient id="user-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--card-foreground))" />
+            <stop offset="100%" stopColor="hsl(var(--muted-foreground))" />
+        </linearGradient>
       </defs>
 
-      {/* Central Glowing Orb */}
+      {/* Central Globe */}
       <g filter="url(#glow-community)">
-        <circle cx="128" cy="128" r="40" fill="url(#core-grad)" />
+        <circle cx="128" cy="128" r="50" fill="url(#globe-grad)" />
+        <path d="M128 78 C 100 90, 100 166, 128 178" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
+        <path d="M128 78 C 156 90, 156 166, 128 178" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
+        <path d="M90 100 C 110 95, 146 95, 166 100" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
+        <path d="M90 156 C 110 161, 146 161, 166 156" stroke="hsl(var(--background))" strokeWidth="1.5" fill="none" opacity="0.3"/>
       </g>
       
-      {/* Abstract Person Figures and connections */}
-      {[0, 60, 120, 180, 240, 300].map(angle => (
-        <g key={angle} transform={`rotate(${angle} 128 128)`}>
-          {/* Connection line */}
-          <path d="M128 128 C128 80, 90 60, 60 60" stroke="hsl(var(--border))" strokeWidth="2" fill="none" strokeOpacity="0.5"/>
+      {/* Users and connections */}
+      {[0, 45, 90, 135, 180, 225, 270, 315].map(angle => {
+        const x = 128 + 90 * Math.cos(angle * Math.PI / 180);
+        const y = 128 + 90 * Math.sin(angle * Math.PI / 180);
+        return (
+            <g key={angle}>
+                <path d={`M128 128 C ${(128 + x)/2} ${(128 + y)/2}, ${x} ${y}, ${x} ${y}`} stroke="hsl(var(--border))" strokeWidth="1.5" fill="none" strokeOpacity="0.7"/>
+                
+                {/* User Icon */}
+                <g transform={`translate(${x-12}, ${y-12})`}>
+                    <circle cx="12" cy="12" r="12" fill="url(#user-grad)" stroke="hsl(var(--primary))" strokeWidth="1"/>
+                    <path d="M12 15 C 10 19, 14 19, 12 15" stroke="hsl(var(--primary))" strokeWidth="1" fill="none"/>
+                    <circle cx="12" cy="9" r="3" fill="hsl(var(--primary))" opacity="0.8"/>
+                </g>
 
-          {/* Person Head */}
-          <circle cx="60" cy="60" r="12" fill="hsl(var(--card))" stroke="hsl(var(--primary))" strokeWidth="2"/>
-          {/* Person Body Arc */}
-          <path d="M48 78 C54 88, 66 88, 72 78" stroke="hsl(var(--primary))" strokeWidth="3" fill="none" strokeLinecap="round" />
-        </g>
-      ))}
-
-      {/* Floating accent elements */}
-      <circle cx="50" cy="100" r="4" fill="hsl(var(--secondary))" opacity="0.7" />
-      <circle cx="200" cy="80" r="5" fill="hsl(var(--secondary))" opacity="0.8" />
-      <circle cx="210" cy="180" r="3" fill="hsl(var(--secondary))" opacity="0.6" />
-      <circle cx="80" cy="200" r="4" fill="hsl(var(--secondary))" opacity="0.7" />
-      
+                {/* Animated Earning Coin */}
+                <circle cx="128" cy="128" r="3" fill="hsl(var(--secondary))">
+                    <animateMotion
+                        dur={`${2 + Math.random() * 2}s`}
+                        repeatCount="indefinite"
+                        path={`M0,0 C ${(x - 128)/2} ${(y - 128)/2}, ${x - 128} ${y-128}, ${x - 128} ${y-128}`}
+                        begin={`${Math.random()}s`}
+                    />
+                </circle>
+            </g>
+        )
+      })}
     </svg>
   );
 }
