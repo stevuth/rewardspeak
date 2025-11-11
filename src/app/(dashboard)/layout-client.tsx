@@ -174,9 +174,6 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                             <UserNav user={user} avatarUrl={avatarUrl} />
                             <div className="flex-1 min-w-0">
                                 <p className="font-semibold truncate">{user?.email}</p>
-                                <Link href="/settings" onClick={closeSheet} className="text-xs text-muted-foreground hover:text-primary transition-colors">
-                                    View profile
-                                </Link>
                             </div>
                         </div>
                     </div>
