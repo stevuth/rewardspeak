@@ -225,7 +225,7 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                             </div>
                         </div>
                         <form action={signOut}>
-                            <Button variant="destructive" type="submit" className="w-full justify-start">
+                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-primary hover:text-primary-foreground">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
                             </Button>
