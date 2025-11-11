@@ -47,7 +47,7 @@ export default function AdminLoginPage() {
             <AlertTriangle className="h-6 w-6 flex-shrink-0 text-destructive" />
             <div>
                 <h3 className="font-semibold text-destructive-foreground">Security Warning</h3>
-                <p className="text-sm text-destructive/80">
+                <p className="text-base font-semibold text-destructive/80">
                 All activities on this portal are logged and monitored for security purposes. Unauthorized access is strictly prohibited.
                 </p>
             </div>
