@@ -70,6 +70,7 @@ const OfferHeader = ({
       </div>
        <button
         onClick={onClose}
+        aria-label="Close"
         className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-1 ring-primary/50 shadow-sm ring-offset-background transition-all hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-secondary hover:-translate-y-0.5 active:scale-95 z-10"
       >
         <span className="text-xs uppercase tracking-wider">Close</span>
@@ -225,7 +226,7 @@ export function OfferPreviewModal({
                       <Button
                         onClick={handleStartOffer}
                         size="default"
-                        className="font-bold bg-accent text-accent-foreground hover:bg-accent/80 hover:shadow-[0_0_12px_hsl(var(--accent))] transition-all w-full sm:w-auto shrink-0"
+                        className="font-bold bg-primary text-primary-foreground hover:bg-primary/80 hover:shadow-[0_0_12px_hsl(var(--primary))] transition-all w-full sm:w-auto shrink-0"
                       >
                         Start Offer
                       </Button>
