@@ -198,41 +198,6 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
     const router = useRouter();
     const pathname = usePathname();
     const isDashboard = pathname === '/dashboard';
-    const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
-
-    useEffect(() => {
-        if (!user) return;
-        
-        const supabase = createSupabaseBrowserClient();
-        const fetchUnreadStatus = async () => {
-            const { data: tickets, error } = await supabase
-                .from('support_tickets')
-                .select('id, messages:ticket_messages(is_from_support)')
-                .eq('user_id', user.id)
-                .eq('status', 'open');
-
-            if (error || !tickets) return;
-
-            const hasUnread = tickets.some(ticket => 
-                ticket.messages.length > 0 && ticket.messages[ticket.messages.length - 1].is_from_support
-            );
-            setHasUnreadMessages(hasUnread);
-        };
-        
-        fetchUnreadStatus();
-
-        const channel = supabase
-            .channel('public:ticket_messages')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ticket_messages' }, 
-                (payload) => {
-                    fetchUnreadStatus();
-                }
-            ).subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        }
-    }, [user]);
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
@@ -283,18 +248,7 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
                         <p className="font-bold"><AnimatedCounter value={withdrawnPoints} /> Pts</p>
                     </div>
                 </div>
-                <Link href="/help" className="relative">
-                    <Button variant="ghost" size="icon" className="relative h-8 w-8">
-                        <Bell className="h-4 w-4" />
-                        {hasUnreadMessages && (
-                            <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-                            </span>
-                        )}
-                        <span className="sr-only">Notifications</span>
-                    </Button>
-                </Link>
+                
                 <UserNav user={user} avatarUrl={avatarUrl} />
                 <MobileSidebar user={user} avatarUrl={avatarUrl} />
             </div>
@@ -367,5 +321,3 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
-
-    
