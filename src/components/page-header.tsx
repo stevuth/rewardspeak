@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
 type PageHeaderProps = {
-  title: string;
+  title?: string;
   description?: string;
   className?: string;
-  icon?: LucideIcon; // Keep prop for compatibility, but won't be used
+  icon?: LucideIcon;
 };
 
 const SvgHeading = ({ title }: { title: string }) => {
@@ -67,9 +67,11 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className={cn("space-y-2", className)}>
-       <div className={cn("flex items-center", /center/.test(className || '') ? "justify-center" : "justify-start")}>
-        <SvgHeading title={title} />
-      </div>
+       {title && (
+            <div className={cn("flex items-center", /center/.test(className || '') ? "justify-center" : "justify-start")}>
+                <SvgHeading title={title} />
+            </div>
+        )}
       {description && (
         <p className={cn("text-base text-muted-foreground", /center/.test(className || '') ? "text-center" : "text-left")}>
             {description}
