@@ -259,7 +259,7 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
 const mobileNavItems = [
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
     { href: "/earn", label: "Earn", icon: DollarSign },
-    { href: "/leaderboard", label: "Leaders", icon: Trophy },
+    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ];
 
 const MobileNavItem = ({ item, isActive }: { item: typeof mobileNavItems[0], isActive: boolean }) => (
