@@ -204,7 +204,6 @@ export default function CashOutCabinPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Cash-Out Cabin"
         description="Withdraw your earnings. 1,000 Points = $1.00 USD."
       />
 

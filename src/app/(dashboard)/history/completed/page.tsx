@@ -50,7 +50,6 @@ export default function CompletedPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Completed Offers"
         description="A log of all quests you have successfully completed."
         icon={CheckCircle}
       />

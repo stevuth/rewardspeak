@@ -46,7 +46,7 @@ const offerwalls = [
         logoComponent: TheoremReachLogo,
         bgClass: "bg-blue-500"
     }
-]
+];
 
 const OfferwallCard = ({ wall }: { wall: typeof offerwalls[0] }) => (
     <Link href={`/offerwalls/${wall.slug}`} className="block group">
@@ -266,7 +266,6 @@ export default function EarnPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Earn"
         description="Main earning hub that leads to all available earning opportunities."
       />
       

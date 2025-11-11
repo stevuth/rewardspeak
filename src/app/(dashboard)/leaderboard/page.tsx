@@ -70,7 +70,6 @@ function getOrdinal(n: number) {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
-
 const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => {
     const isFirst = rank === 1;
     const isSecond = rank === 2;
@@ -117,7 +116,6 @@ export default async function TopEarnersPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Peak Performers"
         description="A salute to our top earners. See who's leading the pack on the climb to the top."
       />
       

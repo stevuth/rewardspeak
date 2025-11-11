@@ -190,7 +190,6 @@ export default function HelpPage() {
        <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
                 <PageHeader
-                    title="Help Center"
                     description="Get help or create a new support ticket. We're here to assist you on your climb."
                 />
             </div>

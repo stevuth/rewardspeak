@@ -116,7 +116,6 @@ export default function HistoryPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Offers Log"
         description="Review your completed, pending, and rejected offers."
         icon={History}
       />

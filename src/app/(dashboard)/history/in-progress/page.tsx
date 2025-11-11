@@ -50,7 +50,6 @@ export default function InProgressPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="In Progress Offers"
         description="A log of all quests that are currently pending."
         icon={Clock}
       />

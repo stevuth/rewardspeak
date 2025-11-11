@@ -93,7 +93,6 @@ export default function InviteAndClimbPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Invite & Earn"
         description="Share your code to earn a percentage of what your friends make, for life."
       />
 
