@@ -55,8 +55,8 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
-    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
+    { href: "/earn", label: "Earn", icon: Mountain },
     { href: "/history", label: "Offers Log", icon: Clock },
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
@@ -141,7 +141,7 @@ function SidebarNavs({ user }: { user: User | null }) {
          <form action={signOut}>
             <button
                 type="submit"
-                className="w-full flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm text-muted-foreground hover:bg-primary hover:text-primary-foreground font-bold"
+                className="w-full flex items-center gap-3 rounded-lg px-3 py-2 transition-all text-sm font-bold text-muted-foreground hover:bg-primary hover:text-primary-foreground"
             >
                 <LogOut className="h-4 w-4" />
                 Log Out
@@ -199,6 +199,7 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                         <Link
                         href="/dashboard"
                         className="flex items-center gap-2 font-semibold text-lg font-headline"
+                        onClick={() => setIsOpen(false)}
                         >
                           <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
                           <span className="text-lg font-bold">Rewards Peak</span>
@@ -225,7 +226,7 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                             </div>
                         </div>
                         <form action={signOut}>
-                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-primary hover:text-primary-foreground">
+                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-primary hover:text-primary-foreground font-bold">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Log Out
                             </Button>
@@ -239,13 +240,23 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
 
 function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User | null, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null }) {
     const router = useRouter();
+    const pathname = usePathname();
+    const isDashboard = pathname === '/dashboard';
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
-            <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
-                <ArrowLeft className="h-5 w-5" />
-                <span className="sr-only">Go back</span>
-            </Button>
+             <div className="md:hidden">
+                {isDashboard ? (
+                    <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
+                         <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
+                    </Link>
+                ) : (
+                    <Button variant="ghost" size="icon" className="shrink-0" onClick={() => router.back()}>
+                        <ArrowLeft className="h-5 w-5" />
+                        <span className="sr-only">Go back</span>
+                    </Button>
+                )}
+            </div>
             <div className="flex-1 overflow-x-auto whitespace-nowrap">
                 <div className="flex gap-2 items-center">
                 {recentEarnings.map((earning, i) => (
@@ -338,3 +349,4 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
     
 
     
+
