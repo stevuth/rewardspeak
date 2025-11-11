@@ -9,9 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Lock, Mail, LifeBuoy } from 'lucide-react';
+import { Lock, Mail, LifeBuoy } from 'lucide-react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 
 export default function SupportLoginPage() {
   const [state, formAction, isPending] = useActionState(supportLogin, { message: "", success: false });
@@ -24,10 +24,6 @@ export default function SupportLoginPage() {
         title: "Login Failed",
         description: state.message,
       });
-    }
-    if (state.success) {
-        // This redirect is now handled by the server action itself.
-        // The client-side redirect can be removed.
     }
   }, [state, toast]);
 
@@ -64,8 +60,11 @@ export default function SupportLoginPage() {
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending ? 'Signing In...' : 'Sign In'}
+              {isPending ? (
+                <WavingMascotLoader messages={["Signing In..."]} />
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
         </CardContent>

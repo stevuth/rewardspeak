@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { updateFeaturedContent, getFeaturedContent } from "@/app/actions";
-import { Loader2, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 export default function FeaturedContentPage() {
@@ -140,8 +140,7 @@ export default function FeaturedContentPage() {
 
        <div className="flex justify-end">
          <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          {isSaving ? "Saving..." : "Save Changes"}
+            {isSaving ? <WavingMascotLoader messages={["Saving..."]} /> : "Save Changes"}
         </Button>
       </div>
     </div>

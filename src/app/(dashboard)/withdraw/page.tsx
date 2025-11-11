@@ -15,7 +15,7 @@ import {
   PaypalLogo,
   UsdtLogo,
 } from "@/components/illustrations/crypto-logos";
-import { CheckCircle, Clock, XCircle, Loader2, Wallet, AtSign, Gift } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Wallet, AtSign, Gift } from "lucide-react";
 import { WithdrawalCard } from "@/components/withdrawal-card";
 import {
   Dialog,
@@ -282,9 +282,12 @@ export default function CashOutCabinPage() {
 
               <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-auto">
                 <Button variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>Cancel</Button>
-                <Button onClick={handleSubmitWithdrawal} disabled={isSubmitting}>
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                <Button onClick={handleSubmitWithdrawal} disabled={isSubmitting} className="w-36">
+                    {isSubmitting ? (
+                        <WavingMascotLoader messages={["Submitting..."]} />
+                    ) : (
+                        'Submit Request'
+                    )}
                 </Button>
               </div>
             </div>

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, Check, X, Search, Download, Gift } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, X, Search, Download, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { getWithdrawalRequests, updateWithdrawalRequestStatus, updateBulkWithdrawalRequestStatus, getAllWithdrawalRequestsForCSV } from "@/app/actions";
@@ -288,8 +288,7 @@ export default function WithdrawalRequestsPage() {
                     Clear
                 </Button>
                 <Button onClick={handleDownloadCSV} variant="outline" disabled={isDownloading}>
-                    {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4"/>}
-                    Download CSV
+                    {isDownloading ? <WavingMascotLoader messages={["Downloading..."]} /> : <><Download className="mr-2 h-4 w-4"/>Download CSV</>}
                 </Button>
             </div>
         </CardContent>
@@ -300,12 +299,10 @@ export default function WithdrawalRequestsPage() {
             <CardContent className="pt-6 flex items-center gap-4">
                 <p className="text-sm font-medium text-muted-foreground">{selectedRows.length} selected</p>
                 <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleBulkUpdate('completed')} disabled={isPending}>
-                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Check className="mr-2 h-4 w-4" />}
-                    Approve Selected
+                    {isPending ? <WavingMascotLoader messages={["Approving..."]} /> : <><Check className="mr-2 h-4 w-4" />Approve Selected</>}
                 </Button>
                 <Button size="sm" variant="destructive" onClick={() => handleBulkUpdate('rejected')} disabled={isPending}>
-                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <X className="mr-2 h-4 w-4" />}
-                    Reject Selected
+                    {isPending ? <WavingMascotLoader messages={["Rejecting..."]} /> : <><X className="mr-2 h-4 w-4" />Reject Selected</>}
                 </Button>
             </CardContent>
          </Card>

@@ -14,13 +14,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Globe, CalendarDays, Fingerprint, Loader2, Settings } from "lucide-react";
+import { Globe, CalendarDays, Fingerprint, Settings } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { AvatarUploader } from "@/components/avatar-uploader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { updatePassword } from "@/app/actions";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 // Helper to get flag emoji from country code
 function getFlagEmoji(countryCode: string): string {
@@ -192,8 +193,11 @@ export function SettingsPageClient({ user, profileData }: { user: any, profileDa
                                     </CardContent>
                                     <CardFooter>
                                         <Button type="submit" disabled={isSaving}>
-                                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                            {isSaving ? 'Saving...' : 'Update Password'}
+                                            {isSaving ? (
+                                                <WavingMascotLoader messages={["Saving..."]} />
+                                            ) : (
+                                                'Update Password'
+                                            )}
                                         </Button>
                                     </CardFooter>
                                 </Card>

@@ -9,8 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Lock, Mail, Shield } from 'lucide-react';
+import { Lock, Mail, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 
 export default function AdminLoginPage() {
   const [state, formAction, isPending] = useActionState(adminLogin, { message: "", success: false });
@@ -59,8 +60,11 @@ export default function AdminLoginPage() {
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending ? 'Signing In...' : 'Sign In'}
+              {isPending ? (
+                <WavingMascotLoader messages={["Signing In..."]} />
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
         </CardContent>

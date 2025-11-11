@@ -5,13 +5,14 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, User, Globe, Calendar, Clock, Fingerprint, Coins, Gift, Percent, Link as LinkIcon, Hash, Users as UsersIcon, ListChecks, Ban, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, User, Globe, Calendar, Clock, Fingerprint, Coins, Gift, Percent, Link as LinkIcon, Hash, Users as UsersIcon, ListChecks, Ban } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { UserProfile } from "@/app/api/get-all-users/route";
 import { SafeImage } from "@/components/safe-image";
 import { banUser, unbanUser } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
 function getFlagEmoji(countryCode: string | null): string {
     if (!countryCode || countryCode.length !== 2) return '🏳️';
@@ -107,13 +108,11 @@ export function UserDetailsRow({ user }: { user: UserProfile }) {
                 </Button>
                 {isBanned ? (
                     <Button variant="outline" size="sm" onClick={handleUnban} disabled={isPending}>
-                        {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Ban className="h-4 w-4 mr-2" />}
-                        Unban
+                        {isPending ? <WavingMascotLoader messages={["Unbanning..."]} /> : <><Ban className="h-4 w-4 mr-2" />Unban</>}
                     </Button>
                 ) : (
                     <Button variant="destructive" size="sm" onClick={handleBan} disabled={isPending}>
-                        {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Ban className="h-4 w-4 mr-2" />}
-                        Ban
+                        {isPending ? <WavingMascotLoader messages={["Banning..."]} /> : <><Ban className="h-4 w-4 mr-2" />Ban</>}
                     </Button>
                 )}
             </div>

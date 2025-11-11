@@ -206,7 +206,9 @@ export function FuturisticAuthForm({
 
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const referralCode = searchParams.get('ref') || '';
+  const refCode = searchParams.get('ref') || '';
+  const [referralCode, setReferralCode] = useState(refCode);
+
 
   useEffect(() => {
     if (state.message && !state.success) {
@@ -217,6 +219,10 @@ export function FuturisticAuthForm({
       });
     }
   }, [state, toast]);
+
+  useEffect(() => {
+    setReferralCode(refCode);
+  }, [refCode]);
 
   const [ipAddress, setIpAddress] = useState('');
   const [showPassword, setShowPassword] = useState(false);

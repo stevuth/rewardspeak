@@ -5,8 +5,9 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Upload, Loader2, Save } from "lucide-react";
+import { Upload, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { WavingMascotLoader } from './waving-mascot-loader';
 
 const MAX_FILE_SIZE_MB = 2;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -90,7 +91,7 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
                 <Avatar className="h-24 w-24 border-2 border-primary">
                     <AvatarImage src={preview || ''} alt="User avatar" />
                     <AvatarFallback className="text-3xl">
-                        {isPending ? <Loader2 className="animate-spin" /> : 'U'}
+                        {isPending ? <WavingMascotLoader messages={[]} /> : 'U'}
                     </AvatarFallback>
                 </Avatar>
                 <input
@@ -109,16 +110,13 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
                     disabled={isPending}
                     aria-label="Choose new profile picture"
                 >
-                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    {isPending ? <WavingMascotLoader messages={[]} /> : <Upload className="h-4 w-4" />}
                 </Button>
             </div>
             {fileToUpload && (
                 <Button onClick={handleSave} disabled={isPending}>
                     {isPending ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                        </>
+                        <WavingMascotLoader messages={["Saving..."]} />
                     ) : (
                         <>
                             <Save className="mr-2 h-4 w-4" />
