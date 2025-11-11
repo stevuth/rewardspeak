@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useActionState } from "react";
+import { useSearchParams } from 'next/navigation';
 import { login, signup, requestPasswordReset } from "@/app/auth/actions";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatePresence, motion } from "framer-motion";
@@ -204,6 +205,8 @@ export function FuturisticAuthForm({
   );
 
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref') || '';
 
   useEffect(() => {
     if (state.message && !state.success) {
@@ -324,6 +327,7 @@ export function FuturisticAuthForm({
                       label="Referral Code (Optional)"
                       Icon={UserPlus}
                       required={false}
+                      defaultValue={referralCode}
                     />
                     <div className="flex items-center space-x-2">
                       <Checkbox id="accepted_terms" name="accepted_terms" />
