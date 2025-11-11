@@ -239,13 +239,23 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
 
 function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User | null, totalPoints: number, withdrawnPoints: number, avatarUrl: string | null }) {
     const router = useRouter();
+    const pathname = usePathname();
+    const isDashboard = pathname === '/dashboard';
 
     return (
         <header className="flex h-16 items-center gap-4 border-b bg-card px-4 lg:px-6">
-            <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => router.back()}>
-                <ArrowLeft className="h-5 w-5" />
-                <span className="sr-only">Go back</span>
-            </Button>
+             <div className="md:hidden">
+                {isDashboard ? (
+                    <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
+                         <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
+                    </Link>
+                ) : (
+                    <Button variant="ghost" size="icon" className="shrink-0" onClick={() => router.back()}>
+                        <ArrowLeft className="h-5 w-5" />
+                        <span className="sr-only">Go back</span>
+                    </Button>
+                )}
+            </div>
             <div className="flex-1 overflow-x-auto whitespace-nowrap">
                 <div className="flex gap-2 items-center">
                 {recentEarnings.map((earning, i) => (
@@ -334,5 +344,7 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
+
+    
 
     
