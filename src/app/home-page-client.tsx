@@ -370,7 +370,7 @@ export function HomePageClient({ featuredOffers, phoneCardOffers }: { featuredOf
                             className="grid md:grid-cols-2 gap-8 md:gap-12 items-center"
                         >
                             <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
-                                <div className="w-80 h-80 flex items-center justify-center p-8">
+                                <div className="w-96 h-96 flex items-center justify-center p-8">
                                     {feature.illustration}
                                 </div>
                             </div>
