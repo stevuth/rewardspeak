@@ -51,7 +51,7 @@ const secondaryNavItems = [
   { href: "/help", label: "Help Center", icon: CircleHelp },
 ];
 
-const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick?: () => void }) => {
+const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick: () => void }) => {
   return (
     <Link href={href} className="relative block w-full group" onClick={onClick}>
       <svg
@@ -88,21 +88,23 @@ function SidebarNavs({ user, closeSheet }: { user: User | null; closeSheet?: () 
   }
 
   return (
-    <nav className="flex-1 space-y-2 p-4">
-      {allNavItems.map((item) => {
-        const isActive = pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href);
-        return (
-          <SvgNavButton
-            key={item.href}
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-            isActive={isActive}
-            onClick={closeSheet}
-          />
-        );
-      })}
-    </nav>
+    <div className="flex-grow overflow-y-auto">
+        <nav className="flex-1 space-y-2 p-4">
+        {allNavItems.map((item) => {
+            const isActive = pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href);
+            return (
+            <SvgNavButton
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                isActive={isActive}
+                onClick={closeSheet || (() => {})}
+            />
+            );
+        })}
+        </nav>
+    </div>
   );
 }
 
@@ -121,9 +123,7 @@ function SidebarContent({ user, children, closeSheet }: { user: User | null; chi
         </Link>
         {children}
       </div>
-      <div className="flex-grow overflow-y-auto">
         <SidebarNavs user={user} closeSheet={closeSheet} />
-      </div>
        <div className="p-4 border-t flex-shrink-0">
          <form action={signOut}>
             <button
@@ -158,17 +158,38 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-xs bg-card p-0">
                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                 <SidebarContent user={user} closeSheet={closeSheet}>
-                     <div className="p-2 flex items-center gap-4 bg-muted/50 rounded-lg">
-                        <UserNav user={user} avatarUrl={avatarUrl} />
-                        <div className="flex-1 min-w-0">
-                            <p className="font-semibold truncate">{user?.email}</p>
-                             <Link href="/settings" onClick={closeSheet} className="text-xs text-muted-foreground hover:text-primary transition-colors">
-                                View profile
-                            </Link>
+                 <div className="flex flex-col h-full">
+                    <div className="p-4 border-b flex-shrink-0">
+                        <Link
+                            href="/dashboard"
+                            className="flex items-center gap-2 font-semibold text-lg font-headline"
+                            onClick={closeSheet}
+                        >
+                        <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
+                        <span className="text-lg font-bold">Rewards Peak</span>
+                        </Link>
+                    </div>
+                     <div className="p-4 border-b">
+                        <div className="flex items-center gap-4">
+                            <UserNav user={user} avatarUrl={avatarUrl} />
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold truncate">{user?.email}</p>
+                                <Link href="/settings" onClick={closeSheet} className="text-xs text-muted-foreground hover:text-primary transition-colors">
+                                    View profile
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                 </SidebarContent>
+                    <SidebarNavs user={user} closeSheet={closeSheet} />
+                     <div className="p-4 border-t flex-shrink-0">
+                        <form action={signOut}>
+                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-primary hover:text-primary-foreground font-bold">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Log Out
+                            </Button>
+                        </form>
+                    </div>
+                 </div>
             </SheetContent>
         </Sheet>
     );
