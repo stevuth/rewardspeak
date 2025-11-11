@@ -61,9 +61,9 @@ const mobileNavItems = [
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ]
 
-const SvgNavButton = ({ href, icon: Icon, label, isActive }: { href: string; icon: React.ElementType; label: string; isActive: boolean }) => {
+const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: string; icon: React.ElementType; label: string; isActive: boolean, onClick: () => void }) => {
   return (
-    <Link href={href} className="relative block w-full group">
+    <Link href={href} className="relative block w-full group" onClick={onClick}>
       <svg
         viewBox="0 0 200 50"
         preserveAspectRatio="none"
@@ -173,6 +173,7 @@ function SidebarContent({ user, children }: { user: User | null, children?: Reac
 
 function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
     const pathname = usePathname();
+    const [isOpen, setIsOpen] = useState(false);
 
     const mobileNavLinks = [
         ...navItems, 
@@ -184,7 +185,7 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
     }
 
     return (
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="shrink-0 md:hidden">
                     <Menu className="h-5 w-5" />
@@ -211,6 +212,7 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                               icon={item.icon}
                               label={item.label}
                               isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href)}
+                              onClick={() => setIsOpen(false)}
                            />
                         ))}
                     </nav>
@@ -332,3 +334,5 @@ export function LayoutClient({ user, children, totalPoints, withdrawnPoints, ava
         </SidebarProvider>
     )
 }
+
+    
