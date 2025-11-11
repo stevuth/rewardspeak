@@ -59,26 +59,6 @@ const SvgHeading = ({ title }: { title: string }) => {
 };
 
 
-const SvgDescription = ({ description }: { description: string }) => {
-    // A more reliable way to estimate width for various screen sizes.
-    const approximateWidth = Math.max(400, description.length * 12);
-    
-    return (
-        <svg viewBox={`0 0 ${approximateWidth} 24`} xmlns="http://www.w3.org/2000/svg" className="w-full h-auto mt-1" preserveAspectRatio="xMinYMid meet">
-             <text
-                x="0"
-                y="50%"
-                dy=".3em"
-                fill="hsl(var(--muted-foreground))"
-                className="font-sans text-base"
-            >
-                {description}
-            </text>
-        </svg>
-    )
-}
-
-
 export function PageHeader({
   title,
   description,
@@ -91,9 +71,9 @@ export function PageHeader({
         <SvgHeading title={title} />
       </div>
       {description && (
-        <div className={cn("flex w-full", /center/.test(className || '') ? "justify-center" : "justify-start")}>
-            <SvgDescription description={description} />
-        </div>
+        <p className={cn("text-base text-muted-foreground", /center/.test(className || '') ? "text-center" : "text-left")}>
+            {description}
+        </p>
       )}
     </div>
   );
