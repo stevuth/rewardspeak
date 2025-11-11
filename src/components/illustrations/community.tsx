@@ -1,5 +1,25 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
+
+type AnimationProps = {
+    dur: string;
+    begin: string;
+};
+
 export function CommunityIllustration() {
+  const [animationProps, setAnimationProps] = useState<AnimationProps[]>([]);
+
+  useEffect(() => {
+    // This code now runs only on the client, after the initial render.
+    const newAnimationProps = Array(8).fill(null).map(() => ({
+        dur: `${2 + Math.random() * 2}s`,
+        begin: `${Math.random()}s`,
+    }));
+    setAnimationProps(newAnimationProps);
+  }, []);
+
   return (
     <svg
       width="256"
@@ -37,9 +57,11 @@ export function CommunityIllustration() {
       </g>
       
       {/* Users and connections */}
-      {[0, 45, 90, 135, 180, 225, 270, 315].map(angle => {
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
         const x = 128 + 90 * Math.cos(angle * Math.PI / 180);
         const y = 128 + 90 * Math.sin(angle * Math.PI / 180);
+        const anims = animationProps[i] || { dur: '3s', begin: '0s' }; // Default values for SSR
+
         return (
             <g key={angle}>
                 <path d={`M128 128 C ${(128 + x)/2} ${(128 + y)/2}, ${x} ${y}, ${x} ${y}`} stroke="hsl(var(--border))" strokeWidth="1.5" fill="none" strokeOpacity="0.7"/>
@@ -54,10 +76,10 @@ export function CommunityIllustration() {
                 {/* Animated Earning Coin */}
                 <circle cx="128" cy="128" r="3" fill="hsl(var(--secondary))">
                     <animateMotion
-                        dur={`${2 + Math.random() * 2}s`}
+                        dur={anims.dur}
                         repeatCount="indefinite"
                         path={`M0,0 C ${(x - 128)/2} ${(y - 128)/2}, ${x - 128} ${y-128}, ${x - 128} ${y-128}`}
-                        begin={`${Math.random()}s`}
+                        begin={anims.begin}
                     />
                 </circle>
             </g>
