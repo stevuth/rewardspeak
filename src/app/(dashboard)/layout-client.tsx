@@ -39,7 +39,6 @@ import React, { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { SafeImage } from "@/components/safe-image";
 import { signOut } from "@/app/auth/actions";
-import { motion } from 'framer-motion';
 
 
 const navItems = [
@@ -57,9 +56,10 @@ const secondaryNavItems = [
 ];
 
 const mobileNavItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/earn", label: "Earn", icon: DollarSign },
     { href: "/withdraw", label: "Cash-Out", icon: Gift },
-    { href: "/leaderboard", label: "Top Earners", icon: Trophy },
-    { href: "/history", label: "Offers Log", icon: Clock },
+    { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
     { href: "/referrals", label: "Referrals", icon: Users },
 ]
 
@@ -267,7 +267,6 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
                         <span className="font-bold text-secondary">{earning.name}</span>
                         <span className="text-muted-foreground">{earning.user}</span>
                     </div>
-                    {/* <Badge variant="secondary">{earning.amount}</Badge> */}
                     </div>
                 ))}
                 </div>
@@ -303,64 +302,31 @@ function Header({ user, totalPoints, withdrawnPoints, avatarUrl }: { user: User 
 }
 
 const MobileNavItem = ({ href, icon: Icon, label, isActive }: { href:string, icon: React.ElementType, label: string, isActive: boolean }) => (
-    <motion.div whileTap={{ scale: 0.9 }}>
-        <Link
-            href={href}
-            className={cn(
-                "group relative flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-semibold",
-                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            )}
-        >
-            {isActive && (
-                <motion.div
-                    layoutId="active-nav-highlight"
-                    className="absolute inset-0 bg-primary/10 rounded-full"
-                    style={{ filter: 'blur(10px)' }}
-                />
-            )}
-            <Icon className="h-5 w-5" />
-            <span className="truncate">{label}</span>
-        </Link>
-    </motion.div>
+    <Link
+        href={href}
+        className={cn(
+            "group relative flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-semibold",
+            isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+        )}
+    >
+        <div className="absolute top-0 h-0.5 w-1/2 rounded-b-full bg-primary transition-all duration-300" style={{ transform: isActive ? 'scaleX(1)' : 'scaleX(0)' }}/>
+        <Icon className="h-5 w-5" />
+        <span className="truncate">{label}</span>
+    </Link>
 );
 
 function MobileBottomNav() {
     const pathname = usePathname();
-    const isEarnActive = pathname.startsWith('/earn');
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 h-24 md:hidden z-50 pointer-events-none">
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm pointer-events-auto">
-                <div
-                    className="relative grid h-16 items-center rounded-full border border-border/50 bg-card/70 backdrop-blur-xl"
-                    style={{ gridTemplateColumns: '1fr 1fr auto 1fr 1fr' }}
-                >
-                    <MobileNavItem href="/withdraw" label="Cash-Out" icon={Gift} isActive={pathname === '/withdraw'} />
-                    <MobileNavItem href="/leaderboard" label="Top Earners" icon={Trophy} isActive={pathname === '/leaderboard'} />
-
-                    <div className="relative flex justify-center">
-                        <motion.div whileTap={{ scale: 0.9 }}>
-                            <Link href="/earn" className="relative -top-6">
-                                <div className={cn(
-                                    "relative flex h-16 w-16 items-center justify-center rounded-full border-4 border-background transition-all duration-300",
-                                    isEarnActive ? "bg-secondary shadow-lg shadow-secondary/30" : "bg-primary"
-                                )}>
-                                    {isEarnActive && (
-                                        <motion.div
-                                            layoutId="active-earn-highlight"
-                                            className="absolute inset-0 rounded-full bg-secondary"
-                                            style={{ filter: 'blur(12px)' }}
-                                        />
-                                    )}
-                                    <DollarSign className={cn("h-7 w-7 transition-colors", isEarnActive ? "text-secondary-foreground" : "text-primary-foreground")} />
-                                </div>
-                            </Link>
-                        </motion.div>
-                    </div>
-                    
-                    <MobileNavItem href="/history" label="Offers Log" icon={Clock} isActive={pathname.startsWith('/history')} />
-                    <MobileNavItem href="/referrals" label="Referrals" icon={Users} isActive={pathname === '/referrals'} />
-                </div>
+        <div className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t border-border/50 md:hidden z-50">
+            <div className="grid h-full grid-cols-5 items-center">
+                 {mobileNavItems.map((item) => {
+                    const isActive = pathname === item.href || (item.href === '/earn' && pathname.startsWith('/earn'));
+                    return (
+                        <MobileNavItem key={item.href} href={item.href} icon={item.icon} label={item.label} isActive={isActive} />
+                    )
+                })}
             </div>
         </div>
     );
