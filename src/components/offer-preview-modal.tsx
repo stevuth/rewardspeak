@@ -225,7 +225,7 @@ export function OfferPreviewModal({
                       </div>
                       <button
                         onClick={handleStartOffer}
-                        className="rounded-md px-4 py-2 bg-black/20 ring-1 ring-primary/50 shadow-sm ring-offset-background transition-all hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none font-semibold text-secondary hover:-translate-y-0.5 active:scale-95 z-10 w-full sm:w-auto"
+                        className="rounded-md px-4 py-2 bg-black/20 ring-1 ring-primary/50 shadow-sm ring-offset-background transition-all hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none font-semibold text-secondary hover:-translate-y-0.5 active:scale-95 z-10 sm:w-auto"
                       >
                         <span className="text-sm uppercase tracking-wider">Start Offer</span>
                       </button>
