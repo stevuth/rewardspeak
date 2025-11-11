@@ -5,7 +5,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Upload, Save } from "lucide-react";
+import { Upload, Save, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WavingMascotLoader } from './waving-mascot-loader';
 
@@ -110,7 +110,7 @@ export function AvatarUploader({ currentAvatar }: { currentAvatar: string | null
                     disabled={isPending}
                     aria-label="Choose new profile picture"
                 >
-                    {isPending ? <WavingMascotLoader messages={[]} /> : <Upload className="h-4 w-4" />}
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                 </Button>
             </div>
             {fileToUpload && (
