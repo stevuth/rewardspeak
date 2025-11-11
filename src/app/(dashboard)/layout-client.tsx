@@ -78,47 +78,53 @@ const SvgNavButton = ({ href, icon: Icon, label, isActive, onClick }: { href: st
 
 const recentEarnings: any[] = [];
 
-function SidebarNavs({ user }: { user: User | null }) {
+function SidebarNavs({ user, closeSheet }: { user: User | null; closeSheet?: () => void; }) {
   const pathname = usePathname();
 
-  return (
-    <>
-      <nav className="flex-1 space-y-2 p-4">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href);
-          return (
-            <SvgNavButton
-              key={item.href}
-              href={item.href}
-              icon={item.icon}
-              label={item.label}
-              isActive={isActive}
-            />
-          );
-        })}
-        {user && user.email?.endsWith('@rewardspeak.com') && (
-            <SvgNavButton
-              href="/admin/dashboard"
-              icon={Shield}
-              label="Admin Portal"
-              isActive={pathname.startsWith('/admin')}
-            />
-        )}
-      </nav>
+  const allNavItems = [...navItems, ...secondaryNavItems];
 
-      <div className="mt-auto p-4 space-y-2 border-t">
-        {secondaryNavItems.map((item) => {
-           const isActive = pathname.startsWith(item.href);
-           return (
-            <SvgNavButton
-              key={item.href}
-              href={item.href}
-              icon={item.icon}
-              label={item.label}
-              isActive={isActive}
-            />
-          );
-        })}
+  if (user && user.email?.endsWith('@rewardspeak.com')) {
+    allNavItems.push({ href: "/admin/dashboard", label: "Admin Portal", icon: Shield });
+  }
+
+  return (
+    <nav className="flex-1 space-y-2 p-4">
+      {allNavItems.map((item) => {
+        const isActive = pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href);
+        return (
+          <SvgNavButton
+            key={item.href}
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            isActive={isActive}
+            onClick={closeSheet}
+          />
+        );
+      })}
+    </nav>
+  );
+}
+
+
+function SidebarContent({ user, children, closeSheet }: { user: User | null; children?: React.ReactNode, closeSheet?: () => void; }) {
+  return (
+    <div className="flex flex-col h-full">
+      <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 font-semibold text-lg font-headline"
+          onClick={closeSheet}
+        >
+          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={40} height={40} />
+          <span className="text-xl font-bold">Rewards Peak</span>
+        </Link>
+        {children}
+      </div>
+      <div className="flex-grow overflow-y-auto">
+        <SidebarNavs user={user} closeSheet={closeSheet} />
+      </div>
+       <div className="p-4 border-t flex-shrink-0">
          <form action={signOut}>
             <button
                 type="submit"
@@ -129,41 +135,14 @@ function SidebarNavs({ user }: { user: User | null }) {
             </button>
         </form>
       </div>
-    </>
-  );
-}
-
-function SidebarContent({ user, children }: { user: User | null, children?: React.ReactNode }) {
-  return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 border-b flex items-center justify-between">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2 font-semibold text-lg font-headline"
-        >
-          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={40} height={40} />
-          <span className="text-xl font-bold">Rewards Peak</span>
-        </Link>
-        {children}
-      </div>
-      <SidebarNavs user={user} />
     </div>
   );
 }
 
 
 function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
-    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-
-    const mobileNavLinks = [
-        ...navItems, 
-        ...secondaryNavItems
-    ];
-
-     if (user && user.email?.endsWith('@rewardspeak.com')) {
-        mobileNavLinks.push({ href: "/admin/dashboard", label: "Admin Portal", icon: Shield });
-    }
+    const closeSheet = () => setIsOpen(false);
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -179,45 +158,15 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-xs bg-card p-0">
                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                 <div className="w-full h-full flex flex-col">
-                    <div className="p-4 border-b flex items-center justify-between">
-                        <Link
-                        href="/dashboard"
-                        className="flex items-center gap-2 font-semibold text-lg font-headline"
-                        onClick={() => setIsOpen(false)}
-                        >
-                          <Image src="/logo.png?v=7" alt="Rewards Peak Logo" width={32} height={32} />
-                          <span className="text-lg font-bold">Rewards Peak</span>
-                        </Link>
-                    </div>
-                     <nav className="flex-1 space-y-2 p-4 overflow-y-auto">
-                        {mobileNavLinks.map((item) => (
-                           <SvgNavButton
-                              key={item.href}
-                              href={item.href}
-                              icon={item.icon}
-                              label={item.label}
-                              isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === item.href)}
-                              onClick={() => setIsOpen(false)}
-                           />
-                        ))}
-                    </nav>
-                     <div className="mt-auto p-4 border-t space-y-4">
-                        <div className="p-2 flex items-center gap-4 bg-muted/50 rounded-lg">
-                            <UserNav user={user} avatarUrl={avatarUrl} />
-                            <div className="flex-1 min-w-0">
-                                <p className="font-semibold truncate">{user?.email}</p>
-                                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                            </div>
+                 <SidebarContent user={user} closeSheet={closeSheet}>
+                     <div className="p-2 flex items-center gap-4 bg-muted/50 rounded-lg">
+                        <UserNav user={user} avatarUrl={avatarUrl} />
+                        <div className="flex-1 min-w-0">
+                            <p className="font-semibold truncate">{user?.email}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                         </div>
-                        <form action={signOut}>
-                            <Button variant="ghost" type="submit" className="w-full justify-start hover:bg-primary hover:text-primary-foreground font-bold">
-                                <LogOut className="mr-2 h-4 w-4" />
-                                Log Out
-                            </Button>
-                        </form>
                     </div>
-                 </div>
+                 </SidebarContent>
             </SheetContent>
         </Sheet>
     );
