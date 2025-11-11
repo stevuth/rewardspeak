@@ -223,13 +223,12 @@ export function OfferPreviewModal({
                           {totalUSD.toFixed(2)})
                         </p>
                       </div>
-                      <Button
+                      <button
                         onClick={handleStartOffer}
-                        size="default"
-                        className="font-bold bg-primary text-primary-foreground hover:bg-primary/80 hover:shadow-[0_0_12px_hsl(var(--primary))] transition-all w-full sm:w-auto shrink-0"
+                        className="rounded-md px-4 py-2 bg-black/20 ring-1 ring-primary/50 shadow-sm ring-offset-background transition-all hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none font-semibold text-secondary hover:-translate-y-0.5 active:scale-95 z-10 w-full sm:w-auto"
                       >
-                        Start Offer
-                      </Button>
+                        <span className="text-sm uppercase tracking-wider">Start Offer</span>
+                      </button>
                     </div>
                   </div>
                 </div>
