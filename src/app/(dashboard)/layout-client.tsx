@@ -71,15 +71,15 @@ const SvgNavButton = ({ href, icon: Icon, label, isActive }: { href: string; ico
       >
         <path
           d="M 5 5 C 10 0, 190 0, 195 5 L 195 45 C 190 50, 10 50, 5 45 Z"
-          fill={isActive ? 'hsl(var(--accent))' : 'hsl(var(--muted)/0.5)'}
-          stroke={isActive ? 'hsl(var(--accent)/0.5)' : 'hsl(var(--border))'}
+          fill={isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted)/0.5)'}
+          stroke={isActive ? 'hsl(var(--primary)/0.5)' : 'hsl(var(--border))'}
           strokeWidth="1"
           className="transition-all duration-300 group-hover:fill-[hsl(var(--muted))] "
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-start px-4 gap-3 pointer-events-none">
-        <Icon className={cn("h-5 w-5 transition-colors", isActive ? "text-accent-foreground" : "text-muted-foreground group-hover:text-primary")} />
-        <span className={cn("font-semibold transition-colors", isActive ? "text-accent-foreground" : "text-foreground")}>{label}</span>
+        <Icon className={cn("h-5 w-5 transition-colors", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary")} />
+        <span className={cn("font-semibold transition-colors", isActive ? "text-primary-foreground" : "text-foreground")}>{label}</span>
       </div>
     </Link>
   );
