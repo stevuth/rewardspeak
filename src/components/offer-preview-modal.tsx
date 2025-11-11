@@ -185,8 +185,8 @@ export function OfferPreviewModal({
                           className="bg-black/20 p-4 rounded-lg border border-border transition-all hover:border-primary/50"
                         >
                           <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-semibold">{event.name}</p>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold break-all">{event.name}</p>
                               <p className="text-xs text-muted-foreground mt-1">
                                 Complete this step to earn
                               </p>
