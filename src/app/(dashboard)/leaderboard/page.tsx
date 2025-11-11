@@ -102,12 +102,12 @@ const PodiumCard = ({ user, rank }: { user: LeaderboardUser; rank: number }) => 
         <Badge className="mt-4">{getOrdinal(user.rank)}</Badge>
       </Card>
     );
-  };
+};
 
 const RankBadge = ({ rank }: { rank: number }) => {
     if (rank <= 3) return null;
     return <Badge variant="secondary">{getOrdinal(rank)}</Badge>;
-  };
+};
 
 export default async function TopEarnersPage() {
     const leaderboardData = await getLeaderboardData();
