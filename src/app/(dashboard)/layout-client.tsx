@@ -12,16 +12,11 @@ import {
   Users,
   CircleHelp,
   Settings,
-  Menu,
   Clock,
   DollarSign,
   LogOut,
   ArrowLeft,
-  X,
-  ClipboardList,
-  LayoutGrid,
   Shield,
-  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,13 +27,13 @@ import {
 } from "@/components/ui/sheet";
 import { UserNav } from "@/components/user-nav";
 import { cn } from "@/lib/utils";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, SidebarInset } from "@/components/ui/sidebar";
 import type { User } from "@supabase/supabase-js";
 import { AnimatedCounter } from "@/components/animated-counter";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { SafeImage } from "@/components/safe-image";
 import { signOut } from "@/app/auth/actions";
+import { motion } from 'framer-motion';
 
 
 const navItems = [
@@ -182,7 +177,11 @@ function MobileSidebar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-                    <Menu className="h-5 w-5" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5">
+                      <path d="M4 7H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M4 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M4 17H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
                     <span className="sr-only">Toggle navigation menu</span>
                 </Button>
             </SheetTrigger>
@@ -299,32 +298,43 @@ const mobileNavItems = [
     { href: "/leaderboard", label: "Top Earners", icon: Trophy },
 ];
 
-const MobileNavItem = ({ href, icon: Icon, label }: { href:string, icon: React.ElementType, label: string }) => {
-    const pathname = usePathname();
-    const isActive = pathname === href;
-    return (
-        <Link
-            href={href}
-            className={cn(
-                "group relative flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-semibold",
-                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            )}
-        >
-            <Icon className="h-5 w-5" />
-            <span className="truncate">{label}</span>
-            {isActive && <div className="absolute bottom-0 h-0.5 w-full rounded-t-full bg-primary" />}
-        </Link>
-    );
-};
+const MobileNavItem = ({ item, isActive }: { item: typeof mobileNavItems[0], isActive: boolean }) => (
+    <Link
+        href={item.href}
+        className="group relative flex flex-col items-center justify-center w-full gap-1 p-2 text-xs font-semibold"
+    >
+        <div className="relative">
+            <item.icon className={cn(
+                "h-6 w-6 transition-colors duration-200",
+                isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+            )} />
+        </div>
+        <span className={cn(
+            "truncate transition-colors duration-200",
+            isActive ? "text-primary" : "text-muted-foreground"
+        )}>{item.label}</span>
+        {isActive && (
+            <motion.div
+                layoutId="active-nav-underline"
+                className="absolute bottom-0 h-0.5 w-full rounded-full bg-primary"
+            />
+        )}
+    </Link>
+);
 
 
 function MobileBottomNav() {
+    const pathname = usePathname();
+
     return (
         <div className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t border-border/50 md:hidden z-50">
             <div className="grid h-full grid-cols-3 items-center">
-                 {mobileNavItems.map((item) => (
-                    <MobileNavItem key={item.href} href={item.href} icon={item.icon} label={item.label} />
-                ))}
+                 {mobileNavItems.map((item) => {
+                    const isActive = pathname.startsWith(item.href);
+                    return (
+                       <MobileNavItem key={item.href} item={item} isActive={isActive} />
+                    )
+                })}
             </div>
         </div>
     );
