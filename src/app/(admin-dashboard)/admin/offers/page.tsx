@@ -425,10 +425,10 @@ export default function ManageOffersPage() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[200px]">Timestamp</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Offers Synced</TableHead>
-                        <TableHead>Log</TableHead>
+                        <TableHead className="w-[200px] text-muted-foreground">Timestamp</TableHead>
+                        <TableHead className="text-muted-foreground">Status</TableHead>
+                        <TableHead className="text-muted-foreground">Offers Synced</TableHead>
+                        <TableHead className="text-muted-foreground">Log</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
