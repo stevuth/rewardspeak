@@ -418,7 +418,7 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Bot className="h-5 w-5"/> Automated Sync History</CardTitle>
           <CardDescription>
-            The system automatically syncs offers every 15 minutes. Here are the latest logs.
+            The system automatically syncs offers every 15 minutes. Here are the latest logs. This requires an external cron job to be configured to call the /api/cron/sync-offers endpoint.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -459,7 +459,7 @@ export default function ManageOffersPage() {
                     ) : (
                          <TableRow>
                             <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                                No automated syncs have run yet.
+                                No automated syncs have been recorded yet. Ensure your external cron job is configured correctly.
                             </TableCell>
                         </TableRow>
                     )}
