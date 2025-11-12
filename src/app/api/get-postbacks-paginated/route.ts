@@ -23,7 +23,10 @@ export async function GET(request: NextRequest) {
         user_id,
         amount_usd,
         payout_usd,
-        postback_url
+        postback_url,
+        rewarded_txn_id,
+        event_id,
+        event_name
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);

@@ -37,6 +37,9 @@ type Transaction = {
   amount_usd: number;
   payout_usd: number;
   postback_url: string;
+  rewarded_txn_id: string | null;
+  event_id: string | null;
+  event_name: string | null;
 };
 
 export default function PostbacksPage() {
@@ -145,10 +148,10 @@ export default function PostbacksPage() {
                 <TableHead>Date</TableHead>
                 <TableHead>User Email</TableHead>
                 <TableHead>Offer Name</TableHead>
-                <TableHead>Offer ID</TableHead>
+                <TableHead>Event Name</TableHead>
                 <TableHead>Amount (USD)</TableHead>
-                <TableHead>Payout (USD)</TableHead>
                 <TableHead>Txn ID</TableHead>
+                <TableHead>Event ID</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -167,12 +170,14 @@ export default function PostbacksPage() {
                     <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
                     <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
                     <TableCell>
-                        <Badge variant="secondary" className="font-mono">{tx.offer_id || 'N/A'}</Badge>
+                        <Badge variant="outline" className="font-mono">{tx.event_name || 'N/A'}</Badge>
                     </TableCell>
                     <TableCell className="font-semibold text-muted-foreground">${(tx.amount_usd || 0).toFixed(2)}</TableCell>
-                    <TableCell className="font-semibold text-muted-foreground">${(tx.payout_usd || 0).toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">{tx.txn_id || 'N/A'}</Badge>
+                    </TableCell>
+                    <TableCell>
+                        <Badge variant="secondary" className="font-mono">{tx.event_id || 'N/A'}</Badge>
                     </TableCell>
                   </TableRow>
                 ))

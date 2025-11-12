@@ -15,6 +15,11 @@ export async function GET(request: NextRequest) {
   const offerId = nextUrl.searchParams.get('offer_id');
   const offerName = nextUrl.searchParams.get('offer_name') || 'N/A';
   
+  // New event tracking parameters
+  const rewardedTxnId = nextUrl.searchParams.get('rewarded_txn_id');
+  const eventId = nextUrl.searchParams.get('event_id');
+  const eventName = nextUrl.searchParams.get('event_name');
+
   const userAmountParam = nextUrl.searchParams.get('amount');
   const totalPayoutParam = nextUrl.searchParams.get('payout');
   
@@ -74,6 +79,9 @@ export async function GET(request: NextRequest) {
       postback_url: fullUrl,
       amount_usd: finalUserAmount,
       payout_usd: finalTotalPayout,
+      rewarded_txn_id: rewardedTxnId,
+      event_id: eventId,
+      event_name: eventName,
     };
 
     const { error: transactionError } = await supabase
