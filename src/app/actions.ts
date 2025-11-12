@@ -628,3 +628,19 @@ export async function updateTicketStatus(ticketId: string, status: 'open' | 'clo
     
     return { success: true };
 }
+
+
+export async function getCronLogs(): Promise<{data: any[] | null, error: string | null}> {
+    const supabase = createSupabaseAdminClient();
+    const { data, error } = await supabase
+        .from('cron_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+    
+    if (error) {
+        console.error("Error fetching cron logs:", error);
+        return { data: null, error: error.message };
+    }
+    return { data, error: null };
+}

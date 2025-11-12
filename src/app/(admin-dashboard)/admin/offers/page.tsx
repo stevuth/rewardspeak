@@ -23,14 +23,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Percent, ListTodo, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Percent, ListTodo, List, Bot, Clock } from "lucide-react";
 import { OfferDetailsRow } from "./offer-details-row";
-import { getOfferPayoutPercentage, updateOfferPayoutPercentage, getOfferDisplayLimit, updateOfferDisplayLimit } from "@/app/actions";
+import { getOfferPayoutPercentage, updateOfferPayoutPercentage, getOfferDisplayLimit, updateOfferDisplayLimit, getCronLogs } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { clientGetAllOffers } from "@/lib/notik-api";
+import { Badge } from "@/components/ui/badge";
 
 type Offer = {
   offer_id: string;
@@ -49,6 +50,14 @@ type Offer = {
   created_at: string;
 };
 
+type CronLog = {
+    id: string;
+    created_at: string;
+    status: 'success' | 'failure';
+    log_message: string;
+    offers_synced_count: number;
+}
+
 export default function ManageOffersPage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -58,6 +67,9 @@ export default function ManageOffersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncLog, setSyncLog] = useState<string | null>(null);
+  const [cronLogs, setCronLogs] = useState<CronLog[]>([]);
+  const [isLoadingCronLogs, setIsLoadingCronLogs] = useState(true);
+
   const { toast } = useToast();
   
   const [isPending, startTransition] = useTransition();
@@ -80,6 +92,22 @@ export default function ManageOffersPage() {
   const OFFERS_PER_PAGE = 20;
   const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
 
+  const fetchCronLogs = useCallback(async () => {
+    setIsLoadingCronLogs(true);
+    const { data, error } = await getCronLogs();
+    if (error) {
+        toast({
+            variant: "destructive",
+            title: "Error fetching cron logs",
+            description: "Could not fetch automated sync history.",
+        });
+        setCronLogs([]);
+    } else {
+        setCronLogs(data || []);
+    }
+    setIsLoadingCronLogs(false);
+  }, [toast]);
+
   useEffect(() => {
     async function fetchSettings() {
         const { data: percentageData } = await getOfferPayoutPercentage();
@@ -89,7 +117,8 @@ export default function ManageOffersPage() {
         setOfferDisplayLimit(limitData);
     }
     fetchSettings();
-  }, []);
+    fetchCronLogs();
+  }, [fetchCronLogs]);
 
   const fetchOffers = useCallback(async () => {
     setIsLoading(true);
@@ -165,7 +194,7 @@ export default function ManageOffersPage() {
 
   const handleSyncOffers = async () => {
     setIsSyncing(true);
-    let cumulativeLog = "Sync process started...\n";
+    let cumulativeLog = "Manual sync process started...\n";
     setSyncLog(cumulativeLog);
     toast({ title: "Syncing offers...", description: "Fetching the latest offers from our partners." });
 
@@ -377,13 +406,67 @@ export default function ManageOffersPage() {
        {syncLog && (
         <Card>
           <CardHeader>
-            <CardTitle>Sync Log</CardTitle>
+            <CardTitle>Manual Sync Log</CardTitle>
           </CardHeader>
           <CardContent>
             <pre className="text-xs bg-muted p-4 rounded-md whitespace-pre-wrap">{syncLog}</pre>
           </CardContent>
         </Card>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Bot className="h-5 w-5"/> Automated Sync History</CardTitle>
+          <CardDescription>
+            The system automatically syncs offers every 15 minutes. Here are the latest logs.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[200px]">Timestamp</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Offers Synced</TableHead>
+                        <TableHead>Log</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {isLoadingCronLogs ? (
+                        <TableRow>
+                            <TableCell colSpan={4} className="h-24 text-center">
+                                <WavingMascotLoader text="Loading logs..." />
+                            </TableCell>
+                        </TableRow>
+                    ) : cronLogs.length > 0 ? (
+                        cronLogs.map((log) => (
+                            <TableRow key={log.id}>
+                                <TableCell className="text-muted-foreground flex items-center gap-2">
+                                    <Clock className="h-4 w-4"/>
+                                    {new Date(log.created_at).toLocaleString()}
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant={log.status === 'success' ? 'secondary' : 'destructive'}>
+                                        {log.status}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="font-bold">{log.offers_synced_count}</TableCell>
+                                <TableCell>
+                                    <pre className="text-xs max-h-24 overflow-y-auto bg-muted/50 p-2 rounded-md whitespace-pre-wrap">{log.log_message}</pre>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    ) : (
+                         <TableRow>
+                            <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                                No automated syncs have run yet.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent className="pt-6">

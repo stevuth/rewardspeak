@@ -197,3 +197,66 @@ export async function clientGetAllOffers(updateLog: (newLog: string) => void): P
   updateLog(`Sync finished. Total offers: ${allOffers.length}.\n`);
   return { offers: allOffers, log };
 }
+
+// New server-side version for cron jobs
+export async function getAllOffers(): Promise<{ offers: NotikOffer[], log: string }> {
+  const apiKey = process.env.NOTIK_API_KEY;
+  const pubId = process.env.NOTIK_PUB_ID;
+  const appId = process.env.NOTIK_APP_ID;
+  
+  let log = '';
+
+  if (!apiKey || !pubId || !appId) {
+    log = "CRITICAL ERROR: Notik API credentials (NOTIK_API_KEY, NOTIK_PUB_ID, NOTIK_APP_ID) are not set in environment variables.\n";
+    return { offers: [], log };
+  }
+
+  let allOffers: NotikOffer[] = [];
+  let pageNum = 1;
+  let nextPageUrl: string | null | undefined = `https://notik.me/api/v2/get-offers/all?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}`;
+  
+  const headers = {
+    'Accept': 'application/json',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+  };
+
+  log += `Starting server-side offer sync...\n`;
+
+  while (nextPageUrl) {
+    log += `Fetching page ${pageNum}...\n`;
+    
+    try {
+      const response = await fetch(nextPageUrl, { headers });
+      const responseBodyText = await response.text();
+
+      if (!response.ok) {
+        log += `ERROR: API call failed with status ${response.status}. Body: ${responseBodyText}\n`;
+        break; 
+      }
+      
+      const data: ApiResponse = JSON.parse(responseBodyText);
+      const offersData = data.offers?.data;
+
+      if (data.status === 'success' && Array.isArray(offersData)) {
+        const processedOffers = offersData.map(processOffer);
+        allOffers = allOffers.concat(processedOffers);
+        log += `Page ${pageNum} successful. Fetched ${processedOffers.length} offers. Total: ${allOffers.length}.\n`;
+        
+        nextPageUrl = data.offers?.next_page_url;
+        if (nextPageUrl) {
+           nextPageUrl += `&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}`;
+        }
+        pageNum++;
+      } else {
+        log += `API call for page ${pageNum} not successful. Status: ${data.status}, Message: ${data.message || 'No message'}.\n`;
+        break;
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown fetch error.";
+      log += `FATAL ERROR on page ${pageNum}: ${errorMessage}\n`;
+      break; 
+    }
+  }
+  log += `Server sync finished. Total unique offers: ${allOffers.length}.\n`;
+  return { offers: allOffers, log };
+}
