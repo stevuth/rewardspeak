@@ -142,56 +142,58 @@ export default function PostbacksPage() {
 
       <Card>
         <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>User Email</TableHead>
-                <TableHead>Offer Name</TableHead>
-                <TableHead>Event Name</TableHead>
-                <TableHead>Amount (USD)</TableHead>
-                <TableHead>Payout (USD)</TableHead>
-                <TableHead>Txn ID</TableHead>
-                <TableHead>Event ID</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
+          <div className="overflow-x-auto">
+            <Table className="min-w-[1200px]">
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-64">
-                    <WavingMascotLoader text="Loading Postbacks..." />
-                  </TableCell>
+                  <TableHead className="w-[180px]">Date</TableHead>
+                  <TableHead className="w-[200px]">User Email</TableHead>
+                  <TableHead>Offer Name</TableHead>
+                  <TableHead>Event Name</TableHead>
+                  <TableHead className="w-[120px]">Amount (USD)</TableHead>
+                  <TableHead className="w-[120px]">Payout (USD)</TableHead>
+                  <TableHead>Txn ID</TableHead>
+                  <TableHead>Event ID</TableHead>
                 </TableRow>
-              ) : transactions.length > 0 ? (
-                transactions.map((tx) => (
-                  <TableRow key={tx.id}>
-                    <TableCell>
-                      {new Date(tx.created_at).toLocaleString()}
-                    </TableCell>
-                    <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
-                    <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
-                    <TableCell>
-                        <Badge variant="outline" className="font-mono">{tx.event_name || 'N/A'}</Badge>
-                    </TableCell>
-                    <TableCell className="font-semibold text-muted-foreground">${(tx.amount_usd || 0).toFixed(2)}</TableCell>
-                    <TableCell className="font-semibold text-secondary">${(tx.payout_usd || 0).toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="font-mono">{tx.txn_id || 'N/A'}</Badge>
-                    </TableCell>
-                    <TableCell>
-                        <Badge variant="secondary" className="font-mono">{tx.event_id || 'N/A'}</Badge>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center h-64">
+                      <WavingMascotLoader text="Loading Postbacks..." />
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center h-24">
-                    No postbacks recorded yet.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ) : transactions.length > 0 ? (
+                  transactions.map((tx) => (
+                    <TableRow key={tx.id}>
+                      <TableCell>
+                        {new Date(tx.created_at).toLocaleString()}
+                      </TableCell>
+                      <TableCell className="font-medium max-w-xs truncate">{tx.user_email}</TableCell>
+                      <TableCell className="max-w-xs truncate">{tx.offer_name}</TableCell>
+                      <TableCell>
+                          <Badge variant="outline" className="font-mono">{tx.event_name || 'N/A'}</Badge>
+                      </TableCell>
+                      <TableCell className="font-semibold text-muted-foreground">${(tx.amount_usd || 0).toFixed(2)}</TableCell>
+                      <TableCell className="font-semibold text-secondary">${(tx.payout_usd || 0).toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-mono">{tx.txn_id || 'N/A'}</Badge>
+                      </TableCell>
+                      <TableCell>
+                          <Badge variant="secondary" className="font-mono">{tx.event_id || 'N/A'}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center h-24">
+                      No postbacks recorded yet.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
         <CardFooter>
             <div className="flex w-full justify-between items-center text-sm text-muted-foreground">
