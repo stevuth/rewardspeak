@@ -25,11 +25,12 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Percent, ListTodo, List } from "lucide-react";
 import { OfferDetailsRow } from "./offer-details-row";
-import { syncOffers, getOfferPayoutPercentage, updateOfferPayoutPercentage, getOfferDisplayLimit, updateOfferDisplayLimit } from "@/app/actions";
+import { getOfferPayoutPercentage, updateOfferPayoutPercentage, getOfferDisplayLimit, updateOfferDisplayLimit } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
+import { clientGetAllOffers } from "@/lib/notik-api";
 
 type Offer = {
   offer_id: string;
@@ -164,23 +165,52 @@ export default function ManageOffersPage() {
 
   const handleSyncOffers = async () => {
     setIsSyncing(true);
-    setSyncLog(null);
+    let cumulativeLog = "Sync process started...\n";
+    setSyncLog(cumulativeLog);
     toast({ title: "Syncing offers...", description: "Fetching the latest offers from our partners." });
 
-    const result = await syncOffers();
-    setSyncLog(result.log || 'No log message returned.');
-    
-    if (result.success) {
-        toast({ title: "Sync complete!", description: "Offers have been updated successfully." });
-        await fetchOffers(); // Refetch offers
+    const { offers: fetchedOffers, log: fetchLog } = await clientGetAllOffers((newLog) => {
+        cumulativeLog += newLog;
+        setSyncLog(cumulativeLog);
+    });
+
+    cumulativeLog += fetchLog;
+    setSyncLog(cumulativeLog);
+
+    if (fetchedOffers.length > 0) {
+        cumulativeLog += `Fetched ${fetchedOffers.length} offers. Now saving to database...\n`;
+        setSyncLog(cumulativeLog);
+
+        const response = await fetch('/api/sync-offers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ offers: fetchedOffers }),
+        });
+
+        const result = await response.json();
+        cumulativeLog += result.log || 'No save log returned.\n';
+        setSyncLog(cumulativeLog);
+
+        if (response.ok) {
+            toast({ title: "Sync complete!", description: "Offers have been updated successfully." });
+            await fetchOffers(); // Refetch offers
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Sync failed",
+                description: result.error || "An unknown error occurred during sync.",
+            });
+        }
     } else {
+        cumulativeLog += "No offers fetched from the partner API.\n";
+        setSyncLog(cumulativeLog);
         toast({
             variant: "destructive",
-            title: "Sync failed",
-            description: result.error || "An unknown error occurred during sync.",
+            title: "Sync Incomplete",
+            description: "No offers were returned from the partner API.",
         });
     }
-    
+
     setIsSyncing(false);
   };
   

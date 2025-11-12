@@ -3,7 +3,7 @@
 
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
-import { getAllOffers, type NotikOffer } from "@/lib/notik-api";
+import { type NotikOffer } from "@/lib/notik-api";
 import { revalidatePath } from "next/cache";
 import { redirect } from 'next/navigation';
 
@@ -66,93 +66,6 @@ export async function supportLogin(prevState: { message: string, success?: boole
 
     redirect('/support/dashboard');
 }
-
-export async function syncOffers(): Promise<{ success: boolean; error?: string, log?: string }> {
-    const supabase = createSupabaseAdminClient();
-    let log = "Sync process started...\n";
-
-    try {
-        log += "Fetching all offers from the API...\n";
-        const { offers: allOffers, log: apiLog } = await getAllOffers();
-        log += apiLog;
-        log += `Fetched ${allOffers.length} offers from the API.\n`;
-        
-        if (allOffers.length === 0) {
-            log += "No offers to sync. Exiting.\n";
-            revalidatePath('/earn');
-            return { success: true, log };
-        }
-
-        const prepareOffersData = (offers: NotikOffer[]) => {
-            const uniqueOffersMap = new Map<string, NotikOffer>();
-            for (const offer of offers) {
-                if (!uniqueOffersMap.has(offer.offer_id)) {
-                    uniqueOffersMap.set(offer.offer_id, offer);
-                }
-            }
-            const uniqueOffers = Array.from(uniqueOffersMap.values());
-
-            log += `Found ${uniqueOffers.length} unique offers out of ${offers.length} total.\n`;
-
-            return uniqueOffers.map(offer => ({
-                offer_id: offer.offer_id,
-                name: offer.name,
-                description: offer.description || "",
-                click_url: offer.click_url,
-                image_url: offer.image_url,
-                network: offer.network,
-                payout: offer.payout,
-                countries: offer.countries,
-                platforms: offer.platforms,
-                devices: offer.devices,
-                categories: offer.categories,
-                events: offer.events,
-                // `is_disabled` is handled by the `ON CONFLICT` clause below.
-                // We don't set it here to avoid overwriting admin changes.
-                created_at: new Date().toISOString(), // Ensure created_at is set for new rows
-            }));
-        };
-
-        const BATCH_SIZE = 500;
-        const allOffersData = prepareOffersData(allOffers);
-        const allOfferChunks = chunk(allOffersData, BATCH_SIZE);
-
-        log += `Prepared ${allOffersData.length} unique offers for database update. Splitting into ${allOfferChunks.length} chunk(s).\n`;
-
-        for (let i = 0; i < allOfferChunks.length; i++) {
-            const allChunk = allOfferChunks[i];
-            log += `Upserting chunk ${i + 1}/${allOfferChunks.length} with ${allChunk.length} offers...\n`;
-            
-            // On conflict, update all fields EXCEPT `is_disabled`.
-            // This preserves the admin's choice to disable an offer.
-            const { error: allOffersError } = await supabase
-                .from('all_offers')
-                .upsert(allChunk, { onConflict: 'offer_id' });
-
-            if (allOffersError) {
-                log += `❌ Error upserting chunk ${i + 1}: ${allOffersError.message}\n`;
-                console.error('❌ Error upserting all offers:', allOffersError);
-                throw new Error(allOffersError.message);
-            }
-            log += `✅ Chunk ${i + 1} upserted successfully.\n`;
-        }
-        
-        log += "Revalidating paths /earn, /dashboard, and /admin/offer-preview...\n";
-        revalidatePath('/earn');
-        revalidatePath('/dashboard');
-        revalidatePath('/admin/offer-preview');
-        revalidatePath('/admin/offers');
-        log += "Sync complete!";
-        return { success: true, log };
-
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during offer sync.";
-        log += `❌ Sync failed: ${errorMessage}`;
-        console.error("Sync Offers Error:", errorMessage);
-        return { success: false, error: errorMessage, log };
-    }
-}
-
 
 export async function getFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers'): Promise<{data: string[] | null, error: string | null}> {
     const supabase = createSupabaseAdminClient();
