@@ -1,5 +1,4 @@
 
-
 export interface NotikOffer {
   offer_id: string;
   name: string;
@@ -165,9 +164,9 @@ export async function getOffers(): Promise<{ offers: NotikOffer[], log: string }
 }
 
 export async function getAllOffers(): Promise<{ offers: NotikOffer[], log: string }> {
-  const apiKey = process.env.NOTIK_API_KEY || process.env.NEXT_PUBLIC_NOTIK_API_KEY;
-  const pubId = process.env.NOTIK_PUB_ID || process.env.NEXT_PUBLIC_NOTIK_PUB_ID;
-  const appId = process.env.NOTIK_APP_ID || process.env.NEXT_PUBLIC_NOTIK_APP_ID;
+  const apiKey = process.env.NOTIK_API_KEY;
+  const pubId = process.env.NOTIK_PUB_ID;
+  const appId = process.env.NOTIK_APP_ID;
   
   let log = '';
 
@@ -181,19 +180,19 @@ export async function getAllOffers(): Promise<{ offers: NotikOffer[], log: strin
   let pageNum = 1;
   let nextPageUrl: string | null | undefined = `https://notik.me/api/v2/get-offers/all?api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}`;
   
+  const headers = {
+    'Accept': 'application/json',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+  };
+
   log += `Starting offer sync...\n`;
 
   while (nextPageUrl) {
     log += `Fetching page ${pageNum}: ${nextPageUrl}\n`;
     console.log(`Fetching page ${pageNum}: ${nextPageUrl}`);
     try {
-      const response = await fetch(nextPageUrl, { cache: 'no-store' });
+      const response = await fetch(nextPageUrl, { headers: headers, cache: 'no-store' });
       if (!response.ok) {
-        if (response.status === 429) {
-          log += `Warning: Notik API rate limit hit at page ${pageNum}. Stopping sync for this cycle.\n`;
-          console.warn(log);
-          break; 
-        }
         const errorBody = await response.text();
         log += `ERROR: API call failed with status ${response.status} for URL: ${nextPageUrl}. Body: ${errorBody}\n`;
         console.error(log);
@@ -208,8 +207,12 @@ export async function getAllOffers(): Promise<{ offers: NotikOffer[], log: strin
         allOffers = allOffers.concat(processedOffers);
         log += `Page ${pageNum} successful. Fetched ${processedOffers.length} offers. Total so far: ${allOffers.length}.\n`;
         
-        const nextUrlFromData = data.offers?.next_page_url;
-        nextPageUrl = nextUrlFromData ? `${nextUrlFromData}&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}` : null;
+        nextPageUrl = data.offers?.next_page_url;
+
+        if (nextPageUrl) {
+           nextPageUrl += `&api_key=${apiKey}&pub_id=${pubId}&app_id=${appId}`;
+        }
+        
         if (!nextPageUrl) {
           log += 'No more pages to fetch.\n';
         }
