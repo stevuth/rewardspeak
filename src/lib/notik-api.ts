@@ -207,7 +207,7 @@ export async function getAllOffers(): Promise<{ offers: NotikOffer[], log: strin
   let log = '';
 
   if (!apiKey || !pubId || !appId) {
-    log = "CRITICAL ERROR: Notik API credentials (NOTIK_API_KEY, NOTIK_PUB_ID, NOTIK_APP_ID) are not set in environment variables.\n";
+    log = "CRITICAL ERROR: Server-side Notik API credentials (NOTIK_API_KEY, NOTIK_PUB_ID, NOTIK_APP_ID) are not set in environment variables.\n";
     return { offers: [], log };
   }
 
