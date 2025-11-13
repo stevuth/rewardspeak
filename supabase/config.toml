@@ -6,6 +6,11 @@
 # supabase secrets set NOTIK_API_KEY="your_notik_api_key"
 # supabase secrets set NOTIK_PUB_ID="your_notik_pub_id"
 # supabase secrets set NOTIK_APP_ID="your_notik_app_id"
+#
+# To deploy, you will need a management access token.
+# Generate one at https://supabase.com/dashboard/account/tokens
+# Then, run the following command, pasting your token:
+# supabase functions deploy sync-offers --token "your_access_token_here"
 import_map = "./import_map.json"
 
     

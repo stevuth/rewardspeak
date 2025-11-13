@@ -421,23 +421,18 @@ export default function ManageOffersPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-semibold">Step 1: Log in to Supabase CLI</h4>
-              <p className="text-sm text-muted-foreground mb-2">This command will generate a login link. Because this environment can't open a browser automatically, you will need to **copy the full URL from the terminal and paste it into your browser** to authorize the CLI.</p>
-              <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase login</code></pre>
-            </div>
              <div>
-              <h4 className="font-semibold">Step 2: Set API Secrets</h4>
+              <h4 className="font-semibold">Step 1: Set API Secrets</h4>
               <p className="text-sm text-muted-foreground mb-2">Run these commands one by one, replacing the placeholder values with your actual Notik API credentials.</p>
               <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase secrets set NOTIK_API_KEY="your_key_here"<br/>supabase secrets set NOTIK_PUB_ID="your_pub_id_here"<br/>supabase secrets set NOTIK_APP_ID="your_app_id_here"</code></pre>
             </div>
              <div>
-              <h4 className="font-semibold">Step 3: Deploy the Edge Function</h4>
-              <p className="text-sm text-muted-foreground mb-2">This uploads the sync logic to your Supabase project.</p>
-              <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase functions deploy sync-offers</code></pre>
+              <h4 className="font-semibold">Step 2: Deploy the Edge Function</h4>
+              <p className="text-sm text-muted-foreground mb-2">This step requires a Supabase Access Token. <Link href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noopener noreferrer" className="underline font-bold text-primary">Generate a new token here</Link>, then run the command below, pasting your token where indicated.</p>
+              <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase functions deploy sync-offers --token "your_access_token_here"</code></pre>
             </div>
              <div>
-              <h4 className="font-semibold">Step 4: Schedule the Function</h4>
+              <h4 className="font-semibold">Step 3: Schedule the Function</h4>
               <p className="text-sm text-muted-foreground mb-2">In your Supabase dashboard, go to <strong>Database &gt; Edge Functions</strong>, select `sync-offers`, go to the **Schedules** tab, and create a schedule to run every 15 minutes using the cron expression `*/15 * * * *`.</p>
             </div>
         </CardContent>
@@ -560,3 +555,5 @@ export default function ManageOffersPage() {
     </div>
   );
 }
+
+    
