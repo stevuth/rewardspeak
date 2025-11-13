@@ -1,0 +1,43 @@
+
+{
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "src/app/page.tsx"
+      ]
+    },
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "dsznajder.es7-react-js-snippets"
+      ],
+      "settings": {
+        "workbench.colorTheme": "Default Dark Modern",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "files.exclude": {
+          "**/node_modules": true
+        }
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/nix:1": {
+        "pkgs": "supabase-cli"
+    }
+  }
+}
