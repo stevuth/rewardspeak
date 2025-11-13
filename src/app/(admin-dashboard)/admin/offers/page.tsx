@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Percent, ListTodo, List, Bot, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Search, X, Percent, ListTodo, List, Bot, Clock, DatabaseZap } from "lucide-react";
 import { OfferDetailsRow } from "./offer-details-row";
 import { getOfferPayoutPercentage, updateOfferPayoutPercentage, getOfferDisplayLimit, updateOfferDisplayLimit, getCronLogs } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
@@ -416,25 +416,33 @@ export default function ManageOffersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/> Automated Offer Sync Setup</CardTitle>
+          <CardTitle className="flex items-center gap-2"><DatabaseZap className="h-5 w-5"/> Automated Offer Sync Setup</CardTitle>
           <CardDescription>
-            To keep offers up-to-date automatically, set up a free cron job to trigger the sync API route.
+            Deploy a Supabase Edge Function to keep offers up-to-date automatically, then schedule it to run.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 text-sm">
-             <div>
-              <h4 className="font-bold mb-2">Step 1: Get Your Cron Secret</h4>
-              <p className="text-muted-foreground mb-2">Your `CRON_SECRET` is set in the `apphosting.yaml` file. You can view its value in your Firebase project's App Hosting backend configuration.</p>
+        <CardContent className="space-y-6 text-sm">
+            <div>
+                <h4 className="font-bold mb-2">Step 1: Set API Secrets</h4>
+                <p className="text-muted-foreground mb-2">Run these commands in the terminal to securely store your Notik API credentials for the function to use. Replace the placeholders with your actual credentials.</p>
+                <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono space-y-2">
+                    <div>npx supabase secrets set NOTIK_API_KEY="your_notik_api_key"</div>
+                    <div>npx supabase secrets set NOTIK_PUB_ID="your_notik_pub_id"</div>
+                    <div>npx supabase secrets set NOTIK_APP_ID="your_notik_app_id"</div>
+                </pre>
             </div>
             <div>
-              <h4 className="font-bold mb-2">Step 2: Set up a Cron Job</h4>
+                <h4 className="font-bold mb-2">Step 2: Deploy the Edge Function</h4>
+                <p className="text-muted-foreground mb-2">You need a Supabase access token to deploy. <a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noreferrer" className="text-primary underline">Generate one here</a>, then run the command below, replacing the placeholder with your token. This command uses Supabase's servers to build the function, so you don't need Docker installed.</p>
+                <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
+                  SUPABASE_ACCESS_TOKEN="your_access_token_here" npx supabase functions deploy sync-offers --use-remote-build
+                </pre>
+            </div>
+            <div>
+              <h4 className="font-bold mb-2">Step 3: Schedule the Function</h4>
               <p className="text-muted-foreground mb-2">
-                Use a free cron job service like <a href="https://cron-job.org/" target="_blank" rel="noreferrer" className="text-primary underline">cron-job.org</a> to call the following URL every 15 minutes:
+                In your Supabase project dashboard, go to **Database &gt; Edge Functions**, select the `sync-offers` function, and create a new schedule. Use the cron expression `*/15 * * * *` to run it automatically every 15 minutes.
               </p>
-               <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
-                {`https://<your-app-url>/api/cron/sync-offers`}
-              </pre>
-              <p className="text-muted-foreground mt-2">When setting up the cron job, you must add an `Authorization` header with the value `Bearer YOUR_CRON_SECRET`.</p>
             </div>
         </CardContent>
       </Card>
@@ -484,7 +492,7 @@ export default function ManageOffersPage() {
                     ) : (
                          <TableRow>
                             <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                                No automated syncs have been recorded yet. Ensure the cron job is configured correctly.
+                                No automated syncs have been recorded yet. Ensure the function is deployed and scheduled correctly.
                             </TableCell>
                         </TableRow>
                     )}
@@ -556,5 +564,3 @@ export default function ManageOffersPage() {
     </div>
   );
 }
-
-    

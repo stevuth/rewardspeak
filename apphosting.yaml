@@ -10,8 +10,6 @@ runConfig:
 # Secrets are only available on the server and are not exposed to the client.
 # https://firebase.google.com/docs/app-hosting/configure#set_environment_variables_and_secrets
 secretEnv:
-  - variable: CRON_SECRET
-    secret: CRON_SECRET
   - variable: NEXT_PUBLIC_SUPABASE_URL
     secret: NEXT_PUBLIC_SUPABASE_URL
   - variable: NEXT_PUBLIC_SUPABASE_ANON_KEY
