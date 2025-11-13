@@ -154,12 +154,13 @@ export default function PostbacksPage() {
                   <TableHead className="w-[120px]">Payout (USD)</TableHead>
                   <TableHead>Txn ID</TableHead>
                   <TableHead>Event ID</TableHead>
+                  <TableHead>Rewarded Txn ID</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center h-64">
+                    <TableCell colSpan={9} className="text-center h-64">
                       <WavingMascotLoader text="Loading Postbacks..." />
                     </TableCell>
                   </TableRow>
@@ -182,11 +183,14 @@ export default function PostbacksPage() {
                       <TableCell>
                           <Badge variant="secondary" className="font-mono">{tx.event_id || 'N/A'}</Badge>
                       </TableCell>
+                      <TableCell>
+                          <Badge variant="destructive" className="font-mono">{tx.rewarded_txn_id || 'N/A'}</Badge>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center h-24">
+                    <TableCell colSpan={9} className="text-center h-24">
                       No postbacks recorded yet.
                     </TableCell>
                   </TableRow>
