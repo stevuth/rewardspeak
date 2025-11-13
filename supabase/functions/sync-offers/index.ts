@@ -1,7 +1,7 @@
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from '../cors.ts';
+import { corsHeaders } from './cors.ts';
 import { getAllOffers } from './notik-api.ts';
 import type { NotikOffer } from './notik-api.ts';
 
