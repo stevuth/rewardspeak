@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from "react";
@@ -424,7 +423,7 @@ export default function ManageOffersPage() {
         <CardContent className="space-y-4">
             <div>
               <h4 className="font-semibold">Step 1: Log in to Supabase CLI</h4>
-              <p className="text-sm text-muted-foreground mb-2">This command will open a browser window to authenticate your terminal.</p>
+              <p className="text-sm text-muted-foreground mb-2">This command will generate a login link. Because this environment can't open a browser automatically, you will need to **copy the full URL from the terminal and paste it into your browser** to authorize the CLI.</p>
               <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase login</code></pre>
             </div>
              <div>
