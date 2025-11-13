@@ -1,33 +1,33 @@
--- This migration enables the pg_cron extension and schedules the `sync-offers`
--- Edge Function to run every 15 minutes.
+-- This migration file enables required extensions and schedules the 'sync-offers' edge function.
+-- To apply this migration, run the following command in your terminal:
+-- npx supabase db push
 
--- 1. Ensure the pg_cron extension is enabled.
--- It's safe to run this even if it's already enabled.
-CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA extensions;
--- Grant usage to the postgres role if not already granted.
-GRANT USAGE ON SCHEMA cron TO postgres;
+-- 1. Enable pg_cron for scheduling tasks
+create extension if not exists "pg_cron" with schema "extensions";
+grant usage on schema cron to postgres;
 
--- 2. Grant permissions to the anon role to invoke the function.
--- This is necessary for the cron job, which runs as the `postgres` user,
--- to have permission to call the function.
-GRANT USAGE ON SCHEMA net TO postgres;
+-- 2. Enable pg_net for making HTTP requests from within the database
+create extension if not exists "pg_net" with schema "extensions";
+grant usage on schema net to postgres;
 
--- 3. Define the webhook URL for the function.
--- Supabase automatically provides this endpoint for every deployed function.
--- We use the project's reference ID, which is a stable identifier.
--- The service_role key is required for authentication.
-SELECT
-    -- Unschedule the job first to ensure this script is repeatable.
-    cron.unschedule('sync-offers-every-15-minutes'),
-    -- Schedule the job to run every 15 minutes.
-    cron.schedule(
-        'sync-offers-every-15-minutes', -- The unique name for our job.
-        '*/15 * * * *', -- Standard cron syntax for "every 15 minutes".
-        $$
-        SELECT
-            net.http_post(
-                url:='https://fxpdfkianxufsjsblgpi.supabase.co/functions/v1/sync-offers',
-                headers:='{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjgxMDgwMDB9.ZLs_3Y12T2h47I4iBEs-YCL1e_i4iH5E2t3Qy3iSnjY"}'
-            );
-        $$
-    );
+-- 3. Unschedule any existing job with the same name to make this script re-runnable.
+-- The `if_exists` parameter is set to true, so it won't throw an error if the job doesn't exist.
+select cron.unschedule(job_name := 'sync-offers-every-15-minutes', if_exists := true);
+
+-- 4. Schedule the 'sync-offers' function to run every 15 minutes.
+-- This calls the function via an HTTP POST request.
+-- Note: Replace 'YOUR_SUPABASE_PROJECT_URL' with your actual project URL.
+-- Note: Replace 'YOUR_SUPABASE_ANON_KEY' with your actual anon key.
+select
+  cron.schedule(
+    'sync-offers-every-15-minutes',
+    '*/15 * * * *', -- This cron expression means "every 15 minutes"
+    $$
+    select
+      net.http_post(
+        url := 'https://fxpdfkianxufsjsblgpi.supabase.co/functions/v1/sync-offers',
+        headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5NDZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"}'::jsonb,
+        body := '{}'::jsonb
+      ) as request_id;
+    $$
+  );
