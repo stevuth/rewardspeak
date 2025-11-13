@@ -1,16 +1,38 @@
-# Supabase project configuration
+# Supabase project configuration.
+#
+# A project_id is required. It can be found in your project's URL:
+# https://supabase.com/dashboard/project/<project_id>
+#
+# You can also use the --project-ref flag to specify the project id.
+
+project_id = "fxpdfkianxufsjsblgpi"
+
+[api]
+# Port to use for the API proxy.
+port = 54321
+# Schemas to expose in your API.
+schemas = ["public", "storage", "graphql"]
+# Extra schemas to add to the search_path of roles.
+extra_search_path = ["public"]
+# Maximum number of rows to return from a view, table, or function.
+max_rows = 1000
+
+[db]
+# Port to use for the local database.
+port = 54322
+# Use a major version number.
+major_version = 15
+
+[studio]
+# Port to use for Supabase Studio.
+port = 54323
+
+# Email testing server.
+[inbucket]
+# Port to use for the email testing server.
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
 
 [functions.sync-offers]
-# You must first create a Supabase secret for each of these.
-# You can do so by running the following commands, replacing the placeholder values:
-# supabase secrets set NOTIK_API_KEY="your_notik_api_key"
-# supabase secrets set NOTIK_PUB_ID="your_notik_pub_id"
-# supabase secrets set NOTIK_APP_ID="your_notik_app_id"
-#
-# To deploy, you will need a management access token.
-# Generate one at https://supabase.com/dashboard/account/tokens
-# Then, run the following command, pasting your token:
-# supabase functions deploy sync-offers --token "your_access_token_here"
 import_map = "./import_map.json"
-
-    

@@ -418,7 +418,7 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/> Automated Sync History</CardTitle>
           <CardDescription>
-            A log of automated syncs performed by the Supabase Edge Function. To set this up, you need to deploy the function and create a schedule in your Supabase dashboard.
+            A log of automated syncs. Set this up in your Supabase project dashboard under Database &gt; Edge Functions &gt; sync-offers &gt; Schedules. Use cron: `*/15 * * * *` for every 15 minutes.
           </CardDescription>
         </CardHeader>
         <CardContent>
