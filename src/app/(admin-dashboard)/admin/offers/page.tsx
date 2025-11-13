@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from "react";
@@ -417,7 +418,7 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/> Automated Sync History</CardTitle>
           <CardDescription>
-            A log of automated syncs performed by the Supabase Edge Function.
+            A log of automated syncs performed by the Supabase Edge Function. To set this up, you need to deploy the function and create a schedule in your Supabase dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent>
