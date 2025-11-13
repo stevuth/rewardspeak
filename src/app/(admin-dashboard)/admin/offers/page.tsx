@@ -418,17 +418,17 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Bot className="h-5 w-5"/> Automated Sync History</CardTitle>
           <CardDescription>
-            The system automatically syncs offers every 15 minutes. Here are the latest logs. This requires an external cron job to be configured to call the /api/cron/sync-offers endpoint.
+            The system automatically syncs offers every 15 minutes. Here are the latest logs from the Supabase Edge Function. To set this up, go to the "Database" &gt; "Edge Functions" section of your Supabase dashboard and create a schedule for the `sync-offers` function to run every 15 minutes (`*/15 * * * *`).
           </CardDescription>
         </CardHeader>
         <CardContent>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[200px] text-muted-foreground">Timestamp</TableHead>
-                        <TableHead className="text-muted-foreground">Status</TableHead>
-                        <TableHead className="text-muted-foreground">Offers Synced</TableHead>
-                        <TableHead className="text-muted-foreground">Log</TableHead>
+                        <TableHead className="w-[200px]">Timestamp</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Offers Synced</TableHead>
+                        <TableHead>Log</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -459,7 +459,7 @@ export default function ManageOffersPage() {
                     ) : (
                          <TableRow>
                             <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                                No automated syncs have been recorded yet. Ensure your external cron job is configured correctly.
+                                No automated syncs have been recorded yet. Ensure the Supabase Scheduler is configured correctly.
                             </TableCell>
                         </TableRow>
                     )}
