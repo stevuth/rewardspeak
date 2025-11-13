@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from "react";
@@ -417,34 +418,36 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/> Automated Offer Sync Setup</CardTitle>
           <CardDescription>
-            To keep offers up-to-date automatically, you need to deploy and schedule a Supabase Edge Function. Follow these steps using the terminal.
+            To keep offers up-to-date automatically, you need to deploy and schedule a Supabase Edge Function.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 text-sm">
             <div>
               <h4 className="font-bold mb-2">Step 1: Generate an Access Token</h4>
               <p className="text-muted-foreground mb-2">
-                Go to the <a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noreferrer" className="text-primary underline">Supabase Access Tokens page</a>, generate a new token, and copy it.
+                Go to the <a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noreferrer" className="text-primary underline">Supabase Access Tokens page</a>, generate a new token, and copy it. You will not be able to see it again.
               </p>
             </div>
              <div>
               <h4 className="font-bold mb-2">Step 2: Set API Secrets</h4>
               <p className="text-muted-foreground mb-2">Run these commands in your terminal, replacing the placeholders with your actual Notik API credentials.</p>
               <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
-                {`npx supabase secrets set NOTIK_API_KEY="your_key_here"\nnpx supabase secrets set NOTIK_PUB_ID="your_pub_id_here"\nnpx supabase secrets set NOTIK_APP_ID="your_app_id_here"`}
+                {`npx supabase secrets set NOTIK_API_KEY="your_key_here"
+npx supabase secrets set NOTIK_PUB_ID="your_pub_id_here"
+npx supabase secrets set NOTIK_APP_ID="your_app_id_here"`}
               </pre>
             </div>
              <div>
               <h4 className="font-bold mb-2">Step 3: Deploy the Function</h4>
-              <p className="text-muted-foreground mb-2">Run this command in your terminal, pasting your access token where indicated.</p>
+              <p className="text-muted-foreground mb-2">Run this command in your terminal, pasting your access token where indicated. The `--no-verify-jwt` flag is crucial for this environment.</p>
               <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
-                {`SUPABASE_ACCESS_TOKEN="paste_your_token_here" npx supabase functions deploy sync-offers`}
+                {`SUPABASE_ACCESS_TOKEN="paste_your_token_here" npx supabase functions deploy sync-offers --no-verify-jwt`}
               </pre>
             </div>
             <div>
               <h4 className="font-bold mb-2">Step 4: Schedule the Function</h4>
               <p className="text-muted-foreground">
-                In your Supabase project dashboard, go to **Database &gt; Edge Functions**, select `sync-offers`, open the **Schedules** tab, and create a new schedule with the cron expression `*/15 * * * *` to run it every 15 minutes.
+                In your Supabase project dashboard, go to **Edge Functions**, select `sync-offers`, open the **Schedules** tab, and create a new schedule with the cron expression `*/15 * * * *` to run it every 15 minutes.
               </p>
             </div>
         </CardContent>
