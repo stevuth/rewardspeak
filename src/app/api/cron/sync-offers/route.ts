@@ -8,11 +8,12 @@ export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
 
   if (!cronSecret) {
-    console.error("CRON_SECRET is not set in environment variables.");
-    return NextResponse.json({ error: 'Cron secret not configured.' }, { status: 500 });
+    console.error("[CRON-JOB-ERROR] CRON_SECRET is not set in the server environment variables. This is a configuration issue on the hosting platform.");
+    return NextResponse.json({ error: 'Cron secret not configured on the server.' }, { status: 500 });
   }
 
   if (authHeader !== `Bearer ${cronSecret}`) {
+    console.error(`[CRON-JOB-AUTH-FAILURE] Unauthorized access attempt. Expected 'Bearer ${cronSecret.substring(0,5)}...' but received '${authHeader || "No Authorization header"}'.`);
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
