@@ -418,30 +418,27 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><DatabaseZap className="h-5 w-5"/> Automated Offer Sync Setup</CardTitle>
           <CardDescription>
-            Deploy a Supabase Edge Function to keep offers up-to-date automatically, then schedule it to run.
+            A simple, one-time setup to keep your offers fresh automatically.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 text-sm">
             <div>
-                <h4 className="font-bold mb-2">Step 1: Set API Secrets</h4>
-                <p className="text-muted-foreground mb-2">Run these commands in the terminal to securely store your Notik API credentials for the function to use. Replace the placeholders with your actual credentials.</p>
-                <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono space-y-2">
-                    <div>npx supabase secrets set NOTIK_API_KEY="your_notik_api_key"</div>
-                    <div>npx supabase secrets set NOTIK_PUB_ID="your_notik_pub_id"</div>
-                    <div>npx supabase secrets set NOTIK_APP_ID="your_notik_app_id"</div>
-                </pre>
+                <h4 className="font-bold mb-2">Step 1: Set API Secrets in Supabase</h4>
+                <p className="text-muted-foreground mb-2">Go to your Supabase project dashboard, navigate to **Settings &gt; Edge Functions**, and add the following secrets. These are your Notik API credentials.</p>
+                <ul className="list-disc pl-5 space-y-1 font-mono text-xs bg-muted p-3 rounded-md">
+                    <li>NOTIK_API_KEY</li>
+                    <li>NOTIK_PUB_ID</li>
+                    <li>NOTIK_APP_ID</li>
+                </ul>
             </div>
             <div>
                 <h4 className="font-bold mb-2">Step 2: Deploy the Edge Function</h4>
-                <p className="text-muted-foreground mb-2">You need a Supabase access token to deploy. <a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noreferrer" className="text-primary underline">Generate one here</a>, then run the command below, replacing the placeholder with your token. This command uses Supabase's servers to build the function, so you don't need Docker installed.</p>
-                <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
-                  SUPABASE_ACCESS_TOKEN="your_access_token_here" npx supabase functions deploy sync-offers --use-remote-build
-                </pre>
+                <p className="text-muted-foreground mb-2">In your Supabase project dashboard, go to **Edge Functions** in the sidebar. Click **Deploy new function**, name it `sync-offers`, and paste the code from the file located at `supabase/functions/sync-offers/index.ts` in your project.</p>
             </div>
             <div>
               <h4 className="font-bold mb-2">Step 3: Schedule the Function</h4>
               <p className="text-muted-foreground mb-2">
-                In your Supabase project dashboard, go to **Database &gt; Edge Functions**, select the `sync-offers` function, and create a new schedule. Use the cron expression `*/15 * * * *` to run it automatically every 15 minutes.
+                After deploying, stay on the `sync-offers` function page and click the **Schedules** tab. Create a new schedule using the cron expression `*/15 * * * *` to run it automatically every 15 minutes.
               </p>
             </div>
         </CardContent>
