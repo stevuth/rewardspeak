@@ -35,3 +35,4 @@ COMMENT ON COLUMN public.cron_logs.status IS 'The final status of the cron job r
 COMMENT ON COLUMN public.cron_logs.log_message IS 'A detailed log of the cron job execution.';
 COMMENT ON COLUMN public.cron_logs.offers_synced_count IS 'The number of new or updated offers synced during the run.';
 
+    
