@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from "react";
@@ -362,6 +361,25 @@ export default function ManageOffersPage() {
           </CardFooter>
         </Card>
        </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Automated Offer Sync</CardTitle>
+                <CardDescription>
+                    To keep offers up-to-date, a Supabase Edge Function handles automated syncing. To enable it, you need to apply a database migration to schedule the function.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <h3 className="font-semibold mb-2">How to Schedule the Sync</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                    Run the following command in your terminal. This will apply the new database migration that tells Supabase to run the `sync-offers` function every 15 minutes.
+                </p>
+                <pre className="text-xs bg-muted p-4 rounded-md whitespace-pre-wrap"><code>npx supabase db push</code></pre>
+                 <p className="text-xs text-muted-foreground mt-2">
+                    Note: You may need to have the Supabase CLI installed (`npm install -g supabase`) and be logged in (`npx supabase login`).
+                </p>
+            </CardContent>
+        </Card>
       
        <Card>
         <CardHeader>
