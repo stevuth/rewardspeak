@@ -414,41 +414,27 @@ export default function ManageOffersPage() {
         </Card>
       )}
 
-       <Card>
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/> Automated Offer Sync Setup</CardTitle>
           <CardDescription>
-            To keep offers up-to-date automatically, you need to deploy and schedule a Supabase Edge Function.
+            To keep offers up-to-date automatically, set up a free cron job to trigger the sync API route.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6 text-sm">
+        <CardContent className="space-y-4 text-sm">
+             <div>
+              <h4 className="font-bold mb-2">Step 1: Get Your Cron Secret</h4>
+              <p className="text-muted-foreground mb-2">Your `CRON_SECRET` is set in the `apphosting.yaml` file. You can view its value in your Firebase project's App Hosting backend configuration.</p>
+            </div>
             <div>
-              <h4 className="font-bold mb-2">Step 1: Generate an Access Token</h4>
+              <h4 className="font-bold mb-2">Step 2: Set up a Cron Job</h4>
               <p className="text-muted-foreground mb-2">
-                Go to the <a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noreferrer" className="text-primary underline">Supabase Access Tokens page</a>, generate a new token, and copy it. You will not be able to see it again.
+                Use a free cron job service like <a href="https://cron-job.org/" target="_blank" rel="noreferrer" className="text-primary underline">cron-job.org</a> to call the following URL every 15 minutes:
               </p>
-            </div>
-             <div>
-              <h4 className="font-bold mb-2">Step 2: Set API Secrets</h4>
-              <p className="text-muted-foreground mb-2">Run these commands in your terminal, replacing the placeholders with your actual Notik API credentials.</p>
-              <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
-                {`npx supabase secrets set NOTIK_API_KEY="your_key_here"
-npx supabase secrets set NOTIK_PUB_ID="your_pub_id_here"
-npx supabase secrets set NOTIK_APP_ID="your_app_id_here"`}
+               <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
+                {`https://<your-app-url>/api/cron/sync-offers`}
               </pre>
-            </div>
-             <div>
-              <h4 className="font-bold mb-2">Step 3: Deploy the Function</h4>
-              <p className="text-muted-foreground mb-2">Run this command in your terminal, pasting your access token where indicated. The `--no-verify-jwt` flag is crucial for this environment.</p>
-              <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
-                {`SUPABASE_ACCESS_TOKEN="paste_your_token_here" npx supabase functions deploy sync-offers --no-verify-jwt`}
-              </pre>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">Step 4: Schedule the Function</h4>
-              <p className="text-muted-foreground">
-                In your Supabase project dashboard, go to **Edge Functions**, select `sync-offers`, open the **Schedules** tab, and create a new schedule with the cron expression `*/15 * * * *` to run it every 15 minutes.
-              </p>
+              <p className="text-muted-foreground mt-2">When setting up the cron job, you must add an `Authorization` header with the value `Bearer YOUR_CRON_SECRET`.</p>
             </div>
         </CardContent>
       </Card>
@@ -498,7 +484,7 @@ npx supabase secrets set NOTIK_APP_ID="your_app_id_here"`}
                     ) : (
                          <TableRow>
                             <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                                No automated syncs have been recorded yet. Ensure the Supabase Scheduler is configured correctly.
+                                No automated syncs have been recorded yet. Ensure the cron job is configured correctly.
                             </TableCell>
                         </TableRow>
                     )}

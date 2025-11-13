@@ -1,4 +1,3 @@
-
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 
@@ -10,9 +9,20 @@ runConfig:
 # The `runConfig` settings are specified in `apphosting.yaml`.
 # Secrets are only available on the server and are not exposed to the client.
 # https://firebase.google.com/docs/app-hosting/configure#set_environment_variables_and_secrets
-runConfig:
-  # Environment variables for the backend.
-  # https://firebase.google.com/docs/app-hosting/configure#set_environment_variables
-  env:
-    - variable: CRON_SECRET
-      secret: CRON_SECRET
+secretEnv:
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
+  - variable: NEXT_PUBLIC_SUPABASE_URL
+    secret: NEXT_PUBLIC_SUPABASE_URL
+  - variable: NEXT_PUBLIC_SUPABASE_ANON_KEY
+    secret: NEXT_PUBLIC_SUPABASE_ANON_KEY
+  - variable: SUPABASE_SERVICE_ROLE_KEY
+    secret: SUPABASE_SERVICE_ROLE_KEY
+  - variable: NEXT_PUBLIC_NOTIK_API_KEY
+    secret: NEXT_PUBLIC_NOTIK_API_KEY
+  - variable: NEXT_PUBLIC_NOTIK_PUB_ID
+    secret: NEXT_PUBLIC_NOTIK_PUB_ID
+  - variable: NEXT_PUBLIC_NOTIK_APP_ID
+    secret: NEXT_PUBLIC_NOTIK_APP_ID
+  - variable: IPHUB_API_KEY
+    secret: IPHUB_API_KEY
