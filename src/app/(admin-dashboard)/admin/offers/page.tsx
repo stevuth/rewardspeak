@@ -417,19 +417,9 @@ export default function ManageOffersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/> Automated Sync History</CardTitle>
           <CardDescription>
-            A log of automated syncs performed by the Supabase Edge Function. To enable this, you must deploy the function from your local terminal and set up a schedule in your Supabase dashboard.
+            A log of automated syncs performed by the Supabase Edge Function.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="prose prose-sm prose-invert max-w-none bg-muted/50 p-4 rounded-lg">
-            <h4 className="text-foreground">One-Time Setup Instructions:</h4>
-            <ol>
-                <li><strong>Install Supabase CLI:</strong> Run `npm install -g supabase@latest` in your terminal to get the latest version.</li>
-                <li><strong>Deploy Function:</strong> Get an access token from your <a href="https://supabase.com/dashboard/account/tokens" target="_blank" rel="noopener noreferrer">Supabase Account</a>. Then run the command: <br/> <code className="text-secondary">supabase functions deploy sync-offers --token "your_access_token"</code></li>
-                 <li><strong>Schedule the Job:</strong> In your Supabase dashboard, go to <strong>Database &gt; Edge Functions</strong>. Select `sync-offers`, go to the **Schedules** tab, and create a new schedule with the expression `*/15 * * * *` to run every 15 minutes.</li>
-            </ol>
-          </div>
-        </CardContent>
         <CardContent>
             <Table>
                 <TableHeader>
