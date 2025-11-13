@@ -35,4 +35,4 @@ smtp_port = 54325
 pop3_port = 54326
 
 [functions.sync-offers]
-import_map = "./import_map.json"
+import_map = "./functions/import_map.json"
