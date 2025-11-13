@@ -416,9 +416,39 @@ export default function ManageOffersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Bot className="h-5 w-5"/> Automated Sync History</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Bot className="h-5 w-5"/> Automated Sync Setup</CardTitle>
           <CardDescription>
-            The system automatically syncs offers every 15 minutes. Here are the latest logs from the Supabase Edge Function. To set this up, go to the "Database" &gt; "Edge Functions" section of your Supabase dashboard and create a schedule for the `sync-offers` function to run every 15 minutes (`*/15 * * * *`).
+            The system uses a Supabase Edge Function to sync offers automatically. Follow these one-time setup steps in your terminal from the project root directory.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div>
+              <h4 className="font-semibold">Step 1: Log in to Supabase CLI</h4>
+              <p className="text-sm text-muted-foreground mb-2">This command will open a browser window to authenticate your terminal.</p>
+              <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase login</code></pre>
+            </div>
+             <div>
+              <h4 className="font-semibold">Step 2: Set API Secrets</h4>
+              <p className="text-sm text-muted-foreground mb-2">Run these commands one by one, replacing the placeholder values with your actual Notik API credentials.</p>
+              <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase secrets set NOTIK_API_KEY="your_key_here"<br/>supabase secrets set NOTIK_PUB_ID="your_pub_id_here"<br/>supabase secrets set NOTIK_APP_ID="your_app_id_here"</code></pre>
+            </div>
+             <div>
+              <h4 className="font-semibold">Step 3: Deploy the Edge Function</h4>
+              <p className="text-sm text-muted-foreground mb-2">This uploads the sync logic to your Supabase project.</p>
+              <pre className="text-xs bg-muted p-2 rounded-md font-mono"><code>supabase functions deploy sync-offers</code></pre>
+            </div>
+             <div>
+              <h4 className="font-semibold">Step 4: Schedule the Function</h4>
+              <p className="text-sm text-muted-foreground mb-2">In your Supabase dashboard, go to <strong>Database &gt; Edge Functions</strong>, select `sync-offers`, go to the **Schedules** tab, and create a schedule to run every 15 minutes using the cron expression `*/15 * * * *`.</p>
+            </div>
+        </CardContent>
+      </Card>
+
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/> Automated Sync History</CardTitle>
+          <CardDescription>
+            A log of the most recent automated syncs performed by the Supabase Edge Function.
           </CardDescription>
         </CardHeader>
         <CardContent>
