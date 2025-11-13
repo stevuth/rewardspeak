@@ -1,33 +1,35 @@
--- This migration file enables required extensions and schedules the 'sync-offers' edge function.
--- To apply this migration, run the following command in your terminal:
--- npx supabase db push
+-- This migration file enables required extensions and schedules the offer sync function.
 
--- 1. Enable pg_cron for scheduling tasks
+-- Enable the pg_cron extension for scheduling tasks.
+-- This allows us to run functions on a timer.
 create extension if not exists "pg_cron" with schema "extensions";
-grant usage on schema cron to postgres;
 
--- 2. Enable pg_net for making HTTP requests from within the database
+-- Enable the pg_net extension for making HTTP requests.
+-- This is required by the cron job to call the API route.
 create extension if not exists "pg_net" with schema "extensions";
+
+-- Grant usage permissions to the postgres role for the new schemas.
+grant usage on schema cron to postgres;
 grant usage on schema net to postgres;
 
--- 3. Unschedule any existing job with the same name to make this script re-runnable.
--- The `if_exists` parameter is set to true, so it won't throw an error if the job doesn't exist.
-select cron.unschedule(job_name := 'sync-offers-every-15-minutes', if_exists := true);
+-- IMPORTANT: The service_role key must be added as a secret named `SUPABASE_SERVICE_ROLE_KEY`
+-- in the project's secrets settings for this to work.
 
--- 4. Schedule the 'sync-offers' function to run every 15 minutes.
--- This calls the function via an HTTP POST request.
--- Note: Replace 'YOUR_SUPABASE_PROJECT_URL' with your actual project URL.
--- Note: Replace 'YOUR_SUPABASE_ANON_KEY' with your actual anon key.
-select
-  cron.schedule(
+-- First, delete any existing job with the same name to ensure idempotency.
+-- This makes the migration safe to re-run.
+DELETE FROM cron.job WHERE jobname = 'sync-offers-every-15-minutes';
+
+-- Schedule the 'sync-offers' function to run every 15 minutes.
+-- The function is triggered via an HTTP POST request to its endpoint.
+-- We are using the service_role key to bypass RLS for this internal task.
+SELECT cron.schedule(
     'sync-offers-every-15-minutes',
-    '*/15 * * * *', -- This cron expression means "every 15 minutes"
+    '*/15 * * * *',
     $$
     select
-      net.http_post(
-        url := 'https://fxpdfkianxufsjsblgpi.supabase.co/functions/v1/sync-offers',
-        headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5NDZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"}'::jsonb,
-        body := '{}'::jsonb
-      ) as request_id;
+        net.http_post(
+            url:='http://localhost:54321/functions/v1/sync-offers',
+            headers:='{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"}'
+        )
     $$
-  );
+);
