@@ -413,36 +413,6 @@ export default function ManageOffersPage() {
           </CardContent>
         </Card>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><DatabaseZap className="h-5 w-5"/> Automated Offer Sync Setup</CardTitle>
-          <CardDescription>
-            A simple, one-time setup to keep your offers fresh automatically.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6 text-sm">
-            <div>
-                <h4 className="font-bold mb-2">Step 1: Set API Secrets in Supabase</h4>
-                <p className="text-muted-foreground mb-2">Go to your Supabase project dashboard, navigate to **Settings &gt; Edge Functions**, and add the following secrets. These are your Notik API credentials.</p>
-                <ul className="list-disc pl-5 space-y-1 font-mono text-xs bg-muted p-3 rounded-md">
-                    <li>NOTIK_API_KEY</li>
-                    <li>NOTIK_PUB_ID</li>
-                    <li>NOTIK_APP_ID</li>
-                </ul>
-            </div>
-            <div>
-                <h4 className="font-bold mb-2">Step 2: Deploy the Edge Function</h4>
-                <p className="text-muted-foreground mb-2">In your Supabase project dashboard, go to **Edge Functions** in the sidebar. Click **Deploy new function**, name it `sync-offers`, and paste the code from the file located at `supabase/functions/sync-offers/index.ts` in your project.</p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">Step 3: Schedule the Function</h4>
-              <p className="text-muted-foreground mb-2">
-                After deploying, stay on the `sync-offers` function page and click the **Schedules** tab. Create a new schedule using the cron expression `*/15 * * * *` to run it automatically every 15 minutes.
-              </p>
-            </div>
-        </CardContent>
-      </Card>
       
        <Card>
         <CardHeader>
