@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { OfferGridCard } from "@/components/offer-grid-card";
 import { Input } from "@/components/ui/input";
-import { Loader2, Search, Mountain } from "lucide-react";
+import { Loader2, Search, Mountain, RefreshCw } from "lucide-react";
 import { OfferPreviewModal } from "@/components/offer-preview-modal";
 import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { TheoremReachLogo, TimeWallLogo } from "@/components/illustrations/offerwall-logos";
+import { Button } from "@/components/ui/button";
 
 type Offer = NotikOffer & {
   points: number;
@@ -105,6 +106,7 @@ export default function EarnPage() {
   const [hasMore, setHasMore] = useState(true);
   const [totalOfferLimit, setTotalOfferLimit] = useState(1000);
   const { toast } = useToast();
+  const [isRefreshing, startRefreshTransition] = useTransition();
 
   const fetchOffers = useCallback(async (pageNum: number, isNewSearch: boolean = false) => {
     if (pageNum === 1) {
@@ -196,6 +198,19 @@ export default function EarnPage() {
     }
   }, [searchQuery, toast, allOffers.length]);
 
+  const handleRefresh = () => {
+    startRefreshTransition(() => {
+        setAllOffers([]);
+        setPage(1);
+        setHasMore(true);
+        fetchOffers(1, true);
+        toast({
+            title: "Refreshed!",
+            description: "The latest offers have been loaded.",
+        });
+    });
+  };
+
   useEffect(() => {
     setAllOffers([]);
     setPage(1);
@@ -269,14 +284,20 @@ export default function EarnPage() {
         description="Main earning hub that leads to all available earning opportunities."
       />
       
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input 
-          placeholder="Search for offers..." 
-          className="pl-9"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+            placeholder="Search for offers..." 
+            className="pl-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            />
+        </div>
+        <Button onClick={handleRefresh} disabled={isRefreshing || isLoading}>
+            <RefreshCw className={cn("mr-2 h-4 w-4", (isRefreshing || isLoading) && "animate-spin")} />
+            {isRefreshing || isLoading ? 'Refreshing...' : 'Refresh Offers'}
+        </Button>
       </div>
 
        <section>
