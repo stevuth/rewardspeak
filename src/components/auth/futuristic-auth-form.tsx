@@ -41,7 +41,9 @@ const FloatingLabelInput = ({
   required = true,
   isPassword = false,
   showPassword,
-  toggleShowPassword
+  toggleShowPassword,
+  value,
+  onChange
 }: {
   id: string;
   name: string;
@@ -51,6 +53,8 @@ const FloatingLabelInput = ({
   isPassword?: boolean;
   showPassword?: boolean;
   toggleShowPassword?: () => void;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   return (
     <div className="relative">
@@ -64,6 +68,8 @@ const FloatingLabelInput = ({
             placeholder=" " // Important for the floating label effect
             className="floating-label-input block w-full bg-[#1A0033]/80 rounded-md py-3 pl-10 pr-10 text-base text-gray-200 placeholder-gray-500 appearance-none focus:outline-none focus:ring-0 relative z-20"
             required={required}
+            value={value}
+            onChange={onChange}
           />
            {isPassword && (
             <button
@@ -204,7 +210,7 @@ export function FuturisticAuthForm({
     if (state.message && !state.success) {
       toast({
         variant: "destructive",
-        title: "Authentication Failed",
+        title: "Login Failed",
         description: state.message,
       });
     }
@@ -329,6 +335,8 @@ export function FuturisticAuthForm({
                             type="text"
                             Icon={UserPlus}
                             required={false}
+                            value={referralCode}
+                            onChange={(e) => setReferralCode(e.target.value)}
                         />
                     </div>
                     <div className="flex items-center space-x-2">
