@@ -77,7 +77,12 @@ export default function OfferPreviewPage() {
         const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
         const payoutPercentage = config ? Number(config.value) : 100;
 
-        const { data: rawAllOffers, error: allOffersError } = await supabase.from('all_offers').select('*').eq('is_disabled', false);
+        const { data: rawAllOffers, error: allOffersError } = await supabase
+          .from('all_offers')
+          .select('*')
+          .eq('is_disabled', false)
+          .order('created_at', { ascending: false });
+
         if (allOffersError) throw allOffersError;
         if (Array.isArray(rawAllOffers)) {
             const transformed = rawAllOffers.map((o: NotikOffer) => transformOffer(o, userId, payoutPercentage));
