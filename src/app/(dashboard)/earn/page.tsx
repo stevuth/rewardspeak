@@ -158,7 +158,7 @@ export default function EarnPage() {
             .neq('description', '')
             .neq('description', 'name')
             .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`)
-            .order('payout', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(from, to);
 
         if (searchQuery) {
