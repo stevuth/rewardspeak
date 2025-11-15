@@ -106,7 +106,6 @@ export default function EarnPage() {
   const [hasMore, setHasMore] = useState(true);
   const [totalOfferLimit, setTotalOfferLimit] = useState(1000);
   const { toast } = useToast();
-  const [isRefreshing, startRefreshTransition] = useTransition();
 
   const fetchOffers = useCallback(async (pageNum: number, isNewSearch: boolean = false) => {
     if (pageNum === 1) {
@@ -198,19 +197,6 @@ export default function EarnPage() {
     }
   }, [searchQuery, toast, allOffers.length]);
 
-  const handleRefresh = () => {
-    startRefreshTransition(() => {
-        setAllOffers([]);
-        setPage(1);
-        setHasMore(true);
-        fetchOffers(1, true);
-        toast({
-            title: "Refreshed!",
-            description: "The latest offers have been loaded.",
-        });
-    });
-  };
-
   useEffect(() => {
     setAllOffers([]);
     setPage(1);
@@ -284,20 +270,14 @@ export default function EarnPage() {
         description="Main earning hub that leads to all available earning opportunities."
       />
       
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-            placeholder="Search for offers..." 
-            className="pl-9"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            />
-        </div>
-        <Button onClick={handleRefresh} disabled={isRefreshing || isLoading}>
-            <RefreshCw className={cn("mr-2 h-4 w-4", (isRefreshing || isLoading) && "animate-spin")} />
-            {isRefreshing || isLoading ? 'Refreshing...' : 'Refresh Offers'}
-        </Button>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input 
+          placeholder="Search for offers..." 
+          className="pl-9"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
        <section>
