@@ -18,15 +18,19 @@ grant usage on schema net to postgres, anon, authenticated, service_role;
 -- cron.schedule is idempotent: if a job with the same name exists, it will be updated.
 -- This avoids errors on subsequent runs of the migration.
 select
-    cron.schedule(
-        'sync-offers-every-15-minutes',
-        '*/15 * * * *',
-        $$
-        select
-            net.http_post(
-                url:='http://localhost:54321/functions/v1/sync-offers',
-                headers:='{"Content-Type": "application/json"}'::jsonb,
-                body:='{}'::jsonb
-            ) as request_id;
-        $$
-    );
+   SELECT
+  cron.schedule(
+    'sync-offers-every-15-minutes',
+    '*/15 * * * *',
+    $$
+    SELECT
+      net.http_post(
+        url := 'https://fxpdfkianxufsjsblgpi.supabase.co/functions/v1/sync-offers',
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'Authorization', 'Bearer ' || current_setting('supabase.service_role_key')
+        ),
+        body := '{}'::jsonb
+      );
+    $$
+  );

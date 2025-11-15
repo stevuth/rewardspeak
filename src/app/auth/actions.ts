@@ -99,6 +99,9 @@ export async function login(prevState: { message: string, success?: boolean }, f
             success: false 
         };
     }
+    if (error.message.includes('Invalid login credentials')) {
+        return { message: 'Incorrect email or password. Please try again.', success: false };
+    }
     return { message: error.message, success: false };
   }
 
