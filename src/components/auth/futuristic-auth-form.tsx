@@ -202,23 +202,28 @@ export function FuturisticAuthForm({
 
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const refCode = searchParams.get('ref') || '';
-  const [referralCode, setReferralCode] = useState(refCode);
-
+  
+  // Set initial state from URL search param.
+  const [referralCode, setReferralCode] = useState(() => searchParams.get('ref') || '');
 
   useEffect(() => {
     if (state.message && !state.success) {
       toast({
         variant: "destructive",
-        title: "Login Failed",
+        title: isLogin ? "Login Failed" : "Signup Failed",
         description: state.message,
       });
     }
-  }, [state, toast]);
+  }, [state, toast, isLogin]);
 
   useEffect(() => {
-    setReferralCode(refCode);
-  }, [refCode]);
+    // This effect ensures that if the modal is re-opened while the URL still has
+    // a ref code, the input field is updated. This is useful for SPAs.
+    const refCodeFromURL = searchParams.get('ref') || '';
+    if (refCodeFromURL) {
+        setReferralCode(refCodeFromURL);
+    }
+  }, [searchParams]);
 
   const [ipAddress, setIpAddress] = useState('');
   const [showPassword, setShowPassword] = useState(false);

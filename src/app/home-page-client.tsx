@@ -167,6 +167,12 @@ function AuthModals() {
       window.history.replaceState({}, '', '/');
     }
     
+    // Check for referral code to open signup modal
+    const refCode = searchParams.get('ref');
+    if (refCode) {
+      setIsSignupOpen(true);
+    }
+    
     const openSignupEvent = () => setIsSignupOpen(true);
     window.addEventListener('open-signup', openSignupEvent);
 
