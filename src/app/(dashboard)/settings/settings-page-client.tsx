@@ -47,16 +47,16 @@ export function SettingsPageClient({ user, profileData, completedOffersCount }: 
         if (newPassword !== confirmPassword) {
             toast({
                 variant: 'destructive',
-                title: 'Passwords do not match',
-                description: 'Please ensure both password fields are identical.',
+                title: "Passwords Don't Match",
+                description: "Whoops! Please ensure both password fields are identical.",
             });
             return;
         }
         if (newPassword.length < 6) {
             toast({
                 variant: 'destructive',
-                title: 'Password too short',
-                description: 'Your new password must be at least 6 characters long.',
+                title: 'Password Too Short',
+                description: 'For security, your new password must be at least 6 characters long.',
             });
             return;
         }

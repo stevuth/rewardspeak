@@ -250,7 +250,7 @@ export async function processWithdrawalRequest(payload: WithdrawalPayload): Prom
     if (rpcError) {
         console.error("Error in process_withdrawal RPC:", rpcError);
         const errorMessage = rpcError.message.includes("Not enough points") 
-            ? "Insufficient balance for this withdrawal." 
+            ? "Your treasure chest is a little light for that cash-out. Keep earning and you'll get there!" 
             : "An unexpected error occurred. Please try again later.";
         return { success: false, error: errorMessage };
     }
