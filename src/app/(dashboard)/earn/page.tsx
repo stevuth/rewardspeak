@@ -120,7 +120,7 @@ export default function EarnPage() {
         
         if (deviceFilter !== 'all') {
             if (deviceFilter === 'mobile') {
-                query = query.contains('devices', ['android', 'ios']);
+                query = query.or('devices.cs.{"android"},devices.cs.{"ios"}');
             } else {
                 query = query.contains('devices', [deviceFilter]);
             }
