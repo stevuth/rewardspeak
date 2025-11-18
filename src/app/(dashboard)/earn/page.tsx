@@ -58,7 +58,6 @@ export default function EarnPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [deviceFilter, setDeviceFilter] = useState('all');
   const [sortFilter, setSortFilter] = useState('created_at-desc');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -118,14 +117,6 @@ export default function EarnPage() {
             query = query.ilike('name', `%${searchQuery}%`);
         }
         
-        if (deviceFilter !== 'all') {
-            if (deviceFilter === 'mobile') {
-                query = query.or('devices.cs.{"android"},devices.cs.{"ios"}');
-            } else {
-                query = query.contains('devices', [deviceFilter]);
-            }
-        }
-        
         const [sortColumn, sortOrder] = sortFilter.split('-');
         query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
 
@@ -160,7 +151,7 @@ export default function EarnPage() {
       setIsLoading(false);
       setIsLoadingMore(false);
     }
-  }, [searchQuery, deviceFilter, sortFilter, toast, allOffers.length]);
+  }, [searchQuery, sortFilter, toast, allOffers.length]);
 
   useEffect(() => {
     setAllOffers([]);
@@ -168,7 +159,7 @@ export default function EarnPage() {
     setHasMore(true);
     fetchOffers(1, true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, deviceFilter, sortFilter]);
+  }, [searchQuery, sortFilter]);
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
@@ -248,18 +239,6 @@ export default function EarnPage() {
                 />
             </div>
             <div className="w-full sm:w-auto flex items-center gap-4">
-                <Select value={deviceFilter} onValueChange={setDeviceFilter}>
-                    <SelectTrigger id="device-filter" className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="All Devices" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Devices</SelectItem>
-                        <SelectItem value="desktop">Desktop</SelectItem>
-                        <SelectItem value="mobile">Mobile</SelectItem>
-                        <SelectItem value="android">Android</SelectItem>
-                        <SelectItem value="ios">iOS</SelectItem>
-                    </SelectContent>
-                </Select>
                 <Select value={sortFilter} onValueChange={setSortFilter}>
                     <SelectTrigger id="sort-filter" className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Sort by..." />
@@ -305,5 +284,3 @@ export default function EarnPage() {
     </div>
   );
 }
-
-    
