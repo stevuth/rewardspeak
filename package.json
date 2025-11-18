@@ -1,4 +1,3 @@
-
 {
   "name": "nextn",
   "version": "0.1.0",
@@ -11,7 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "db:seed": "tsx scripts/seed-db.ts"
+    "db:seed": "tsx scripts/seed-db.ts",
+    "postbuild": "rm -rf .next/cache"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
