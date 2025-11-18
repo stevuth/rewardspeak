@@ -34,6 +34,7 @@ import { LoginSuccessModal } from "@/components/login-success-modal";
 import type { User } from "@supabase/supabase-js";
 import { QuestMap } from "@/components/illustrations/quest-map";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 type DashboardOffer = NotikOffer & {
   points: number;
@@ -87,6 +88,7 @@ export default function DashboardPage() {
   const [isLoadingActivity, setIsLoadingActivity] = useState(true);
   const [selectedOffer, setSelectedOffer] = useState<DashboardOffer | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -97,88 +99,95 @@ export default function DashboardPage() {
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
 
-        if (user) {
-            // Fetch recent activity
-            const { data: transactions, error: txError } = await supabase
-                .from('transactions')
-                .select('id, offer_name, amount_usd, created_at')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-                .limit(5);
+        try {
+            if (user) {
+                // Fetch recent activity
+                const { data: transactions, error: txError } = await supabase
+                    .from('transactions')
+                    .select('id, offer_name, amount_usd, created_at')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
 
-            if (txError) {
-                console.error("Error fetching recent activity:", txError);
-            } else {
+                if (txError) throw txError;
                 setRecentActivity(transactions as Transaction[]);
             }
-        }
-        setIsLoadingActivity(false);
-
-
-        let userCountry = 'US'; // Default to US if not found
-        if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('country_code')
-            .eq('user_id', user.id)
-            .single();
-          if (profile && profile.country_code) {
-            userCountry = profile.country_code;
-          }
+        } catch (error) {
+             console.error("Error fetching recent activity:", error);
+        } finally {
+            setIsLoadingActivity(false);
         }
 
-        const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
-        const payoutPercentage = config ? Number(config.value) : 100;
+        try {
+            let userCountry = 'US'; // Default to US if not found
+            if (user) {
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('country_code')
+                .eq('user_id', user.id)
+                .single();
+            if (profile && profile.country_code) {
+                userCountry = profile.country_code;
+            }
+            }
 
-        const { data: featuredContent } = await supabase.from('featured_content').select('content_type, offer_ids');
-        const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
-        const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
-        
-        if (featuredIds.length > 0) {
-            const { data: offersData, error } = await supabase
-                .from('all_offers')
-                .select('*')
-                .in('offer_id', featuredIds)
-                .eq('is_disabled', false)
-                .not('description', 'is', null)
-                .neq('description', '')
-                .neq('description', 'name')
-                .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
+            const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
+            const payoutPercentage = config ? Number(config.value) : 100;
 
-            if (error) {
-                console.error("Error fetching featured dashboard offers:", error);
-            } else {
+            const { data: featuredContent, error: featuredContentError } = await supabase.from('featured_content').select('content_type, offer_ids');
+            if (featuredContentError) throw featuredContentError;
+
+            const featuredIds = featuredContent?.find(c => c.content_type === 'featured_offers')?.offer_ids || [];
+            const topConvertingIds = featuredContent?.find(c => c.content_type === 'top_converting_offers')?.offer_ids || [];
+            
+            if (featuredIds.length > 0) {
+                const { data: offersData, error } = await supabase
+                    .from('all_offers')
+                    .select('*')
+                    .in('offer_id', featuredIds)
+                    .eq('is_disabled', false)
+                    .not('description', 'is', null)
+                    .neq('description', '')
+                    .neq('description', 'name')
+                    .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
+
+                if (error) throw error;
+                
                 const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
                 setFeaturedOffers(featuredIds.map((id: string) => offerMap.get(id)).filter(Boolean) as DashboardOffer[]);
             }
-        }
 
-        if (topConvertingIds.length > 0) {
-            const { data: offersData, error } = await supabase
-                .from('all_offers')
-                .select('*')
-                .in('offer_id', topConvertingIds)
-                .eq('is_disabled', false)
-                .not('description', 'is', null)
-                .neq('description', '')
-                .neq('description', 'name')
-                .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
+            if (topConvertingIds.length > 0) {
+                const { data: offersData, error } = await supabase
+                    .from('all_offers')
+                    .select('*')
+                    .in('offer_id', topConvertingIds)
+                    .eq('is_disabled', false)
+                    .not('description', 'is', null)
+                    .neq('description', '')
+                    .neq('description', 'name')
+                    .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
-            if (error) {
-                console.error("Error fetching top converting dashboard offers:", error);
-            } else {
+                if (error) throw error;
                 const transformed = offersData.map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
                 const offerMap = new Map(transformed.map(o => [o.offer_id, o]));
                 setTopConvertingOffers(topConvertingIds.map((id: string) => offerMap.get(id)).filter(Boolean) as DashboardOffer[]);
             }
+        } catch (error) {
+            console.error("Error fetching dashboard offers:", error);
+            toast({
+                variant: "destructive",
+                title: "Can't Load Offers",
+                description: "The offer map seems a bit foggy. Please refresh and try again.",
+            });
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsLoading(false);
     };
 
     fetchDashboardData();
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     const event = searchParams.get('event');

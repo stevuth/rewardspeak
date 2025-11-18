@@ -124,21 +124,23 @@ export default function CashOutCabinPage() {
     const fetchHistory = async () => {
       setIsLoadingHistory(true);
       const supabase = createSupabaseBrowserClient();
-      const { data, error } = await supabase
-        .from('withdrawal_requests')
-        .select('id, created_at, method, amount_usd, status')
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+            .from('withdrawal_requests')
+            .select('id, created_at, method, amount_usd, status')
+            .order('created_at', { ascending: false });
 
-      if (error) {
+        if (error) throw error;
+        setHistory(data as Withdrawal[]);
+      } catch (error) {
         toast({
           variant: "destructive",
-          title: "Error loading history",
-          description: "Could not fetch your withdrawal history."
+          title: "Can't Load History",
+          description: "There was a problem loading your withdrawal history. Please refresh.",
         });
-      } else {
-        setHistory(data as Withdrawal[]);
+      } finally {
+        setIsLoadingHistory(false);
       }
-      setIsLoadingHistory(false);
     }
     fetchHistory();
   }, [toast]);
@@ -243,7 +245,7 @@ export default function CashOutCabinPage() {
             <div className="absolute inset-0 p-8 flex flex-col">
               <button
                 onClick={handleCloseModal}
-                className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
+                className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-1 ring-primary/50 shadow-sm ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-[#39FF14] hover:text-[#8A2BE2] hover:-translate-y-0.5 active:scale-95 z-10"
               >
                 <span className="text-xs uppercase tracking-wider">Close</span>
               </button>

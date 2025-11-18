@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
 
 type Offer = NotikOffer & {
@@ -144,8 +143,8 @@ export default function EarnPage() {
       console.error("Error fetching offers:", error);
       toast({
           variant: "destructive",
-          title: "Error fetching offers",
-          description: "An unknown error occurred.",
+          title: "Can't Load Offers",
+          description: "Our map is a bit foggy right now. Please try again in a moment.",
       });
     } finally {
       setIsLoading(false);

@@ -47,19 +47,28 @@ export default function HistoryPage() {
         return;
       }
       
-      const { data, error } = await supabase
-        .from('user_offer_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('started_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('user_offer_progress')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('started_at', { ascending: false });
 
-      if (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch your offer history.' });
-      } else if (data) {
-        setInProgressOffers(data.filter(o => o.status === 'in-progress'));
-        setCompletedOffers(data.filter(o => o.status === 'completed'));
+        if (error) throw error;
+        
+        if (data) {
+          setInProgressOffers(data.filter(o => o.status === 'in-progress'));
+          setCompletedOffers(data.filter(o => o.status === 'completed'));
+        }
+      } catch (error) {
+         toast({ 
+            variant: 'destructive', 
+            title: 'History Unreadable', 
+            description: "We couldn't read your adventure log. Please try refreshing the page." 
+        });
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchOfferProgress();
