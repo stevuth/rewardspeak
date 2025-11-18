@@ -103,60 +103,55 @@ export async function GET(request: NextRequest) {
     const pointsToCredit = Math.round(finalUserAmount * 1000);
     
     if (pointsToCredit > 0) {
-        const currentPoints = profile.points || 0;
-        const newTotalPoints = currentPoints + pointsToCredit;
-
-        const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ points: newTotalPoints })
-            .eq('user_id', actualUserId);
+        const { error: updateError } = await supabase.rpc('add_points_to_user', {
+          p_user_id: actualUserId,
+          p_points_to_add: pointsToCredit
+        });
 
         if (updateError) {
             console.error(`❌ Points Update Error for user ${actualUserId}:`, {
                 message: updateError.message,
-                details: updateError.details,
-                hint: updateError.hint,
-                code: updateError.code
+                details: (updateError as any).details,
+                hint: (updateError as any).hint,
+                code: (updateError as any).code
             });
         } else {
-            console.log(`[POINTS_SUCCESS] Credited ${pointsToCredit} points to user ${actualUserId}. New balance: ${newTotalPoints}.`);
+            console.log(`[POINTS_SUCCESS] Credited ${pointsToCredit} points to user ${actualUserId}.`);
 
             // --- Start: Referral Logic ---
             if (profile.referred_by) {
                 console.log(`User ${actualUserId} was referred by ${profile.referred_by}. Calculating referral bonus.`);
                 
-                // Find the referrer's profile using the referral code (which is the profile 'id')
-                const { data: referrerProfile, error: referrerError } = await supabase
-                    .from('profiles')
-                    .select('user_id, points, referral_earnings')
-                    .eq('id', profile.referred_by)
-                    .single();
-
-                if (referrerError || !referrerProfile) {
-                    console.error(`[REFERRAL_ERROR] Could not find referrer profile with ID: ${profile.referred_by}`, referrerError);
+                const { error: rpcError } = await supabase.rpc('credit_referral_bonus', {
+                  p_referred_by_code: profile.referred_by,
+                  p_original_points: pointsToCredit
+                });
+                
+                if (rpcError) {
+                  console.error(`❌ Referral Points Update Error for referrer ${profile.referred_by}:`, rpcError);
                 } else {
-                    const referralBonus = Math.round(pointsToCredit * 0.10);
-                    if (referralBonus > 0) {
-                        const newReferrerPoints = (referrerProfile.points || 0) + referralBonus;
-                        const newReferralEarnings = (referrerProfile.referral_earnings || 0) + referralBonus;
-
-                        const { error: referrerUpdateError } = await supabase
-                            .from('profiles')
-                            .update({ points: newReferrerPoints, referral_earnings: newReferralEarnings })
-                            .eq('user_id', referrerProfile.user_id);
-                        
-                        if (referrerUpdateError) {
-                            console.error(`❌ Referral Points Update Error for referrer ${referrerProfile.user_id}:`, referrerUpdateError);
-                        } else {
-                            console.log(`[REFERRAL_SUCCESS] Credited ${referralBonus} referral points to user ${referrerProfile.user_id}.`);
-                        }
-                    }
+                  console.log(`[REFERRAL_SUCCESS] Credited referral bonus for referrer ${profile.referred_by}.`);
                 }
             }
             // --- End: Referral Logic ---
         }
     }
     // --- End: Update user points directly ---
+
+    // --- Start: Update Offer Progress ---
+    if (offerId && eventId) {
+        const { error: progressError } = await supabase.rpc('update_offer_progress', {
+            p_user_id: actualUserId,
+            p_offer_id: offerId,
+            p_event_id: eventId
+        });
+        if (progressError) {
+            console.error(`[PROGRESS_UPDATE_ERROR] Failed to update progress for user ${actualUserId}, offer ${offerId}:`, progressError);
+        } else {
+            console.log(`[PROGRESS_UPDATE_SUCCESS] Updated progress for user ${actualUserId}, offer ${offerId}, event ${eventId}.`);
+        }
+    }
+    // --- End: Update Offer Progress ---
 
 
     console.log(`[POSTBACK_SUCCESS] Created transaction for user ${actualUserId}.`);

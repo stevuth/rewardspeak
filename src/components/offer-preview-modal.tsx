@@ -9,6 +9,8 @@ import { SafeImage } from "@/components/safe-image";
 import type { NotikOffer } from "@/lib/notik-api";
 import { Badge } from "@/components/ui/badge";
 import { usePathname } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { startOfferTracking } from "@/app/actions";
 
 type Offer = NotikOffer & {
   points?: number;
@@ -87,6 +89,7 @@ export function OfferPreviewModal({
 }: OfferPreviewModalProps) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -117,8 +120,18 @@ export function OfferPreviewModal({
   const totalPoints = Math.round(totalPayout * 1000);
   const totalUSD = totalPayout;
 
-  const handleStartOffer = () => {
+  const handleStartOffer = async () => {
     if (offer.clickUrl) {
+      if (!isAdmin) {
+        const result = await startOfferTracking(offer);
+        if (!result.success) {
+          toast({
+            variant: "destructive",
+            title: "Could not track offer",
+            description: result.error || "Please try again.",
+          });
+        }
+      }
       window.open(offer.clickUrl, "_blank", "noopener,noreferrer");
     }
     onClose();

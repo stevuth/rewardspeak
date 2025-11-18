@@ -35,7 +35,10 @@ export async function adminLogin(prevState: { message: string, success?: boolean
     });
 
     if (error) {
-        return { message: `Authentication failed: ${error.message}`, success: false };
+        if (error.message.includes('Invalid login credentials')) {
+            return { message: 'Incorrect email or password. Please try again.', success: false };
+        }
+        return { message: error.message, success: false };
     }
 
     redirect('/admin/dashboard');
@@ -645,4 +648,40 @@ export async function getCronLogs(): Promise<{data: any[] | null, error: string 
     return { data, error: null };
 }
 
+export async function startOfferTracking(offer: NotikOffer): Promise<{ success: boolean; error?: string }> {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "User not authenticated." };
+    }
+    
+    const adminSupabase = createSupabaseAdminClient();
+
+    const offerDetails = {
+        name: offer.name,
+        image_url: offer.image_url,
+        network: offer.network,
+        events: offer.events || [],
+        points: Math.round((offer.payout || 0) * 1000)
+    };
+
+    const { error } = await adminSupabase.from('user_offer_progress').upsert({
+        user_id: user.id,
+        offer_id: offer.offer_id,
+        offer_details: offerDetails,
+        status: 'in-progress'
+    }, { onConflict: 'user_id, offer_id' });
+
+
+    if (error) {
+        console.error("Error starting offer tracking:", error);
+        return { success: false, error: "Could not start tracking this offer." };
+    }
+
+    revalidatePath('/history/in-progress');
+    revalidatePath('/history');
+
+    return { success: true };
+}
     

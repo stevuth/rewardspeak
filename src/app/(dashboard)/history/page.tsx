@@ -1,117 +1,69 @@
 
+'use client';
+
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, XCircle, History } from "lucide-react";
-import type { Metadata } from "next";
-import { cn } from "@/lib/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
+import { createSupabaseBrowserClient } from "@/utils/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { QuestMap } from "@/components/illustrations/quest-map";
+import { History, Clock, CheckCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OfferHistoryTable } from "./offer-history-table";
 
-export const metadata: Metadata = {
-  title: "Offers Log",
-  description: "Review your completed, pending, and rejected offers.",
-};
-
-type Offer = {
-    id: string;
-    title: string;
-    partner: string;
+export type OfferProgress = {
+  id: string;
+  offer_id: string;
+  offer_details: {
+    name: string;
+    image_url: string;
+    network: string;
+    events: { id: number; name: string; payout: number }[];
     points: number;
-    date?: string;
-    status: "Completed" | "Pending" | "Rejected";
-}
-
-const StatusBadge = ({ status }: { status: Offer["status"] }) => {
-  if (status === "Completed") {
-    return (
-      <Badge className="bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600/30">
-        <CheckCircle className="mr-1 h-3 w-3" />
-        Completed
-      </Badge>
-    );
-  }
-  if (status === "Pending") {
-    return (
-      <Badge variant="outline" className="text-foreground border-border">
-        <Clock className="mr-1 h-3 w-3" />
-        Pending
-      </Badge>
-    );
-  }
-  if (status === "Rejected") {
-    return (
-      <Badge variant="destructive">
-        <XCircle className="mr-1 h-3 w-3" />
-        Rejected
-      </Badge>
-    );
-  }
-  return <Badge variant="secondary">{status}</Badge>;
-};
-
-const OfferHistoryTable = ({ offers, emptyState }: { offers: Offer[], emptyState?: React.ReactNode }) => {
-  if (offers.length === 0) {
-    return <>{emptyState}</>;
-  }
-
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Quest</TableHead>
-          <TableHead>Partner</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Points</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {offers.map((offer) => (
-          <TableRow key={offer.id}>
-            <TableCell className="font-medium">{offer.title}</TableCell>
-            <TableCell>{offer.partner}</TableCell>
-            <TableCell>{offer.date}</TableCell>
-            <TableCell>
-              <StatusBadge status={offer.status} />
-            </TableCell>
-            <TableCell
-              className={cn("text-right font-bold", {
-                "text-secondary": offer.status === "Completed",
-                "text-muted-foreground": offer.status !== "Completed",
-              })}
-            >
-              {offer.status === "Completed" ? "+" : ""}
-              {offer.points.toLocaleString()}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+  };
+  status: 'in-progress' | 'completed';
+  started_at: string;
+  completed_event_ids: string[];
 }
 
 export default function HistoryPage() {
-  const offerHistory: Offer[] = [];
+  const [inProgressOffers, setInProgressOffers] = useState<OfferProgress[]>([]);
+  const [completedOffers, setCompletedOffers] = useState<OfferProgress[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  const inProgressOffers = offerHistory.filter(o => o.status === 'Pending');
-  const completedOffers = offerHistory.filter(o => o.status === 'Completed');
-  const allOffers = offerHistory;
+  useEffect(() => {
+    const fetchOfferProgress = async () => {
+      setIsLoading(true);
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('user_offer_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('started_at', { ascending: false });
+
+      if (error) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch your offer history.' });
+      } else if (data) {
+        setInProgressOffers(data.filter(o => o.status === 'in-progress'));
+        setCompletedOffers(data.filter(o => o.status === 'completed'));
+      }
+      setIsLoading(false);
+    };
+
+    fetchOfferProgress();
+  }, [toast]);
 
   return (
     <div className="space-y-8">
@@ -120,26 +72,31 @@ export default function HistoryPage() {
         icon={History}
       />
       <Card>
-        <CardHeader>
-           <PageHeader title="Offer History" description="A complete log of all quests you've embarked on." />
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex mb-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="in-progress">In Progress</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-            </TabsList>
-            <TabsContent value="all">
-              <OfferHistoryTable offers={allOffers} emptyState={<QuestMap />} />
-            </TabsContent>
-            <TabsContent value="in-progress">
-               <OfferHistoryTable offers={inProgressOffers} emptyState={<QuestMap />} />
-            </TabsContent>
-            <TabsContent value="completed">
-               <OfferHistoryTable offers={completedOffers} emptyState={<QuestMap />} />
-            </TabsContent>
-          </Tabs>
+        <CardContent className="pt-6">
+          {isLoading ? (
+            <div className="h-64 flex items-center justify-center">
+              <WavingMascotLoader text="Loading Your History..." />
+            </div>
+          ) : (
+            <Tabs defaultValue="in-progress" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 md:w-fit md:inline-flex mb-4">
+                <TabsTrigger value="in-progress">
+                    <Clock className="mr-2 h-4 w-4" />
+                    In Progress ({inProgressOffers.length})
+                </TabsTrigger>
+                <TabsTrigger value="completed">
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    Completed ({completedOffers.length})
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="in-progress">
+                <OfferHistoryTable offers={inProgressOffers} emptyState={<QuestMap />} />
+              </TabsContent>
+              <TabsContent value="completed">
+                <OfferHistoryTable offers={completedOffers} emptyState={<QuestMap />} />
+              </TabsContent>
+            </Tabs>
+          )}
         </CardContent>
       </Card>
     </div>
