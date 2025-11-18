@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { User, Fingerprint, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+export const runtime = 'edge';
+
 type SuspiciousUser = {
     user_id: string;
     user_email: string;

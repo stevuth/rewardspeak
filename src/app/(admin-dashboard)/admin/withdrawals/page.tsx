@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
+export const runtime = 'edge';
 
 export type WithdrawalRequest = {
   id: string;

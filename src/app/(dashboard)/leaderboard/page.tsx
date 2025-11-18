@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { EmptyPodium } from "@/components/illustrations/empty-podium";
 
+export const runtime = 'edge';
 export const revalidate = 3600; // Revalidate every hour
 
 type LeaderboardUser = {

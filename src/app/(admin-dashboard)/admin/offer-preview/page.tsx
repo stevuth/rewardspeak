@@ -21,6 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
+export const runtime = 'edge';
+
 type Offer = NotikOffer & {
   points: number;
   imageHint: string;

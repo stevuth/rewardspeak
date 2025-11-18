@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: "Admin Portal",
   description: "Manage users, offers, and site settings.",

@@ -20,6 +20,8 @@ import { updateFeaturedContent, getFeaturedContent } from "@/app/actions";
 import { Star } from "lucide-react";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
+export const runtime = 'edge';
+
 export default function FeaturedContentPage() {
   const [featuredOfferIds, setFeaturedOfferIds] = useState('');
   const [topConvertingOfferIds, setTopConvertingOfferIds] = useState('');

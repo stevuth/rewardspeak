@@ -14,6 +14,7 @@ import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+export const runtime = 'edge';
 
 type Offer = NotikOffer & {
   points: number;
@@ -305,5 +306,3 @@ export default function EarnPage() {
     </div>
   );
 }
-
-    

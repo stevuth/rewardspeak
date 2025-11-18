@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { UserPlus } from "lucide-react";
 
+export const runtime = 'edge';
 export const revalidate = 3600; // Revalidate every hour
 
 type TopReferrer = {

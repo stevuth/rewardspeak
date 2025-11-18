@@ -10,6 +10,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 
+export const runtime = 'edge';
+
 interface Offerwall {
     name: string;
     getIframeUrl: (userId: string) => string;

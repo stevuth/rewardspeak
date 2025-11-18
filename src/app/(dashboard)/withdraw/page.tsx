@@ -35,6 +35,8 @@ import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { EmptyTreasureChest } from "@/components/illustrations/empty-treasure-chest";
 import { cn } from "@/lib/utils";
 
+export const runtime = 'edge';
+
 type Withdrawal = {
   id: string;
   method: string;

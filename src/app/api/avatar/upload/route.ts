@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseApiClient } from '@/utils/supabase/api';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 
+export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
   // 1. Get Authenticated User using the standard API client
   const supabase = createSupabaseApiClient(request);

@@ -2,6 +2,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 
+export const runtime = 'edge';
+
 type SuspiciousUser = {
     user_id: string;
     user_email: string;

@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 
+export const runtime = 'edge';
+
 type TicketMessage = {
   id: string;
   created_at: string;

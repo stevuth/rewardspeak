@@ -2,6 +2,8 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 
+export const runtime = 'edge';
+
 export type UserProfile = {
   user_id: string;
   email: string | null;

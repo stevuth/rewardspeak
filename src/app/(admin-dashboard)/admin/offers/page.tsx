@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from "react";
@@ -31,6 +32,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { clientGetAllOffers } from "@/lib/notik-api";
 import { Badge } from "@/components/ui/badge";
+
+export const runtime = 'edge';
 
 type Offer = {
   offer_id: string;

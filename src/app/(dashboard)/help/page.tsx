@@ -24,6 +24,8 @@ import type { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { SupportIllustration } from "@/components/illustrations/support-illustration";
 
+export const runtime = 'edge';
+
 type TicketMessage = {
   id: string;
   created_at: string;
