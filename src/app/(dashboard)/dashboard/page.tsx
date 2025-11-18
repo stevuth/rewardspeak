@@ -33,12 +33,20 @@ import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { LoginSuccessModal } from "@/components/login-success-modal";
 import type { User } from "@supabase/supabase-js";
 import { QuestMap } from "@/components/illustrations/quest-map";
+import { Badge } from "@/components/ui/badge";
 
 type DashboardOffer = NotikOffer & {
   points: number;
   imageHint: string;
   category: "Survey" | "Game" | "App" | "Quiz";
   clickUrl: string;
+};
+
+type Transaction = {
+  id: string;
+  offer_name: string;
+  amount_usd: number;
+  created_at: string;
 };
 
 function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payoutPercentage: number): DashboardOffer {
@@ -74,16 +82,38 @@ export default function DashboardPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [featuredOffers, setFeaturedOffers] = useState<DashboardOffer[]>([]);
   const [topConvertingOffers, setTopConvertingOffers] = useState<DashboardOffer[]>([]);
+  const [recentActivity, setRecentActivity] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
   const [selectedOffer, setSelectedOffer] = useState<DashboardOffer | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchOffers = async () => {
+    const fetchDashboardData = async () => {
         setIsLoading(true);
+        setIsLoadingActivity(true);
+
         const supabase = createSupabaseBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
+
+        if (user) {
+            // Fetch recent activity
+            const { data: transactions, error: txError } = await supabase
+                .from('transactions')
+                .select('id, offer_name, amount_usd, created_at')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(5);
+
+            if (txError) {
+                console.error("Error fetching recent activity:", txError);
+            } else {
+                setRecentActivity(transactions as Transaction[]);
+            }
+        }
+        setIsLoadingActivity(false);
+
 
         let userCountry = 'US'; // Default to US if not found
         if (user) {
@@ -147,7 +177,7 @@ export default function DashboardPage() {
         setIsLoading(false);
     };
 
-    fetchOffers();
+    fetchDashboardData();
   }, []);
 
   useEffect(() => {
@@ -209,7 +239,6 @@ export default function DashboardPage() {
     );
   };
 
-  const recentActivity: any[] = []; // This needs to be connected to real data
   const userName = user?.email?.split('@')[0];
   const welcomeMessage = userName ? `Welcome back, ${userName}!` : 'Welcome back!';
 
@@ -254,16 +283,26 @@ export default function DashboardPage() {
         <div>
           <Card>
              <CardHeader>
-                <PageHeader title="Recent Activity" description="Your latest completed quests will appear here." />
+                <PageHeader title="Recent Activity" description="Your latest earnings will appear here." />
              </CardHeader>
             <CardContent className="pt-0">
                <Table>
                 <TableBody>
-                  {recentActivity.length > 0 ? (
-                    recentActivity.map((offer) => (
-                      <TableRow key={offer.id}>
+                  {isLoadingActivity ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="h-48">
+                            <WavingMascotLoader text="Loading Activity..." />
+                        </TableCell>
+                      </TableRow>
+                  ) : recentActivity.length > 0 ? (
+                    recentActivity.map((activity) => (
+                      <TableRow key={activity.id}>
                         <TableCell>
-                            <div className="font-medium">{offer.name}</div>
+                            <div className="font-medium truncate">{activity.offer_name}</div>
+                            <div className="text-xs text-muted-foreground">{new Date(activity.created_at).toLocaleDateString()}</div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                           <Badge variant="secondary">+{Math.round(activity.amount_usd * 1000).toLocaleString()} Pts</Badge>
                         </TableCell>
                       </TableRow>
                     ))
