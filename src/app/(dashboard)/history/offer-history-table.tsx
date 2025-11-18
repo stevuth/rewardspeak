@@ -87,7 +87,7 @@ const OfferRow = ({ offer }: { offer: OfferProgress }) => {
                     </div>
                 </CardContent>
             )}
-        </>
+        </Card>
     )
 }
 
