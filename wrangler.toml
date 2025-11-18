@@ -1,11 +1,5 @@
 name = "rewardspeak"
 compatibility_date = "2025-11-18"
 
-# Pages-specific configuration
+# For Pages, only specify the output directory
 pages_build_output_dir = ".next"
-
-[build]
-command = "npm run build"
-
-[build.upload]
-format = "service-worker"
