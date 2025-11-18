@@ -1,8 +1,26 @@
-import { redirect } from 'next/navigation';
 
-// This page now permanently redirects to the homepage with a referral query parameter.
-// This simplifies the app structure and resolves a module resolution error in Next.js.
-// The primary purpose of the /join URL is to be a shareable link for referrals.
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { WavingMascotLoader } from '@/components/waving-mascot-loader';
+
+// This page is a clean entry point for referral links.
+// It opens the signup modal on the homepage.
 export default function JoinPage() {
-  redirect('/?ref=join');
+  const router = useRouter();
+
+  useEffect(() => {
+    // Dispatch a global event that the AuthModals component on the homepage listens for.
+    window.dispatchEvent(new CustomEvent('open-signup'));
+    // Redirect to the homepage. The modal will be open when the user lands there.
+    router.push('/');
+  }, [router]);
+
+  // Show a loader while redirecting.
+  return (
+    <div className="flex h-screen w-full items-center justify-center">
+      <WavingMascotLoader text="Joining the climb..." />
+    </div>
+  );
 }

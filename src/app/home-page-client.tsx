@@ -167,12 +167,7 @@ function AuthModals() {
       window.history.replaceState({}, '', '/');
     }
     
-    // Check for referral code to open signup modal
-    const refCode = searchParams.get('ref');
-    if (refCode) {
-      setIsSignupOpen(true);
-    }
-    
+    // Listen for the global event dispatched from the /join page
     const openSignupEvent = () => setIsSignupOpen(true);
     window.addEventListener('open-signup', openSignupEvent);
 
