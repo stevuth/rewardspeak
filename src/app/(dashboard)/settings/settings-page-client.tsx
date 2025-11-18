@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Globe, CalendarDays, Fingerprint, Settings } from "lucide-react";
+import { Globe, CalendarDays, Fingerprint, Settings, ListChecks } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { AvatarUploader } from "@/components/avatar-uploader";
@@ -36,7 +36,7 @@ function getFlagEmoji(countryCode: string): string {
 }
 
 
-export function SettingsPageClient({ user, profileData }: { user: any, profileData: any }) {
+export function SettingsPageClient({ user, profileData, completedOffersCount }: { user: any, profileData: any, completedOffersCount: number }) {
     const { toast } = useToast();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -81,7 +81,6 @@ export function SettingsPageClient({ user, profileData }: { user: any, profileDa
         setIsSaving(false);
     };
 
-    const completedOffersCount = 0; // This can be fetched later
     const totalPoints = profileData?.points ?? 0;
     const totalAmountEarned = totalPoints / 1000;
     const dateJoined = user?.created_at ? new Date(user.created_at) : new Date();
@@ -121,7 +120,7 @@ export function SettingsPageClient({ user, profileData }: { user: any, profileDa
                             <div className="flex justify-around text-center pt-4 border-t border-border">
                                 <div>
                                     <p className="text-2xl font-bold"><AnimatedCounter value={completedOffersCount} /></p>
-                                    <p className="text-xs text-muted-foreground">Offers Done</p>
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1 justify-center"><ListChecks className="h-3 w-3" /> Offers Done</p>
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold">${totalAmountEarned.toFixed(2)}</p>
