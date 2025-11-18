@@ -59,7 +59,7 @@ export default function EarnPage() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [deviceFilter, setDeviceFilter] = useState('all');
-  const [sortFilter, setSortFilter] = useState('created_at');
+  const [sortFilter, setSortFilter] = useState('created_at-desc');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalOfferLimit, setTotalOfferLimit] = useState(1000);
@@ -236,39 +236,32 @@ export default function EarnPage() {
       />
       
       <Card>
-        <CardContent className="pt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-1 space-y-2">
-                <Label htmlFor="search-offers">Search</Label>
-                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      id="search-offers"
-                      placeholder="Search for offers..." 
-                      className="pl-9"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
+        <CardContent className="pt-6 flex flex-col sm:flex-row items-center gap-4">
+            <div className="relative w-full sm:flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                    id="search-offers"
+                    placeholder="Search for offers..." 
+                    className="pl-9"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
             </div>
-            <div className="space-y-2">
-                <Label htmlFor="device-filter">Device</Label>
+            <div className="w-full sm:w-auto flex items-center gap-4">
                 <Select value={deviceFilter} onValueChange={setDeviceFilter}>
-                    <SelectTrigger id="device-filter">
+                    <SelectTrigger id="device-filter" className="w-full sm:w-[180px]">
                         <SelectValue placeholder="All Devices" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Devices</SelectItem>
                         <SelectItem value="desktop">Desktop</SelectItem>
-                        <SelectItem value="mobile">Mobile (All)</SelectItem>
+                        <SelectItem value="mobile">Mobile</SelectItem>
                         <SelectItem value="android">Android</SelectItem>
                         <SelectItem value="ios">iOS</SelectItem>
                     </SelectContent>
                 </Select>
-            </div>
-            <div className="space-y-2">
-                 <Label htmlFor="sort-filter">Sort By</Label>
-                 <Select value={sortFilter} onValueChange={setSortFilter}>
-                    <SelectTrigger id="sort-filter">
+                <Select value={sortFilter} onValueChange={setSortFilter}>
+                    <SelectTrigger id="sort-filter" className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Sort by..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -312,3 +305,5 @@ export default function EarnPage() {
     </div>
   );
 }
+
+    
