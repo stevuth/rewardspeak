@@ -72,7 +72,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
 
   const { isVpn } = await checkVpn(ipAddress);
   if (isVpn) {
-    return { message: 'Heads up! For fair rewards and security, VPNs and proxies aren’t allowed. Please reconnect without one.', success: false };
+    return { message: "Heads up, climber! For a fair ascent, VPNs aren't allowed. Please reconnect without one to continue.", success: false };
   }
 
   const supabase = createSupabaseServerClient(true);
@@ -80,11 +80,11 @@ export async function login(prevState: { message: string, success?: boolean }, f
   const password = formData.get('password') as string;
 
   if (!email || !password) {
-    return { message: 'Email and password are required.', success: false };
+    return { message: "You'll need both your email and password to enter the peak.", success: false };
   }
   
   if (!isValidEmail(email)) {
-    return { message: 'Please enter a valid email address.', success: false };
+    return { message: "That email address doesn't look right. Please check it and try again.", success: false };
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -100,9 +100,9 @@ export async function login(prevState: { message: string, success?: boolean }, f
         };
     }
     if (error.message.includes('Invalid login credentials')) {
-        return { message: 'Incorrect email or password. Please try again.', success: false };
+        return { message: "Lost your map? Your login details don't seem right. Please try that again.", success: false };
     }
-    return { message: error.message, success: false };
+    return { message: `A technical issue occurred: ${error.message}`, success: false };
   }
 
   redirect('/dashboard?event=login');
@@ -114,7 +114,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   
   const { isVpn, countryCode } = await checkVpn(ipAddress);
   if (isVpn) {
-    return { message: 'Heads up! For fair rewards and security, VPNs and proxies aren’t allowed. Please reconnect without one.', success: false };
+    return { message: "Heads up, climber! For a fair ascent, VPNs aren't allowed. Please reconnect without one to continue.", success: false };
   }
 
   const email = formData.get('email') as string;
@@ -123,15 +123,15 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   const acceptedTerms = formData.get('accepted_terms') === 'on';
 
   if (!email || !password) {
-    return { message: 'Email and password are required.', success: false };
+    return { message: "You'll need both your email and password to start your climb.", success: false };
   }
   
   if (!isValidEmail(email)) {
-    return { message: 'Please enter a valid email address.', success: false };
+    return { message: "That email address doesn't look quite right. Please double-check it.", success: false };
   }
 
   if (!acceptedTerms) {
-    return { message: 'You must agree to the Terms of Use and Privacy Policy to create an account.', success: false };
+    return { message: "Please agree to the Terms of Use and Privacy Policy to begin your journey.", success: false };
   }
 
   const supabase = createSupabaseServerClient(true);
@@ -150,8 +150,8 @@ export async function signup(prevState: { message: string, success?: boolean }, 
 
   if (error) {
     const friendlyMessage = error.message.includes('unique constraint')
-        ? 'A user with this email already exists.'
-        : `Signup failed: ${error.message}`;
+        ? "It looks like another adventurer already has that email. Try logging in instead!"
+        : `A technical issue occurred on the trail: ${error.message}`;
     return { message: friendlyMessage, success: false };
   }
 
@@ -162,11 +162,11 @@ export async function requestPasswordReset(prevState: { message: string, success
   const email = formData.get('email') as string;
 
   if (!email) {
-    return { message: 'Please enter your email address.', success: false };
+    return { message: 'Please enter your email to find your path again.', success: false };
   }
   
   if (!isValidEmail(email)) {
-    return { message: 'Please enter a valid email address.', success: false };
+    return { message: 'That email address doesn\'t look quite right. Please double-check it.', success: false };
   }
 
   const supabase = createSupabaseServerClient();
@@ -176,10 +176,10 @@ export async function requestPasswordReset(prevState: { message: string, success
 
   if (error) {
     console.error("Password reset error:", error);
-    return { message: `Failed to send reset link: ${error.message}`, success: false };
+    return { message: `A technical issue occurred while sending the reset link. Please try again.`, success: false };
   }
 
-  return { message: 'If an account exists for this email, a password reset link has been sent.', success: true };
+  return { message: "If an account exists for this email, we've sent a recovery link to your inbox.", success: true };
 }
 
 
