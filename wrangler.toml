@@ -1,5 +1,4 @@
 name = "rewardspeak"
 compatibility_date = "2025-11-18"
-
-# For Pages, only specify the output directory
-pages_build_output_dir = ".next"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
