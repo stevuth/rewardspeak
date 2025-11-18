@@ -160,6 +160,28 @@ export default function EarnPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, sortFilter]);
 
+  // Real-time listener for offer updates
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    const channel = supabase.channel('realtime:all_offers')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'all_offers' }, (payload) => {
+        console.log('Change received!', payload);
+        // A simple way to refresh is to reset the page and fetch again
+        // This ensures filters and sorting are reapplied correctly.
+        setAllOffers([]);
+        setPage(1);
+        setHasMore(true);
+        fetchOffers(1, true);
+        toast({ title: "New offers available!", description: "The offer list has been updated." });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, sortFilter]); // Rerun if filters change to re-subscribe with correct context if needed
+
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
         const nextPage = page + 1;
@@ -283,3 +305,5 @@ export default function EarnPage() {
     </div>
   );
 }
+
+    
