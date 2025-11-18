@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { SafeImage } from "@/components/safe-image";
 import type { OfferProgress } from './page';
 import { cn } from "@/lib/utils";
-import { Check, CheckCircle, ChevronDown, ChevronUp, Circle } from 'lucide-react';
+import { Check, CheckCircle, Plus, Minus, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
@@ -50,7 +50,7 @@ const OfferRow = ({ offer }: { offer: OfferProgress }) => {
                         <StatusBadge status={offer.status} />
                          {totalEvents > 0 && (
                             <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)} className="h-8 w-8">
-                                {isOpen ? <ChevronUp className="h-4 w-4"/> : <ChevronDown className="h-4 w-4" />}
+                                {isOpen ? <Minus className="h-4 w-4"/> : <Plus className="h-4 w-4" />}
                                 <span className="sr-only">Toggle Milestones</span>
                             </Button>
                         )}
