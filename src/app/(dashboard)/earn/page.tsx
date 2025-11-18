@@ -12,6 +12,9 @@ import type { NotikOffer } from "@/lib/notik-api";
 import { useToast } from "@/hooks/use-toast";
 import { createSupabaseBrowserClient } from "@/utils/supabase/client";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+
 
 type Offer = NotikOffer & {
   points: number;
@@ -55,6 +58,8 @@ export default function EarnPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deviceFilter, setDeviceFilter] = useState('all');
+  const [sortFilter, setSortFilter] = useState('created_at');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalOfferLimit, setTotalOfferLimit] = useState(1000);
@@ -91,7 +96,6 @@ export default function EarnPage() {
         setTotalOfferLimit(currentTotalLimit);
 
         const from = (pageNum - 1) * OFFERS_PER_PAGE;
-        // Do not fetch more than the total limit
         if (from >= currentTotalLimit) {
             setHasMore(false);
             setIsLoading(false);
@@ -101,7 +105,6 @@ export default function EarnPage() {
 
         const to = Math.min(from + OFFERS_PER_PAGE - 1, currentTotalLimit - 1);
 
-
         let query = supabase
             .from('all_offers')
             .select('*', { count: 'exact' })
@@ -109,15 +112,24 @@ export default function EarnPage() {
             .not('description', 'is', null)
             .neq('description', '')
             .neq('description', 'name')
-            .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`)
-            .order('created_at', { ascending: false })
-            .range(from, to);
+            .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
         if (searchQuery) {
             query = query.ilike('name', `%${searchQuery}%`);
         }
+        
+        if (deviceFilter !== 'all') {
+            if (deviceFilter === 'mobile') {
+                query = query.contains('devices', ['android', 'ios']);
+            } else {
+                query = query.contains('devices', [deviceFilter]);
+            }
+        }
+        
+        const [sortColumn, sortOrder] = sortFilter.split('-');
+        query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
 
-        const { data: rawAllOffers, error: allOffersError } = await query;
+        const { data: rawAllOffers, error: allOffersError } = await query.range(from, to);
 
         if (allOffersError) throw allOffersError;
         
@@ -148,7 +160,7 @@ export default function EarnPage() {
       setIsLoading(false);
       setIsLoadingMore(false);
     }
-  }, [searchQuery, toast, allOffers.length]);
+  }, [searchQuery, deviceFilter, sortFilter, toast, allOffers.length]);
 
   useEffect(() => {
     setAllOffers([]);
@@ -156,7 +168,7 @@ export default function EarnPage() {
     setHasMore(true);
     fetchOffers(1, true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]); // fetchOffers is memoized, only re-run when searchQuery changes.
+  }, [searchQuery, deviceFilter, sortFilter]);
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
@@ -223,21 +235,61 @@ export default function EarnPage() {
         description="Main earning hub that leads to all available earning opportunities."
       />
       
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input 
-          placeholder="Search for offers..." 
-          className="pl-9"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+      <Card>
+        <CardContent className="pt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-1 space-y-2">
+                <Label htmlFor="search-offers">Search</Label>
+                 <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      id="search-offers"
+                      placeholder="Search for offers..." 
+                      className="pl-9"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="device-filter">Device</Label>
+                <Select value={deviceFilter} onValueChange={setDeviceFilter}>
+                    <SelectTrigger id="device-filter">
+                        <SelectValue placeholder="All Devices" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Devices</SelectItem>
+                        <SelectItem value="desktop">Desktop</SelectItem>
+                        <SelectItem value="mobile">Mobile (All)</SelectItem>
+                        <SelectItem value="android">Android</SelectItem>
+                        <SelectItem value="ios">iOS</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="space-y-2">
+                 <Label htmlFor="sort-filter">Sort By</Label>
+                 <Select value={sortFilter} onValueChange={setSortFilter}>
+                    <SelectTrigger id="sort-filter">
+                        <SelectValue placeholder="Sort by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="created_at-desc">Newest</SelectItem>
+                        <SelectItem value="payout-desc">Highest Reward</SelectItem>
+                        <SelectItem value="payout-asc">Lowest Reward</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+        </CardContent>
+      </Card>
+
 
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold tracking-tight font-headline">
             All Offers
           </h2>
+           <span className="text-sm text-muted-foreground">
+                Showing {allOffers.length} of {totalOfferLimit} offers
+            </span>
         </div>
         {renderOfferGrid(allOffers)}
         {isLoadingMore && (
