@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { FeaturedOfferCard } from "./featured-offer-card";
+import { FeaturedOfferCard } from "@/components/featured-offer-card";
 
 type OfferCarouselProps = {
   offers: any[];

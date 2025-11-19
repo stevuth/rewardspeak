@@ -33,9 +33,9 @@ export const OfferCarousel: React.FC<OfferCarouselProps> = ({ offers }) => {
     [emblaApi]
   );
 
-  const onSelect = useCallback((emblaApi: UseEmblaCarouselType) => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
+  const onSelect = useCallback((api: UseEmblaCarouselType) => {
+    if (!api) return;
+    setSelectedIndex(api.selectedScrollSnap());
   }, []);
 
   useEffect(() => {
