@@ -1,5 +1,0 @@
-# Default build settings for a Next.js app on Netlify
-
-[build]
-  command = "npm run build"
-  publish = ".next"
