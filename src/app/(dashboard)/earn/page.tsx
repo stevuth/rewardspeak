@@ -279,9 +279,6 @@ export default function EarnPage() {
           <h2 className="text-xl font-bold tracking-tight font-headline">
             All Offers
           </h2>
-           <span className="text-sm text-muted-foreground">
-                Showing {allOffers.length} of {totalOfferLimit} offers
-            </span>
         </div>
         {renderOfferGrid(allOffers)}
         {isLoadingMore && (
