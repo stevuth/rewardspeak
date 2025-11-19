@@ -59,43 +59,39 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isPublicRoute = request.nextUrl.pathname === '/' || request.nextUrl.pathname.startsWith('/join');
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
-  const isAdminLoginRoute = request.nextUrl.pathname === '/admin/login';
-  const isSupportLoginRoute = request.nextUrl.pathname === '/support/login';
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
-  const isSupportRoute = request.nextUrl.pathname.startsWith('/support');
+  const { pathname } = request.nextUrl;
 
-  // If user is not logged in...
+  const isPublicRoute = pathname === '/' || pathname.startsWith('/join');
+  const isAuthRoute = pathname.startsWith('/auth');
+  const isAdminLoginRoute = pathname === '/admin/login';
+  const isSupportLoginRoute = pathname === '/support/login';
+  
+  const isAdminDashboard = pathname.startsWith('/admin');
+  const isSupportDashboard = pathname.startsWith('/support');
+
   if (!user) {
-    // Allow access to public pages and all login pages
     if (isPublicRoute || isAuthRoute || isAdminLoginRoute || isSupportLoginRoute) {
       return response;
     }
-    // For any other protected route, redirect to the main sign-in page
     return NextResponse.redirect(new URL('/', request.url));
   }
-  
-  // If user is logged in...
+
+  // If user is logged in
   const isPrivilegedUser = user.email?.endsWith('@rewardspeak.com');
-  const onLoginPage = isAdminLoginRoute || isSupportLoginRoute || isPublicRoute || isAuthRoute;
-
-  // If a logged-in user (admin or regular) is on a public/login page, redirect them to their respective dashboard.
-  if (onLoginPage) {
-    if (isPrivilegedUser) {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-    } else {
+  const onPublicOrLoginPage = isPublicRoute || isAuthRoute || isAdminLoginRoute || isSupportLoginRoute;
+  
+  if (onPublicOrLoginPage) {
+      if(isPrivilegedUser) {
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      }
       return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-  }
-
-  // If a non-privileged user tries to access admin or support routes, redirect them to the user dashboard.
-  if ((isAdminRoute || isSupportRoute) && !isPrivilegedUser) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
   
-  // If all checks pass, allow the request to proceed.
-  return response;
+  if (!isPrivilegedUser && (isAdminDashboard || isSupportDashboard)) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  return response
 }
 
 export const config = {
