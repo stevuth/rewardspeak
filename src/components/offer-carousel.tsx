@@ -34,6 +34,7 @@ export const OfferCarousel: React.FC<OfferCarouselProps> = ({ offers }) => {
   );
 
   const onSelect = useCallback((emblaApi: UseEmblaCarouselType) => {
+    if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
   }, []);
 
@@ -66,7 +67,6 @@ export const OfferCarousel: React.FC<OfferCarouselProps> = ({ offers }) => {
   
   const getRotation = (index: number) => {
     if (index === selectedIndex) return 0;
-    const isLeft = index < selectedIndex;
     
     let diff = selectedIndex - index;
 
