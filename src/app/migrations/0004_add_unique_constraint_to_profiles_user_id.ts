@@ -1,4 +1,3 @@
-
 -- This migration adds a unique constraint to the user_id column in the profiles table.
 -- This is necessary to allow other tables to create a foreign key relationship to it.
 

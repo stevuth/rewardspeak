@@ -1,4 +1,3 @@
-
 -- This is a migration file. It is used to apply changes to the database.
 -- It is written in SQL and is executed by the Supabase CLI.
 --
@@ -34,5 +33,3 @@ COMMENT ON TABLE public.cron_logs IS 'Stores logs for automated cron jobs, like 
 COMMENT ON COLUMN public.cron_logs.status IS 'The final status of the cron job run (e.g., success, failure).';
 COMMENT ON COLUMN public.cron_logs.log_message IS 'A detailed log of the cron job execution.';
 COMMENT ON COLUMN public.cron_logs.offers_synced_count IS 'The number of new or updated offers synced during the run.';
-
-    
