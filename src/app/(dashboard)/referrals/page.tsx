@@ -75,7 +75,6 @@ export default function InviteAndClimbPage() {
     toast({
       title: "Copied to clipboard!",
       description: "Your referral link is ready to be shared.",
-      icon: <Check className="text-green-500" />,
     });
   };
   
@@ -84,7 +83,6 @@ export default function InviteAndClimbPage() {
     toast({
       title: "Copied to clipboard!",
       description: "Your referral code is ready to be shared.",
-      icon: <Check className="text-green-500" />,
     });
   };
 
