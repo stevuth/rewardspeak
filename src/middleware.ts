@@ -61,57 +61,37 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Define public and auth-related routes
-  const isPublicRoute = pathname === '/' || pathname.startsWith('/join')
-  const isAuthRoute = pathname.startsWith('/auth')
-  const isAdminLoginRoute = pathname === '/admin/login'
-  const isSupportLoginRoute = pathname === '/support/login'
-  
   // Define protected areas
-  const isAdminArea = pathname.startsWith('/admin')
-  const isSupportArea = pathname.startsWith('/support')
-  const isDashboardArea = pathname.startsWith('/dashboard') || 
-                          pathname.startsWith('/earn') ||
-                          pathname.startsWith('/referrals') ||
-                          pathname.startsWith('/leaderboard') ||
-                          pathname.startsWith('/withdraw') ||
-                          pathname.startsWith('/history') ||
-                          pathname.startsWith('/settings') ||
-                          pathname.startsWith('/help') ||
-                          pathname.startsWith('/offerwalls')
-
+  const isAdminArea = pathname.startsWith('/admin');
+  const isSupportArea = pathname.startsWith('/support');
+  const isDashboardArea = !isAdminArea && !isSupportArea && pathname !== '/' && !pathname.startsWith('/auth') && !pathname.startsWith('/join');
 
   // --- Logic for Unauthenticated Users ---
   if (!user) {
-    // If trying to access any protected area, redirect to the homepage to log in.
+    // If an unauthenticated user tries to access any protected area, redirect them to the homepage to log in.
     if (isAdminArea || isSupportArea || isDashboardArea) {
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/', request.url));
     }
-    // Otherwise, allow access to public/auth pages.
-    return response
+    // Allow access to public pages (/, /join) and auth pages (/auth/...).
+    return response;
   }
 
   // --- Logic for Authenticated Users ---
-  const isPrivilegedUser = user.email?.endsWith('@rewardspeak.com')
+  const isPrivilegedUser = user.email?.endsWith('@rewardspeak.com');
 
-  // If a privileged user is on a public/auth/user-dashboard route, redirect to admin dashboard.
   if (isPrivilegedUser) {
-    if (isPublicRoute || isAuthRoute || isDashboardArea) {
-       return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    // If a privileged user tries to access the regular user dashboard, redirect them to the admin dashboard.
+    if (isDashboardArea) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
-    // They are already in the admin/support area, so let them proceed.
-    return response
-  }
-
-  // If a regular user is on a public/auth/admin/support route, redirect to user dashboard.
-  if (!isPrivilegedUser) {
-    if (isPublicRoute || isAuthRoute || isAdminArea || isSupportArea) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+  } else {
+    // If a regular user tries to access admin or support areas, redirect them to their dashboard.
+    if (isAdminArea || isSupportArea) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
-    // They are already in the user dashboard area, so let them proceed.
-    return response
   }
-
+  
+  // For all other cases (e.g., admin on admin page, user on user page), allow the request to proceed.
   return response
 }
 
