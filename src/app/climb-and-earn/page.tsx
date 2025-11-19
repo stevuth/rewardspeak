@@ -1,13 +1,11 @@
 import { PageHeader } from "@/components/page-header";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { offerWalls, popularOffers, quickTasks } from "@/lib/mock-data";
 import {
   Mountain,
   FileText,
