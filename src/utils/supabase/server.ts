@@ -10,17 +10,18 @@ import { revalidatePath } from 'next/cache';
 // Because it is a server-only client, it can make use of the `cookies`
 // header from `next/headers` to securely manage user sessions.
 export function createSupabaseServerClient(revalidate: boolean = false) {
-  const cookieStore = cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
+        async get(name: string) {
+          const cookieStore = cookies();
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
+        async set(name: string, value: string, options: CookieOptions) {
           try { 
+            const cookieStore = cookies();
             cookieStore.set({ name, value, ...options });
             if (revalidate) {
                 revalidatePath('/', 'layout');
@@ -31,8 +32,9 @@ export function createSupabaseServerClient(revalidate: boolean = false) {
             // user sessions.
           }
         },
-        remove(name: string, options: CookieOptions) {
+        async remove(name: string, options: CookieOptions) {
           try { 
+            const cookieStore = cookies();
             cookieStore.set({ name, value: '', ...options });
             if (revalidate) {
                 revalidatePath('/', 'layout');
