@@ -165,7 +165,7 @@ export default function InviteAndClimbPage() {
                         <Twitter className="h-5 w-5" />
                     </div>
                  </TwitterShareButton>
-                  <FacebookShareButton url={referralLink} quote={shareBody} hashtag="#RewardsPeak">
+                  <FacebookShareButton url={referralLink} hashtag="#RewardsPeak">
                      <div className="flex items-center justify-center h-12 w-12 rounded-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
                         <Facebook className="h-5 w-5" />
                     </div>
