@@ -98,7 +98,7 @@ export async function GET() {
         avatar_url: profile.avatar_url,
         referral_count: referralCountsMap.get(profile.id) || 0,
         completed_offers_count: offersCountsMap.get(profile.user_id) || 0,
-        banned_until: authUser?.banned_until || null,
+        banned_until: (authUser as any)?.banned_until || null,
       };
     }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); // Sort by creation date descending
     
