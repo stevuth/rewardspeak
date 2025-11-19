@@ -59,36 +59,57 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl;
+  const { pathname } = request.nextUrl
 
-  const isPublicRoute = pathname === '/' || pathname.startsWith('/join');
-  const isAuthRoute = pathname.startsWith('/auth');
-  const isAdminLoginRoute = pathname === '/admin/login';
-  const isSupportLoginRoute = pathname === '/support/login';
+  // Define public and auth-related routes
+  const isPublicRoute = pathname === '/' || pathname.startsWith('/join')
+  const isAuthRoute = pathname.startsWith('/auth')
+  const isAdminLoginRoute = pathname === '/admin/login'
+  const isSupportLoginRoute = pathname === '/support/login'
   
-  const isAdminDashboard = pathname.startsWith('/admin');
-  const isSupportDashboard = pathname.startsWith('/support');
+  // Define protected areas
+  const isAdminArea = pathname.startsWith('/admin')
+  const isSupportArea = pathname.startsWith('/support')
+  const isDashboardArea = pathname.startsWith('/dashboard') || 
+                          pathname.startsWith('/earn') ||
+                          pathname.startsWith('/referrals') ||
+                          pathname.startsWith('/leaderboard') ||
+                          pathname.startsWith('/withdraw') ||
+                          pathname.startsWith('/history') ||
+                          pathname.startsWith('/settings') ||
+                          pathname.startsWith('/help') ||
+                          pathname.startsWith('/offerwalls')
 
+
+  // --- Logic for Unauthenticated Users ---
   if (!user) {
-    if (isPublicRoute || isAuthRoute || isAdminLoginRoute || isSupportLoginRoute) {
-      return response;
+    // If trying to access any protected area, redirect to the homepage to log in.
+    if (isAdminArea || isSupportArea || isDashboardArea) {
+      return NextResponse.redirect(new URL('/', request.url))
     }
-    return NextResponse.redirect(new URL('/', request.url));
+    // Otherwise, allow access to public/auth pages.
+    return response
   }
 
-  // If user is logged in
-  const isPrivilegedUser = user.email?.endsWith('@rewardspeak.com');
-  const onPublicOrLoginPage = isPublicRoute || isAuthRoute || isAdminLoginRoute || isSupportLoginRoute;
-  
-  if (onPublicOrLoginPage) {
-      if(isPrivilegedUser) {
-          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-      }
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+  // --- Logic for Authenticated Users ---
+  const isPrivilegedUser = user.email?.endsWith('@rewardspeak.com')
+
+  // If a privileged user is on a public/auth/user-dashboard route, redirect to admin dashboard.
+  if (isPrivilegedUser) {
+    if (isPublicRoute || isAuthRoute || isDashboardArea) {
+       return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    }
+    // They are already in the admin/support area, so let them proceed.
+    return response
   }
-  
-  if (!isPrivilegedUser && (isAdminDashboard || isSupportDashboard)) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+
+  // If a regular user is on a public/auth/admin/support route, redirect to user dashboard.
+  if (!isPrivilegedUser) {
+    if (isPublicRoute || isAuthRoute || isAdminArea || isSupportArea) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    // They are already in the user dashboard area, so let them proceed.
+    return response
   }
 
   return response
