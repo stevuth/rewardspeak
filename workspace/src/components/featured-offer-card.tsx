@@ -1,7 +1,7 @@
 
 "use client";
 
-import { SafeImage } from "./safe-image";
+import { SafeImage } from "@/components/safe-image";
 import { Star } from "lucide-react";
 
 export function FeaturedOfferCard({ offer, scale }: { offer: any, scale: number }) {
