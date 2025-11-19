@@ -3,8 +3,6 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from "@/utils/supabase/admin";
 import type { NotikOffer } from "@/lib/notik-api";
 
-export const runtime = 'edge';
-
 // Helper to split an array into chunks
 function chunk<T>(array: T[], size: number): T[][] {
   const chunks: T[][] = [];

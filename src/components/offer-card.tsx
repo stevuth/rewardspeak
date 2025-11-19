@@ -4,15 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
-import type { NotikOffer } from "@/lib/notik-api";
+import { NotikOffer } from "@/lib/notik-api";
 
 type OfferCardProps = {
   offer: NotikOffer & {
     points: number;
     category: string;
-    title?: string; // a name property is available on NotikOffer
-    partner?: string; // a network property is available on NotikOffer
-    imageUrl?: string; // an image_url property is available on NotikOffer
+    title?: string;
+    partner?: string;
+    imageUrl?: string;
   };
 };
 

@@ -2,8 +2,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 
-export const runtime = 'edge';
-
 export async function GET(request: NextRequest) {
   const { nextUrl } = request;
   const fullUrl = nextUrl.toString();

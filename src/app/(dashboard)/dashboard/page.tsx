@@ -36,8 +36,6 @@ import { QuestMap } from "@/components/illustrations/quest-map";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
-export const runtime = 'edge';
-
 type DashboardOffer = NotikOffer & {
   points: number;
   imageHint: string;

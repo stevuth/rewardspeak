@@ -26,8 +26,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
-export const runtime = 'edge';
-
 export default function InviteAndClimbPage() {
   const [referralCode, setReferralCode] = useState('GUEST');
   const [userId, setUserId] = useState<string | null>(null);

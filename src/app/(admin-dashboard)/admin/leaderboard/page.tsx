@@ -21,7 +21,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { createSupabaseServerClient } from "@/utils/supabase/server";
 
-export const runtime = 'edge';
 export const revalidate = 3600; // Revalidate every hour
 
 type LeaderboardUser = {

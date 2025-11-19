@@ -23,8 +23,6 @@ import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { UserDetailsRow } from "./user-details-row";
 import type { UserProfile } from "@/app/api/get-all-users/route";
 
-export const runtime = 'edge';
-
 export default function ManageUsersPage() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);

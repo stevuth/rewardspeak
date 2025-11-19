@@ -27,8 +27,6 @@ import { Badge } from "@/components/ui/badge";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { Input } from "@/components/ui/input";
 
-export const runtime = 'edge';
-
 type Transaction = {
   id: number;
   created_at: string;

@@ -3,8 +3,6 @@ import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { SettingsPageClient } from "./settings-page-client";
 import type { Metadata } from "next";
 
-export const runtime = 'edge';
-
 export const metadata: Metadata = {
   title: "My Peak Profile",
   description: "Account info, preferences, and personal stats.",

@@ -15,8 +15,6 @@ import { History, Clock, CheckCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OfferHistoryTable } from "./offer-history-table";
 
-export const runtime = 'edge';
-
 export type OfferProgress = {
   id: string;
   offer_id: string;

@@ -9,10 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Apple, Monitor } from "lucide-react";
 
 type Offer = NotikOffer & {
-  points?: number;
-  imageHint?: string;
-  category?: string;
-  clickUrl?: string;
+  points: number;
+  imageHint: string;
+  category: "Survey" | "Game" | "App" | "Quiz";
+  clickUrl: string;
 };
 
 const AndroidIcon = (props: React.SVGProps<SVGSVGElement>) => (

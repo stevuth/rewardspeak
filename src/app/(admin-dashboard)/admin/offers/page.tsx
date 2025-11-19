@@ -33,8 +33,6 @@ import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 import { clientGetAllOffers } from "@/lib/notik-api";
 import { Badge } from "@/components/ui/badge";
 
-export const runtime = 'edge';
-
 type Offer = {
   offer_id: string;
   name: string;

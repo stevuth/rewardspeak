@@ -12,8 +12,6 @@ import { Lock, Mail, Shield, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { WavingMascotLoader } from '@/components/waving-mascot-loader';
 
-export const runtime = 'edge';
-
 export default function AdminLoginPage() {
   const [state, formAction, isPending] = useActionState(adminLogin, { message: "", success: false });
   const { toast } = useToast();

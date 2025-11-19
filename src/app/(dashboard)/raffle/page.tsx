@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/card";
 import type { Metadata } from "next";
 
-export const runtime = 'edge';
-
 export const metadata: Metadata = {
   title: "Raffle",
   description: "Enter raffles to win big prizes.",
