@@ -1,11 +1,5 @@
-# Configuration for Netlify builds and deploys
+# Default build settings for a Next.js app on Netlify
 
 [build]
-  # Default build command and publish directory for a Next.js app.
   command = "npm run build"
   publish = ".next"
-
-[build.environment]
-  # This tells Netlify's secrets scanner to ignore these specific keys,
-  # as they are intended to be included in the client-side bundle.
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_THEOREMREACH_API_KEY,IPHUB_API_KEY"
