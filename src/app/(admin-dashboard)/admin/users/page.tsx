@@ -1,21 +1,12 @@
 
-'use client';
-
-import { Suspense } from 'react';
-import ManageUsersPageContent from './page-content';
-import { WavingMascotLoader } from '@/components/waving-mascot-loader';
+import UsersPageWrapper from './page-wrapper';
 import type { Metadata } from 'next';
 
-// We can't export metadata from a client component.
-// It should be moved to a server component parent if needed, or defined in a new page.tsx.
-// For now, let's create a wrapper.
-
-function UsersPage() {
-    return (
-        <Suspense fallback={<div className="flex h-96 w-full items-center justify-center"><WavingMascotLoader text="Loading users..." /></div>}>
-            <ManageUsersPageContent />
-        </Suspense>
-    );
+export const metadata: Metadata = {
+    title: "Manage Users",
+    description: "View, filter, and manage all registered users on the platform."
 }
 
-export default UsersPage;
+export default function UsersPage() {
+    return <UsersPageWrapper />;
+}
