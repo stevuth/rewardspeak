@@ -1,9 +1,11 @@
+
 import { PageHeader } from "@/components/page-header";
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
+    CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,37 +30,31 @@ const earningCategories = [
   {
     href: "/survey-summit",
     label: "Survey Summit",
-    icon: FileText,
     description: "Share your opinions and earn.",
   },
   {
     href: "/offer-trails",
     label: "Offer Trails",
-    icon: Mountain,
     description: "Explore tasks from our partners.",
   },
   {
     href: "/quick-boosts",
     label: "Quick Boosts",
-    icon: Zap,
     description: "Fast rewards for simple tasks.",
   },
   {
     href: "/trending-peaks",
     label: "Trending Peaks",
-    icon: TrendingUp,
     description: "Popular and high-paying offers.",
   },
   {
     href: "/new-heights",
     label: "New Heights",
-    icon: PlusCircle,
     description: "The latest earning opportunities.",
   },
   {
     href: "/fast-tracks",
     label: "Fast Tracks",
-    icon: Rocket,
     description: "Quick-completion offers.",
   },
 ];
@@ -78,7 +74,7 @@ export default function ClimbAndEarnPage() {
           >
             <CardHeader className="flex-row items-center gap-4 space-y-0 pb-4">
               <div className="p-3 bg-primary/10 rounded-lg text-primary">
-                <category.icon className="w-6 h-6" />
+                <Mountain className="w-6 h-6" />
               </div>
               <div>
                 <CardTitle className="font-headline text-lg">
