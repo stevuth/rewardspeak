@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     "paid surveys",
     "online tasks",
   ],
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
