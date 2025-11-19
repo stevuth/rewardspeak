@@ -19,6 +19,7 @@ import { Label } from "../ui/label";
 type AuthFormProps = {
   type: "login" | "signup";
   onSwitch?: () => void;
+  initialReferralCode?: string;
 };
 
 const pageVariants = {
@@ -193,6 +194,7 @@ function ForgotPasswordModal({ open, onOpenChange }: { open: boolean, onOpenChan
 export function FuturisticAuthForm({
   type,
   onSwitch,
+  initialReferralCode = ''
 }: AuthFormProps) {
   const isLogin = type === "login";
   const [state, formAction, isPending] = useActionState(
@@ -201,10 +203,13 @@ export function FuturisticAuthForm({
   );
 
   const { toast } = useToast();
-  const searchParams = useSearchParams();
   
-  // Set initial state from URL search param.
-  const [referralCode, setReferralCode] = useState(() => searchParams.get('ref') || '');
+  const [referralCode, setReferralCode] = useState(initialReferralCode);
+
+  useEffect(() => {
+    setReferralCode(initialReferralCode);
+  }, [initialReferralCode]);
+
 
   useEffect(() => {
     if (state.message && !state.success) {
@@ -215,15 +220,6 @@ export function FuturisticAuthForm({
       });
     }
   }, [state, toast, isLogin]);
-
-  useEffect(() => {
-    // This effect ensures that if the modal is re-opened while the URL still has
-    // a ref code, the input field is updated. This is useful for SPAs.
-    const refCodeFromURL = searchParams.get('ref') || '';
-    if (refCodeFromURL) {
-        setReferralCode(refCodeFromURL);
-    }
-  }, [searchParams]);
 
   const [ipAddress, setIpAddress] = useState('');
   const [showPassword, setShowPassword] = useState(false);

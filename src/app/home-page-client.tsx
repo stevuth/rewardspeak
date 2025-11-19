@@ -159,6 +159,7 @@ function AuthModals() {
   const [isLogoutOpen, setIsLogoutOpen] = React.useState(false);
 
   const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref') || '';
 
   React.useEffect(() => {
     const event = searchParams.get('event');
@@ -192,7 +193,7 @@ function AuthModals() {
       <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
         <DialogContent className="p-0 border-0 bg-transparent shadow-none">
             <DialogTitle className="sr-only">Sign Up</DialogTitle>
-            <FuturisticAuthForm type="signup" onSwitch={onSwitchForms} />
+            <FuturisticAuthForm type="signup" onSwitch={onSwitchForms} initialReferralCode={referralCode} />
         </DialogContent>
       </Dialog>
       <LogoutSuccessModal isOpen={isLogoutOpen} onClose={() => setIsLogoutOpen(false)} />
@@ -524,3 +525,5 @@ export function HomePageClient({ featuredOffers, phoneCardOffers }: { featuredOf
     </div>
   );
 }
+
+    
