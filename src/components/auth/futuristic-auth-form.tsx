@@ -197,7 +197,7 @@ export function FuturisticAuthForm({
   const isLogin = type === "login";
   const [state, formAction, isPending] = useActionState(
     isLogin ? login : signup,
-    { message: "" }
+    { message: "", success: false }
   );
 
   const { toast } = useToast();
