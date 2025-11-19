@@ -210,6 +210,13 @@ export default function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isLoginPage = pathname === '/admin/login';
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <AdminHeader />
@@ -219,5 +226,3 @@ export default function AdminDashboardLayout({
     </div>
   );
 }
-
-    

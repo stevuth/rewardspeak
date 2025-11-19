@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { LogOut, LifeBuoy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/app/auth/actions";
@@ -34,6 +35,13 @@ export default function SupportDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isLoginPage = pathname === '/support/login';
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+  
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <SupportHeader />
@@ -43,5 +51,3 @@ export default function SupportDashboardLayout({
     </div>
   );
 }
-
-    
