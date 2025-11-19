@@ -1,22 +1,13 @@
 
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/utils/supabase/server";
-
+// This layout no longer needs to validate the session,
+// as the admin/support portals now use sessionless authentication.
+// The individual pages or a sub-layout can handle checking if a user is authorized if needed.
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const isAdminUser = user?.email?.endsWith("@rewardspeak.com");
-
-  if (!isAdminUser) {
-    redirect("/admin/login");
-  }
-
   return <>{children}</>;
 }
+
+    

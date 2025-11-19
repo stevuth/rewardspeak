@@ -11,20 +11,30 @@ import { Button } from '@/components/ui/button';
 import { Lock, Mail, Shield, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { WavingMascotLoader } from '@/components/waving-mascot-loader';
+import { useRouter } from 'next/navigation';
 
 export default function AdminLoginPage() {
   const [state, formAction, isPending] = useActionState(adminLogin, { message: "", success: false });
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
-    if (state.message && !state.success) {
-      toast({
-        variant: 'destructive',
-        title: "Login Failed",
-        description: state.message,
-      });
+    if (state.message) {
+      if (state.success) {
+        toast({
+          title: "Login Successful",
+          description: "Redirecting to the admin dashboard...",
+        });
+        router.push('/admin/dashboard');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: "Login Failed",
+          description: state.message,
+        });
+      }
     }
-  }, [state, toast]);
+  }, [state, toast, router]);
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -95,3 +105,5 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
+    

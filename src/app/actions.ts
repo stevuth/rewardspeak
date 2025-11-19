@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/utils/supabase/server";
 import { type NotikOffer } from "@/lib/notik-api";
 import { revalidatePath } from "next/cache";
 import { redirect } from 'next/navigation';
+import { createClient } from "@supabase/supabase-js";
 
 // Helper to split an array into chunks
 function chunk<T>(array: T[], size: number): T[][] {
@@ -17,7 +18,12 @@ function chunk<T>(array: T[], size: number): T[][] {
 }
 
 export async function adminLogin(prevState: { message: string, success?: boolean }, formData: FormData) {
-    const supabase = createSupabaseServerClient(true);
+    // Use a temporary, non-persisted client for admin/support logins
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { auth: { persistSession: false } }
+    );
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
@@ -41,12 +47,19 @@ export async function adminLogin(prevState: { message: string, success?: boolean
         return { message: error.message, success: false };
     }
 
-    redirect('/admin/dashboard');
+    // On success, we no longer redirect from the server action.
+    // The client-side form will handle the redirection.
+    return { message: 'Login successful', success: true };
 }
 
 
 export async function supportLogin(prevState: { message: string, success?: boolean }, formData: FormData) {
-    const supabase = createSupabaseServerClient(true);
+    // Use a temporary, non-persisted client for admin/support logins
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { auth: { persistSession: false } }
+    );
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
@@ -67,7 +80,9 @@ export async function supportLogin(prevState: { message: string, success?: boole
         return { message: `Authentication failed: ${error.message}`, success: false };
     }
 
-    redirect('/support/dashboard');
+    // On success, we no longer redirect from the server action.
+    // The client-side form will handle the redirection.
+    return { message: 'Login successful', success: true };
 }
 
 export async function getFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers'): Promise<{data: string[] | null, error: string | null}> {
@@ -684,4 +699,6 @@ export async function startOfferTracking(offer: NotikOffer): Promise<{ success: 
 
     return { success: true };
 }
+    
+
     
