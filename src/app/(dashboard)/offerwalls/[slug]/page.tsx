@@ -36,7 +36,7 @@ export default function OfferwallIframePage() {
   const params = useParams();
   const router = useRouter();
   const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-  const offerwall = offerwalls[slug];
+  const offerwall = slug ? offerwalls[slug] : undefined;
 
   useEffect(() => {
     const constructUrl = async () => {
@@ -53,10 +53,20 @@ export default function OfferwallIframePage() {
       setIsLoading(false);
     };
 
-    if(slug) {
+    if(slug && offerwall) {
         constructUrl();
+    } else {
+        setIsLoading(false);
     }
   }, [slug, offerwall]);
+
+  if (isLoading) {
+    return (
+        <div className="flex justify-center items-center h-96">
+            <WavingMascotLoader text="Loading Offerwall..." />
+        </div>
+    );
+  }
 
   if (!offerwall) {
       return (
@@ -86,11 +96,7 @@ export default function OfferwallIframePage() {
       </div>
       <Card className="flex-grow">
         <CardContent className="p-0 h-full">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <WavingMascotLoader text="Loading Offerwall..." />
-            </div>
-          ) : iframeSrc ? (
+          {iframeSrc ? (
             <iframe
               src={iframeSrc}
               className="w-full h-full border-0"
