@@ -10,10 +10,10 @@ export function createSupabaseServerClient(revalidate: boolean = false) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async get(name: string) {
+        get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        async set(name: string, value: string, options: CookieOptions) {
+        set(name: string, value: string, options: CookieOptions) {
           try { 
             cookieStore.set({ name, value, ...options });
             if (revalidate) {
@@ -23,7 +23,7 @@ export function createSupabaseServerClient(revalidate: boolean = false) {
             // This can happen in server components, safe to ignore.
           }
         },
-        async remove(name: string, options: CookieOptions) {
+        remove(name: string, options: CookieOptions) {
           try { 
             cookieStore.set({ name, value: '', ...options });
             if (revalidate) {
