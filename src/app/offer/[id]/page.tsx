@@ -30,12 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-export async function generateStaticParams() {
-    const { offers } = await getAllOffers();
-    return offers.map((offer) => ({
-        id: offer.offer_id,
-    }))
-}
+export const revalidate = 60;
+export const dynamicParams = true;
 
 export default async function OfferPage({ params }: Props) {
     const { offers } = await getAllOffers();
