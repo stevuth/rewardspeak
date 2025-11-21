@@ -9,7 +9,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   let profilePoints = 0;
@@ -23,13 +23,13 @@ export default async function DashboardLayout({
       .select('points, withdrawn, avatar_url')
       .eq('user_id', user.id)
       .single();
-    
+
     if (profileData) {
-        profilePoints = profileData.points ?? 0;
-        withdrawnPoints = profileData.withdrawn ?? 0;
-        avatarUrl = profileData.avatar_url;
+      profilePoints = profileData.points ?? 0;
+      withdrawnPoints = profileData.withdrawn ?? 0;
+      avatarUrl = profileData.avatar_url;
     }
   }
-  
+
   return <LayoutClient user={user} totalPoints={profilePoints} withdrawnPoints={withdrawnPoints} avatarUrl={avatarUrl}>{children}</LayoutClient>;
 }

@@ -245,7 +245,7 @@ type WithdrawalPayload = {
 };
 
 export async function processWithdrawalRequest(payload: WithdrawalPayload): Promise<{ success: boolean, error?: string }> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -402,7 +402,7 @@ export async function updateBulkWithdrawalRequestStatus(ids: string[], status: '
 }
 
 export async function updatePassword(newPassword: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { error } = await supabase.auth.updateUser({ password: newPassword });
 
     if (error) {
@@ -447,7 +447,7 @@ export async function unbanUser(userId: string): Promise<{ success: boolean; err
 // New Server Actions for Support Tickets
 
 export async function createSupportTicket(formData: FormData): Promise<{ success: boolean; error?: string, ticketId?: string }> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -572,7 +572,7 @@ export async function getSupportTickets(): Promise<{ success: boolean; data?: an
 }
 
 export async function addSupportReply(payload: { ticket_id: string, message: string, isFromSupport: boolean }): Promise<{ success: boolean; data?: any, error?: string }> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -584,9 +584,10 @@ export async function addSupportReply(payload: { ticket_id: string, message: str
     if (payload.isFromSupport && !isAdmin) {
         return { success: false, error: "You are not authorized to send messages as support." };
     }
-    if (!payload.isFromSupport && isAdmin) {
-        return { success: false, error: "Admins cannot send messages as users." };
-    }
+    // Removed the check that prevents admins from sending as users to allow testing/support usage
+    // if (!payload.isFromSupport && isAdmin) {
+    //    return { success: false, error: "Admins cannot send messages as users." };
+    // }
 
     const adminSupabase = createSupabaseAdminClient();
     const { data: newMessage, error } = await adminSupabase
@@ -670,7 +671,7 @@ export async function getCronLogs(): Promise<{ data: any[] | null, error: string
 }
 
 export async function startOfferTracking(offer: NotikOffer): Promise<{ success: boolean; error?: string }> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SettingsPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   let profileData = null;
@@ -24,17 +24,17 @@ export default async function SettingsPage() {
     profileData = profile;
 
     const { count, error } = await supabase
-        .from('user_offer_progress')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('status', 'completed');
-    
+      .from('user_offer_progress')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('status', 'completed');
+
     if (error) {
-        console.error("Error fetching completed offers count:", error);
+      console.error("Error fetching completed offers count:", error);
     } else {
-        completedOffersCount = count || 0;
+      completedOffersCount = count || 0;
     }
   }
-  
+
   return <SettingsPageClient user={user} profileData={profileData} completedOffersCount={completedOffersCount} />
 }

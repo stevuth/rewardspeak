@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '@/utils/supabase/server';
 import { HomePageClient } from './home-page-client';
 
 async function getHomePageData() {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const featuredOfferNames = ["raids shadow", "richie games", "upside", "bingo vacation", "crypto mine", "state of survival"];
     const phoneCardOfferNames = ["bitcoin tiles", "slot mate", "call of dragons", "fish of fortune"];
 
@@ -25,7 +25,7 @@ async function getHomePageData() {
                 uniqueFeaturedOffers.set(bestMatch.offer_id, bestMatch);
             }
         });
-        
+
         const phoneCardPromises = phoneCardOfferNames.map(name =>
             supabase
                 .from('all_offers')
@@ -37,7 +37,7 @@ async function getHomePageData() {
                 .limit(1)
                 .single()
         );
-        
+
         const phoneCardResults = await Promise.allSettled(phoneCardPromises);
         const phoneCardOffers = phoneCardResults
             .map(result => (result.status === 'fulfilled' ? result.value.data : null))
@@ -59,9 +59,9 @@ export async function HomePageContent() {
     const { featuredOffers, phoneCardOffers } = await getHomePageData();
 
     return (
-      <HomePageClient
-        featuredOffers={featuredOffers}
-        phoneCardOffers={phoneCardOffers}
-      />
+        <HomePageClient
+            featuredOffers={featuredOffers}
+            phoneCardOffers={phoneCardOffers}
+        />
     );
 }

@@ -7,8 +7,8 @@ import { createSupabaseAdminClient } from '@/utils/supabase/admin';
 import { revalidatePath } from 'next/cache';
 
 type VpnCheckResult = {
-    isVpn: boolean;
-    countryCode: string | null;
+  isVpn: boolean;
+  countryCode: string | null;
 }
 
 async function checkVpn(ipAddress: string | null): Promise<VpnCheckResult> {
@@ -17,7 +17,7 @@ async function checkVpn(ipAddress: string | null): Promise<VpnCheckResult> {
     console.warn("VPN Check: No IP address provided from the client. Blocking request.");
     return { isVpn: true, countryCode: null };
   }
-  
+
   const apiKey = process.env.IPHUB_API_KEY;
 
   // If the API key is not configured on the server, block the request as a security measure.
@@ -29,7 +29,7 @@ async function checkVpn(ipAddress: string | null): Promise<VpnCheckResult> {
   try {
     const url = `https://v2.api.iphub.info/ip/${ipAddress}`;
     console.log(`VPN Check: Calling IPHub for IP ${ipAddress}`);
-    
+
     const response = await fetch(url, {
       headers: { 'X-Key': apiKey }
     });
@@ -37,22 +37,22 @@ async function checkVpn(ipAddress: string | null): Promise<VpnCheckResult> {
     console.log(`VPN Check: IPHub responded with status ${response.status}`);
 
     if (!response.ok) {
-        // If the IPHub API itself fails, log the error but allow the request to avoid blocking legitimate users.
-        console.error(`IPHub API call failed with status: ${response.status}. Allowing request as a precaution.`);
-        return { isVpn: false, countryCode: null };
+      // If the IPHub API itself fails, log the error but allow the request to avoid blocking legitimate users.
+      console.error(`IPHub API call failed with status: ${response.status}. Allowing request as a precaution.`);
+      return { isVpn: false, countryCode: null };
     }
 
     const data = await response.json();
     console.log(`VPN Check: IPHub data for ${ipAddress}:`, data);
-    
+
     // IPHub returns { block: 1 } for VPN/proxy, and { block: 0 } for residential IPs.
     const isVpn = data.block === 1;
     if (isVpn) {
-        console.log(`VPN/Proxy detected for IP: ${ipAddress}. Blocking access.`);
+      console.log(`VPN/Proxy detected for IP: ${ipAddress}. Blocking access.`);
     } else {
-        console.log(`VPN Check: IP ${ipAddress} is clean (block=${data.block})`);
+      console.log(`VPN Check: IP ${ipAddress} is clean (block=${data.block})`);
     }
-    
+
     return { isVpn, countryCode: data.countryCode || null };
 
   } catch (error) {
@@ -75,14 +75,14 @@ export async function login(prevState: { message: string, success?: boolean }, f
     return { message: "Heads up, climber! For a fair ascent, VPNs aren't allowed. Please reconnect without one to continue.", success: false };
   }
 
-  const supabase = createSupabaseServerClient(true);
+  const supabase = await createSupabaseServerClient(true);
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
   if (!email || !password) {
     return { message: "You'll need both your email and password to enter the peak.", success: false };
   }
-  
+
   if (!isValidEmail(email)) {
     return { message: "That email address doesn't look right. Please check it and try again.", success: false };
   }
@@ -94,13 +94,13 @@ export async function login(prevState: { message: string, success?: boolean }, f
 
   if (error) {
     if (error.message.includes('User is banned')) {
-        return { 
-            message: "Account on Hold. We’ve paused your account because some activity didn’t match our fair use policy. Don’t worry — you can reach out to our support team to review and resolve this.", 
-            success: false 
-        };
+      return {
+        message: "Account on Hold. We’ve paused your account because some activity didn’t match our fair use policy. Don’t worry — you can reach out to our support team to review and resolve this.",
+        success: false
+      };
     }
     if (error.message.includes('Invalid login credentials')) {
-        return { message: "Lost your map? Your login details don't seem right. Please try that again.", success: false };
+      return { message: "Lost your map? Your login details don't seem right. Please try that again.", success: false };
     }
     return { message: `A technical issue occurred: ${error.message}`, success: false };
   }
@@ -111,7 +111,7 @@ export async function login(prevState: { message: string, success?: boolean }, f
 
 export async function signup(prevState: { message: string, success?: boolean }, formData: FormData) {
   const ipAddress = formData.get('ip_address') as string | null;
-  
+
   const { isVpn, countryCode } = await checkVpn(ipAddress);
   if (isVpn) {
     return { message: "Heads up, climber! For a fair ascent, VPNs aren't allowed. Please reconnect without one to continue.", success: false };
@@ -125,7 +125,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
   if (!email || !password) {
     return { message: "You'll need both your email and password to start your climb.", success: false };
   }
-  
+
   if (!isValidEmail(email)) {
     return { message: "That email address doesn't look quite right. Please double-check it.", success: false };
   }
@@ -134,7 +134,7 @@ export async function signup(prevState: { message: string, success?: boolean }, 
     return { message: "Please agree to the Terms of Use and Privacy Policy to begin your journey.", success: false };
   }
 
-  const supabase = createSupabaseServerClient(true);
+  const supabase = await createSupabaseServerClient(true);
 
   const { error } = await supabase.auth.signUp({
     email: email,
@@ -150,8 +150,8 @@ export async function signup(prevState: { message: string, success?: boolean }, 
 
   if (error) {
     const friendlyMessage = error.message.includes('unique constraint')
-        ? "It looks like another adventurer already has that email. Try logging in instead!"
-        : `A technical issue occurred on the trail: ${error.message}`;
+      ? "It looks like another adventurer already has that email. Try logging in instead!"
+      : `A technical issue occurred on the trail: ${error.message}`;
     return { message: friendlyMessage, success: false };
   }
 
@@ -164,12 +164,12 @@ export async function requestPasswordReset(prevState: { message: string, success
   if (!email) {
     return { message: 'Please enter your email to find your path again.', success: false };
   }
-  
+
   if (!isValidEmail(email)) {
     return { message: 'That email address doesn\'t look quite right. Please double-check it.', success: false };
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/auth/reset-password`,
   });
@@ -184,7 +184,7 @@ export async function requestPasswordReset(prevState: { message: string, success
 
 
 export async function signOut() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signOut();
 
   if (error) {
@@ -192,7 +192,7 @@ export async function signOut() {
     // Even if there's an error, we should still try to redirect.
     // The middleware will handle unauthenticated access.
   }
-  
+
   // The redirect now includes query params to trigger the success modal on the homepage.
   return redirect('/?event=logout');
 }

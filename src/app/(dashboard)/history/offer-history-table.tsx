@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { SafeImage } from "@/components/safe-image";
 import type { OfferProgress } from './page';
 import { cn } from "@/lib/utils";
-import { CheckCircle, ChevronDown } from 'lucide-react';
+import { CheckCircle, Plus, Minus } from 'lucide-react';
 
 const StatusBadge = ({ status }: { status: OfferProgress["status"] }) => {
     if (status === "completed") {
@@ -93,12 +93,13 @@ const OfferRow = ({ offer }: { offer: OfferProgress }) => {
 
                 {/* Expand Icon */}
                 {hasEvents && (
-                    <ChevronDown
-                        className={cn(
-                            "h-5 w-5 text-muted-foreground transition-transform flex-shrink-0 mt-1",
-                            isOpen && "rotate-180"
+                    <div className="flex-shrink-0 mt-1">
+                        {isOpen ? (
+                            <Minus className="h-5 w-5 text-muted-foreground transition-colors" />
+                        ) : (
+                            <Plus className="h-5 w-5 text-muted-foreground transition-colors" />
                         )}
-                    />
+                    </div>
                 )}
             </div>
 
