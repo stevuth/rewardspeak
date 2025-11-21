@@ -6,15 +6,15 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/dashboard';
-  
+
   if (code) {
     const supabase = createSupabaseApiClient(request);
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    
+
     if (!error && data.user) {
       // Check if the user is new by looking at the confirmation timestamp.
-      // This is a heuristic: if confirmed within the last 10 seconds, they are likely a new user.
-      const isNewUser = data.user.email_confirmed_at && (new Date().getTime() - new Date(data.user.email_confirmed_at).getTime() < 10000);
+      // This is a heuristic: if confirmed within the last 60 seconds, they are likely a new user.
+      const isNewUser = data.user.email_confirmed_at && (new Date().getTime() - new Date(data.user.email_confirmed_at).getTime() < 60000);
 
       // If it's a new user verification, redirect to the elegant 'verified' page.
       if (isNewUser) {

@@ -10,11 +10,11 @@ import { createClient } from "@supabase/supabase-js";
 
 // Helper to split an array into chunks
 function chunk<T>(array: T[], size: number): T[][] {
-  const chunks: T[][] = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  return chunks;
+    const chunks: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+        chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
 }
 
 export async function adminLogin(prevState: { message: string, success?: boolean }, formData: FormData) {
@@ -30,7 +30,7 @@ export async function adminLogin(prevState: { message: string, success?: boolean
     if (!email || !password) {
         return { message: 'Email and password are required.', success: false };
     }
-    
+
     if (!email.endsWith('@rewardspeak.com')) {
         return { message: 'Access denied. This portal is for administrators only.', success: false };
     }
@@ -66,7 +66,7 @@ export async function supportLogin(prevState: { message: string, success?: boole
     if (!email || !password) {
         return { message: 'Email and password are required.', success: false };
     }
-    
+
     if (!email.endsWith('@rewardspeak.com')) {
         return { message: 'Access denied. This portal is for support agents only.', success: false };
     }
@@ -85,14 +85,14 @@ export async function supportLogin(prevState: { message: string, success?: boole
     return { message: 'Login successful', success: true };
 }
 
-export async function getFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers'): Promise<{data: string[] | null, error: string | null}> {
+export async function getFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers'): Promise<{ data: string[] | null, error: string | null }> {
     const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
         .from('featured_content')
         .select('offer_ids')
         .eq('content_type', contentType)
         .single();
-    
+
     if (error) {
         if (error.code === 'PGRST116') { // "Not a single row was found"
             return { data: [], error: null }; // Return empty array if no entry exists yet
@@ -103,7 +103,7 @@ export async function getFeaturedContent(contentType: 'featured_offers' | 'top_c
     return { data: data.offer_ids, error: null };
 }
 
-export async function updateFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers', offerIds: string[]): Promise<{success: boolean, error?: string}> {
+export async function updateFeaturedContent(contentType: 'featured_offers' | 'top_converting_offers', offerIds: string[]): Promise<{ success: boolean, error?: string }> {
     const supabase = createSupabaseAdminClient();
 
     const { error } = await supabase
@@ -118,7 +118,7 @@ export async function updateFeaturedContent(contentType: 'featured_offers' | 'to
         console.error("Error updating featured content:", error);
         return { success: false, error: error.message };
     }
-    
+
     // Revalidate paths where this content is displayed
     revalidatePath('/dashboard');
     revalidatePath('/admin/offer-preview');
@@ -127,25 +127,25 @@ export async function updateFeaturedContent(contentType: 'featured_offers' | 'to
 }
 
 export async function setOfferDisabledStatus(offerId: string, isDisabled: boolean): Promise<{ success: boolean; error?: string }> {
-  const supabase = createSupabaseAdminClient();
+    const supabase = createSupabaseAdminClient();
 
-  const { error } = await supabase
-    .from('all_offers')
-    .update({ is_disabled: isDisabled })
-    .eq('offer_id', offerId);
+    const { error } = await supabase
+        .from('all_offers')
+        .update({ is_disabled: isDisabled })
+        .eq('offer_id', offerId);
 
-  if (error) {
-    console.error("Error updating offer status:", error);
-    return { success: false, error: error.message };
-  }
+    if (error) {
+        console.error("Error updating offer status:", error);
+        return { success: false, error: error.message };
+    }
 
-  // Revalidate all paths where offers might be displayed
-  revalidatePath('/admin/offers', 'page');
-  revalidatePath('/admin/offer-preview');
-  revalidatePath('/dashboard');
-  revalidatePath('/earn');
+    // Revalidate all paths where offers might be displayed
+    revalidatePath('/admin/offers', 'page');
+    revalidatePath('/admin/offer-preview');
+    revalidatePath('/dashboard');
+    revalidatePath('/earn');
 
-  return { success: true };
+    return { success: true };
 }
 
 export async function getOfferPayoutPercentage(): Promise<{ data: number; error: string | null; }> {
@@ -155,16 +155,16 @@ export async function getOfferPayoutPercentage(): Promise<{ data: number; error:
         .select('value')
         .eq('key', 'offer_payout_percentage')
         .single();
-    
+
     if (error) {
         // If the key doesn't exist, return a default of 100%
-        if (error.code === 'PGRST116') { 
+        if (error.code === 'PGRST116') {
             return { data: 100, error: null };
         }
         console.error("Error fetching payout percentage:", error);
         return { data: 100, error: error.message };
     }
-    
+
     return { data: Number(data.value), error: null };
 }
 
@@ -180,7 +180,7 @@ export async function updateOfferPayoutPercentage(percentage: number): Promise<{
             key: 'offer_payout_percentage',
             value: String(percentage),
         }, { onConflict: 'key' });
-    
+
     if (error) {
         console.error("Error updating payout percentage:", error);
         return { success: false, error: error.message };
@@ -201,16 +201,16 @@ export async function getOfferDisplayLimit(): Promise<{ data: number; error: str
         .select('value')
         .eq('key', 'offer_display_limit')
         .single();
-    
+
     if (error) {
         // If the key doesn't exist, return a default
-        if (error.code === 'PGRST116') { 
+        if (error.code === 'PGRST116') {
             return { data: 1000, error: null };
         }
         console.error("Error fetching offer display limit:", error);
         return { data: 1000, error: error.message };
     }
-    
+
     return { data: Number(data.value), error: null };
 }
 
@@ -226,7 +226,7 @@ export async function updateOfferDisplayLimit(limit: number): Promise<{ success:
             key: 'offer_display_limit',
             value: String(limit),
         }, { onConflict: 'key' });
-    
+
     if (error) {
         console.error("Error updating offer display limit:", error);
         return { success: false, error: error.message };
@@ -261,11 +261,11 @@ export async function processWithdrawalRequest(payload: WithdrawalPayload): Prom
         p_method: payload.method,
         p_wallet_address: payload.walletAddress,
     });
-    
+
     if (rpcError) {
         console.error("Error in process_withdrawal RPC:", rpcError);
-        const errorMessage = rpcError.message.includes("Not enough points") 
-            ? "Your treasure chest is a little light for that cash-out. Keep earning and you'll get there!" 
+        const errorMessage = rpcError.message.includes("Not enough points")
+            ? "Your balance is a little light for that cash-out. Keep earning and you'll get there!"
             : "An unexpected error occurred. Please try again later.";
         return { success: false, error: errorMessage };
     }
@@ -284,7 +284,7 @@ type GetWithdrawalRequestsParams = {
     status?: string;
 }
 
-export async function getWithdrawalRequests({ page, limit, email, method, status }: GetWithdrawalRequestsParams): Promise<{requests: any[] | null, count: number | null}> {
+export async function getWithdrawalRequests({ page, limit, email, method, status }: GetWithdrawalRequestsParams): Promise<{ requests: any[] | null, count: number | null }> {
     const supabase = createSupabaseAdminClient();
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -315,7 +315,7 @@ export async function getWithdrawalRequests({ page, limit, email, method, status
     return { requests: data, count };
 }
 
-export async function getAllWithdrawalRequestsForCSV({ email, method, status }: Omit<GetWithdrawalRequestsParams, 'page' | 'limit'>): Promise<{requests: any[] | null, error?: string}> {
+export async function getAllWithdrawalRequestsForCSV({ email, method, status }: Omit<GetWithdrawalRequestsParams, 'page' | 'limit'>): Promise<{ requests: any[] | null, error?: string }> {
     const supabase = createSupabaseAdminClient();
 
     let query = supabase
@@ -333,17 +333,17 @@ export async function getAllWithdrawalRequestsForCSV({ email, method, status }: 
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
-    
+
     if (error) {
         console.error("Error fetching all withdrawal requests for CSV:", error);
         return { requests: null, error: error.message };
     }
-    
+
     return { requests: data };
 }
 
 
-export async function updateWithdrawalRequestStatus(id: string, status: 'completed' | 'rejected'): Promise<{success: boolean, error?: string}> {
+export async function updateWithdrawalRequestStatus(id: string, status: 'completed' | 'rejected'): Promise<{ success: boolean, error?: string }> {
     const supabase = createSupabaseAdminClient();
 
     const { error } = await supabase.rpc('update_withdrawal_status', {
@@ -453,7 +453,7 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
     if (!user) {
         return { success: false, error: "You must be logged in to submit a ticket." };
     }
-    
+
     const subject = formData.get('subject') as string;
     const message = formData.get('message') as string;
     const attachment = formData.get('attachment') as File | null;
@@ -463,7 +463,7 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
     }
 
     let attachmentUrl: string | null = null;
-    
+
     // 1. Handle file upload if an attachment exists
     if (attachment && attachment.size > 0) {
         const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('support_attachments');
@@ -472,10 +472,10 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
             console.error("Storage bucket 'support_attachments' not found.", bucketError);
             return { success: false, error: "Configuration error: Support attachment storage is not available. Please contact support directly." };
         }
-        
+
         const fileExt = attachment.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
             .from('support_attachments')
             .upload(fileName, attachment);
@@ -484,11 +484,11 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
             console.error("Error uploading support attachment:", uploadError);
             return { success: false, error: `Failed to upload attachment: ${uploadError.message}` };
         }
-        
+
         const { data: urlData } = supabase.storage
             .from('support_attachments')
             .getPublicUrl(fileName);
-            
+
         attachmentUrl = urlData.publicUrl;
     }
 
@@ -504,12 +504,12 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
         })
         .select()
         .single();
-    
+
     if (ticketError) {
         console.error("Error creating support ticket:", ticketError);
         return { success: false, error: "Could not create the ticket." };
     }
-  
+
     // 3. Create the initial message
     const { error: messageError } = await adminSupabase
         .from('ticket_messages')
@@ -520,7 +520,7 @@ export async function createSupportTicket(formData: FormData): Promise<{ success
             is_from_support: false,
             attachment_url: attachmentUrl,
         });
-        
+
     if (messageError) {
         console.error("Error creating initial ticket message:", messageError);
         await adminSupabase.from('support_tickets').delete().eq('id', ticket.id);
@@ -550,7 +550,7 @@ export async function getSupportTickets(): Promise<{ success: boolean; data?: an
     if (!tickets || tickets.length === 0) {
         return { success: true, data: [] };
     }
-    
+
     const ticketIds = tickets.map(t => t.id);
     const { data: messages, error: messagesError } = await supabase
         .from('ticket_messages')
@@ -578,13 +578,13 @@ export async function addSupportReply(payload: { ticket_id: string, message: str
     if (!user) {
         return { success: false, error: "Authentication required." };
     }
-    
+
     // Server-side validation
     const isAdmin = user.email?.endsWith('@rewardspeak.com');
     if (payload.isFromSupport && !isAdmin) {
         return { success: false, error: "You are not authorized to send messages as support." };
     }
-     if (!payload.isFromSupport && isAdmin) {
+    if (!payload.isFromSupport && isAdmin) {
         return { success: false, error: "Admins cannot send messages as users." };
     }
 
@@ -604,6 +604,12 @@ export async function addSupportReply(payload: { ticket_id: string, message: str
         console.error("Error adding support reply:", error);
         return { success: false, error: `Database error: ${error.message}` };
     }
+
+    // Touch the ticket so updated_at changes, triggering realtime listeners
+    await adminSupabase
+        .from('support_tickets')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', payload.ticket_id);
 
     revalidatePath('/support/dashboard');
     revalidatePath('/help');
@@ -643,19 +649,19 @@ export async function updateTicketStatus(ticketId: string, status: 'open' | 'clo
 
     revalidatePath('/support/dashboard');
     revalidatePath('/help');
-    
+
     return { success: true };
 }
 
 
-export async function getCronLogs(): Promise<{data: any[] | null, error: string | null}> {
+export async function getCronLogs(): Promise<{ data: any[] | null, error: string | null }> {
     const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
         .from('cron_logs')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
-    
+
     if (error) {
         console.error("Error fetching cron logs:", error);
         return { data: null, error: error.message };
@@ -670,7 +676,7 @@ export async function startOfferTracking(offer: NotikOffer): Promise<{ success: 
     if (!user) {
         return { success: false, error: "User not authenticated." };
     }
-    
+
     const adminSupabase = createSupabaseAdminClient();
 
     const offerDetails = {
@@ -699,6 +705,5 @@ export async function startOfferTracking(offer: NotikOffer): Promise<{ success: 
 
     return { success: true };
 }
-    
 
-    
+

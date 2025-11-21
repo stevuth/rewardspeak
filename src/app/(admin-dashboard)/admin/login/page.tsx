@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -42,7 +41,7 @@ export default function AdminLoginPage() {
         {/* Left Panel */}
         <div className="relative hidden flex-col items-center justify-between bg-card p-8 text-white lg:flex">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background" />
-           <Link href="/" className="relative z-10 inline-flex items-center gap-2 self-start font-semibold">
+          <Link href="/" className="relative z-10 inline-flex items-center gap-2 self-start font-semibold">
             <Image src="/logo.png?v=9" alt="Logo" width={32} height={32} />
             <span className="text-xl">Rewards Peak</span>
           </Link>
@@ -56,10 +55,10 @@ export default function AdminLoginPage() {
           <div className="relative z-10 mt-auto flex w-full max-w-sm items-start gap-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-left">
             <AlertTriangle className="h-6 w-6 flex-shrink-0 text-destructive" />
             <div>
-                <h3 className="font-semibold text-destructive-foreground">Security Warning</h3>
-                <p className="text-sm text-destructive/80">
+              <h3 className="font-semibold text-destructive-foreground">Security Warning</h3>
+              <p className="text-sm text-destructive/80">
                 All activities on this portal are logged and monitored for security purposes. Unauthorized access is strictly prohibited.
-                </p>
+              </p>
             </div>
           </div>
         </div>
@@ -95,9 +94,9 @@ export default function AdminLoginPage() {
               </Button>
             </form>
             <div className="text-center text-sm text-muted-foreground">
-                <Link href="/" className="underline hover:text-primary">
-                    Return to main site
-                </Link>
+              <Link href="/" className="underline hover:text-primary">
+                Return to main site
+              </Link>
             </div>
           </div>
         </div>
@@ -105,5 +104,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-
-    

@@ -5,12 +5,12 @@ import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,17 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { updatePassword } from "@/app/actions";
 import { WavingMascotLoader } from "@/components/waving-mascot-loader";
 
-// Helper to get flag emoji from country code
-function getFlagEmoji(countryCode: string): string {
-  if (!countryCode || countryCode.length !== 2) return '';
-  // The regional indicator symbol letters are mapped from 'A' (U+1F1E6) to 'Z' (U+1F1FF).
-  // The formula is: 127462 - 65 ('A') + charCode.
-  const codePoints = countryCode
-    .toUpperCase()
-    .split('')
-    .map(char => 127397 + char.charCodeAt(0));
-  return String.fromCodePoint(...codePoints);
-}
+
 
 
 export function SettingsPageClient({ user, profileData, completedOffersCount }: { user: any, profileData: any, completedOffersCount: number }) {
@@ -63,7 +53,7 @@ export function SettingsPageClient({ user, profileData, completedOffersCount }: 
 
         setIsSaving(true);
         const result = await updatePassword(newPassword);
-        
+
         if (result.success) {
             toast({
                 title: 'Password Updated',
@@ -87,7 +77,7 @@ export function SettingsPageClient({ user, profileData, completedOffersCount }: 
     const rewardsPeakId = profileData?.id ?? 'GUEST';
     const avatarUrl = profileData?.avatar_url;
     const countryCode = profileData?.country_code ?? 'N/A';
-    const countryFlag = countryCode !== 'N/A' ? getFlagEmoji(countryCode) : '';
+
 
     return (
         <div className="space-y-8">
@@ -110,7 +100,16 @@ export function SettingsPageClient({ user, profileData, completedOffersCount }: 
                                         <>
                                             <Separator orientation="vertical" className="h-4" />
                                             <span className="flex items-center gap-1">
-                                                <Globe className="h-3 w-3" /> {countryFlag} {countryCode}
+                                                <Globe className="h-3 w-3" />
+                                                <img
+                                                    src={`https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`}
+                                                    srcSet={`https://flagcdn.com/w80/${countryCode.toLowerCase()}.png 2x`}
+                                                    width="20"
+                                                    height="15"
+                                                    alt={countryCode}
+                                                    className="object-contain"
+                                                />
+                                                {countryCode}
                                             </span>
                                         </>
                                     )}
@@ -157,7 +156,7 @@ export function SettingsPageClient({ user, profileData, completedOffersCount }: 
                             </Card>
                         </TabsContent>
                         <TabsContent value="password">
-                             <form onSubmit={handleUpdatePassword}>
+                            <form onSubmit={handleUpdatePassword}>
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Password</CardTitle>

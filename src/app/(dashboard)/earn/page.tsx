@@ -29,7 +29,7 @@ function transformOffer(notikOffer: NotikOffer, userId: string | undefined, payo
 
   const percentage = payoutPercentage / 100;
   const markedUpPayout = Number(notikOffer.payout || 0) * percentage;
-  
+
   const points = Math.round(markedUpPayout * 1000);
 
   const markedUpEvents = notikOffer.events?.map(event => ({
@@ -62,88 +62,90 @@ export default function EarnPage() {
   const [totalOfferLimit, setTotalOfferLimit] = useState(1000);
   const { toast } = useToast();
 
-  const fetchOffers = useCallback(async (pageNum: number, isNewSearch: boolean = false) => {
-    if (pageNum === 1) {
+  const fetchOffers = useCallback(async (pageNum: number, isNewSearch: boolean = false, silent: boolean = false) => {
+    if (pageNum === 1 && !silent) {
       setIsLoading(true);
     } else {
       setIsLoadingMore(true);
     }
-    
+
     try {
-        const supabase = createSupabaseBrowserClient();
-        const { data: { user } } = await supabase.auth.getUser();
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
 
-        let userCountry = 'US'; // Default to US if not found
-        if (user) {
-            const { data: profile } = await supabase
-            .from('profiles')
-            .select('country_code')
-            .eq('user_id', user.id)
-            .single();
-            if (profile && profile.country_code) {
-              userCountry = profile.country_code;
-            }
+      let userCountry = 'US'; // Default to US if not found
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country_code')
+          .eq('user_id', user.id)
+          .single();
+        if (profile && profile.country_code) {
+          userCountry = profile.country_code;
         }
-        
-        const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
-        const payoutPercentage = config ? Number(config.value) : 100;
-        
-        const { data: limitConfig } = await supabase.from('site_config').select('value').eq('key', 'offer_display_limit').single();
-        const currentTotalLimit = limitConfig ? Number(limitConfig.value) : 1000;
-        setTotalOfferLimit(currentTotalLimit);
+      }
 
-        const from = (pageNum - 1) * OFFERS_PER_PAGE;
-        if (from >= currentTotalLimit) {
-            setHasMore(false);
-            setIsLoading(false);
-            setIsLoadingMore(false);
-            return;
-        }
+      const { data: config } = await supabase.from('site_config').select('value').eq('key', 'offer_payout_percentage').single();
+      const payoutPercentage = config ? Number(config.value) : 100;
 
-        const to = Math.min(from + OFFERS_PER_PAGE - 1, currentTotalLimit - 1);
+      const { data: limitConfig } = await supabase.from('site_config').select('value').eq('key', 'offer_display_limit').single();
+      const currentTotalLimit = limitConfig ? Number(limitConfig.value) : 1000;
+      setTotalOfferLimit(currentTotalLimit);
 
-        let query = supabase
-            .from('all_offers')
-            .select('*', { count: 'exact' })
-            .eq('is_disabled', false)
-            .not('description', 'is', null)
-            .neq('description', '')
-            .neq('description', 'name')
-            .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
+      const from = (pageNum - 1) * OFFERS_PER_PAGE;
+      if (from >= currentTotalLimit) {
+        setHasMore(false);
+        setIsLoading(false);
+        setIsLoadingMore(false);
+        return;
+      }
 
-        if (searchQuery) {
-            query = query.ilike('name', `%${searchQuery}%`);
-        }
-        
-        const [sortColumn, sortOrder] = sortFilter.split('-');
-        query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
+      const to = Math.min(from + OFFERS_PER_PAGE - 1, currentTotalLimit - 1);
 
-        const { data: rawAllOffers, error: allOffersError } = await query.range(from, to);
+      let query = supabase
+        .from('all_offers')
+        .select('*', { count: 'exact' })
+        .eq('is_disabled', false)
+        .not('description', 'is', null)
+        .neq('description', '')
+        .neq('description', 'name')
+        .or(`countries.cs.["ALL"],countries.cs.["${userCountry}"]`);
 
-        if (allOffersError) throw allOffersError;
-        
-        const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
-        
-        setAllOffers(prev => {
-            if (isNewSearch) {
-                return transformedOffers;
-            }
-            const existingIds = new Set(prev.map(o => o.offer_id));
-            const newOffers = transformedOffers.filter(o => !existingIds.has(o.offer_id));
-            return [...prev, ...newOffers];
+      if (searchQuery) {
+        query = query.ilike('name', `%${searchQuery}%`);
+      }
+
+      const [sortColumn, sortOrder] = sortFilter.split('-');
+      query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
+
+      const { data: rawAllOffers, error: allOffersError } = await query.range(from, to);
+
+      if (allOffersError) throw allOffersError;
+
+      const transformedOffers = (rawAllOffers || []).map((o: NotikOffer) => transformOffer(o, user?.id, payoutPercentage));
+
+      setAllOffers(prev => {
+        const combined = isNewSearch ? transformedOffers : [...prev, ...transformedOffers];
+        const uniqueMap = new Map();
+        combined.forEach(offer => {
+          if (!uniqueMap.has(offer.offer_id)) {
+            uniqueMap.set(offer.offer_id, offer);
+          }
         });
-        
-        const totalFetched = isNewSearch ? transformedOffers.length : allOffers.length + transformedOffers.length;
-        if (transformedOffers.length < OFFERS_PER_PAGE || totalFetched >= currentTotalLimit) {
-            setHasMore(false);
-        }
+        return Array.from(uniqueMap.values());
+      });
+
+      const totalFetched = isNewSearch ? transformedOffers.length : allOffers.length + transformedOffers.length;
+      if (transformedOffers.length < OFFERS_PER_PAGE || totalFetched >= currentTotalLimit) {
+        setHasMore(false);
+      }
 
     } catch (error) {
       console.error("Error fetching offers:", error);
       toast({
-          variant: "destructive",
-          title: "Can't Load Offers",
-          description: "Our map is a bit foggy right now. Please try again in a moment.",
+        variant: "destructive",
+        title: "Can't Load Offers",
+        description: "Our map is a bit foggy right now. Please try again in a moment.",
       });
     } finally {
       setIsLoading(false);
@@ -156,7 +158,7 @@ export default function EarnPage() {
     setPage(1);
     setHasMore(true);
     fetchOffers(1, true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, sortFilter]);
 
   // Real-time listener for offer updates
@@ -165,40 +167,37 @@ export default function EarnPage() {
     const channel = supabase.channel('realtime:all_offers')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'all_offers' }, (payload) => {
         console.log('Change received!', payload);
-        // A simple way to refresh is to reset the page and fetch again
-        // This ensures filters and sorting are reapplied correctly.
-        setAllOffers([]);
+        // Silent update: refresh the list without clearing it or showing a toast
         setPage(1);
         setHasMore(true);
-        fetchOffers(1, true);
-        toast({ title: "New offers available!", description: "The offer list has been updated." });
+        fetchOffers(1, true, true);
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, sortFilter]);
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore) {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        fetchOffers(nextPage);
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchOffers(nextPage);
     }
   };
 
   useEffect(() => {
     const handleScroll = () => {
-        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 500) {
-            handleLoadMore();
-        }
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 500) {
+        handleLoadMore();
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingMore, hasMore, page]); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoadingMore, hasMore, page]);
 
   const handleOfferClick = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -207,36 +206,36 @@ export default function EarnPage() {
   const handleCloseModal = () => {
     setSelectedOffer(null);
   };
-  
+
   const renderOfferGrid = (offers: Offer[]) => {
     if (isLoading && offers.length === 0) {
-        return (
-            <div className="flex flex-col justify-center items-center py-12 gap-2 h-96">
-                <WavingMascotLoader text="Finding the best offers..." />
-            </div>
-        );
+      return (
+        <div className="flex flex-col justify-center items-center py-12 gap-2 h-96">
+          <WavingMascotLoader text="Finding the best offers..." />
+        </div>
+      );
     }
 
     if (offers.length > 0) {
-        return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {offers.map((offer) => (
-                    <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
-                ))}
-            </div>
-        );
+      return (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {offers.map((offer) => (
+            <OfferGridCard key={offer.offer_id} offer={offer} onOfferClick={handleOfferClick} />
+          ))}
+        </div>
+      );
     }
 
     if (!isLoading && offers.length === 0) {
-        return (
-            <Card className="text-center py-12">
-                <CardContent>
-                    <p className="text-muted-foreground">No offers found. Try a different search!</p>
-                </CardContent>
-            </Card>
-        );
+      return (
+        <Card className="text-center py-12">
+          <CardContent>
+            <p className="text-muted-foreground">No offers found. Try a different search!</p>
+          </CardContent>
+        </Card>
+      );
     }
-    
+
     return null;
   };
 
@@ -245,31 +244,31 @@ export default function EarnPage() {
       <PageHeader
         description="Main earning hub that leads to all available earning opportunities."
       />
-      
+
       <Card>
         <CardContent className="pt-6 flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative w-full sm:flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                    id="search-offers"
-                    placeholder="Search for offers..." 
-                    className="pl-9"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
-            <div className="w-full sm:w-auto flex items-center gap-4">
-                <Select value={sortFilter} onValueChange={setSortFilter}>
-                    <SelectTrigger id="sort-filter" className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="Sort by..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="created_at-desc">Newest</SelectItem>
-                        <SelectItem value="payout-desc">Highest Reward</SelectItem>
-                        <SelectItem value="payout-asc">Lowest Reward</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
+          <div className="relative w-full sm:flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="search-offers"
+              placeholder="Search for offers..."
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="w-full sm:w-auto flex items-center gap-4">
+            <Select value={sortFilter} onValueChange={setSortFilter}>
+              <SelectTrigger id="sort-filter" className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="created_at-desc">Newest</SelectItem>
+                <SelectItem value="payout-desc">Highest Reward</SelectItem>
+                <SelectItem value="payout-asc">Lowest Reward</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardContent>
       </Card>
 
@@ -282,18 +281,18 @@ export default function EarnPage() {
         </div>
         {renderOfferGrid(allOffers)}
         {isLoadingMore && (
-             <div className="flex justify-center items-center py-8">
-                <WavingMascotLoader text="Loading more..." />
-             </div>
+          <div className="flex justify-center items-center py-8">
+            <WavingMascotLoader text="Loading more..." />
+          </div>
         )}
         {!hasMore && allOffers.length > 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-                <p>You've reached the end of the offers!</p>
-            </div>
+          <div className="text-center py-8 text-muted-foreground">
+            <p>You've reached the end of the offers!</p>
+          </div>
         )}
       </section>
-      
-      <OfferPreviewModal 
+
+      <OfferPreviewModal
         isOpen={!!selectedOffer}
         onClose={handleCloseModal}
         offer={selectedOffer}

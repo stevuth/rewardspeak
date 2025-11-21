@@ -19,12 +19,12 @@ export async function middleware(request: NextRequest) {
         },
         set(name: string, value: string, options: CookieOptions) {
           request.cookies.set({ name, value, ...options });
-          response = NextResponse.next({ request: { headers: request.headers }});
+          response = NextResponse.next({ request: { headers: request.headers } });
           response.cookies.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
           request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({ request: { headers: request.headers }});
+          response = NextResponse.next({ request: { headers: request.headers } });
           response.cookies.set({ name, value: '', ...options });
         },
       },
@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = protectedUserRoutes.some(route => pathname.startsWith(route));
   const isAuthRoute = pathname.startsWith('/auth') || pathname.startsWith('/join');
   const isHomePage = pathname === '/';
-  
+
   // Admin and Support portals are not protected by this middleware anymore,
   // as they handle their own sessionless authentication.
   const isAdminPortal = pathname.startsWith('/admin');
@@ -69,9 +69,12 @@ export async function middleware(request: NextRequest) {
 
   if (user && (isAuthRoute || isHomePage)) {
     // If a logged-in user tries to access auth pages or the homepage, redirect them to their dashboard.
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    // EXCEPTION: Allow them to see the 'verified' page so they know their email is confirmed.
+    if (pathname !== '/auth/verified') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
-  
+
   return response;
 }
 
@@ -80,5 +83,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
-
-    
