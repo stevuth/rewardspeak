@@ -56,7 +56,7 @@ export default function EarnPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortFilter, setSortFilter] = useState('created_at-desc');
+  const [sortFilter, setSortFilter] = useState('updated_at-desc');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalOfferLimit, setTotalOfferLimit] = useState(1000);
@@ -106,6 +106,7 @@ export default function EarnPage() {
         .from('all_offers')
         .select('*', { count: 'exact' })
         .eq('is_disabled', false)
+        .gte('payout', 1)
         .not('description', 'is', null)
         .neq('description', '')
         .neq('description', 'name')
@@ -126,11 +127,10 @@ export default function EarnPage() {
 
       setAllOffers(prev => {
         const combined = isNewSearch ? transformedOffers : [...prev, ...transformedOffers];
+        // Use Map to deduplicate by offer_id, keeping the most recent version
         const uniqueMap = new Map();
         combined.forEach(offer => {
-          if (!uniqueMap.has(offer.offer_id)) {
-            uniqueMap.set(offer.offer_id, offer);
-          }
+          uniqueMap.set(offer.offer_id, offer);
         });
         return Array.from(uniqueMap.values());
       });
@@ -161,21 +161,61 @@ export default function EarnPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, sortFilter]);
 
-  // Real-time listener for offer updates
+  // Real-time listener for offer updates and config changes
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-    const channel = supabase.channel('realtime:all_offers')
+
+    console.log('[Realtime] Setting up channel subscription...');
+
+    const channel = supabase.channel('realtime:earn_page')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'all_offers' }, (payload) => {
-        console.log('Change received!', payload);
+        console.log('[Realtime] Offer change received!', payload);
         // Silent update: refresh the list without clearing it or showing a toast
         setPage(1);
         setHasMore(true);
         fetchOffers(1, true, true);
       })
-      .subscribe();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'site_config' }, (payload) => {
+        console.log('[Realtime] Config change received!', payload);
+        // Refresh offers to apply new payout percentage
+        setPage(1);
+        setHasMore(true);
+        fetchOffers(1, true, true);
+      })
+      .subscribe((status, err) => {
+        console.log('[Realtime] Subscription status:', status, err);
+        if (status === 'SUBSCRIBED') {
+          console.log('[Realtime] ✅ Successfully subscribed to all_offers and site_config tables');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('[Realtime] ❌ Channel error:', err);
+        } else if (status === 'TIMED_OUT') {
+          console.error('[Realtime] ❌ Connection timed out');
+        } else if (status === 'CLOSED') {
+          console.warn('[Realtime] ⚠️ Channel closed');
+        }
+      });
 
     return () => {
+      console.log('[Realtime] Cleaning up channel subscription...');
       supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, sortFilter]);
+
+  // Polling interval to refresh offers every 15 minutes (to catch bulk updates from cron job)
+  useEffect(() => {
+    console.log('[Polling] Setting up 15-minute refresh interval...');
+
+    const intervalId = setInterval(() => {
+      console.log('[Polling] 15 minutes elapsed, refreshing offers...');
+      setPage(1);
+      setHasMore(true);
+      fetchOffers(1, true, true);
+    }, 15 * 60 * 1000); // 15 minutes
+
+    return () => {
+      console.log('[Polling] Cleaning up refresh interval...');
+      clearInterval(intervalId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, sortFilter]);
@@ -246,8 +286,8 @@ export default function EarnPage() {
       />
 
       <Card>
-        <CardContent className="pt-6 flex flex-col sm:flex-row items-center gap-4">
-          <div className="relative w-full sm:flex-1">
+        <CardContent className="pt-6">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="search-offers"
@@ -256,18 +296,6 @@ export default function EarnPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-          <div className="w-full sm:w-auto flex items-center gap-4">
-            <Select value={sortFilter} onValueChange={setSortFilter}>
-              <SelectTrigger id="sort-filter" className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Sort by..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="created_at-desc">Newest</SelectItem>
-                <SelectItem value="payout-desc">Highest Reward</SelectItem>
-                <SelectItem value="payout-asc">Lowest Reward</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </CardContent>
       </Card>

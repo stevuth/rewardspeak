@@ -94,7 +94,7 @@ export default function HelpPage() {
         (payload) => {
           setSelectedTicket(prev => {
             if (!prev || prev.messages.some(msg => msg.id === payload.new.id)) {
-                return prev;
+              return prev;
             }
             return {
               ...prev,
@@ -123,20 +123,38 @@ export default function HelpPage() {
       is_from_support: false,
       attachment_url: null,
     };
-    
+
     setSelectedTicket(prev => prev ? { ...prev, messages: [...prev.messages, optimisticMessage] } : null);
+    const currentMessage = replyMessage;
     setReplyMessage('');
 
     startTransition(async () => {
       const result = await addSupportReply({
         ticket_id: selectedTicket.id,
-        message: optimisticMessage.message,
+        message: currentMessage,
         isFromSupport: false
       });
 
       if (!result.success) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not send reply.' });
+        toast({
+          variant: 'destructive',
+          title: 'Failed to Send',
+          description: result.error || 'Could not send reply. Please try again.'
+        });
         setSelectedTicket(prev => prev ? { ...prev, messages: prev.messages.filter(m => m.id !== tempId) } : null);
+        setReplyMessage(currentMessage);
+      } else {
+        if (result.data) {
+          setSelectedTicket(prev => {
+            if (!prev) return null;
+            const filteredMessages = prev.messages.filter(m => m.id !== tempId);
+            return { ...prev, messages: [...filteredMessages, result.data] };
+          });
+        }
+        toast({
+          title: 'Reply Sent',
+          description: 'Your message has been sent successfully.'
+        });
       }
     });
   };
@@ -151,20 +169,20 @@ export default function HelpPage() {
         toast({ title: 'Ticket Created', description: 'We have received your message.' });
         const { data } = await supabase.from('support_tickets').select('*, messages:ticket_messages(*)').eq('id', result.ticketId).single();
         if (data) {
-            setTickets(prev => [data as Ticket, ...prev]);
-            setSelectedTicket(data as Ticket);
-            setView('ticket');
-            setAttachment(null);
-            setAttachmentPreview(null);
+          setTickets(prev => [data as Ticket, ...prev]);
+          setSelectedTicket(data as Ticket);
+          setView('ticket');
+          setAttachment(null);
+          setAttachmentPreview(null);
         } else {
-            setView('list');
+          setView('list');
         }
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
     });
   };
-  
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -179,24 +197,24 @@ export default function HelpPage() {
 
   if (isLoading) {
     return (
-        <div className="flex justify-center items-center h-96">
-            <WavingMascotLoader text="Loading Help Center..." />
-        </div>
+      <div className="flex justify-center items-center h-96">
+        <WavingMascotLoader text="Loading Help Center..." />
+      </div>
     )
   }
 
   return (
     <div className="space-y-8">
-       <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-                <PageHeader
-                    description="Get help or create a new support ticket. We're here to assist you on your climb."
-                />
-            </div>
-            <div className="hidden md:flex justify-center items-center">
-                <SupportIllustration />
-            </div>
+      <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div>
+          <PageHeader
+            description="Get help or create a new support ticket. We're here to assist you on your climb."
+          />
         </div>
+        <div className="hidden md:flex justify-center items-center">
+          <SupportIllustration />
+        </div>
+      </div>
 
       {view === 'list' && (
         <Card>
@@ -209,21 +227,21 @@ export default function HelpPage() {
           </CardHeader>
           <CardContent>
             {tickets.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                    You have no support tickets.
-                </div>
+              <div className="text-center py-12 text-muted-foreground">
+                You have no support tickets.
+              </div>
             ) : (
-                <div className="space-y-2">
-                    {tickets.map(ticket => (
-                        <button key={ticket.id} onClick={() => { setSelectedTicket(ticket); setView('ticket'); }} className="w-full text-left p-3 rounded-lg transition-colors hover:bg-muted">
-                            <div className="flex justify-between items-start">
-                                <p className="font-semibold">{ticket.subject}</p>
-                                <span className={`text-xs font-bold px-2 py-1 rounded-full ${ticket.status === 'open' ? 'bg-green-500/20 text-green-400' : 'bg-muted-foreground/20 text-muted-foreground'}`}>{ticket.status}</span>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">{new Date(ticket.created_at).toLocaleString()}</p>
-                        </button>
-                    ))}
-                </div>
+              <div className="space-y-2">
+                {tickets.map(ticket => (
+                  <button key={ticket.id} onClick={() => { setSelectedTicket(ticket); setView('ticket'); }} className="w-full text-left p-3 rounded-lg transition-colors hover:bg-muted">
+                    <div className="flex justify-between items-start">
+                      <p className="font-semibold">{ticket.subject}</p>
+                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${ticket.status === 'open' ? 'bg-green-500/20 text-green-400' : 'bg-muted-foreground/20 text-muted-foreground'}`}>{ticket.status}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">{new Date(ticket.created_at).toLocaleString()}</p>
+                  </button>
+                ))}
+              </div>
             )}
           </CardContent>
         </Card>
@@ -232,42 +250,42 @@ export default function HelpPage() {
       {view === 'create' && (
         <Card>
           <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Mail className="h-5 w-5"/> Create a New Ticket</CardTitle>
-              <CardDescription>Fill out the form below to contact support.</CardDescription>
+            <CardTitle className="flex items-center gap-2"><Mail className="h-5 w-5" /> Create a New Ticket</CardTitle>
+            <CardDescription>Fill out the form below to contact support.</CardDescription>
           </CardHeader>
           <form action={handleCreateTicket}>
             <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="subject">Subject</Label>
-                    <Input id="subject" name="subject" required />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea id="message" name="message" required className="min-h-[120px]" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="attachment">Attach Image (Optional, max 2MB)</Label>
-                  <Input id="attachment" name="attachment" type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-                   <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                        <Paperclip className="mr-2 h-4 w-4" />
-                        Choose File
-                   </Button>
-                   {attachmentPreview && (
-                     <div className="mt-2 relative w-24 h-24">
-                        <img src={attachmentPreview} alt="Attachment preview" className="rounded-md object-cover w-full h-full" />
-                        <Button type="button" variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => { setAttachment(null); setAttachmentPreview(null); if(fileInputRef.current) fileInputRef.current.value = ''; }}>
-                            &times;
-                        </Button>
-                     </div>
-                   )}
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="subject">Subject</Label>
+                <Input id="subject" name="subject" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="message">Message</Label>
+                <Textarea id="message" name="message" required className="min-h-[120px]" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="attachment">Attach Image (Optional, max 2MB)</Label>
+                <Input id="attachment" name="attachment" type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+                <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                  <Paperclip className="mr-2 h-4 w-4" />
+                  Choose File
+                </Button>
+                {attachmentPreview && (
+                  <div className="mt-2 relative w-24 h-24">
+                    <img src={attachmentPreview} alt="Attachment preview" className="rounded-md object-cover w-full h-full" />
+                    <Button type="button" variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => { setAttachment(null); setAttachmentPreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}>
+                      &times;
+                    </Button>
+                  </div>
+                )}
+              </div>
             </CardContent>
             <CardFooter className="gap-2">
-                <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
-                    Send
-                </Button>
-                <Button variant="outline" onClick={() => setView('list')}>Back to Tickets</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                Send
+              </Button>
+              <Button variant="outline" onClick={() => setView('list')}>Back to Tickets</Button>
             </CardFooter>
           </form>
         </Card>
@@ -275,35 +293,48 @@ export default function HelpPage() {
 
       {view === 'ticket' && selectedTicket && (
         <Card className="flex flex-col h-[70vh]">
-            <CardHeader className="flex-shrink-0">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle>{selectedTicket.subject}</CardTitle>
-                        <CardDescription>Ticket ID: {selectedTicket.id}</CardDescription>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={() => setView('list')}>Back to Tickets</Button>
+          <CardHeader className="flex-shrink-0">
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle>{selectedTicket.subject}</CardTitle>
+                <CardDescription>Ticket ID: {selectedTicket.id}</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setView('list')}>Back to Tickets</Button>
+            </div>
+          </CardHeader>
+          <CardContent className="flex-grow overflow-y-auto space-y-4">
+            {selectedTicket.messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map(msg => (
+              <div key={msg.id} className={`flex items-end gap-2 ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                  <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                  {msg.attachment_url && (
+                    <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
+                      <img src={msg.attachment_url} alt="Attachment" width={200} height={200} className="rounded-md object-cover max-w-full h-auto" />
+                    </a>
+                  )}
                 </div>
-            </CardHeader>
-            <CardContent className="flex-grow overflow-y-auto space-y-4">
-                {selectedTicket.messages.sort((a,b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map(msg => (
-                    <div key={msg.id} className={`flex items-end gap-2 ${msg.is_from_support ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-md p-3 rounded-lg ${msg.is_from_support ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                            <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
-                            {msg.attachment_url && (
-                                <a href={msg.attachment_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
-                                    <img src={msg.attachment_url} alt="Attachment" width={200} height={200} className="rounded-md object-cover max-w-full h-auto" />
-                                </a>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </CardContent>
-            <CardFooter className="p-4 border-t gap-2">
-                <Textarea value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder="Type your reply..." disabled={isSubmitting} />
-                <Button onClick={handleSendReply} disabled={isSubmitting || !replyMessage.trim()}>
-                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : <Send className="h-4 w-4" />}
-                </Button>
-            </CardFooter>
+              </div>
+            ))}
+          </CardContent>
+          <CardFooter className="p-4 border-t gap-2">
+            <Textarea
+              value={replyMessage}
+              onChange={(e) => setReplyMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  if (replyMessage.trim() && !isSubmitting) {
+                    handleSendReply();
+                  }
+                }
+              }}
+              placeholder="Type your reply... (Press Enter to send, Shift+Enter for new line)"
+              disabled={isSubmitting}
+            />
+            <Button onClick={handleSendReply} disabled={isSubmitting || !replyMessage.trim()}>
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            </Button>
+          </CardFooter>
         </Card>
       )}
 

@@ -70,7 +70,7 @@ const OfferHeader = ({
           <p className="text-sm text-muted-foreground">from {offer.network}</p>
         </div>
       </div>
-       <button
+      <button
         onClick={onClose}
         aria-label="Close"
         className="absolute right-4 top-4 rounded-md px-2 py-1 bg-black/20 ring-1 ring-primary/50 shadow-sm ring-offset-background transition-all hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground font-semibold text-secondary hover:-translate-y-0.5 active:scale-95 z-10"
@@ -170,7 +170,7 @@ export function OfferPreviewModal({
                     dangerouslySetInnerHTML={{ __html: offer.description }}
                   />
                 </div>
-                
+
                 {isAdmin && (
                   <div className="p-4 bg-black/20 rounded-lg border border-border">
                     <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
@@ -186,7 +186,7 @@ export function OfferPreviewModal({
                 )}
 
                 <h3 className="font-semibold text-primary pt-2">Milestones</h3>
-                
+
                 <div className="space-y-3">
                   {hasMilestones ? (
                     offer.events?.map((event, index) => {
@@ -236,7 +236,7 @@ export function OfferPreviewModal({
                           {totalUSD.toFixed(2)})
                         </p>
                       </div>
-                       <Button onClick={handleStartOffer} className="bg-primary hover:bg-primary/80 text-primary-foreground sm:w-auto">
+                      <Button onClick={handleStartOffer} className="bg-primary hover:bg-primary/80 text-primary-foreground sm:w-auto">
                         <span className="text-sm uppercase tracking-wider font-semibold">Start Offer</span>
                       </Button>
                     </div>
